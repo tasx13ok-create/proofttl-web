@@ -68,6 +68,7 @@ const ALLOWED_TARGETS: Readonly<Record<AssistantSection, string>> = Object.freez
 export async function fetchProofTTLAssistantUsage(signal?: AbortSignal) {
   const response = await fetch(ASSISTANT_USAGE_ENDPOINT, {
     method: 'GET',
+    credentials: 'include',
     cache: 'no-store',
     signal,
   })
@@ -86,6 +87,7 @@ export async function askProofTTLByVoice(audio: Blob, signal?: AbortSignal) {
 
   const response = await fetch(ASSISTANT_VOICE_ENDPOINT, {
     method: 'POST',
+    credentials: 'include',
     headers: { 'content-type': audio.type },
     body: audio,
     signal,
@@ -119,6 +121,7 @@ export async function askProofTTLByText(
 
   const response = await fetch(ASSISTANT_TEXT_ENDPOINT, {
     method: 'POST',
+    credentials: 'include',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ message: clean, history: boundedHistory }),
     signal,
