@@ -1,6 +1,7 @@
 'use client'
 
 import { FormEvent, useState } from 'react'
+import MobileNavMenu from '../components/MobileNavMenu'
 
 const API_URL = process.env.NEXT_PUBLIC_PROOFTTL_API_URL || 'https://proofttl.tasx13ok.workers.dev'
 const GITHUB_URL = 'https://github.com/tasx13ok-create/proofttl'
@@ -141,7 +142,19 @@ export default function Home() {
     <nav className="nav shell" aria-label="Primary navigation">
       <a className="brand" href="#top"><span className="brand-mark">P</span> PROOF<span className="brand-muted">TTL</span></a>
       <div className="nav-links"><a href="#how">How it works</a><a href="#lease">Fact leases</a><a href="#api">API</a><a href="#pricing">Pricing</a><a href="/support">Support</a><a href="/login">Sign in</a></div>
-      <a className="nav-cta" href="#verify">Try verifier <span>↗</span></a>
+      <div className="nav-right">
+        <a className="nav-cta" href="#verify">Try verifier <span>↗</span></a>
+        <MobileNavMenu
+          links={[
+            { href: '#how', label: 'How it works' },
+            { href: '#lease', label: 'Fact leases' },
+            { href: '#api', label: 'API' },
+            { href: '#pricing', label: 'Pricing' },
+            { href: '/support', label: 'Support' },
+            { href: '/login', label: 'Sign in' },
+          ]}
+        />
+      </div>
     </nav>
 
     <section className="hero shell" id="top">

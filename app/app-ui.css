@@ -241,4 +241,5 @@
   .price-preview { align-items: flex-start; flex-direction: column; }
   .app-table { overflow-x: auto; }
   .app-table-head, .app-table-row { min-width: 560px; }
+  .app-topbar { flex-wrap: wrap; row-gap: 10px; min-height: 0; padding: 14px 0; }
 }

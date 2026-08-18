@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { SEARCH_INTENTS } from './search-intents'
 import styles from './search-page.module.css'
+import MobileNavMenu from '../../components/MobileNavMenu'
 
 export const metadata: Metadata = {
   title: 'ProofTTL Solutions — Verification, Monitoring, AI Agents, x402',
@@ -18,6 +19,13 @@ export default function SolutionsPage() {
           <a href="/support/">Support</a>
           <a href="/console/">Console</a>
         </div>
+        <MobileNavMenu
+          links={[
+            { href: '/docs/', label: 'Docs' },
+            { href: '/support/', label: 'Support' },
+            { href: '/console/', label: 'Console' },
+          ]}
+        />
       </nav>
 
       <section className={`${styles.shell} ${styles.indexHero}`}>

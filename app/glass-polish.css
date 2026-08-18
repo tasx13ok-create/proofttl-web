@@ -310,6 +310,29 @@
   }
 }
 
+@media (max-width: 480px) {
+  .pttl-chat-dock {
+    right: max(84px, calc(env(safe-area-inset-right) + 74px));
+  }
+
+  .pttl-assistant-trigger {
+    width: 52px;
+    height: 52px;
+  }
+
+  .pttl-assistant-trigger::after {
+    width: 52px;
+    height: 52px;
+  }
+
+  .pttl-chat-orb,
+  .pttl-chat-send {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nav,
   .nav::before,

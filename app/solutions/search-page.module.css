@@ -251,20 +251,19 @@
   font-size: 13px;
 }
 
-@media (max-width: 760px) {
-  .shell {
-    width: min(100% - 28px, 1120px);
+@media (max-width: 900px) {
+  .navLinks {
+    display: none;
   }
 
   .nav {
-    align-items: flex-start;
-    padding: 20px 0;
+    align-items: center;
   }
+}
 
-  .navLinks {
-    gap: 12px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
+@media (max-width: 760px) {
+  .shell {
+    width: min(100% - 28px, 1120px);
   }
 
   .hero,
@@ -280,5 +279,61 @@
   .cta {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .shell {
+    width: min(100% - 24px, 1120px);
+  }
+
+  .nav {
+    min-height: 64px;
+  }
+
+  .hero {
+    padding: 40px 0 40px;
+    gap: 28px;
+  }
+
+  .indexHero {
+    padding: 56px 0 24px;
+  }
+
+  .mainGrid {
+    padding: 16px 0 56px;
+    gap: 14px;
+  }
+
+  .intentGrid {
+    padding: 16px 0 56px;
+    gap: 12px;
+  }
+
+  .panel,
+  .intentCard {
+    padding: 20px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .cta {
+    padding: 22px;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .primary,
+  .secondary {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+
+  .relatedGrid {
+    grid-template-columns: 1fr;
   }
 }

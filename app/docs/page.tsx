@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import styles from '../solutions/search-page.module.css'
+import MobileNavMenu from '../../components/MobileNavMenu'
 
 const API_URL = process.env.NEXT_PUBLIC_PROOFTTL_API_URL || 'https://proofttl.tasx13ok.workers.dev'
 
@@ -29,6 +30,14 @@ export default function DocsPage() {
           <a href="/support/">Support</a>
           <a href="/console/">Console</a>
         </div>
+        <MobileNavMenu
+          links={[
+            { href: '/solutions/', label: 'Solutions' },
+            { href: '/#verify', label: 'Verifier' },
+            { href: '/support/', label: 'Support' },
+            { href: '/console/', label: 'Console' },
+          ]}
+        />
       </nav>
 
       <section className={`${styles.shell} ${styles.hero}`}>

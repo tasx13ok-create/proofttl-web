@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { SEARCH_INTENTS, getSearchIntent } from '../search-intents'
 import styles from '../search-page.module.css'
+import MobileNavMenu from '../../../components/MobileNavMenu'
 
 const API_URL = process.env.NEXT_PUBLIC_PROOFTTL_API_URL || 'https://proofttl.tasx13ok.workers.dev'
 
@@ -57,6 +58,14 @@ export default async function SearchIntentPage({ params }: PageProps) {
           <a href="/support/">Support</a>
           <a href="/console/">Console</a>
         </div>
+        <MobileNavMenu
+          links={[
+            { href: '/solutions/', label: 'Solutions' },
+            { href: '/docs/', label: 'Docs' },
+            { href: '/support/', label: 'Support' },
+            { href: '/console/', label: 'Console' },
+          ]}
+        />
       </nav>
 
       <section className={`${styles.shell} ${styles.hero}`}>
