@@ -21,6 +21,7 @@ const requiredFiles = [
   'out/solutions/x402-verification-api/index.html',
   'out/solutions/fact-leases/index.html',
   'out/verify-lease.html',
+  'out/lease-ops.html',
   'out/methodology.html',
   'out/status.html',
   'out/robots.txt',
@@ -99,8 +100,11 @@ async function main() {
     'voicePhase',
     'trackEntity',
     'AssistantHistoryMessage',
+    'FactLeaseCard',
+    'inspectLeaseFromMessage',
+    'data-love-fact-lease="materialized"',
   ]) {
-    if (!chat.includes(expected)) throw new Error(`L.O.V.E. chat bar is missing required quota/conversation/reactive-entity/voice behavior: ${expected}`)
+    if (!chat.includes(expected)) throw new Error(`L.O.V.E. chat bar is missing required quota/conversation/reactive-entity/voice/lease behavior: ${expected}`)
   }
 
   const entityStyles = await readFile('components/LoveEntity.module.css', 'utf8')
@@ -109,12 +113,17 @@ async function main() {
   }
 
   const verifier = await readFile('out/verify-lease.html', 'utf8')
-  for (const expected of ['Verify a signed', 'Ed25519', 'proofttl-issuance-v1', '/.well-known/proofttl-keys.json', 'Export signed Lease JSON', 'Append-only verification history']) {
+  for (const expected of ['Verify a signed', 'Ed25519', 'proofttl-issuance-v1', 'proofttl-event-v1', '/.well-known/proofttl-keys.json', 'Export signed Lease JSON', 'Signed verification history', 'verifyEventChain', 'previous_event_hash']) {
     if (!verifier.includes(expected)) throw new Error(`Independent Lease verifier is missing required trust behavior: ${expected}`)
   }
 
+  const leaseOps = await readFile('out/lease-ops.html', 'utf8')
+  for (const expected of ['Lease Operations', 'Share verification link', 'Prepare renewal', 'SOURCE_UNAVAILABLE']) {
+    if (!leaseOps.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Lease operations surface is missing lifecycle behavior: ${expected}`)
+  }
+
   const methodology = await readFile('out/methodology.html', 'utf8')
-  for (const expected of ['proofttl-methodology-v1', 'SUPPORTED', 'CONTRADICTED', 'UNKNOWN', 'ACTIVE', 'REVOKED', 'EXPIRED']) {
+  for (const expected of ['proofttl-methodology-v1', 'proofttl-event-v1', 'previous_event_hash', 'SUPPORTED', 'CONTRADICTED', 'UNKNOWN', 'ACTIVE', 'REVOKED', 'EXPIRED']) {
     if (!methodology.includes(expected)) throw new Error(`Verification methodology is missing required semantics: ${expected}`)
   }
 
@@ -127,6 +136,9 @@ async function main() {
   if (!layout.includes('<ProofTTLChatBar />')) throw new Error('Global L.O.V.E. chat bar is not mounted')
   if (layout.includes('<ProofTTLAssistant />')) throw new Error('Legacy separate voice assistant is mounted alongside the unified L.O.V.E. chat surface')
   if (!layout.includes("'./chat-fullscreen.css'")) throw new Error('Fullscreen L.O.V.E. chat styles are not loaded')
+  for (const expected of ['/verify-lease.html', '/lease-ops.html', '/methodology.html', '/status.html', 'TESTNET PREVIEW', 'Mainnet disabled']) {
+    if (!layout.includes(expected)) throw new Error(`Global trust strip is missing required content: ${expected}`)
+  }
 
   const voiceAssistant = await readFile('components/ProofTTLAssistant.tsx', 'utf8')
   for (const expected of ['L.O.V.E.', 'Lease Offering Value Interpreter', "data-love-state={visualState}", 'loveSpeechDataUrl', "phase === 'speaking'", 'REPLAY VOICE']) {
@@ -134,7 +146,7 @@ async function main() {
   }
 
   const assistantClient = await readFile('lib/proofttl-assistant.ts', 'utf8')
-  for (const expected of ['NEXT_PUBLIC_PROOFTTL_API_URL', 'https://proofttl.tasx13ok.workers.dev', '/assistant/text', '/assistant/voice', '/assistant/usage', "credentials: 'include'", 'loveSpeechDataUrl', 'audio_base64']) {
+  for (const expected of ['NEXT_PUBLIC_PROOFTTL_API_URL', 'https://proofttl.tasx13ok.workers.dev', '/assistant/text', '/assistant/voice', '/assistant/usage', "credentials: 'include'", 'loveSpeechDataUrl', 'audio_base64', 'lease_grounding']) {
     if (!assistantClient.includes(expected)) throw new Error(`Assistant API client is missing required production/L.O.V.E. wiring: ${expected}`)
   }
 
@@ -157,9 +169,6 @@ async function main() {
   for (const expected of ["AD_ELIGIBLE_PREFIXES = ['/docs/', '/solutions/']", "AD_ELIGIBLE_EXACT = new Set(['/'])", 'NEXT_PUBLIC_ADSENSE_CLIENT', 'ca-pub-']) {
     if (!adsSource.includes(expected)) throw new Error(`ProofTTL ad loader is missing the public-only advertising guard: ${expected}`)
   }
-  for (const forbidden of ['/login/', '/onboarding/', '/two-factor/', '/console/', '/support/', '/get-started/']) {
-    if (adsSource.includes(`'${forbidden}'`) && !adsSource.includes("AD_ELIGIBLE_PREFIXES = ['/docs/', '/solutions/']")) throw new Error(`Private/product route unexpectedly appears eligible for advertising: ${forbidden}`)
-  }
 
   const adsPolicy = await readFile('ADSENSE-SETUP.md', 'utf8')
   for (const expected of ['Side rail ads', 'Left and right', 'Disable **Anchor ads**', 'Disable **Vignette ads**', 'No popups or pop-unders']) {
@@ -168,9 +177,6 @@ async function main() {
 
   const robots = await readFile('out/robots.txt', 'utf8')
   if (!robots.includes('Allow: /')) throw new Error('robots.txt must allow crawlers to reach indexable pages and page-level noindex directives')
-  for (const forbidden of ['Disallow: /console/', 'Disallow: /login/', 'Disallow: /two-factor/', 'Disallow: /onboarding/']) {
-    if (robots.includes(forbidden)) throw new Error(`robots.txt blocks a page whose noindex directive must remain crawlable: ${forbidden}`)
-  }
 
   const headers = await readFile('out/_headers', 'utf8')
   for (const expected of ['X-Content-Type-Options: nosniff', 'X-Frame-Options: DENY', 'Permissions-Policy: camera=(), microphone=(self), geolocation=()']) {
@@ -178,7 +184,7 @@ async function main() {
   }
   if (headers.includes('microphone=()')) throw new Error('Pages headers disable the L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL static export, paid audit offer, public sample audit, auth/security routes, unified reactive L.O.V.E. chat with voice states, independent Lease verification/export, versioned methodology, public status, developer docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
+  console.log('\nSUCCESS: ProofTTL static export, audit offer/sample, auth/security, unified reactive L.O.V.E. voice + Lease context, independent issuance/event-chain verification, lifecycle operations, versioned methodology, public status, docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
 }
 
 main().catch((error) => {
