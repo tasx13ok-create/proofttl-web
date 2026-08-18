@@ -31,6 +31,7 @@ export default function ProofTTLChatBar() {
   const [fullscreen, setFullscreen] = useState(false)
   const [remaining, setRemaining] = useState<number | null>(null)
   const [limit, setLimit] = useState(20)
+  const [plan, setPlan] = useState('free')
   const abortRef = useRef<AbortController | null>(null)
   const messagesRef = useRef<HTMLDivElement | null>(null)
   const endRef = useRef<HTMLDivElement | null>(null)
@@ -41,6 +42,7 @@ export default function ProofTTLChatBar() {
       .then((quota) => {
         if (typeof quota?.limit === 'number') setLimit(quota.limit)
         if (typeof quota?.remaining === 'number') setRemaining(quota.remaining)
+        if (typeof quota?.plan === 'string') setPlan(quota.plan)
       })
       .catch(() => {})
     return () => controller.abort()
@@ -92,11 +94,12 @@ export default function ProofTTLChatBar() {
       const result = await askProofTTLByText(message, history, controller.signal)
       if (typeof result.quota?.limit === 'number') setLimit(result.quota.limit)
       if (typeof result.quota?.remaining === 'number') setRemaining(result.quota.remaining)
+      if (typeof result.quota?.plan === 'string') setPlan(result.quota.plan)
       setMessages((current) => [
         ...current,
         {
           role: 'assistant',
-          text: result.response || 'L.O.V.E. did not return a usable response. Try that again.',
+          text: result.response || 'I missed that one. Try it again.',
         },
       ])
 
@@ -107,8 +110,8 @@ export default function ProofTTLChatBar() {
       }
     } catch (caught) {
       if (controller.signal.aborted) return
-      const text = caught instanceof Error ? caught.message : 'ProofTTL Assistant is unavailable right now.'
-      if (/free ProofTTL AI limit/i.test(text)) setRemaining(0)
+      const text = caught instanceof Error ? caught.message : 'L.O.V.E. is unavailable right now.'
+      if (/ProofTTL AI limit/i.test(text)) setRemaining(0)
       setMessages((current) => [...current, { role: 'assistant', text }])
     } finally {
       if (abortRef.current === controller) abortRef.current = null
@@ -117,10 +120,12 @@ export default function ProofTTLChatBar() {
   }
 
   const quotaLabel = remaining === null
-    ? `${limit} FREE / DAY`
+    ? plan === 'member' ? 'MEMBER ACCESS' : `${limit} FREE / DAY`
     : remaining === 0
-      ? 'FREE LIMIT REACHED'
-      : `${remaining} OF ${limit} LEFT`
+      ? 'AI LIMIT REACHED'
+      : plan === 'member'
+        ? `${remaining} / ${limit}`
+        : `${remaining} OF ${limit} LEFT`
 
   function closeChat() {
     setFullscreen(false)
@@ -135,8 +140,8 @@ export default function ProofTTLChatBar() {
           <div className="pttl-chat-transcript-head">
             <div className="pttl-chat-identity">
               <span className="pttl-chat-kicker">L.O.V.E. / PROOFTTL AI</span>
-              <strong>{fullscreen ? 'The system is listening.' : 'Product intelligence'}</strong>
-              {fullscreen && <small>Language · Observation · Verification · Execution</small>}
+              <strong>{fullscreen ? 'Listening.' : 'L.O.V.E.'}</strong>
+              {fullscreen && <small>Grounded conversation · ProofTTL intelligence</small>}
             </div>
             <div className="pttl-chat-window-actions">
               <small>{quotaLabel}</small>
@@ -153,7 +158,7 @@ export default function ProofTTLChatBar() {
           </div>
           <div ref={messagesRef} className="pttl-chat-messages">
             {messages.length === 0 && (
-              <p className="pttl-chat-empty">Ask about ProofTTL, Fact Leases, x402, monitoring, pricing, security, the API, or how to use the product.</p>
+              <p className="pttl-chat-empty">Say hi, ask a question, or tell me what you&apos;re trying to do.</p>
             )}
             {messages.map((message, index) => (
               <div key={`${message.role}-${index}`} className={`pttl-chat-message ${message.role}`}>
@@ -173,9 +178,9 @@ export default function ProofTTLChatBar() {
           value={value}
           onChange={(event) => setValue(event.target.value)}
           onFocus={() => setExpanded(true)}
-          placeholder={remaining === 0 ? 'Free AI limit reached' : 'Ask L.O.V.E.…'}
+          placeholder={remaining === 0 ? 'AI limit reached' : 'Message L.O.V.E.…'}
           maxLength={1200}
-          aria-label="Ask L.O.V.E."
+          aria-label="Message L.O.V.E."
           disabled={remaining === 0}
         />
         <button type="submit" className="pttl-chat-send" disabled={!value.trim() || loading || remaining === 0} aria-label="Send to L.O.V.E.">
