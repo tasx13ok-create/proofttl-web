@@ -6,6 +6,7 @@ import {
   assistantNavigationHref,
   fetchProofTTLAssistantUsage,
   type AssistantNavigationAction,
+  type AssistantHistoryMessage,
 } from '../lib/proofttl-assistant'
 
 type Message = {
@@ -47,6 +48,11 @@ export default function ProofTTLChatBar() {
     const message = value.replace(/\s+/g, ' ').trim()
     if (!message || loading || remaining === 0) return
 
+    const history: AssistantHistoryMessage[] = messages.slice(-6).map((item) => ({
+      role: item.role,
+      content: item.text,
+    }))
+
     setExpanded(true)
     setValue('')
     setMessages((current) => [...current, { role: 'user', text: message }])
@@ -57,7 +63,7 @@ export default function ProofTTLChatBar() {
     abortRef.current = controller
 
     try {
-      const result = await askProofTTLByText(message, controller.signal)
+      const result = await askProofTTLByText(message, history, controller.signal)
       if (typeof result.quota?.limit === 'number') setLimit(result.quota.limit)
       if (typeof result.quota?.remaining === 'number') setRemaining(result.quota.remaining)
       setMessages((current) => [
