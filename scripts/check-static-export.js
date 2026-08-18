@@ -71,14 +71,17 @@ async function main() {
   for (const expected of [
     'X-Content-Type-Options: nosniff',
     'X-Frame-Options: DENY',
-    'Permissions-Policy:',
+    'Permissions-Policy: camera=(), microphone=(self), geolocation=()',
   ]) {
     if (!headers.includes(expected)) {
       throw new Error(`Static export is missing expected security header rule: ${expected}`)
     }
   }
+  if (headers.includes('microphone=()')) {
+    throw new Error('Pages headers disable the ProofTTL voice assistant microphone')
+  }
 
-  console.log('\nSUCCESS: ProofTTL static export contains all required public/app preview routes, search-intent pages, voice assistant trigger, page-level noindex rules, crawl rules, and Pages security headers.')
+  console.log('\nSUCCESS: ProofTTL static export contains all required public/app preview routes, search-intent pages, voice assistant trigger, page-level noindex rules, crawl rules, and microphone-safe Pages security headers.')
 }
 
 main().catch((error) => {
