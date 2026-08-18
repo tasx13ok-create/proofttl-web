@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import './app-ui.css'
+import './assistant-navigation.css'
 
 export const metadata: Metadata = {
   title: 'ProofTTL — Truth with an expiry date',
