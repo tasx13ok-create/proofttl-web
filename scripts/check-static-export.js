@@ -27,14 +27,21 @@ async function main() {
   }
 
   const homepage = await readFile('out/index.html', 'utf8')
-  for (const expected of ['ProofTTL', 'Truth with', 'Sign in']) {
+  for (const expected of ['ProofTTL', 'Truth with', 'Sign in', 'Talk to ProofTTL Assistant']) {
     if (!homepage.includes(expected)) {
       throw new Error(`Static homepage is missing expected content: ${expected}`)
     }
   }
 
+  const consolePage = await readFile('out/console/index.html', 'utf8')
+  for (const expected of ['CUSTOMER CONSOLE', 'Talk to ProofTTL Assistant']) {
+    if (!consolePage.includes(expected)) {
+      throw new Error(`Static console is missing expected content: ${expected}`)
+    }
+  }
+
   const solution = await readFile('out/solutions/ai-agent-verification/index.html', 'utf8')
-  for (const expected of ['AI Agent', 'ProofTTL', 'Fact Lease']) {
+  for (const expected of ['AI Agent', 'ProofTTL', 'Fact Lease', 'Talk to ProofTTL Assistant']) {
     if (!solution.includes(expected)) {
       throw new Error(`Static solution page is missing expected content: ${expected}`)
     }
@@ -58,7 +65,7 @@ async function main() {
     }
   }
 
-  console.log('\nSUCCESS: ProofTTL static export contains all required public/app preview routes, search-intent pages, crawl rules, and Pages security headers.')
+  console.log('\nSUCCESS: ProofTTL static export contains all required public/app preview routes, search-intent pages, voice assistant trigger, crawl rules, and Pages security headers.')
 }
 
 main().catch((error) => {
