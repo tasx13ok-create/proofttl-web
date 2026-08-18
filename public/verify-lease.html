@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>ProofTTL — Verify Fact Lease</title>
+  <style>
+    :root{--bg:#071017;--panel:#0d1822;--line:rgba(103,232,249,.18);--cyan:#67e8f9;--muted:#94a3b8;--text:#eefcff;--ok:#4ade80;--bad:#fb7185;--warn:#fbbf24}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,rgba(34,211,238,.08),transparent 35%),var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}main{width:min(980px,calc(100% - 32px));margin:0 auto;padding:34px 0 80px}h1{font-size:clamp(34px,6vw,62px);line-height:1;margin:.25rem 0 1rem}h1 em{color:var(--cyan);font-style:normal}.kicker,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.kicker{font-size:11px;letter-spacing:.15em;color:var(--cyan);text-transform:uppercase}.card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01)),var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:18px;box-shadow:0 25px 80px rgba(0,0,0,.25)}label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px}.row{display:grid;grid-template-columns:1fr auto;gap:10px}.row+.row{margin-top:12px}input,textarea,button{font:inherit}input,textarea{width:100%;background:#071018;border:1px solid rgba(148,163,184,.2);color:var(--text);border-radius:10px;padding:12px;outline:none}textarea{min-height:220px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;resize:vertical}input:focus,textarea:focus{border-color:rgba(103,232,249,.55);box-shadow:0 0 0 3px rgba(34,211,238,.08)}button{border:1px solid rgba(103,232,249,.3);border-radius:10px;background:rgba(34,211,238,.1);color:var(--cyan);padding:11px 14px;cursor:pointer}button:hover{background:rgba(34,211,238,.16)}button:disabled{opacity:.45;cursor:wait}.status{display:none;margin-top:16px;padding:13px 14px;border-radius:10px;border:1px solid}.status.ok{display:block;color:var(--ok);border-color:rgba(74,222,128,.28);background:rgba(74,222,128,.07)}.status.bad{display:block;color:var(--bad);border-color:rgba(251,113,133,.28);background:rgba(251,113,133,.07)}.status.warn{display:block;color:var(--warn);border-color:rgba(251,191,36,.28);background:rgba(251,191,36,.07)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.metric{border:1px solid rgba(148,163,184,.12);border-radius:10px;padding:12px}.metric span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.09em}.metric strong{display:block;margin-top:5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;overflow-wrap:anywhere}.history{display:grid;gap:9px;margin-top:12px}.event{border-left:2px solid var(--line);padding:8px 10px;background:rgba(255,255,255,.018)}.event b{color:var(--cyan)}.event small{display:block;color:var(--muted);margin-top:4px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.note{color:var(--muted);font-size:13px}.testnet{padding:9px 12px;border:1px solid rgba(251,191,36,.25);background:rgba(251,191,36,.07);color:#fde68a;border-radius:10px;margin:16px 0}.hide{display:none!important}@media(max-width:700px){.row{grid-template-columns:1fr}.grid{grid-template-columns:1fr}main{width:min(100% - 20px,980px);padding-top:20px}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="kicker">ProofTTL / independent verification</div>
+  <h1>Verify a signed <em>Fact Lease.</em></h1>
+  <p class="note">This page performs Ed25519 verification in your browser using WebCrypto. The signature check is local. You can fetch a Lease by ID or paste a Lease JSON object directly.</p>
+  <div class="testnet">Current settlement network: Base Sepolia testnet. Verification of signatures is real cryptography; payment settlement is not mainnet.</div>
+
+  <section class="card">
+    <label for="leaseId">Fact Lease ID</label>
+    <div class="row">
+      <input id="leaseId" placeholder="ftl_…" autocomplete="off" />
+      <button id="fetchLease" type="button">Fetch Lease</button>
+    </div>
+    <label for="leaseJson" style="margin-top:14px">Lease JSON</label>
+    <textarea id="leaseJson" spellcheck="false" placeholder='Paste the complete signed Lease JSON here'></textarea>
+    <div class="actions">
+      <button id="verify" type="button">Verify signature</button>
+      <button id="download" type="button" disabled>Export signed Lease JSON</button>
+      <button id="copy" type="button" disabled>Copy Lease JSON</button>
+    </div>
+    <div id="status" class="status"></div>
+  </section>
+
+  <section id="summary" class="card hide">
+    <div class="kicker">Lease summary</div>
+    <div id="metrics" class="grid"></div>
+  </section>
+
+  <section id="historyCard" class="card hide">
+    <div class="kicker">Append-only verification history</div>
+    <p class="note">These events are returned inside the Lease object. The issuance signature covers the immutable issuance attestation; monitoring fields and later events remain mutable state and are shown separately.</p>
+    <div id="history" class="history"></div>
+  </section>
+
+  <section class="card">
+    <div class="kicker">Verification method</div>
+    <p class="note">ProofTTL signs the canonical JSON form of <span class="mono">issued_attestation</span> with Ed25519. This verifier rebuilds the expected issuance attestation from the Lease, compares it to the stored attestation, fetches the matching published public key from the ProofTTL key-discovery endpoint, and verifies the signature locally.</p>
+    <div class="actions"><a href="/methodology.html" style="color:var(--cyan)">Read methodology →</a></div>
+  </section>
+</main>
+<script>
+const API='https://proofttl.tasx13ok.workers.dev';
+const $=id=>document.getElementById(id);
+let currentLease=null;
+
+function canonicalize(value){
+  if(value===null||typeof value!=='object') return JSON.stringify(value);
+  if(Array.isArray(value)) return '['+value.map(canonicalize).join(',')+']';
+  return '{'+Object.keys(value).sort().map(k=>JSON.stringify(k)+':'+canonicalize(value[k])).join(',')+'}';
+}
+function buildAttestation(lease){
+  const issuedStatus=lease.issued_status||lease.status||null;
+  const required={
+    lease_id:lease.lease_id,
+    protocol:lease.protocol,
+    claim:lease.claim,
+    issued_status:issuedStatus,
+    source_url:lease.source_url,
+    final_url:lease.final_url||null,
+    evidence:lease.evidence??null,
+    reason:lease.reason??null,
+    issued_at:lease.issued_at||lease.observed_at,
+    expires_at:lease.expires_at,
+    ttl_seconds:Number(lease.ttl_seconds),
+    source_fingerprint:lease.source_fingerprint,
+    confidence:Number(lease.confidence),
+    verifier:lease.verifier,
+    proof_basis:lease.proof_basis
+  };
+  for(const [k,v] of Object.entries(required)){
+    if(v===undefined||v===''||(typeof v==='number'&&!Number.isFinite(v))) throw new Error('Lease is missing attestation field: '+k);
+  }
+  return {attestation_version:'proofttl-issuance-v1',...required};
+}
+function b64url(value){
+  const normalized=String(value).replaceAll('-','+').replaceAll('_','/');
+  const padded=normalized+'='.repeat((4-normalized.length%4)%4);
+  const binary=atob(padded); const out=new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++) out[i]=binary.charCodeAt(i);
+  return out;
+}
+function setStatus(kind,text){const n=$('status');n.className='status '+kind;n.textContent=text}
+function esc(v){return String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderLease(lease){
+  currentLease=lease;$('leaseJson').value=JSON.stringify(lease,null,2);$('download').disabled=false;$('copy').disabled=false;
+  const fields=[['Lease ID',lease.lease_id],['Issued status',lease.issued_status||lease.status],['Current status',lease.current_status||lease.revocation?.current_status||lease.last_check?.status||lease.status],['Lease state',lease.lease_state],['Expires',lease.expires_at],['Verifier',lease.verifier],['Signature key',lease.signature?.key_id],['Schema','proofttl-issuance-v1'],['Checks',lease.verification_count??lease.history?.length??0]];
+  $('metrics').innerHTML=fields.map(([a,b])=>`<div class="metric"><span>${esc(a)}</span><strong>${esc(b)}</strong></div>`).join('');$('summary').classList.remove('hide');
+  const history=Array.isArray(lease.history)?lease.history:[];
+  $('history').innerHTML=history.length?history.map((e,i)=>`<div class="event"><b>${esc(e.result||e.kind||'CHECK')}</b><small>${esc(e.checked_at||'')} · status ${esc(e.status||'—')}</small><div>${esc(e.reason||e.evidence||'')}</div><small>source ${esc(e.source_fingerprint||'—')} · confidence ${esc(e.confidence??'—')}</small></div>`).join(''):'<div class="note">No history array was present in this Lease.</div>';
+  $('historyCard').classList.remove('hide');
+}
+async function getKeys(){
+  const r=await fetch(API+'/.well-known/proofttl-keys.json',{cache:'no-store'}); if(!r.ok) throw new Error('Could not fetch ProofTTL public signing keys.'); return r.json();
+}
+async function verifyLease(lease){
+  if(!lease?.issued_attestation||!lease?.signature?.value) throw new Error('This Lease does not contain an issuance signature.');
+  if(lease.signature.algorithm!=='Ed25519'||lease.signature.version!=='proofttl-ed25519-v1') throw new Error('Unsupported signature envelope.');
+  const expected=buildAttestation(lease); const expectedCanonical=canonicalize(expected); const storedCanonical=canonicalize(lease.issued_attestation);
+  if(expectedCanonical!==storedCanonical) throw new Error('INVALID: the signed issuance attestation does not match the Lease fields.');
+  const discovery=await getKeys(); const key=(discovery.keys||[]).find(k=>k.kid===lease.signature.key_id);
+  if(!key) throw new Error('No published public key matches key_id '+lease.signature.key_id+'.');
+  const publicKey=await crypto.subtle.importKey('jwk',{kty:'OKP',crv:'Ed25519',x:key.x},{name:'Ed25519'},false,['verify']);
+  const ok=await crypto.subtle.verify({name:'Ed25519'},publicKey,b64url(lease.signature.value),new TextEncoder().encode(storedCanonical));
+  return ok;
+}
+$('fetchLease').onclick=async()=>{
+  const id=$('leaseId').value.trim(); if(!id)return setStatus('warn','Enter a Lease ID first.');
+  $('fetchLease').disabled=true;setStatus('warn','Fetching Lease…');
+  try{const r=await fetch(API+'/lease/'+encodeURIComponent(id),{cache:'no-store'});const body=await r.json();if(!r.ok)throw new Error(body.message||body.error||'Lease fetch failed.');renderLease(body);setStatus('ok','Lease loaded. Click “Verify signature” for local Ed25519 verification.')}catch(e){setStatus('bad',e.message||String(e))}finally{$('fetchLease').disabled=false}
+};
+$('verify').onclick=async()=>{
+  $('verify').disabled=true;setStatus('warn','Verifying Ed25519 signature locally…');
+  try{const lease=JSON.parse($('leaseJson').value);renderLease(lease);const ok=await verifyLease(lease);setStatus(ok?'ok':'bad',ok?'VALID — Ed25519 issuance signature verified against the published ProofTTL public key.':'INVALID — signature verification failed.')}catch(e){setStatus('bad',e.message||String(e))}finally{$('verify').disabled=false}
+};
+$('download').onclick=()=>{if(!currentLease)return;const blob=new Blob([JSON.stringify(currentLease,null,2)+'\n'],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(currentLease.lease_id||'proofttl-lease')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+$('copy').onclick=async()=>{if(!currentLease)return;await navigator.clipboard.writeText(JSON.stringify(currentLease,null,2));setStatus('ok','Lease JSON copied to clipboard.')};
+const q=new URLSearchParams(location.search).get('id');if(q){$('leaseId').value=q;$('fetchLease').click()}
+</script>
+</body>
+</html>
