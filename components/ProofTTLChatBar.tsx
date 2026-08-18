@@ -334,17 +334,18 @@ export default function ProofTTLChatBar() {
       if (speechUrl) {
         const playback = new Audio(speechUrl)
         audioRef.current = playback
-        playback.onended = () => {
+        const finishPlayback = () => {
           if (operationId === voiceOperationRef.current) {
             setVoicePhase('idle')
             setFormation('context active')
           }
           if (audioRef.current === playback) audioRef.current = null
         }
-        playback.onerror = playback.onended
+        playback.onended = finishPlayback
+        playback.onerror = () => finishPlayback()
         setVoicePhase('speaking')
         setFormation('voice synthesis active')
-        try { await playback.play() } catch { setVoicePhase('idle') }
+        try { await playback.play() } catch { finishPlayback() }
       } else {
         setVoicePhase('idle')
       }
