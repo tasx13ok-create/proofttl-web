@@ -20,6 +20,9 @@ const requiredFiles = [
   'out/solutions/evidence-verification-api/index.html',
   'out/solutions/x402-verification-api/index.html',
   'out/solutions/fact-leases/index.html',
+  'out/verify-lease.html',
+  'out/methodology.html',
+  'out/status.html',
   'out/robots.txt',
   'out/_headers',
   'components/ProofTTLAds.tsx',
@@ -86,7 +89,8 @@ async function main() {
   const chat = await readFile('components/ProofTTLChatBar.tsx', 'utf8')
   for (const expected of [
     'fetchProofTTLAssistantUsage',
-    "placeholder={remaining === 0 ? 'AI limit reached' : 'Message L.O.V.E.…'}",
+    "'Message L.O.V.E.…'",
+    "voicePhase === 'recording'",
     'remaining === 0',
     'LoveEntity',
     "type LoveState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'awake'",
@@ -102,6 +106,21 @@ async function main() {
   const entityStyles = await readFile('components/LoveEntity.module.css', 'utf8')
   for (const expected of ['.stage', '.eyes', '.smoke', '.voiceWave', "[data-state='speaking']", '[data-state=', '@media (prefers-reduced-motion: reduce)']) {
     if (!entityStyles.includes(expected)) throw new Error(`Reactive L.O.V.E. entity is missing required visual behavior: ${expected}`)
+  }
+
+  const verifier = await readFile('out/verify-lease.html', 'utf8')
+  for (const expected of ['Verify a signed', 'Ed25519', 'proofttl-issuance-v1', '/.well-known/proofttl-keys.json', 'Export signed Lease JSON', 'Append-only verification history']) {
+    if (!verifier.includes(expected)) throw new Error(`Independent Lease verifier is missing required trust behavior: ${expected}`)
+  }
+
+  const methodology = await readFile('out/methodology.html', 'utf8')
+  for (const expected of ['proofttl-methodology-v1', 'SUPPORTED', 'CONTRADICTED', 'UNKNOWN', 'ACTIVE', 'REVOKED', 'EXPIRED']) {
+    if (!methodology.includes(expected)) throw new Error(`Verification methodology is missing required semantics: ${expected}`)
+  }
+
+  const statusPage = await readFile('out/status.html', 'utf8')
+  for (const expected of ['System status', '/health', '/monitor/status', 'Base Sepolia testnet']) {
+    if (!statusPage.includes(expected)) throw new Error(`Public status page is missing required status behavior: ${expected}`)
   }
 
   const layout = await readFile('app/layout.tsx', 'utf8')
@@ -159,7 +178,7 @@ async function main() {
   }
   if (headers.includes('microphone=()')) throw new Error('Pages headers disable the L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL static export, paid audit offer, public sample audit, auth/security routes, unified reactive L.O.V.E. chat with voice states, bounded conversation context, developer docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
+  console.log('\nSUCCESS: ProofTTL static export, paid audit offer, public sample audit, auth/security routes, unified reactive L.O.V.E. chat with voice states, independent Lease verification/export, versioned methodology, public status, developer docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
 }
 
 main().catch((error) => {
