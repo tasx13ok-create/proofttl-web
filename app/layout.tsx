@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next'
-import ProofTTLAssistant from '../components/ProofTTLAssistant'
 import ProofTTLAds from '../components/ProofTTLAds'
 import ProofTTLChatBar from '../components/ProofTTLChatBar'
 import './globals.css'
@@ -34,7 +33,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {children}
         <ProofTTLAds />
         <ProofTTLChatBar />
-        <ProofTTLAssistant />
       </body>
     </html>
   )
