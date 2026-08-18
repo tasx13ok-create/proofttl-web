@@ -4,6 +4,7 @@ export const PROOFTTL_API_URL = (
 ).replace(/\/$/, '')
 
 export const ASSISTANT_VOICE_ENDPOINT = `${PROOFTTL_API_URL}/assistant/voice`
+export const ASSISTANT_TEXT_ENDPOINT = `${PROOFTTL_API_URL}/assistant/text`
 
 export type AssistantSection =
   | 'payments'
@@ -24,12 +25,12 @@ export type AssistantNavigationAction = {
   section: AssistantSection
 }
 
-export type AssistantVoiceResponse = {
+export type AssistantResponse = {
   transcript?: string
+  message?: string
   response?: string
   action?: AssistantNavigationAction | null
   error?: string
-  message?: string
 }
 
 const ALLOWED_TARGETS: Readonly<Record<AssistantSection, string>> = Object.freeze({
@@ -60,9 +61,41 @@ export async function askProofTTLByVoice(audio: Blob, signal?: AbortSignal) {
     signal,
   })
 
+  const body = await readAssistantResponse(response)
+
+  return {
+    transcript: typeof body.transcript === 'string' ? body.transcript : '',
+    response: typeof body.response === 'string' ? body.response : '',
+    action: validateAssistantAction(body.action),
+  }
+}
+
+export async function askProofTTLByText(message: string, signal?: AbortSignal) {
+  const clean = message.replace(/\s+/g, ' ').trim().slice(0, 1200)
+  if (!clean) throw new Error('Enter a ProofTTL question.')
+
+  const response = await fetch(ASSISTANT_TEXT_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({ message: clean }),
+    signal,
+  })
+
+  const body = await readAssistantResponse(response)
+
+  return {
+    message: clean,
+    response: typeof body.response === 'string' ? body.response : '',
+    action: validateAssistantAction(body.action),
+  }
+}
+
+async function readAssistantResponse(response: Response) {
   const contentType = response.headers.get('content-type') || ''
   const body = contentType.includes('application/json')
-    ? await response.json().catch(() => ({})) as AssistantVoiceResponse
+    ? await response.json().catch(() => ({})) as AssistantResponse
     : {}
 
   if (!response.ok) {
@@ -70,11 +103,7 @@ export async function askProofTTLByVoice(audio: Blob, signal?: AbortSignal) {
     throw new Error(message)
   }
 
-  return {
-    transcript: typeof body.transcript === 'string' ? body.transcript : '',
-    response: typeof body.response === 'string' ? body.response : '',
-    action: validateAssistantAction(body.action),
-  }
+  return body
 }
 
 export function validateAssistantAction(value: unknown): AssistantNavigationAction | null {
