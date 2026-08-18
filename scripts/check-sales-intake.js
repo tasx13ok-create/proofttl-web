@@ -24,7 +24,7 @@ for (const expected of [
   '#audit-intake',
   'SCOPE BEFORE PAYMENT',
   '48-hour turnaround',
-  '3–5 business days',
+  '3–5 business-day turnaround',
 ]) {
   if (!auditPage.includes(expected)) throw new Error(`Audit sales page missing required sellability behavior: ${expected}`)
 }
