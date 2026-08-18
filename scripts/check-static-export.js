@@ -3,6 +3,7 @@ import { access, readFile } from 'node:fs/promises'
 const requiredFiles = [
   'out/index.html',
   'out/login/index.html',
+  'out/two-factor/index.html',
   'out/onboarding/index.html',
   'out/get-started/index.html',
   'out/console/index.html',
@@ -35,15 +36,24 @@ async function main() {
   }
 
   const consolePage = await readFile('out/console/index.html', 'utf8')
-  for (const expected of ['CUSTOMER CONSOLE', 'Talk to ProofTTL Assistant', 'noindex']) {
+  for (const expected of ['CUSTOMER CONSOLE', 'SECURITY', 'SECURITY BACKEND LOCKED', 'Talk to ProofTTL Assistant', 'noindex']) {
     if (!consolePage.toLowerCase().includes(expected.toLowerCase())) {
       throw new Error(`Static console is missing expected content: ${expected}`)
     }
   }
 
   const loginPage = await readFile('out/login/index.html', 'utf8')
-  if (!loginPage.toLowerCase().includes('noindex')) {
-    throw new Error('Static login page is missing its noindex directive')
+  for (const expected of ['noindex', 'CONTINUE WITH GITHUB', 'TOTP', 'RECOVERY CODES', 'PASSKEYS']) {
+    if (!loginPage.toLowerCase().includes(expected.toLowerCase())) {
+      throw new Error(`Static login page is missing auth capability content: ${expected}`)
+    }
+  }
+
+  const twoFactorPage = await readFile('out/two-factor/index.html', 'utf8')
+  for (const expected of ['noindex', 'SECURITY CHECK', 'AUTHENTICATOR', 'RECOVERY CODE']) {
+    if (!twoFactorPage.toLowerCase().includes(expected.toLowerCase())) {
+      throw new Error(`Static two-factor page is missing expected content: ${expected}`)
+    }
   }
 
   const onboardingPage = await readFile('out/onboarding/index.html', 'utf8')
@@ -69,7 +79,7 @@ async function main() {
   if (!robots.includes('Allow: /')) {
     throw new Error('robots.txt must allow crawlers to reach indexable pages and page-level noindex directives')
   }
-  for (const forbidden of ['Disallow: /console/', 'Disallow: /login/', 'Disallow: /onboarding/']) {
+  for (const forbidden of ['Disallow: /console/', 'Disallow: /login/', 'Disallow: /two-factor/', 'Disallow: /onboarding/']) {
     if (robots.includes(forbidden)) {
       throw new Error(`robots.txt blocks a page whose noindex directive must remain crawlable: ${forbidden}`)
     }
@@ -89,7 +99,7 @@ async function main() {
     throw new Error('Pages headers disable the ProofTTL voice assistant microphone')
   }
 
-  console.log('\nSUCCESS: ProofTTL static export contains all required public/app preview routes, developer docs, search-intent pages, voice assistant trigger, page-level noindex rules, crawl rules, and microphone-safe Pages security headers.')
+  console.log('\nSUCCESS: ProofTTL static export contains all required public/account routes, MFA challenge UI, Security Center locked state, developer docs, search-intent pages, voice assistant trigger, noindex rules, crawl rules, and microphone-safe Pages security headers.')
 }
 
 main().catch((error) => {
