@@ -48,6 +48,14 @@ export default function AuditPage() {
           </div>
 
           <div className="onboarding-card" style={{ marginTop: 24 }}>
+            <p className="app-kicker">SEE THE WORK BEFORE YOU BUY</p>
+            <p className="app-copy">
+              The public sample audit uses live product documentation to show how ProofTTL separates current source support from stale or internally inconsistent product facts. No fabricated signatures, customer data, or fake monitoring events.
+            </p>
+            <a className="text-link" href="/audit/sample/">View the public sample audit <span>→</span></a>
+          </div>
+
+          <div className="onboarding-card" style={{ marginTop: 24 }}>
             <p className="app-kicker">BUILT FOR CLAIMS THAT CARRY CONSEQUENCES</p>
             <p className="app-copy">
               AI and agent outputs · research and diligence · product and pricing claims · API/documentation claims · competitive intelligence · source-backed client reports.
@@ -68,7 +76,8 @@ export default function AuditPage() {
             >
               START A $500 AUDIT →
             </a>
-            <a className="button button-secondary" href="/docs/">SEE THE VERIFICATION METHOD</a>
+            <a className="button button-secondary" href="/audit/sample/">VIEW SAMPLE AUDIT</a>
+            <a className="button button-secondary" href="/docs/">VERIFICATION METHOD</a>
           </div>
 
           <p className="app-note">
