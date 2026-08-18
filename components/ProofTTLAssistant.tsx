@@ -6,6 +6,8 @@ import {
   assistantNavigationHref,
   type AssistantNavigationAction,
 } from '../lib/proofttl-assistant'
+import { getSpecterCapability } from '../lib/proofttl-specter'
+import SpecterModeControls from './SpecterModeControls'
 
 type AssistantPhase =
   | 'idle'
@@ -130,6 +132,19 @@ export default function ProofTTLAssistant() {
     setAnswer('')
     setError('')
     setNavigation(null)
+
+    try {
+      const capability = await getSpecterCapability()
+      if (!capability.member || !capability.previewAuthorized) {
+        setPhase('error')
+        setError('Voice requests are available in Specter Mode for verified members. Open the access panel below to check your account.')
+        return
+      }
+    } catch (caught) {
+      setPhase('error')
+      setError(caught instanceof Error ? caught.message : 'Could not verify Specter Mode access.')
+      return
+    }
 
     if (
       typeof navigator === 'undefined' ||
@@ -325,6 +340,10 @@ export default function ProofTTLAssistant() {
         <div className={`pttl-assistant-status phase-${phase}`} aria-live="polite">
           <span className="pttl-assistant-status-dot" />
           {phaseLabel(phase)}
+        </div>
+
+        <div className="pttl-assistant-specter">
+          <SpecterModeControls />
         </div>
 
         <div className="pttl-assistant-content" aria-live="polite">

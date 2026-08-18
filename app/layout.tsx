@@ -11,6 +11,7 @@ import './assistant.css'
 import './chat-bar.css'
 import './glass-polish.css'
 import './mobile-nav.css'
+import './specter.css'
 
 export const metadata: Metadata = {
   title: 'ProofTTL — Truth with an expiry date',

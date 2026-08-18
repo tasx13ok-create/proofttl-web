@@ -40,7 +40,7 @@ export default function SecurityCenter() {
   const [totpCode, setTotpCode] = useState('')
   const [recoveryCodes, setRecoveryCodes] = useState<string[]>([])
 
-  const user = sessionData?.user as (typeof sessionData.user & { twoFactorEnabled?: boolean }) | undefined
+  const user = sessionData?.user as (NonNullable<typeof sessionData>['user'] & { twoFactorEnabled?: boolean }) | undefined
   const signedIn = Boolean(sessionData?.session && user)
   const currentSessionToken = sessionData?.session?.token
   const twoFactorEnabled = Boolean(user?.twoFactorEnabled)
