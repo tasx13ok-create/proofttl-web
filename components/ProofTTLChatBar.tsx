@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useEffect, useRef, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import {
   askProofTTLByText,
   assistantNavigationHref,
@@ -8,11 +8,14 @@ import {
   type AssistantNavigationAction,
   type AssistantHistoryMessage,
 } from '../lib/proofttl-assistant'
+import love from './LoveEntity.module.css'
 
 type Message = {
   role: 'user' | 'assistant'
   text: string
 }
+
+type LoveState = 'idle' | 'listening' | 'thinking' | 'awake'
 
 function SendIcon() {
   return (
@@ -20,6 +23,42 @@ function SendIcon() {
       <path d="M4 12 19 5l-4.5 14-3.1-5.9L4 12Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
       <path d="m11.4 13.1 3.2-3.2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
+  )
+}
+
+function LoveEntity({ state, offset }: { state: LoveState; offset: { x: number; y: number } }) {
+  const label = state === 'thinking'
+    ? 'Reasoning / verifying'
+    : state === 'listening'
+      ? 'Signal acquired'
+      : state === 'awake'
+        ? 'Context active'
+        : 'Dormant / listening'
+
+  const style = {
+    '--love-x': `${offset.x}px`,
+    '--love-y': `${offset.y}px`,
+  } as CSSProperties
+
+  return (
+    <div className={love.stage} data-state={state} style={style} aria-hidden="true">
+      <div className={`${love.shard} ${love.shardA}`}>conversation<strong>context online</strong></div>
+      <div className={`${love.shard} ${love.shardB}`}>response model<strong>granite micro</strong></div>
+      <div className={`${love.shard} ${love.shardC}`}>truth layer<strong>ProofTTL grounded</strong></div>
+      <div className={`${love.shard} ${love.shardD}`}>improvement loop<strong>MIRA observing</strong></div>
+      <div className={love.core}>
+        <div className={love.orbit} />
+        <div className={love.orbit2} />
+        <div className={love.orbit3} />
+        <div className={love.smoke} />
+        <div className={love.faceVoid} />
+        <div className={love.eyes}>
+          <i className={love.eye} />
+          <i className={love.eye} />
+        </div>
+      </div>
+      <div className={love.stateLabel}>{label}</div>
+    </div>
   )
 }
 
@@ -32,6 +71,7 @@ export default function ProofTTLChatBar() {
   const [remaining, setRemaining] = useState<number | null>(null)
   const [limit, setLimit] = useState(20)
   const [plan, setPlan] = useState('free')
+  const [entityOffset, setEntityOffset] = useState({ x: 0, y: 0 })
   const abortRef = useRef<AbortController | null>(null)
   const messagesRef = useRef<HTMLDivElement | null>(null)
   const endRef = useRef<HTMLDivElement | null>(null)
@@ -127,21 +167,42 @@ export default function ProofTTLChatBar() {
         ? `${remaining} / ${limit}`
         : `${remaining} OF ${limit} LEFT`
 
+  const loveState: LoveState = loading
+    ? 'thinking'
+    : value.trim()
+      ? 'listening'
+      : messages.length
+        ? 'awake'
+        : 'idle'
+
   function closeChat() {
     setFullscreen(false)
     setExpanded(false)
+    setEntityOffset({ x: 0, y: 0 })
+  }
+
+  function trackEntity(event: PointerEvent<HTMLDivElement>) {
+    if (!fullscreen) return
+    const rect = event.currentTarget.getBoundingClientRect()
+    const x = ((event.clientX - rect.left) / rect.width - 0.5) * 18
+    const y = ((event.clientY - rect.top) / rect.height - 0.5) * 12
+    setEntityOffset({ x, y })
   }
 
   return (
-    <div className={`pttl-chat-dock ${expanded ? 'expanded' : ''} ${fullscreen ? 'fullscreen' : ''}`}>
-      {fullscreen && <div className="pttl-chat-mist" aria-hidden="true" />}
+    <div
+      className={`pttl-chat-dock ${expanded ? 'expanded' : ''} ${fullscreen ? 'fullscreen' : ''}`}
+      onPointerMove={trackEntity}
+      onPointerLeave={() => fullscreen && setEntityOffset({ x: 0, y: 0 })}
+    >
+      {fullscreen && <LoveEntity state={loveState} offset={entityOffset} />}
       {expanded && (
-        <div className="pttl-chat-transcript" aria-live="polite">
+        <div className="pttl-chat-transcript" aria-live="polite" style={fullscreen ? { position: 'relative', zIndex: 2 } : undefined}>
           <div className="pttl-chat-transcript-head">
             <div className="pttl-chat-identity">
               <span className="pttl-chat-kicker">L.O.V.E. / PROOFTTL AI</span>
-              <strong>{fullscreen ? 'Listening.' : 'L.O.V.E.'}</strong>
-              {fullscreen && <small>Grounded conversation · ProofTTL intelligence</small>}
+              <strong>{fullscreen ? 'L.O.V.E.' : 'L.O.V.E.'}</strong>
+              {fullscreen && <small>{loading ? 'Thinking.' : value.trim() ? 'Listening.' : 'Present.'}</small>}
             </div>
             <div className="pttl-chat-window-actions">
               <small>{quotaLabel}</small>
@@ -172,8 +233,8 @@ export default function ProofTTLChatBar() {
         </div>
       )}
 
-      <form className="pttl-chat-bar" onSubmit={submit}>
-        <div className="pttl-chat-orb" aria-hidden="true"><span>P</span></div>
+      <form className="pttl-chat-bar" onSubmit={submit} style={fullscreen ? { position: 'relative', zIndex: 3 } : undefined}>
+        <div className="pttl-chat-orb" aria-hidden="true"><span>{fullscreen ? 'L' : 'P'}</span></div>
         <input
           value={value}
           onChange={(event) => setValue(event.target.value)}
