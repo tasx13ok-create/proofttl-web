@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import {
+  PROOFTTL_API_URL,
   askProofTTLByText,
   askProofTTLByVoice,
   assistantNavigationHref,
@@ -17,11 +18,24 @@ type Message = {
   text: string
 }
 
+type LeasePreview = {
+  lease_id: string
+  found: boolean
+  claim?: string
+  issued_status?: string
+  current_status?: string
+  lease_state?: string
+  expires_at?: string
+  last_checked_at?: string
+  verifier?: string
+}
+
 type LoveState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'awake'
 type VoicePhase = 'idle' | 'permission' | 'recording' | 'processing' | 'speaking' | 'error'
 
 const MAX_RECORDING_MS = 12_000
 const MAX_AUDIO_BYTES = 512 * 1024
+const LEASE_ID_PATTERN = /\bftl_[a-f0-9]{16,64}\b/i
 const MIME_PREFERENCES = [
   'audio/webm;codecs=opus',
   'audio/webm',
@@ -91,6 +105,80 @@ function LoveEntity({ state, offset, formation }: { state: LoveState; offset: { 
   )
 }
 
+function FactLeaseCard({ lease }: { lease: LeasePreview }) {
+  const state = lease.found ? (lease.lease_state || 'UNKNOWN') : 'NOT FOUND'
+  const verdict = lease.found ? (lease.current_status || lease.issued_status || 'UNKNOWN') : 'UNKNOWN'
+  return (
+    <aside
+      data-love-fact-lease="materialized"
+      style={{
+        margin: '10px 0 4px',
+        padding: '13px 14px',
+        border: '1px solid rgba(103,232,249,.22)',
+        borderRadius: 12,
+        background: 'linear-gradient(135deg, rgba(3,12,18,.92), rgba(10,30,38,.72))',
+        boxShadow: '0 18px 70px rgba(0,0,0,.28), inset 0 0 30px rgba(34,211,238,.025)',
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 10, letterSpacing: '.14em', color: '#67e8f9', fontFamily: 'ui-monospace, monospace' }}>FACT LEASE / LIVE API</span>
+        <strong style={{ fontSize: 11, color: lease.found ? '#a5f3fc' : '#fbbf24', fontFamily: 'ui-monospace, monospace' }}>{state} · {verdict}</strong>
+      </div>
+      <code style={{ display: 'block', marginTop: 8, fontSize: 11, color: '#cbd5e1', overflowWrap: 'anywhere' }}>{lease.lease_id}</code>
+      {lease.found && lease.claim && <p style={{ margin: '9px 0 0', fontSize: 13, lineHeight: 1.45 }}>{lease.claim}</p>}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(120px,1fr))', gap: 8, marginTop: 10 }}>
+        <small>ISSUED<br /><b>{lease.issued_status || '—'}</b></small>
+        <small>CURRENT<br /><b>{lease.current_status || '—'}</b></small>
+        <small>EXPIRES<br /><b>{lease.expires_at ? new Date(lease.expires_at).toLocaleString() : '—'}</b></small>
+        <small>LAST CHECK<br /><b>{lease.last_checked_at ? new Date(lease.last_checked_at).toLocaleString() : '—'}</b></small>
+      </div>
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 10 }}>
+        <a href={`/verify-lease.html?id=${encodeURIComponent(lease.lease_id)}`} style={{ color: '#67e8f9', fontSize: 11 }}>VERIFY SIGNATURE →</a>
+        <a href={`/lease-ops.html?id=${encodeURIComponent(lease.lease_id)}`} style={{ color: '#94a3b8', fontSize: 11 }}>LEASE OPS →</a>
+      </div>
+    </aside>
+  )
+}
+
+async function inspectLeaseFromMessage(message: string, signal: AbortSignal): Promise<LeasePreview | null> {
+  const match = message.match(LEASE_ID_PATTERN)
+  if (!match) return null
+  const leaseId = match[0].toLowerCase()
+
+  try {
+    const response = await fetch(`${PROOFTTL_API_URL}/lease/${encodeURIComponent(leaseId)}`, {
+      cache: 'no-store',
+      signal,
+    })
+    if (!response.ok) return { lease_id: leaseId, found: false }
+    const lease = await response.json() as Record<string, unknown>
+    const revocation = lease.revocation && typeof lease.revocation === 'object' ? lease.revocation as Record<string, unknown> : null
+    const lastCheck = lease.last_check && typeof lease.last_check === 'object' ? lease.last_check as Record<string, unknown> : null
+    return {
+      lease_id: typeof lease.lease_id === 'string' ? lease.lease_id : leaseId,
+      found: true,
+      claim: typeof lease.claim === 'string' ? lease.claim : undefined,
+      issued_status: typeof lease.issued_status === 'string' ? lease.issued_status : typeof lease.status === 'string' ? lease.status : undefined,
+      current_status: typeof lease.current_status === 'string'
+        ? lease.current_status
+        : typeof revocation?.current_status === 'string'
+          ? revocation.current_status
+          : typeof lastCheck?.status === 'string'
+            ? lastCheck.status
+            : typeof lease.status === 'string' ? lease.status : undefined,
+      lease_state: typeof lease.lease_state === 'string' ? lease.lease_state : undefined,
+      expires_at: typeof lease.expires_at === 'string' ? lease.expires_at : undefined,
+      last_checked_at: typeof lease.last_checked_at === 'string'
+        ? lease.last_checked_at
+        : typeof lastCheck?.checked_at === 'string' ? lastCheck.checked_at : undefined,
+      verifier: typeof lease.verifier === 'string' ? lease.verifier : undefined,
+    }
+  } catch {
+    if (signal.aborted) return null
+    return { lease_id: leaseId, found: false }
+  }
+}
+
 export default function ProofTTLChatBar() {
   const [value, setValue] = useState('')
   const [messages, setMessages] = useState<Message[]>([])
@@ -104,6 +192,7 @@ export default function ProofTTLChatBar() {
   const [voicePhase, setVoicePhase] = useState<VoicePhase>('idle')
   const [voiceError, setVoiceError] = useState('')
   const [formation, setFormation] = useState('ProofTTL grounded')
+  const [leasePreview, setLeasePreview] = useState<LeasePreview | null>(null)
 
   const abortRef = useRef<AbortController | null>(null)
   const messagesRef = useRef<HTMLDivElement | null>(null)
@@ -148,7 +237,7 @@ export default function ProofTTLChatBar() {
       if (node) node.scrollTop = node.scrollHeight
     })
     return () => window.cancelAnimationFrame(frame)
-  }, [expanded, fullscreen, messages, loading, voicePhase])
+  }, [expanded, fullscreen, messages, loading, voicePhase, leasePreview])
 
   useEffect(() => () => stopVoice(true), [])
 
@@ -202,22 +291,36 @@ export default function ProofTTLChatBar() {
     if (!message || loading || remaining === 0 || voicePhase === 'processing') return
 
     const history: AssistantHistoryMessage[] = messages.slice(-6).map((item) => ({ role: item.role, content: item.text }))
+    const hasLeaseId = LEASE_ID_PATTERN.test(message)
 
     setExpanded(true)
+    if (hasLeaseId) setFullscreen(true)
     setValue('')
     setMessages((current) => [...current, { role: 'user', text: message }])
     setLoading(true)
-    setFormation(/verify|claim|source|lease/i.test(message) ? 'verification forming' : 'ProofTTL grounded')
+    setFormation(hasLeaseId ? 'Fact Lease lock acquiring' : /verify|claim|source|lease/i.test(message) ? 'verification forming' : 'ProofTTL grounded')
 
     abortRef.current?.abort()
     const controller = new AbortController()
     abortRef.current = controller
 
     try {
-      const result = await askProofTTLByText(message, history, controller.signal)
+      const [result, inspectedLease] = await Promise.all([
+        askProofTTLByText(message, history, controller.signal),
+        inspectLeaseFromMessage(message, controller.signal),
+      ])
       updateQuota(result.quota)
+      if (inspectedLease) setLeasePreview(inspectedLease)
       setMessages((current) => [...current, { role: 'assistant', text: result.response || 'I missed that one. Try it again.' }])
-      setFormation(result.action ? 'navigation resolved' : 'response grounded')
+
+      const grounded = Boolean(result.context?.lease_grounding?.found || inspectedLease?.found)
+      if (grounded && inspectedLease) {
+        setFormation(`${inspectedLease.lease_state || 'LEASE'} · ${inspectedLease.current_status || inspectedLease.issued_status || 'UNKNOWN'}`)
+      } else if (result.context?.lease_grounding?.requested && !result.context.lease_grounding.found) {
+        setFormation('Fact Lease not found')
+      } else {
+        setFormation(result.action ? 'navigation resolved' : 'response grounded')
+      }
 
       const action = result.action as AssistantNavigationAction | null
       if (action) {
@@ -392,9 +495,11 @@ export default function ProofTTLChatBar() {
         ? 'Speaking.'
         : loading
           ? 'Thinking.'
-          : value.trim()
-            ? 'Listening.'
-            : 'Present.'
+          : leasePreview?.found
+            ? 'Lease context locked.'
+            : value.trim()
+              ? 'Listening.'
+              : 'Present.'
 
   function closeChat() {
     stopVoice()
@@ -433,7 +538,8 @@ export default function ProofTTLChatBar() {
             </div>
           </div>
           <div ref={messagesRef} className="pttl-chat-messages">
-            {messages.length === 0 && <p className="pttl-chat-empty">Say hi, ask a question, or use the microphone and talk to L.O.V.E.</p>}
+            {messages.length === 0 && <p className="pttl-chat-empty">Say hi, ask a question, paste a Fact Lease ID, or use the microphone and talk to L.O.V.E.</p>}
+            {leasePreview && <FactLeaseCard lease={leasePreview} />}
             {messages.map((message, index) => (
               <div key={`${message.role}-${index}`} className={`pttl-chat-message ${message.role}`}>
                 <span>{message.role === 'user' ? 'YOU' : 'L.O.V.E.'}</span>
