@@ -9,6 +9,7 @@ const requiredFiles = [
   'out/console/index.html',
   'out/support/index.html',
   'out/docs/index.html',
+  'out/audit/index.html',
   'out/solutions/index.html',
   'out/solutions/fact-verification-api/index.html',
   'out/solutions/claim-verification-api/index.html',
@@ -26,6 +27,7 @@ const requiredFiles = [
   'lib/proofttl-assistant.ts',
   'app/nav-glass.css',
   'app/chat-bar.css',
+  'app/chat-fullscreen.css',
   'app/glass-polish.css',
   'ADSENSE-SETUP.md',
 ]
@@ -37,14 +39,14 @@ async function main() {
   }
 
   const homepage = await readFile('out/index.html', 'utf8')
-  for (const expected of ['ProofTTL', 'Truth with', 'Sign in', 'Talk to L.O.V.E.']) {
+  for (const expected of ['ProofTTL', 'Truth with', 'Sign in', 'Ask L.O.V.E.']) {
     if (!homepage.includes(expected)) {
       throw new Error(`Static homepage is missing expected content: ${expected}`)
     }
   }
 
   const consolePage = await readFile('out/console/index.html', 'utf8')
-  for (const expected of ['CUSTOMER CONSOLE', 'SECURITY', 'SECURITY BACKEND LOCKED', 'Talk to L.O.V.E.', 'noindex']) {
+  for (const expected of ['CUSTOMER CONSOLE', 'SECURITY', 'SECURITY BACKEND LOCKED', 'Ask L.O.V.E.', 'noindex']) {
     if (!consolePage.toLowerCase().includes(expected.toLowerCase())) {
       throw new Error(`Static console is missing expected content: ${expected}`)
     }
@@ -77,22 +79,43 @@ async function main() {
   }
 
   const solution = await readFile('out/solutions/ai-agent-verification/index.html', 'utf8')
-  for (const expected of ['AI Agent', 'ProofTTL', 'Fact Lease', 'Talk to L.O.V.E.', '/docs/']) {
+  for (const expected of ['AI Agent', 'ProofTTL', 'Fact Lease', 'Ask L.O.V.E.', '/docs/']) {
     if (!solution.includes(expected)) {
       throw new Error(`Static solution page is missing expected content: ${expected}`)
+    }
+  }
+
+  const audit = await readFile('out/audit/index.html', 'utf8')
+  for (const expected of ['ProofTTL', 'Verification Audit', '$500']) {
+    if (!audit.includes(expected)) {
+      throw new Error(`Static audit page is missing expected pilot content: ${expected}`)
     }
   }
 
   const chat = await readFile('components/ProofTTLChatBar.tsx', 'utf8')
   for (const expected of [
     'fetchProofTTLAssistantUsage',
-    "placeholder={remaining === 0 ? 'Free AI limit reached' : 'Ask ProofTTL…'}",
+    "placeholder={remaining === 0 ? 'Free AI limit reached' : 'Ask L.O.V.E.…'}",
     'remaining === 0',
-    'Product copilot',
+    'Product intelligence',
+    'fullscreen',
+    'pttl-chat-mist',
+    'AssistantHistoryMessage',
   ]) {
     if (!chat.includes(expected)) {
-      throw new Error(`AI chat bar is missing required quota/product behavior: ${expected}`)
+      throw new Error(`L.O.V.E. chat bar is missing required quota/conversation/fullscreen behavior: ${expected}`)
     }
+  }
+
+  const layout = await readFile('app/layout.tsx', 'utf8')
+  if (!layout.includes('<ProofTTLChatBar />')) {
+    throw new Error('Global L.O.V.E. chat bar is not mounted')
+  }
+  if (layout.includes('<ProofTTLAssistant />')) {
+    throw new Error('Legacy separate voice assistant is mounted alongside the unified L.O.V.E. chat surface')
+  }
+  if (!layout.includes("'./chat-fullscreen.css'")) {
+    throw new Error('Fullscreen L.O.V.E. chat styles are not loaded')
   }
 
   const voiceAssistant = await readFile('components/ProofTTLAssistant.tsx', 'utf8')
@@ -105,7 +128,7 @@ async function main() {
     'REPLAY VOICE',
   ]) {
     if (!voiceAssistant.includes(expected)) {
-      throw new Error(`L.O.V.E. voice surface is missing required behavior: ${expected}`)
+      throw new Error(`L.O.V.E. voice capability implementation is missing required behavior: ${expected}`)
     }
   }
 
@@ -130,10 +153,16 @@ async function main() {
     'backdrop-filter: blur(34px) saturate(185%)',
     'env(safe-area-inset-bottom)',
     '.pttl-chat-dock',
-    '.pttl-assistant-trigger',
   ]) {
     if (!glass.includes(expected)) {
       throw new Error(`Final glass/mobile polish is missing required rule: ${expected}`)
+    }
+  }
+
+  const fullscreen = await readFile('app/chat-fullscreen.css', 'utf8')
+  for (const expected of ['body.pttl-chat-fullscreen-open', '.pttl-chat-dock.fullscreen', '@keyframes pttl-mist-in']) {
+    if (!fullscreen.includes(expected)) {
+      throw new Error(`Fullscreen L.O.V.E. smoke layer is missing required rule: ${expected}`)
     }
   }
 
@@ -187,7 +216,7 @@ async function main() {
     throw new Error('Pages headers disable the L.O.V.E. microphone')
   }
 
-  console.log('\nSUCCESS: ProofTTL static export, auth/security routes, product AI quota wiring, L.O.V.E. voice playback hooks, floating glass/mobile surfaces, developer docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
+  console.log('\nSUCCESS: ProofTTL static export, audit offer, auth/security routes, unified L.O.V.E. chat, bounded conversation context, fullscreen smoke layer, voice capability wiring, developer docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
 }
 
 main().catch((error) => {
