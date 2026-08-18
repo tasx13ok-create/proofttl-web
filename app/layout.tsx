@@ -8,6 +8,7 @@ import './security-ui.css'
 import './assistant-navigation.css'
 import './assistant.css'
 import './chat-bar.css'
+import './chat-fullscreen.css'
 import './glass-polish.css'
 
 export const metadata: Metadata = {
