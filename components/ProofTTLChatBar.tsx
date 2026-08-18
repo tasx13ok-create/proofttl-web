@@ -31,6 +31,8 @@ export default function ProofTTLChatBar() {
   const [remaining, setRemaining] = useState<number | null>(null)
   const [limit, setLimit] = useState(20)
   const abortRef = useRef<AbortController | null>(null)
+  const messagesRef = useRef<HTMLDivElement | null>(null)
+  const endRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -42,6 +44,16 @@ export default function ProofTTLChatBar() {
       .catch(() => {})
     return () => controller.abort()
   }, [])
+
+  useEffect(() => {
+    if (!expanded) return
+    const frame = window.requestAnimationFrame(() => {
+      endRef.current?.scrollIntoView({ block: 'end', behavior: messages.length > 1 ? 'smooth' : 'auto' })
+      const node = messagesRef.current
+      if (node) node.scrollTop = node.scrollHeight
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [expanded, messages, loading])
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -110,7 +122,7 @@ export default function ProofTTLChatBar() {
               <button type="button" onClick={() => setExpanded(false)} aria-label="Minimize chat">×</button>
             </div>
           </div>
-          <div className="pttl-chat-messages">
+          <div ref={messagesRef} className="pttl-chat-messages">
             {messages.length === 0 && (
               <p className="pttl-chat-empty">Ask about ProofTTL, Fact Leases, x402, monitoring, pricing, security, the API, or how to use the product.</p>
             )}
@@ -121,6 +133,7 @@ export default function ProofTTLChatBar() {
               </div>
             ))}
             {loading && <div className="pttl-chat-thinking"><i /><i /><i /></div>}
+            <div ref={endRef} className="pttl-chat-end" aria-hidden="true" />
           </div>
         </div>
       )}
