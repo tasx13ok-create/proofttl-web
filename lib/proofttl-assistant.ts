@@ -63,6 +63,28 @@ export type AssistantHistoryMessage = {
   content: string
 }
 
+export type AssistantLeaseGrounding = {
+  requested?: boolean
+  found?: boolean
+  lease_id?: string
+}
+
+export type AssistantContext = {
+  history_messages_used?: number
+  max_history_messages?: number
+  lease_grounding?: AssistantLeaseGrounding | null
+}
+
+export type AssistantInference = {
+  response_model?: string | null
+  deterministic_route?: boolean
+  empty_response_retry?: boolean
+  improvement_observation?: string
+  conversation_strategy?: string
+  casual_turn?: boolean
+  lease_grounded?: boolean
+}
+
 export type AssistantResponse = {
   transcript?: string
   message?: string
@@ -71,6 +93,8 @@ export type AssistantResponse = {
   quota?: AssistantQuota
   love?: LoveCapability
   speech?: LoveSpeech
+  context?: AssistantContext
+  inference?: AssistantInference
   error?: string
 }
 
@@ -125,6 +149,8 @@ export async function askProofTTLByVoice(audio: Blob, signal?: AbortSignal) {
     quota: body.quota,
     love: body.love,
     speech: body.speech,
+    context: body.context,
+    inference: body.inference,
   }
 }
 
@@ -159,6 +185,8 @@ export async function askProofTTLByText(
     response: typeof body.response === 'string' ? body.response : '',
     action: validateAssistantAction(body.action),
     quota: body.quota,
+    context: body.context,
+    inference: body.inference,
   }
 }
 
