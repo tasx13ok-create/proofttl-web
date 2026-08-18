@@ -1,33 +1,35 @@
 # ProofTTL Web
 
-Public marketing and developer frontend for ProofTTL.
+Production-facing frontend shell for ProofTTL.
 
-ProofTTL issues expiring, source-backed Fact Leases for machines and AI agents.
-
-## Development
+## Run locally
 
 ```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
-Set the public API URL in `.env.local`:
+## Environment
 
-```bash
-NEXT_PUBLIC_PROOFTTL_API_URL=https://proofttl.tasx13ok.workers.dev
-```
+`NEXT_PUBLIC_PROOFTTL_API_URL` controls the public ProofTTL API base URL and defaults in code to:
 
-The public `/verify` flow intentionally preserves x402 HTTP 402 responses. No private wallet, signing, or CDP credentials belong in this frontend.
+`https://proofttl.tasx13ok.workers.dev`
 
-## Validation
+## Important behavior
 
-```bash
-npm run check
-```
+- The browser demo submits the real ProofTTL request schema: `claim`, `source_url`, and `ttl_seconds`.
+- An unsigned browser request to the protected `/verify` route should receive HTTP 402. The frontend reports that honestly instead of fabricating a successful payment.
+- x402 wallet/payment handling is not embedded in this frontend yet.
+- Login, customer data, billing management, and admin features are intentionally not faked here. They should only be exposed after real backend/auth implementations exist.
 
-## Current environment
+## Backend
 
-- Protocol: `ProofTTL/0.3.1`
-- Network: Base Sepolia
-- Environment: TESTNET
-- Verification price: `$0.001` per Fact Lease issuance
+Core service repository: `tasx13ok-create/proofttl`.
+
+## Production domain plan
+
+- Current live API: `https://proofttl.tasx13ok.workers.dev`
+- Planned production API hostname: `https://api.proofttl.com`
+
+The frontend should switch to the custom hostname only after `proofttl.com` is registered, active on Cloudflare, and the Worker custom domain is attached.
