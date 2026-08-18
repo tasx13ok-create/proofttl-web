@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>ProofTTL — Fact Lease Operations</title>
+  <style>
+    :root{--bg:#071017;--panel:#0d1822;--line:rgba(103,232,249,.18);--cyan:#67e8f9;--muted:#94a3b8;--text:#eefcff;--ok:#4ade80;--bad:#fb7185;--warn:#fbbf24}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,rgba(34,211,238,.08),transparent 35%),var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}main{width:min(980px,calc(100% - 32px));margin:0 auto;padding:34px 0 80px}h1{font-size:clamp(34px,6vw,62px);line-height:1;margin:.25rem 0 1rem}h1 em{color:var(--cyan);font-style:normal}.kicker,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.kicker{font-size:11px;letter-spacing:.15em;color:var(--cyan);text-transform:uppercase}.card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01)),var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:18px;box-shadow:0 25px 80px rgba(0,0,0,.25)}label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px}.row{display:grid;grid-template-columns:1fr auto;gap:10px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.metric{border:1px solid rgba(148,163,184,.12);border-radius:10px;padding:12px}.metric span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.09em}.metric strong{display:block;margin-top:5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;overflow-wrap:anywhere}input,textarea,button{font:inherit}input,textarea{width:100%;background:#071018;border:1px solid rgba(148,163,184,.2);color:var(--text);border-radius:10px;padding:12px;outline:none}textarea{min-height:180px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;resize:vertical}button{border:1px solid rgba(103,232,249,.3);border-radius:10px;background:rgba(34,211,238,.1);color:var(--cyan);padding:11px 14px;cursor:pointer}button:hover{background:rgba(34,211,238,.16)}button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.status{display:none;margin-top:14px;padding:12px;border-radius:10px;border:1px solid}.status.ok{display:block;color:var(--ok);border-color:rgba(74,222,128,.28);background:rgba(74,222,128,.07)}.status.bad{display:block;color:var(--bad);border-color:rgba(251,113,133,.28);background:rgba(251,113,133,.07)}.status.warn{display:block;color:var(--warn);border-color:rgba(251,191,36,.28);background:rgba(251,191,36,.07)}.note{color:var(--muted);font-size:13px}.diagnostic{padding:12px;border-left:2px solid var(--warn);background:rgba(251,191,36,.05);margin-top:10px}.diagnostic strong{display:block;color:#fde68a}.hide{display:none!important}.testnet{padding:9px 12px;border:1px solid rgba(251,191,36,.25);background:rgba(251,191,36,.07);color:#fde68a;border-radius:10px;margin:16px 0}a{color:var(--cyan)}@media(max-width:700px){.row,.grid{grid-template-columns:1fr}main{width:min(100% - 20px,980px);padding-top:20px}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="kicker">ProofTTL / lease lifecycle</div>
+  <h1>Operate a <em>Fact Lease.</em></h1>
+  <p class="note">Load an existing Lease to diagnose monitoring failures, create a portable share link, export the artifact, and prepare a renewal request that preserves the original claim/source relationship.</p>
+  <div class="testnet">Testnet Preview — renewal preparation below does not silently spend funds. A new Lease still requires the normal x402 issuance flow on Base Sepolia.</div>
+
+  <section class="card">
+    <label for="leaseId">Fact Lease ID</label>
+    <div class="row"><input id="leaseId" placeholder="ftl_…" autocomplete="off"/><button id="load" type="button">Load Lease</button></div>
+    <div id="status" class="status"></div>
+  </section>
+
+  <section id="summary" class="card hide">
+    <div class="kicker">Current lease state</div>
+    <div id="metrics" class="grid"></div>
+    <div class="actions">
+      <button id="copyShare" type="button">Copy public verification link</button>
+      <button id="download" type="button">Export Lease JSON</button>
+      <a id="openVerify" href="/verify-lease.html">Open independent verifier →</a>
+    </div>
+  </section>
+
+  <section id="diagnosticsCard" class="card hide">
+    <div class="kicker">Source monitoring diagnostics</div>
+    <p class="note">ProofTTL exposes source failures as explicit monitoring events. These explanations do not change the Lease verdict by themselves; they explain why a check could not obtain usable evidence.</p>
+    <div id="diagnostics"></div>
+  </section>
+
+  <section id="renewCard" class="card hide">
+    <div class="kicker">Renew / re-issue preparation</div>
+    <p class="note">Renewal creates a new Lease rather than mutating the old issuance signature. The previous Lease remains independently verifiable and can be linked alongside the new one.</p>
+    <label for="renewPayload">New issuance payload</label>
+    <textarea id="renewPayload" readonly></textarea>
+    <div class="actions">
+      <button id="copyPayload" type="button">Copy renewal payload</button>
+      <button id="copyCurl" type="button">Copy x402 API command skeleton</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="kicker">Trust references</div>
+    <p class="note"><a href="/methodology.html">Methodology v1</a> · <a href="/verify-lease.html">Independent signature verifier</a> · <a href="/status.html">Service status</a></p>
+  </section>
+</main>
+<script>
+const API='https://proofttl.tasx13ok.workers.dev';
+const $=id=>document.getElementById(id);
+let lease=null;
+function esc(v){return String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function setStatus(kind,text){const n=$('status');n.className='status '+kind;n.textContent=text}
+function currentStatus(l){return l.current_status||l.revocation?.current_status||l.last_check?.status||l.issued_status||l.status||'UNKNOWN'}
+function failureAdvice(reason){
+  const r=String(reason||'').toLowerCase();
+  if(r.includes('403')) return ['Source blocked automated access','The source returned HTTP 403. Use a directly fetchable first-party page, public API, repository file, or another authoritative source that permits server retrieval.'];
+  if(r.includes('401')||r.includes('login')||r.includes('auth')) return ['Authentication required','ProofTTL cannot monitor private/login-gated evidence anonymously. Provide a public authoritative source or an integration designed for authenticated retrieval.'];
+  if(r.includes('paywall')) return ['Paywalled source','The monitor could not access stable public evidence. Prefer a public canonical source or API endpoint.'];
+  if(r.includes('pdf')) return ['PDF retrieval/parse issue','Confirm the PDF is publicly fetchable and stable. If the document is mirrored as HTML or structured data, prefer that source for continuous monitoring.'];
+  if(r.includes('timeout')) return ['Source timed out','The source did not respond within the retrieval budget. Retry later or use a faster canonical endpoint.'];
+  if(r.includes('too_large')||r.includes('size')) return ['Source exceeded retrieval limits','Use a narrower page, API response, or smaller authoritative artifact containing the exact evidence.'];
+  return ['Source unavailable','The source could not be used for this monitoring check. Review the reason and consider a stable, public, directly fetchable authoritative source.'];
+}
+function render(l){
+  lease=l;
+  const fields=[['Lease ID',l.lease_id],['Issued status',l.issued_status||l.status],['Current status',currentStatus(l)],['Lease state',l.lease_state],['Expires',l.expires_at],['Checks',l.verification_count??l.history?.length??0],['Source',l.final_url||l.source_url],['Signature key',l.signature?.key_id||'unsigned']];
+  $('metrics').innerHTML=fields.map(([a,b])=>`<div class="metric"><span>${esc(a)}</span><strong>${esc(b)}</strong></div>`).join('');
+  $('summary').classList.remove('hide');
+  $('openVerify').href='/verify-lease.html?id='+encodeURIComponent(l.lease_id||'');
+  const failures=(Array.isArray(l.history)?l.history:[]).filter(e=>e.result==='SOURCE_UNAVAILABLE'||String(e.reason||'').includes('source_http_'));
+  $('diagnostics').innerHTML=failures.length?failures.slice().reverse().map(e=>{const [title,advice]=failureAdvice(e.reason);return `<div class="diagnostic"><strong>${esc(title)}</strong><div>${esc(e.reason||'No machine-readable reason')}</div><small>${esc(e.checked_at||'')}</small><p>${esc(advice)}</p></div>`}).join(''):'<div class="note">No source-unavailable monitoring events are present in this Lease.</div>';
+  $('diagnosticsCard').classList.remove('hide');
+  const payload={claim:l.claim,source_url:l.source_url,ttl_seconds:Number(l.ttl_seconds)||3600,previous_lease_id:l.lease_id};
+  $('renewPayload').value=JSON.stringify(payload,null,2);
+  $('renewCard').classList.remove('hide');
+}
+$('load').onclick=async()=>{
+  const id=$('leaseId').value.trim();if(!id)return setStatus('warn','Enter a Lease ID first.');$('load').disabled=true;setStatus('warn','Loading Lease…');
+  try{const r=await fetch(API+'/lease/'+encodeURIComponent(id),{cache:'no-store'});const body=await r.json();if(!r.ok)throw new Error(body.message||body.error||'Lease fetch failed.');render(body);setStatus('ok','Lease loaded. Lifecycle tools are ready.')}catch(e){setStatus('bad',e.message||String(e))}finally{$('load').disabled=false}
+};
+$('copyShare').onclick=async()=>{if(!lease)return;const u=new URL('/verify-lease.html',location.href);u.searchParams.set('id',lease.lease_id);await navigator.clipboard.writeText(u.toString());setStatus('ok','Public verification link copied.')};
+$('download').onclick=()=>{if(!lease)return;const blob=new Blob([JSON.stringify(lease,null,2)+'\n'],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(lease.lease_id||'proofttl-lease')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+$('copyPayload').onclick=async()=>{await navigator.clipboard.writeText($('renewPayload').value);setStatus('ok','Renewal payload copied. It does not authorize payment by itself.')};
+$('copyCurl').onclick=async()=>{if(!lease)return;const payload=JSON.stringify({claim:lease.claim,source_url:lease.source_url,ttl_seconds:Number(lease.ttl_seconds)||3600});const cmd=`curl -i -X POST ${API}/verify -H "content-type: application/json" --data '${payload.replaceAll("'","'\\''")}'`;await navigator.clipboard.writeText(cmd);setStatus('ok','x402 command skeleton copied. The unpaid request should return HTTP 402 with payment requirements.')};
+const q=new URLSearchParams(location.search).get('id');if(q){$('leaseId').value=q;$('load').click()}
+</script>
+</body>
+</html>
