@@ -166,6 +166,32 @@
 .shardC { left: 12%; bottom: 18%; animation-delay: -4.9s; }
 .shardD { right: 10%; bottom: 16%; animation-delay: -2.1s; }
 
+.voiceWave {
+  position: absolute;
+  left: 50%;
+  bottom: 13%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 36px;
+}
+
+.voiceWave i {
+  display: block;
+  width: 3px;
+  height: 12px;
+  border-radius: 99px;
+  background: #67e8f9;
+  box-shadow: 0 0 14px #22d3ee;
+  animation: voiceBar .72s ease-in-out infinite alternate;
+}
+
+.voiceWave i:nth-child(2) { animation-delay: -.48s; }
+.voiceWave i:nth-child(3) { animation-delay: -.22s; }
+.voiceWave i:nth-child(4) { animation-delay: -.6s; }
+.voiceWave i:nth-child(5) { animation-delay: -.34s; }
+
 .stateLabel {
   position: absolute;
   left: 50%;
@@ -184,6 +210,12 @@
   box-shadow: 0 0 15px #cffafe, 0 0 36px #22d3ee, 0 0 86px rgba(34,211,238,.85);
 }
 
+.stage[data-state='listening'] .orbit2 {
+  opacity: .92;
+  border-color: rgba(103,232,249,.32);
+  animation-duration: 7s;
+}
+
 .stage[data-state='thinking'] .smoke,
 .stage[data-state='thinking'] .smoke::before,
 .stage[data-state='thinking'] .smoke::after {
@@ -196,6 +228,19 @@
 .stage[data-state='thinking'] .eye { animation: thinkingPulse 1.15s ease-in-out infinite; }
 .stage[data-state='thinking'] .shard { opacity: .86; border-color: rgba(103,232,249,.3); }
 
+.stage[data-state='speaking'] .eye {
+  height: 20px;
+  animation: speakingEyes 1.4s ease-in-out infinite;
+}
+.stage[data-state='speaking'] .smoke,
+.stage[data-state='speaking'] .smoke::before,
+.stage[data-state='speaking'] .smoke::after {
+  animation-duration: 5s, 12s;
+}
+.stage[data-state='speaking'] .orbit { animation-duration: 9s; border-color: rgba(103,232,249,.24); }
+.stage[data-state='speaking'] .orbit2 { animation-duration: 6s; opacity: .9; }
+.stage[data-state='speaking'] .shard { opacity: .72; }
+
 @keyframes breathe {
   0%,100% { transform: scale(.94) rotate(-2deg); opacity: .74; }
   50% { transform: scale(1.07) rotate(2deg); opacity: .98; }
@@ -205,6 +250,8 @@
 @keyframes orbit { to { transform: rotate(360deg); } }
 @keyframes blink { 0%, 44%, 48%, 100% { scale: 1 1; } 46% { scale: 1 .08; } }
 @keyframes thinkingPulse { 0%,100% { opacity: .72; scale: .9 1; } 50% { opacity: 1; scale: 1.08 1.2; } }
+@keyframes speakingEyes { 0%,100% { opacity: .8; filter: brightness(1); } 50% { opacity: 1; filter: brightness(1.38); } }
+@keyframes voiceBar { from { height: 8px; opacity: .45; } to { height: 34px; opacity: 1; } }
 @keyframes shardFloat { 0%,100% { transform: translateY(8px) scale(.96); } 50% { transform: translateY(-6px) scale(1); } }
 
 @media (max-width: 860px) {
@@ -221,6 +268,7 @@
   .orbit2,
   .orbit3,
   .eye,
-  .shard { animation: none !important; }
+  .shard,
+  .voiceWave i { animation: none !important; }
   .core { transition: none; }
 }
