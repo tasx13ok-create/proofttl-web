@@ -42,6 +42,9 @@ export default async function SearchIntentPage({ params }: PageProps) {
     return <main className={styles.page}><div className={styles.shell}><p>Unknown ProofTTL solution.</p></div></main>
   }
 
+  const currentIndex = SEARCH_INTENTS.findIndex((item) => item.slug === slug)
+  const related = [1, 2, 3].map((offset) => SEARCH_INTENTS[(currentIndex + offset) % SEARCH_INTENTS.length])
+
   const exampleRequest = `POST ${API_URL}/verify\n\n{\n  "claim": "${intent.example}",\n  "source_url": "https://example.com",\n  "ttl_seconds": 300\n}`
 
   return (
@@ -91,6 +94,25 @@ export default async function SearchIntentPage({ params }: PageProps) {
             <a className={styles.secondary} href={`${API_URL}/openapi.json`}>OpenAPI</a>
           </div>
         </div>
+
+        <section className={styles.related} aria-labelledby="related-solutions-heading">
+          <div className={styles.relatedHeading}>
+            <div>
+              <p className={styles.eyebrow}>RELATED PROBLEMS</p>
+              <h2 id="related-solutions-heading">More ways teams use ProofTTL.</h2>
+            </div>
+            <a href="/solutions/">View all solutions →</a>
+          </div>
+          <div className={styles.relatedGrid}>
+            {related.map((item) => (
+              <a className={styles.intentCard} href={`/solutions/${item.slug}/`} key={item.slug}>
+                <span>{item.eyebrow}</span>
+                <h3>{item.heading}</h3>
+                <p>{item.description}</p>
+              </a>
+            ))}
+          </div>
+        </section>
       </section>
 
       <footer className={`${styles.shell} ${styles.footer}`}>
