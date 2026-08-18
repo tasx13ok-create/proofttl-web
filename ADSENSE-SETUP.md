@@ -14,7 +14,7 @@ Ads are intentionally excluded from:
 
 - `/login/`
 - `/onboarding/`
-- `/mfa/`
+- `/two-factor/`
 - `/console/`
 - `/support/`
 - `/get-started/`
@@ -45,6 +45,23 @@ NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-REPLACE_WITH_REAL_PUBLISHER_ID
 ```
 
 Never commit a fabricated publisher ID. A publisher ID is public by design, but it should still come from the actual approved AdSense account.
+
+## Ad click-safety rules
+
+ProofTTL must not place an invisible overlay, click shield, transparent element, custom redirect, or click interceptor over Google ads. Those techniques can interfere with genuine ad interaction, create accidental/deceptive click behavior, and prevent the ad network from handling its own destination normally.
+
+Instead:
+
+- Keep side-rail ads visually and physically separated from ProofTTL navigation, buttons, forms, microphone controls, and other high-interaction UI.
+- Do not place fake close buttons, arrows, warnings, or controls on top of or immediately beside an ad.
+- Do not rewrite or proxy an ad click through a ProofTTL URL.
+- Do not attempt to inspect or modify the contents of the cross-origin ad frame.
+- Use only the approved primary ad network; do not add low-quality fallback ad networks merely to increase fill rate.
+- If an ad implementation causes accidental clicks or interferes with the product, remove/disable that placement rather than intercepting clicks.
+- Keep authenticated, security, payment, and account surfaces ad-free.
+- Our own external links may use separate URL-safety controls later, but ad destinations remain under the ad network/browser security boundary.
+
+No ad platform can provide a mathematical guarantee that every future advertiser destination is safe. ProofTTL therefore minimizes exposure by using a major network with malware/ad-review enforcement, keeping ads isolated from the product UI, and avoiding any code that manipulates ad clicks.
 
 ## UX rules
 
