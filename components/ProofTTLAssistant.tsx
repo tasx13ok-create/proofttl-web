@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from 'react'
 import {
   askProofTTLByVoice,
   assistantNavigationHref,
+  loveSpeechDataUrl,
   type AssistantNavigationAction,
+  type LoveCapability,
 } from '../lib/proofttl-assistant'
 
 type AssistantPhase =
@@ -12,12 +14,13 @@ type AssistantPhase =
   | 'permission'
   | 'recording'
   | 'processing'
+  | 'speaking'
   | 'response'
   | 'error'
 
 const MAX_RECORDING_MS = 12_000
 const MAX_AUDIO_BYTES = 512 * 1024
-const MAX_PROCESSING_MS = 20_000
+const MAX_PROCESSING_MS = 25_000
 
 const MIME_PREFERENCES = [
   'audio/webm;codecs=opus',
@@ -34,8 +37,9 @@ function preferredMimeType() {
 function phaseLabel(phase: AssistantPhase) {
   switch (phase) {
     case 'permission': return 'MIC PERMISSION'
-    case 'recording': return 'LISTENING'
-    case 'processing': return 'TRANSCRIBING + THINKING'
+    case 'recording': return 'L.O.V.E. IS LISTENING'
+    case 'processing': return 'L.O.V.E. IS THINKING'
+    case 'speaking': return 'L.O.V.E. IS SPEAKING'
     case 'response': return 'READY'
     case 'error': return 'ERROR'
     default: return 'READY'
@@ -58,6 +62,8 @@ export default function ProofTTLAssistant() {
   const [answer, setAnswer] = useState('')
   const [error, setError] = useState('')
   const [navigation, setNavigation] = useState<AssistantNavigationAction | null>(null)
+  const [love, setLove] = useState<LoveCapability | null>(null)
+  const [speechUrl, setSpeechUrl] = useState<string | null>(null)
 
   const recorderRef = useRef<MediaRecorder | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
@@ -67,6 +73,7 @@ export default function ProofTTLAssistant() {
   const abortRef = useRef<AbortController | null>(null)
   const navigationTimerRef = useRef<number | null>(null)
   const operationRef = useRef(0)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
   function clearRecordingTimer() {
     if (timeoutRef.current !== null) {
@@ -87,6 +94,15 @@ export default function ProofTTLAssistant() {
     streamRef.current = null
   }
 
+  function stopSpeech() {
+    const audio = audioRef.current
+    audioRef.current = null
+    if (audio) {
+      audio.pause()
+      audio.currentTime = 0
+    }
+  }
+
   function clearNavigationTimer() {
     if (navigationTimerRef.current !== null) {
       window.clearTimeout(navigationTimerRef.current)
@@ -98,6 +114,7 @@ export default function ProofTTLAssistant() {
     operationRef.current += 1
     clearRecordingTimer()
     clearProcessingTimer()
+    stopSpeech()
     abortRef.current?.abort()
     abortRef.current = null
 
@@ -130,6 +147,7 @@ export default function ProofTTLAssistant() {
     setAnswer('')
     setError('')
     setNavigation(null)
+    setSpeechUrl(null)
 
     if (
       typeof navigator === 'undefined' ||
@@ -137,7 +155,7 @@ export default function ProofTTLAssistant() {
       typeof MediaRecorder === 'undefined'
     ) {
       setPhase('error')
-      setError('This browser does not expose the microphone recording APIs ProofTTL needs.')
+      setError('This browser does not expose the microphone recording APIs L.O.V.E. needs.')
       return
     }
 
@@ -158,19 +176,14 @@ export default function ProofTTLAssistant() {
       }
 
       streamRef.current = stream
-
       const mimeType = preferredMimeType()
-      const recorder = mimeType
-        ? new MediaRecorder(stream, { mimeType })
-        : new MediaRecorder(stream)
+      const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream)
 
       recorderRef.current = recorder
       chunksRef.current = []
 
       recorder.ondataavailable = (event) => {
-        if (operationId === operationRef.current && event.data.size > 0) {
-          chunksRef.current.push(event.data)
-        }
+        if (operationId === operationRef.current && event.data.size > 0) chunksRef.current.push(event.data)
       }
 
       recorder.onerror = () => {
@@ -190,9 +203,7 @@ export default function ProofTTLAssistant() {
       setPhase('recording')
       clearRecordingTimer()
       timeoutRef.current = window.setTimeout(() => {
-        if (operationId === operationRef.current && recorder.state === 'recording') {
-          recorder.stop()
-        }
+        if (operationId === operationRef.current && recorder.state === 'recording') recorder.stop()
       }, MAX_RECORDING_MS)
     } catch (caught) {
       if (operationId !== operationRef.current) return
@@ -203,7 +214,7 @@ export default function ProofTTLAssistant() {
       setError(
         denied
           ? 'Microphone permission was denied. Allow microphone access and try again.'
-          : 'ProofTTL could not start the microphone on this device.'
+          : 'L.O.V.E. could not start the microphone on this device.'
       )
     }
   }
@@ -212,6 +223,26 @@ export default function ProofTTLAssistant() {
     clearRecordingTimer()
     const recorder = recorderRef.current
     if (recorder?.state === 'recording') recorder.stop()
+  }
+
+  async function playLoveSpeech(url: string, operationId: number) {
+    stopSpeech()
+    const audio = new Audio(url)
+    audioRef.current = audio
+    audio.onended = () => {
+      if (operationId === operationRef.current) setPhase('response')
+      if (audioRef.current === audio) audioRef.current = null
+    }
+    audio.onerror = () => {
+      if (operationId === operationRef.current) setPhase('response')
+      if (audioRef.current === audio) audioRef.current = null
+    }
+    setPhase('speaking')
+    try {
+      await audio.play()
+    } catch {
+      if (operationId === operationRef.current) setPhase('response')
+    }
   }
 
   async function processRecording(mimeType: string, operationId: number) {
@@ -247,7 +278,7 @@ export default function ProofTTLAssistant() {
       if (operationId !== operationRef.current || controller.signal.aborted) return
       controller.abort()
       setPhase('error')
-      setError('The assistant took too long to respond. Try a shorter request.')
+      setError('L.O.V.E. took too long to respond. Try a shorter request.')
     }, MAX_PROCESSING_MS)
 
     try {
@@ -255,9 +286,17 @@ export default function ProofTTLAssistant() {
       if (operationId !== operationRef.current) return
 
       setTranscript(result.transcript)
-      setAnswer(result.response || 'I heard you, but I do not have a text response for that request.')
+      setAnswer(result.response || 'I heard you, but I do not have a response for that request.')
       setNavigation(result.action)
-      setPhase('response')
+      setLove(result.love || null)
+
+      const url = loveSpeechDataUrl(result.speech)
+      setSpeechUrl(url)
+      if (url) {
+        await playLoveSpeech(url, operationId)
+      } else {
+        setPhase('response')
+      }
 
       if (result.action) {
         const href = assistantNavigationHref(result.action)
@@ -265,13 +304,13 @@ export default function ProofTTLAssistant() {
           clearNavigationTimer()
           navigationTimerRef.current = window.setTimeout(() => {
             if (operationId === operationRef.current) window.location.assign(href)
-          }, 650)
+          }, url ? 1400 : 650)
         }
       }
     } catch (caught) {
       if (controller.signal.aborted || operationId !== operationRef.current) return
       setPhase('error')
-      setError(caught instanceof Error ? caught.message : 'ProofTTL Assistant is unavailable right now.')
+      setError(caught instanceof Error ? caught.message : 'L.O.V.E. is unavailable right now.')
     } finally {
       clearProcessingTimer()
       if (abortRef.current === controller) abortRef.current = null
@@ -283,8 +322,7 @@ export default function ProofTTLAssistant() {
       stopRecording()
       return
     }
-
-    if (phase === 'permission' || phase === 'processing') return
+    if (phase === 'permission' || phase === 'processing' || phase === 'speaking') return
     void startRecording()
   }
 
@@ -295,15 +333,25 @@ export default function ProofTTLAssistant() {
     setPhase('idle')
   }
 
+  const visualState = phase === 'recording'
+    ? 'listening'
+    : phase === 'processing'
+      ? 'thinking'
+      : phase === 'speaking'
+        ? 'speaking'
+        : open
+          ? 'awake'
+          : 'dormant'
+
   if (!open) {
     return (
-      <div className="pttl-assistant pttl-assistant-collapsed">
+      <div className="pttl-assistant pttl-assistant-collapsed" data-love-state={visualState}>
         <button
           type="button"
           className="pttl-assistant-trigger"
           onClick={handleMicClick}
-          aria-label="Talk to ProofTTL Assistant"
-          title="Talk to ProofTTL Assistant"
+          aria-label="Talk to L.O.V.E."
+          title="Talk to L.O.V.E."
         >
           <MicIcon />
         </button>
@@ -312,14 +360,14 @@ export default function ProofTTLAssistant() {
   }
 
   return (
-    <aside className="pttl-assistant" aria-label="ProofTTL Assistant">
-      <div className="pttl-assistant-panel">
+    <aside className="pttl-assistant pttl-love" data-love-state={visualState} aria-label="L.O.V.E. voice assistant">
+      <div className="pttl-assistant-panel pttl-love-panel">
         <header className="pttl-assistant-header">
           <div>
-            <span className="pttl-assistant-kicker">PROOFTTL ASSISTANT</span>
-            <strong>Speak. Get a text answer.</strong>
+            <span className="pttl-assistant-kicker">L.O.V.E. · PROOFTTL</span>
+            <strong>Lease Offering Value Interpreter</strong>
           </div>
-          <button type="button" className="pttl-assistant-close" onClick={closePanel} aria-label="Close assistant">×</button>
+          <button type="button" className="pttl-assistant-close" onClick={closePanel} aria-label="Close L.O.V.E.">×</button>
         </header>
 
         <div className={`pttl-assistant-status phase-${phase}`} aria-live="polite">
@@ -328,13 +376,11 @@ export default function ProofTTLAssistant() {
         </div>
 
         <div className="pttl-assistant-content" aria-live="polite">
-          {phase === 'idle' && (
-            <p>Press the microphone and ask about ProofTTL, or tell me where you want to go.</p>
-          )}
-
+          {phase === 'idle' && <p>Speak to L.O.V.E. about ProofTTL or tell it where you want to go.</p>}
           {phase === 'permission' && <p>Waiting for microphone permission…</p>}
           {phase === 'recording' && <p>Listening. Press the microphone again when you are finished.</p>}
-          {phase === 'processing' && <p>Turning your voice into a ProofTTL request…</p>}
+          {phase === 'processing' && <p>Interpreting your request…</p>}
+          {phase === 'speaking' && <p>L.O.V.E. is responding.</p>}
 
           {transcript && (
             <div className="pttl-assistant-message pttl-assistant-transcript">
@@ -345,17 +391,13 @@ export default function ProofTTLAssistant() {
 
           {answer && (
             <div className="pttl-assistant-message pttl-assistant-answer">
-              <span>PROOFTTL</span>
+              <span>L.O.V.E.</span>
               <p>{answer}</p>
               {navigation && <small>NAVIGATING TO {navigation.section.toUpperCase()}…</small>}
             </div>
           )}
 
-          {error && (
-            <div className="pttl-assistant-error" role="alert">
-              {error}
-            </div>
-          )}
+          {error && <div className="pttl-assistant-error" role="alert">{error}</div>}
         </div>
 
         <footer className="pttl-assistant-footer">
@@ -363,13 +405,20 @@ export default function ProofTTLAssistant() {
             type="button"
             className={`pttl-assistant-mic ${phase === 'recording' ? 'recording' : ''}`}
             onClick={handleMicClick}
-            disabled={phase === 'permission' || phase === 'processing'}
+            disabled={phase === 'permission' || phase === 'processing' || phase === 'speaking'}
             aria-label={phase === 'recording' ? 'Stop recording' : 'Start voice request'}
           >
             <MicIcon />
-            <span>{phase === 'recording' ? 'STOP' : phase === 'processing' ? 'WORKING' : 'TALK'}</span>
+            <span>{phase === 'recording' ? 'STOP' : phase === 'processing' ? 'THINKING' : phase === 'speaking' ? 'SPEAKING' : 'TALK'}</span>
           </button>
-          <small>VOICE IN · TEXT OUT · 12 SEC MAX</small>
+          {speechUrl && phase !== 'speaking' && (
+            <button type="button" className="pttl-love-replay" onClick={() => void playLoveSpeech(speechUrl, operationRef.current)}>
+              REPLAY VOICE
+            </button>
+          )}
+          <small>
+            {love?.preview_enabled ? 'L.O.V.E. TESTNET PREVIEW' : love?.voice_mode ? 'MEMBER VOICE MODE' : 'MEMBERSHIP REQUIRED'}
+          </small>
         </footer>
       </div>
     </aside>
