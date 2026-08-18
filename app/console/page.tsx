@@ -1,5 +1,5 @@
 import SecurityCenter from '../../components/SecurityCenter'
-import { AssistantUsageTelemetry, ReadinessTelemetry } from '../../components/ConsoleTelemetry'
+import { AccountEntitlementTelemetry, AssistantUsageTelemetry, ReadinessTelemetry } from '../../components/ConsoleTelemetry'
 
 export const metadata = {
   title: 'Console — ProofTTL',
@@ -29,7 +29,7 @@ export default function ConsolePage() {
             <div>
               <p className="app-kicker">PROOFTTL CONSOLE</p>
               <h1>Overview</h1>
-              <p className="app-copy">Public verification is live independently of customer accounts. Live infrastructure and anonymous assistant usage are shown below; account-scoped lease/payment history remains locked until ownership can be verified server-side.</p>
+              <p className="app-copy">Public verification is live independently of customer accounts. Live infrastructure and assistant usage are shown below; account-scoped lease/payment history remains locked until ownership can be verified server-side.</p>
             </div>
             <span className="app-status">TESTNET</span>
           </header>
@@ -65,7 +65,7 @@ export default function ConsolePage() {
             <article className="console-panel wide" id="usage">
               <h2>AI USAGE</h2>
               <AssistantUsageTelemetry />
-              <p className="app-note">The free allowance is shared between typed and voice assistant requests and resets daily in UTC. Paid membership is not enabled yet.</p>
+              <p className="app-note">The free allowance is shared between typed and voice assistant requests and resets daily in UTC. Account entitlements are server-controlled; paid billing is not enabled yet.</p>
             </article>
 
             <article className="console-panel wide" id="payments">
@@ -105,12 +105,9 @@ export default function ConsolePage() {
             </article>
 
             <article className="console-panel wide" id="account">
-              <h2>ACCOUNT</h2>
-              <div className="app-empty">
-                <div className="app-empty-meta">AUTH-BACKED PROFILE</div>
-                <strong>Profile controls stay unavailable until a real authenticated session exists.</strong>
-                Provider linking, email changes, account deletion, and any personal profile fields require server-side authorization and recent-authentication checks before they will be exposed here.
-              </div>
+              <h2>ACCOUNT PLAN</h2>
+              <AccountEntitlementTelemetry />
+              <p className="app-note">Profile changes, provider linking, account deletion, and payer-wallet ownership remain locked until their server-side authorization flows are complete.</p>
             </article>
           </div>
         </section>
