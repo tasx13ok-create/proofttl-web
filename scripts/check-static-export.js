@@ -20,6 +20,8 @@ const requiredFiles = [
   'out/solutions/fact-leases/index.html',
   'out/robots.txt',
   'out/_headers',
+  'components/ProofTTLAds.tsx',
+  'ADSENSE-SETUP.md',
 ]
 
 async function main() {
@@ -75,6 +77,25 @@ async function main() {
     }
   }
 
+  const adsSource = await readFile('components/ProofTTLAds.tsx', 'utf8')
+  for (const expected of ["AD_ELIGIBLE_PREFIXES = ['/docs/', '/solutions/']", "AD_ELIGIBLE_EXACT = new Set(['/'])", 'NEXT_PUBLIC_ADSENSE_CLIENT', 'ca-pub-']) {
+    if (!adsSource.includes(expected)) {
+      throw new Error(`ProofTTL ad loader is missing the public-only advertising guard: ${expected}`)
+    }
+  }
+  for (const forbidden of ['/login/', '/onboarding/', '/two-factor/', '/console/', '/support/', '/get-started/']) {
+    if (adsSource.includes(`'${forbidden}'`) && !adsSource.includes("AD_ELIGIBLE_PREFIXES = ['/docs/', '/solutions/']")) {
+      throw new Error(`Private/product route unexpectedly appears eligible for advertising: ${forbidden}`)
+    }
+  }
+
+  const adsPolicy = await readFile('ADSENSE-SETUP.md', 'utf8')
+  for (const expected of ['Side rail ads', 'Left and right', 'Disable **Anchor ads**', 'Disable **Vignette ads**', 'No popups or pop-unders']) {
+    if (!adsPolicy.includes(expected)) {
+      throw new Error(`AdSense policy is missing required side-rail-only rule: ${expected}`)
+    }
+  }
+
   const robots = await readFile('out/robots.txt', 'utf8')
   if (!robots.includes('Allow: /')) {
     throw new Error('robots.txt must allow crawlers to reach indexable pages and page-level noindex directives')
@@ -99,7 +120,7 @@ async function main() {
     throw new Error('Pages headers disable the ProofTTL voice assistant microphone')
   }
 
-  console.log('\nSUCCESS: ProofTTL static export contains all required public/account routes, MFA challenge UI, Security Center locked state, developer docs, search-intent pages, voice assistant trigger, noindex rules, crawl rules, and microphone-safe Pages security headers.')
+  console.log('\nSUCCESS: ProofTTL static export contains all required public/account routes, MFA challenge UI, Security Center locked state, developer docs, search-intent pages, voice assistant trigger, public-only side-rail ad policy, noindex rules, crawl rules, and microphone-safe Pages security headers.')
 }
 
 main().catch((error) => {
