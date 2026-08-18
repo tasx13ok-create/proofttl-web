@@ -1,5 +1,8 @@
+import SecurityCenter from '../../components/SecurityCenter'
+
 export const metadata = {
   title: 'Console — ProofTTL',
+  robots: { index: false, follow: false },
 }
 
 const nav = ['Overview', 'Fact Leases', 'Usage', 'Payments', 'API', 'Security', 'Support', 'Account']
@@ -9,7 +12,7 @@ export default function ConsolePage() {
     <main className="app-page">
       <div className="app-shell app-topbar">
         <a className="brand" href="/"><span className="brand-mark">P</span> PROOF<span className="brand-muted">TTL</span></a>
-        <div className="app-meta">CUSTOMER CONSOLE · PREVIEW</div>
+        <div className="app-meta">CUSTOMER CONSOLE · TESTNET</div>
       </div>
 
       <div className="app-shell console-layout">
@@ -17,7 +20,7 @@ export default function ConsolePage() {
           {nav.map((item, index) => (
             <a className={index === 0 ? 'active' : ''} href={`#${item.toLowerCase().replaceAll(' ', '-')}`} key={item}>{item}</a>
           ))}
-          <a href="/login">Log out preview</a>
+          <a href="/login/">Sign in / switch account</a>
         </aside>
 
         <section className="console-main">
@@ -25,40 +28,40 @@ export default function ConsolePage() {
             <div>
               <p className="app-kicker">PROOFTTL CONSOLE</p>
               <h1>Overview</h1>
-              <p className="app-copy">The customer account backend is not connected yet. These are production-ready empty states, not fabricated metrics.</p>
+              <p className="app-copy">Public verification is live independently of customer accounts. Account-scoped history, payments, and security controls activate only when the authentication backend confirms a signed-in session.</p>
             </div>
-            <span className="app-status">AUTH NOT CONNECTED</span>
+            <span className="app-status">TESTNET</span>
           </header>
 
           <div className="console-grid">
             <article className="console-panel">
               <h2>ACTIVE FACT LEASES</h2>
-              <div className="console-number">—<small>Connect account history to populate</small></div>
+              <div className="console-number">—<small>Account-scoped lease attribution pending</small></div>
             </article>
             <article className="console-panel">
               <h2>REVOKED</h2>
-              <div className="console-number">—<small>No customer data loaded</small></div>
+              <div className="console-number">—<small>No fabricated customer metrics</small></div>
             </article>
             <article className="console-panel">
               <h2>EXPIRED</h2>
-              <div className="console-number">—<small>No customer data loaded</small></div>
+              <div className="console-number">—<small>No fabricated customer metrics</small></div>
             </article>
 
             <article className="console-panel wide" id="fact-leases">
               <h2>RECENT FACT LEASES</h2>
               <div className="app-empty">
-                <div className="app-empty-meta">EMPTY STATE</div>
+                <div className="app-empty-meta">ACCOUNT ATTRIBUTION PENDING</div>
                 <strong>No account-scoped Fact Leases loaded.</strong>
-                Lease history will appear here after authentication, payer/account attribution, and customer data access rules are implemented.
+                Lease history will appear only after ProofTTL has a verifiable payer/account linking mechanism and server-side ownership checks.
               </div>
             </article>
 
             <article className="console-panel" id="usage">
               <h2>USAGE</h2>
               <div className="app-empty">
-                <div className="app-empty-meta">NO METRICS</div>
-                <strong>Usage data is not connected.</strong>
-                Future views can summarize verification and monitoring activity without inventing numbers.
+                <div className="app-empty-meta">NO ACCOUNT METRICS</div>
+                <strong>Usage data is not connected yet.</strong>
+                ProofTTL will expose only real account-scoped activity here.
               </div>
             </article>
 
@@ -68,28 +71,25 @@ export default function ConsolePage() {
                 <div className="app-table-head"><span>TRANSACTION</span><span>NETWORK</span><span>AMOUNT</span></div>
               </div>
               <div className="app-empty">
-                <div className="app-empty-meta">NO ACCOUNT-SCOPED PAYMENTS</div>
-                <strong>Payment attribution is not connected yet.</strong>
-                The eventual table will show x402 transaction history, payer wallet, network, amount, transaction hash, and related Fact Lease where available.
+                <div className="app-empty-meta">PAYMENT ATTRIBUTION PENDING</div>
+                <strong>No wallet is silently assigned to your account.</strong>
+                Payment history will appear only after ProofTTL can cryptographically verify that a payer wallet belongs to the signed-in customer.
               </div>
             </article>
 
             <article className="console-panel" id="api">
               <h2>API</h2>
               <div className="app-empty">
-                <div className="app-empty-meta">PUBLIC API</div>
-                <strong>No API key required today.</strong>
-                ProofTTL currently uses x402 for protected verification rather than fabricated account API keys.
+                <div className="app-empty-meta">PUBLIC X402 API</div>
+                <strong>No account API key is required today.</strong>
+                ProofTTL currently protects verification with x402 rather than inventing customer API keys before an account authorization model exists.
+                <a className="text-link" href="/docs/">OPEN DEVELOPER DOCS →</a>
               </div>
             </article>
 
-            <article className="console-panel wide" id="security">
+            <article className="console-panel wide security-panel" id="security">
               <h2>SECURITY</h2>
-              <div className="app-empty">
-                <div className="app-empty-meta">PLANNED SECURITY CENTER</div>
-                <strong>Provider connections, MFA, passkeys, recovery codes, and session management will live here.</strong>
-                None are shown as enabled until the real authentication backend and threat model are complete.
-              </div>
+              <SecurityCenter />
             </article>
 
             <article className="console-panel" id="support">
@@ -104,9 +104,9 @@ export default function ConsolePage() {
             <article className="console-panel wide" id="account">
               <h2>ACCOUNT</h2>
               <div className="app-empty">
-                <div className="app-empty-meta">ACCOUNT BACKEND PENDING</div>
-                <strong>No personal account data is being stored by this frontend.</strong>
-                Profile, connected providers, account deletion, and session controls will be enabled only after the production account model exists.
+                <div className="app-empty-meta">AUTH-BACKED PROFILE</div>
+                <strong>Profile controls stay unavailable until a real authenticated session exists.</strong>
+                Provider linking, email changes, account deletion, and any personal profile fields require server-side authorization and recent-authentication checks before they will be exposed here.
               </div>
             </article>
           </div>
