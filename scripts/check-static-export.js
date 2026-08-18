@@ -7,6 +7,7 @@ const requiredFiles = [
   'out/get-started/index.html',
   'out/console/index.html',
   'out/support/index.html',
+  'out/docs/index.html',
   'out/solutions/index.html',
   'out/solutions/fact-verification-api/index.html',
   'out/solutions/claim-verification-api/index.html',
@@ -50,8 +51,15 @@ async function main() {
     throw new Error('Static onboarding page is missing its noindex directive')
   }
 
+  const docs = await readFile('out/docs/index.html', 'utf8')
+  for (const expected of ['ProofTTL API Docs', 'HTTP 402', 'PAYMENT-REQUIRED', 'Fact Lease']) {
+    if (!docs.includes(expected)) {
+      throw new Error(`Static developer docs are missing expected content: ${expected}`)
+    }
+  }
+
   const solution = await readFile('out/solutions/ai-agent-verification/index.html', 'utf8')
-  for (const expected of ['AI Agent', 'ProofTTL', 'Fact Lease', 'Talk to ProofTTL Assistant']) {
+  for (const expected of ['AI Agent', 'ProofTTL', 'Fact Lease', 'Talk to ProofTTL Assistant', '/docs/']) {
     if (!solution.includes(expected)) {
       throw new Error(`Static solution page is missing expected content: ${expected}`)
     }
@@ -81,7 +89,7 @@ async function main() {
     throw new Error('Pages headers disable the ProofTTL voice assistant microphone')
   }
 
-  console.log('\nSUCCESS: ProofTTL static export contains all required public/app preview routes, search-intent pages, voice assistant trigger, page-level noindex rules, crawl rules, and microphone-safe Pages security headers.')
+  console.log('\nSUCCESS: ProofTTL static export contains all required public/app preview routes, developer docs, search-intent pages, voice assistant trigger, page-level noindex rules, crawl rules, and microphone-safe Pages security headers.')
 }
 
 main().catch((error) => {
