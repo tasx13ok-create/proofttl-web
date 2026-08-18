@@ -12,6 +12,9 @@
     "check:export": "npm run check && node scripts/check-static-export.js"
   },
   "dependencies": {
+    "@better-auth/core": "1.6.25",
+    "@better-auth/passkey": "1.6.25",
+    "better-auth": "1.6.25",
     "next": "16.3.0",
     "react": "19.2.4",
     "react-dom": "19.2.4"
