@@ -10,6 +10,7 @@ import './assistant-navigation.css'
 import './assistant.css'
 import './chat-bar.css'
 import './glass-polish.css'
+import './chat-fullscreen.css'
 import './mobile-nav.css'
 import './specter.css'
 

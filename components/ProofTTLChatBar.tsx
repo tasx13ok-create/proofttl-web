@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useRef, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import {
   askProofTTLByText,
   assistantNavigationHref,
@@ -26,7 +26,21 @@ export default function ProofTTLChatBar() {
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(false)
   const [expanded, setExpanded] = useState(false)
+  const [fullscreen, setFullscreen] = useState(false)
   const abortRef = useRef<AbortController | null>(null)
+
+  useEffect(() => {
+    if (!fullscreen) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setFullscreen(false)
+    }
+    document.body.classList.add('pttl-chat-fullscreen-open')
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.classList.remove('pttl-chat-fullscreen-open')
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [fullscreen])
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -73,15 +87,20 @@ export default function ProofTTLChatBar() {
   }
 
   return (
-    <div className={`pttl-chat-dock ${expanded ? 'expanded' : ''}`}>
+    <div className={`pttl-chat-dock ${expanded ? 'expanded' : ''} ${fullscreen ? 'fullscreen' : ''}`}>
+      {fullscreen && <div className="pttl-chat-mist" aria-hidden="true" />}
       {expanded && (
         <div className="pttl-chat-transcript" aria-live="polite">
           <div className="pttl-chat-transcript-head">
-            <div>
-              <span>PROOFTTL AI</span>
-              <strong>Ask about the product.</strong>
+            <div className="pttl-chat-identity">
+              <span className="pttl-chat-kicker">L.O.V.E. / PROOFTTL AI</span>
+              <strong>{fullscreen ? 'The system is listening.' : 'Ask about the product.'}</strong>
+              {fullscreen && <small>Language · Observation · Verification · Execution</small>}
             </div>
-            <button type="button" onClick={() => setExpanded(false)} aria-label="Minimize chat">×</button>
+            <div className="pttl-chat-window-actions">
+              <button type="button" onClick={() => setFullscreen((current) => !current)} aria-label={fullscreen ? 'Exit fullscreen chat' : 'Open fullscreen chat'}>{fullscreen ? '↙' : '↗'}</button>
+              <button type="button" onClick={() => { setFullscreen(false); setExpanded(false) }} aria-label="Minimize chat">×</button>
+            </div>
           </div>
           <div className="pttl-chat-messages">
             {messages.length === 0 && (

@@ -1,0 +1,143 @@
+body.pttl-chat-fullscreen-open {
+  overflow: hidden;
+}
+
+.pttl-chat-dock.fullscreen {
+  position: fixed;
+  inset: 0;
+  right: auto;
+  bottom: auto;
+  width: 100vw;
+  height: 100dvh;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+  pointer-events: none;
+  transform: none;
+}
+
+.pttl-chat-dock.fullscreen .pttl-chat-mist {
+  position: fixed;
+  inset: -18%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(21, 26, 37, 0.97) 0 20%, rgba(9, 11, 17, 0.84) 48%, rgba(0, 0, 0, 0.98) 78%),
+    radial-gradient(ellipse at 22% 50%, rgba(63, 76, 102, 0.23), transparent 45%),
+    radial-gradient(ellipse at 78% 48%, rgba(124, 68, 157, 0.2), transparent 43%);
+  filter: blur(1px);
+  animation: pttl-mist-in 700ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.pttl-chat-dock.fullscreen .pttl-chat-transcript,
+.pttl-chat-dock.fullscreen .pttl-chat-bar {
+  pointer-events: auto;
+}
+
+.pttl-chat-dock.fullscreen .pttl-chat-transcript {
+  width: min(900px, 100%);
+  height: min(690px, calc(100dvh - 96px));
+  margin: 0;
+  padding: 26px;
+  border: 1px solid rgba(193, 202, 225, 0.18);
+  border-radius: 28px;
+  background: linear-gradient(145deg, rgba(16, 19, 28, 0.84), rgba(5, 6, 10, 0.77));
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.56), inset 0 1px rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(28px) saturate(135%);
+  animation: pttl-chat-expand 620ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.pttl-chat-dock.fullscreen .pttl-chat-transcript-head {
+  padding-bottom: 18px;
+}
+
+.pttl-chat-dock.fullscreen .pttl-chat-messages {
+  min-height: 0;
+  height: calc(100% - 74px);
+  max-height: none;
+  padding: 26px 12px 20px 4px;
+}
+
+.pttl-chat-dock.fullscreen .pttl-chat-bar {
+  position: absolute;
+  z-index: 2;
+  bottom: max(48px, calc(env(safe-area-inset-bottom) + 24px));
+  width: min(760px, calc(100% - 48px));
+  border-color: rgba(185, 195, 221, 0.25);
+  background: rgba(7, 8, 13, 0.84);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.46), inset 0 1px rgba(255, 255, 255, 0.08);
+  animation: pttl-chat-bar-rise 720ms 70ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.pttl-chat-identity {
+  display: grid;
+  gap: 5px;
+}
+
+.pttl-chat-kicker {
+  color: rgba(199, 210, 232, 0.62);
+  font: 10px/1.2 'IBM Plex Mono', monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pttl-chat-identity small {
+  color: rgba(191, 199, 220, 0.5);
+  font: 10px/1.35 'IBM Plex Mono', monospace;
+}
+
+.pttl-chat-window-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.pttl-chat-window-actions button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(181, 193, 219, 0.18);
+  border-radius: 10px;
+  color: rgba(227, 233, 246, 0.72);
+  background: rgba(255, 255, 255, 0.045);
+  cursor: pointer;
+}
+
+@keyframes pttl-mist-in {
+  from { opacity: 0; transform: scale(0.72); filter: blur(28px); }
+  to { opacity: 1; transform: scale(1); filter: blur(1px); }
+}
+
+@keyframes pttl-chat-expand {
+  from { opacity: 0; transform: translateY(24px) scale(0.84); border-radius: 22px; }
+  to { opacity: 1; transform: translateY(0) scale(1); border-radius: 28px; }
+}
+
+@keyframes pttl-chat-bar-rise {
+  from { opacity: 0; transform: translateY(20px) scale(0.94); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pttl-chat-dock.fullscreen .pttl-chat-mist,
+  .pttl-chat-dock.fullscreen .pttl-chat-transcript,
+  .pttl-chat-dock.fullscreen .pttl-chat-bar {
+    animation: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .pttl-chat-dock.fullscreen {
+    padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+  }
+
+  .pttl-chat-dock.fullscreen .pttl-chat-transcript {
+    height: calc(100dvh - 28px);
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .pttl-chat-dock.fullscreen .pttl-chat-bar {
+    bottom: max(30px, calc(env(safe-area-inset-bottom) + 10px));
+    width: calc(100% - 28px);
+  }
+}
