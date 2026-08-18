@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "node scripts/check-static-export.js",
     "start": "npx serve out",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run build",
-    "check:export": "npm run check && node scripts/check-static-export.js"
+    "check:export": "npm run check"
   },
   "dependencies": {
     "@better-auth/core": "1.6.25",
