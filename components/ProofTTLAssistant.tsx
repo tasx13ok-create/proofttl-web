@@ -17,6 +17,7 @@ type AssistantPhase =
 
 const MAX_RECORDING_MS = 12_000
 const MAX_AUDIO_BYTES = 512 * 1024
+const MAX_PROCESSING_MS = 20_000
 
 const MIME_PREFERENCES = [
   'audio/webm;codecs=opus',
@@ -62,13 +63,22 @@ export default function ProofTTLAssistant() {
   const streamRef = useRef<MediaStream | null>(null)
   const chunksRef = useRef<BlobPart[]>([])
   const timeoutRef = useRef<number | null>(null)
+  const processingTimeoutRef = useRef<number | null>(null)
   const abortRef = useRef<AbortController | null>(null)
   const navigationTimerRef = useRef<number | null>(null)
+  const operationRef = useRef(0)
 
   function clearRecordingTimer() {
     if (timeoutRef.current !== null) {
       window.clearTimeout(timeoutRef.current)
       timeoutRef.current = null
+    }
+  }
+
+  function clearProcessingTimer() {
+    if (processingTimeoutRef.current !== null) {
+      window.clearTimeout(processingTimeoutRef.current)
+      processingTimeoutRef.current = null
     }
   }
 
@@ -84,24 +94,37 @@ export default function ProofTTLAssistant() {
     }
   }
 
+  function cancelActiveOperation() {
+    operationRef.current += 1
+    clearRecordingTimer()
+    clearProcessingTimer()
+    abortRef.current?.abort()
+    abortRef.current = null
+
+    const recorder = recorderRef.current
+    recorderRef.current = null
+    if (recorder && recorder.state !== 'inactive') {
+      recorder.ondataavailable = null
+      recorder.onstop = null
+      recorder.onerror = null
+      recorder.stop()
+    }
+
+    chunksRef.current = []
+    stopMediaTracks()
+  }
+
   useEffect(() => {
     return () => {
-      clearRecordingTimer()
       clearNavigationTimer()
-      abortRef.current?.abort()
-
-      const recorder = recorderRef.current
-      if (recorder && recorder.state !== 'inactive') {
-        recorder.ondataavailable = null
-        recorder.onstop = null
-        recorder.onerror = null
-        recorder.stop()
-      }
-      stopMediaTracks()
+      cancelActiveOperation()
     }
   }, [])
 
   async function startRecording() {
+    cancelActiveOperation()
+    const operationId = operationRef.current
+
     setOpen(true)
     setTranscript('')
     setAnswer('')
@@ -128,6 +151,12 @@ export default function ProofTTLAssistant() {
           autoGainControl: true,
         },
       })
+
+      if (operationId !== operationRef.current) {
+        stream.getTracks().forEach((track) => track.stop())
+        return
+      }
+
       streamRef.current = stream
 
       const mimeType = preferredMimeType()
@@ -139,27 +168,34 @@ export default function ProofTTLAssistant() {
       chunksRef.current = []
 
       recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) chunksRef.current.push(event.data)
+        if (operationId === operationRef.current && event.data.size > 0) {
+          chunksRef.current.push(event.data)
+        }
       }
 
       recorder.onerror = () => {
+        if (operationId !== operationRef.current) return
         clearRecordingTimer()
         stopMediaTracks()
+        recorderRef.current = null
         setPhase('error')
         setError('The microphone recorder stopped unexpectedly. Try again.')
       }
 
       recorder.onstop = () => {
-        void processRecording(recorder.mimeType || mimeType || 'audio/webm')
+        void processRecording(recorder.mimeType || mimeType || 'audio/webm', operationId)
       }
 
       recorder.start()
       setPhase('recording')
       clearRecordingTimer()
       timeoutRef.current = window.setTimeout(() => {
-        if (recorder.state === 'recording') recorder.stop()
+        if (operationId === operationRef.current && recorder.state === 'recording') {
+          recorder.stop()
+        }
       }, MAX_RECORDING_MS)
     } catch (caught) {
+      if (operationId !== operationRef.current) return
       clearRecordingTimer()
       stopMediaTracks()
       setPhase('error')
@@ -178,10 +214,15 @@ export default function ProofTTLAssistant() {
     if (recorder?.state === 'recording') recorder.stop()
   }
 
-  async function processRecording(mimeType: string) {
+  async function processRecording(mimeType: string, operationId: number) {
     clearRecordingTimer()
     stopMediaTracks()
     recorderRef.current = null
+
+    if (operationId !== operationRef.current) {
+      chunksRef.current = []
+      return
+    }
 
     const audio = new Blob(chunksRef.current, { type: mimeType })
     chunksRef.current = []
@@ -201,9 +242,18 @@ export default function ProofTTLAssistant() {
     setPhase('processing')
     const controller = new AbortController()
     abortRef.current = controller
+    clearProcessingTimer()
+    processingTimeoutRef.current = window.setTimeout(() => {
+      if (operationId !== operationRef.current || controller.signal.aborted) return
+      controller.abort()
+      setPhase('error')
+      setError('The assistant took too long to respond. Try a shorter request.')
+    }, MAX_PROCESSING_MS)
 
     try {
       const result = await askProofTTLByVoice(audio, controller.signal)
+      if (operationId !== operationRef.current) return
+
       setTranscript(result.transcript)
       setAnswer(result.response || 'I heard you, but I do not have a text response for that request.')
       setNavigation(result.action)
@@ -214,15 +264,16 @@ export default function ProofTTLAssistant() {
         if (href) {
           clearNavigationTimer()
           navigationTimerRef.current = window.setTimeout(() => {
-            window.location.assign(href)
+            if (operationId === operationRef.current) window.location.assign(href)
           }, 650)
         }
       }
     } catch (caught) {
-      if (controller.signal.aborted) return
+      if (controller.signal.aborted || operationId !== operationRef.current) return
       setPhase('error')
       setError(caught instanceof Error ? caught.message : 'ProofTTL Assistant is unavailable right now.')
     } finally {
+      clearProcessingTimer()
       if (abortRef.current === controller) abortRef.current = null
     }
   }
@@ -240,7 +291,8 @@ export default function ProofTTLAssistant() {
   function closePanel() {
     setOpen(false)
     clearNavigationTimer()
-    if (phase === 'recording') stopRecording()
+    cancelActiveOperation()
+    setPhase('idle')
   }
 
   if (!open) {
