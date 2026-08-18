@@ -14,7 +14,7 @@ export default function SolutionsPage() {
       <nav className={`${styles.shell} ${styles.nav}`} aria-label="ProofTTL solutions navigation">
         <a className={styles.brand} href="/">PROOF<span>TTL</span></a>
         <div className={styles.navLinks}>
-          <a href="/#api">API</a>
+          <a href="/docs/">Docs</a>
           <a href="/support/">Support</a>
           <a href="/console/">Console</a>
         </div>
@@ -35,6 +35,17 @@ export default function SolutionsPage() {
           </a>
         ))}
       </section>
+
+      <div className={`${styles.shell} ${styles.cta}`}>
+        <div>
+          <h2>Ready to integrate?</h2>
+          <p>Read the API flow, inspect x402 behavior, and try the real testnet verifier.</p>
+        </div>
+        <div className={styles.actions}>
+          <a className={styles.primary} href="/docs/">Read docs</a>
+          <a className={styles.secondary} href="/#verify">Try verifier</a>
+        </div>
+      </div>
 
       <footer className={`${styles.shell} ${styles.footer}`}>
         ProofTTL · source-backed facts with explicit lifetimes · testnet
