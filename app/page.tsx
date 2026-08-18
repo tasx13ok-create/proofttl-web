@@ -140,7 +140,7 @@ export default function Home() {
   return <main>
     <nav className="nav shell" aria-label="Primary navigation">
       <a className="brand" href="#top"><span className="brand-mark">P</span> PROOF<span className="brand-muted">TTL</span></a>
-      <div className="nav-links"><a href="#how">How it works</a><a href="#lease">Fact leases</a><a href="#api">API</a><a href="#pricing">Pricing</a><a href="#support">Support</a></div>
+      <div className="nav-links"><a href="#how">How it works</a><a href="#lease">Fact leases</a><a href="#api">API</a><a href="#pricing">Pricing</a><a href="/support">Support</a><a href="/login">Sign in</a></div>
       <a className="nav-cta" href="#verify">Try verifier <span>↗</span></a>
     </nav>
 
@@ -221,7 +221,9 @@ export default function Home() {
       <SectionTitle eyebrow="05 / ARCHITECTURE" title="Drop fresh evidence into the stack.">A deliberately small API surface for source-backed facts with explicit lifetimes.</SectionTitle>
       <div className="architecture-visual"><div className="arch-box"><span>YOUR APP / AGENT</span><code>claim + source + TTL</code></div><div className="arch-arrow">→</div><div className="arch-box accent-box"><span>X402 + PROOFTTL</span><code>settle → validate → verify</code></div><div className="arch-arrow">→</div><div className="arch-box"><span>FACT LEASE</span><code>verdict + evidence + TTL</code></div></div>
       <div className="api-grid">
-        <div><h3>Quickstart</h3><CodeBlock>{`curl -X POST ${API_URL}/verify \\\n  -H "Content-Type: application/json" \\\n  -d '{\n    "claim": "Example.com is intended for illustrative examples in documents.",\n    "source_url": "https://example.com",\n    "ttl_seconds": 300\n  }'`}</CodeBlock></div>
+        <div><h3>Quickstart</h3><CodeBlock>{`curl -X POST ${API_URL}/verify \\
+  -H "Content-Type: application/json" \\
+  -d '{\n    "claim": "Example.com is intended for illustrative examples in documents.",\n    "source_url": "https://example.com",\n    "ttl_seconds": 300\n  }'`}</CodeBlock></div>
         <div className="api-endpoints"><h3>Endpoints</h3><div><span className="method">POST</span><code>/verify</code><small>Issue a paid Fact Lease</small></div><div><span className="method get">GET</span><code>/lease/:id</code><small>Read a Fact Lease</small></div><div><span className="method get">GET</span><code>/health</code><small>Check service health</small></div><div><span className="method get">GET</span><code>/openapi.json</code><small>Read the machine API specification</small></div><div><span className="method get">GET</span><code>/pricing</code><small>Read current machine pricing</small></div></div>
       </div>
     </section>
@@ -233,11 +235,11 @@ export default function Home() {
 
     <section className="section shell support-section" id="support">
       <SectionTitle eyebrow="07 / SUPPORT" title="Testnet support without pretending.">A dedicated ProofTTL support mailbox and employee queue are on the roadmap. During testnet, technical issues can be filed in the public repository so they are trackable.</SectionTitle>
-      <div className="hero-actions"><a className="button button-secondary" href={SUPPORT_URL} target="_blank" rel="noreferrer">Open GitHub issues <span>↗</span></a><a className="text-link" href={GITHUB_URL} target="_blank" rel="noreferrer">View repository <span>↗</span></a></div>
+      <div className="hero-actions"><a className="button button-secondary" href="/support">Open support <span>→</span></a><a className="text-link" href={SUPPORT_URL} target="_blank" rel="noreferrer">GitHub issues <span>↗</span></a></div>
     </section>
 
-    <section className="section shell final-cta"><p className="eyebrow">THE NEXT LAYER OF TRUST</p><h2>Give your product<br /><em>a memory of now.</em></h2><div className="hero-actions"><a className="button button-primary" href="#verify">Verify a claim <span>→</span></a><a className="text-link" href="#api">Read the API <span>↗</span></a></div></section>
+    <section className="section shell final-cta"><p className="eyebrow">THE NEXT LAYER OF TRUST</p><h2>Give your product<br /><em>a memory of now.</em></h2><div className="hero-actions"><a className="button button-primary" href="#verify">Verify a claim <span>→</span></a><a className="button button-secondary" href="/console">Console preview</a><a className="text-link" href="#api">Read the API <span>↗</span></a></div></section>
 
-    <footer className="footer shell"><a className="brand" href="#top"><span className="brand-mark">P</span> PROOF<span className="brand-muted">TTL</span></a><span>EXPIRING, SOURCE-BACKED FACT LEASES FOR MACHINES.</span><div><a href="#api">Docs</a><a href="#pricing">Pricing</a><a href="#support">Support</a><a href={GITHUB_URL} target="_blank" rel="noreferrer">GitHub</a></div></footer>
+    <footer className="footer shell"><a className="brand" href="#top"><span className="brand-mark">P</span> PROOF<span className="brand-muted">TTL</span></a><span>EXPIRING, SOURCE-BACKED FACT LEASES FOR MACHINES.</span><div><a href="#api">Docs</a><a href="#pricing">Pricing</a><a href="/support">Support</a><a href="/login">Sign in</a><a href="/console">Console</a><a href={GITHUB_URL} target="_blank" rel="noreferrer">GitHub</a></div></footer>
   </main>
 }
