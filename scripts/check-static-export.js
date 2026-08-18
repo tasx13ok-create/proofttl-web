@@ -89,15 +89,18 @@ async function main() {
     "placeholder={remaining === 0 ? 'AI limit reached' : 'Message L.O.V.E.…'}",
     'remaining === 0',
     'LoveEntity',
-    "type LoveState = 'idle' | 'listening' | 'thinking' | 'awake'",
+    "type LoveState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'awake'",
+    'askProofTTLByVoice',
+    'loveSpeechDataUrl',
+    'voicePhase',
     'trackEntity',
     'AssistantHistoryMessage',
   ]) {
-    if (!chat.includes(expected)) throw new Error(`L.O.V.E. chat bar is missing required quota/conversation/reactive-entity behavior: ${expected}`)
+    if (!chat.includes(expected)) throw new Error(`L.O.V.E. chat bar is missing required quota/conversation/reactive-entity/voice behavior: ${expected}`)
   }
 
   const entityStyles = await readFile('components/LoveEntity.module.css', 'utf8')
-  for (const expected of ['.stage', '.eyes', '.smoke', '[data-state=', '@media (prefers-reduced-motion: reduce)']) {
+  for (const expected of ['.stage', '.eyes', '.smoke', '.voiceWave', "[data-state='speaking']", '[data-state=', '@media (prefers-reduced-motion: reduce)']) {
     if (!entityStyles.includes(expected)) throw new Error(`Reactive L.O.V.E. entity is missing required visual behavior: ${expected}`)
   }
 
@@ -156,7 +159,7 @@ async function main() {
   }
   if (headers.includes('microphone=()')) throw new Error('Pages headers disable the L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL static export, paid audit offer, public sample audit, auth/security routes, unified reactive L.O.V.E. chat, bounded conversation context, voice capability wiring, developer docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
+  console.log('\nSUCCESS: ProofTTL static export, paid audit offer, public sample audit, auth/security routes, unified reactive L.O.V.E. chat with voice states, bounded conversation context, developer docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
 }
 
 main().catch((error) => {
