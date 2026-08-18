@@ -1,3 +1,5 @@
+import AuditIntakeForm from '../../components/AuditIntakeForm'
+
 export const metadata = {
   title: 'Verification Audit — ProofTTL',
   description: 'A paid claim-verification audit for AI outputs, research, product pages, pricing, documentation, and other high-stakes factual claims.',
@@ -17,7 +19,7 @@ export default function AuditPage() {
     <main className="app-page">
       <div className="app-shell app-topbar">
         <a className="brand" href="/"><span className="brand-mark">P</span> PROOF<span className="brand-muted">TTL</span></a>
-        <span className="app-meta">EARLY CUSTOMER PILOT · MANUAL ONBOARDING</span>
+        <span className="app-meta">EARLY CUSTOMER PILOT · STRUCTURED INTAKE</span>
       </div>
 
       <section className="onboarding-wrap">
@@ -35,6 +37,11 @@ export default function AuditPage() {
               <span>one-time · 10–25 claims · 7-day monitoring</span>
             </div>
             <div className="app-meta">SCOPE CONFIRMED BEFORE PAYMENT · HIGH-TOUCH DELIVERY</div>
+          </div>
+
+          <div className="hero-actions">
+            <a className="button button-primary" href="#audit-intake">START A $500 AUDIT →</a>
+            <a className="button button-secondary" href="/audit/sample/">VIEW SAMPLE AUDIT</a>
           </div>
 
           <div className="app-table" aria-label="Audit deliverables">
@@ -62,6 +69,8 @@ export default function AuditPage() {
             </p>
           </div>
 
+          <AuditIntakeForm />
+
           <div className="onboarding-card" style={{ marginTop: 24 }}>
             <p className="app-kicker">HOW WE HANDLE DISPUTES</p>
             <p className="app-copy">
@@ -70,12 +79,7 @@ export default function AuditPage() {
           </div>
 
           <div className="hero-actions">
-            <a
-              className="button button-primary"
-              href="mailto:tasx13ok@gmail.com?subject=ProofTTL%20Verification%20Audit&body=I%27m%20interested%20in%20the%20%24500%20ProofTTL%20Verification%20Audit.%0A%0ACompany%20or%20project%3A%0AWhat%20I%20want%20verified%3A%0AApproximate%20number%20of%20claims%3A%0AWhy%20these%20claims%20matter%3A%0ADeadline%20(if%20any)%3A"
-            >
-              START A $500 AUDIT →
-            </a>
+            <a className="button button-primary" href="#audit-intake">SUBMIT SCOPE →</a>
             <a className="button button-secondary" href="/audit/sample/">VIEW SAMPLE AUDIT</a>
             <a className="button button-secondary" href="/docs/">VERIFICATION METHOD</a>
           </div>
