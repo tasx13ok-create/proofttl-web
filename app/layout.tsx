@@ -14,11 +14,11 @@ import './glass-polish.css'
 import './sales-cta.css'
 
 export const metadata: Metadata = {
-  title: 'ProofTTL — Truth with an expiry date',
+  title: 'ProofTTL v1.0.0 — Truth with an expiry date',
   description: 'Expiring, source-backed Fact Leases for machines. Verify what a source supports now and monitor whether the evidence changes.',
-  generator: 'ProofTTL',
+  generator: 'ProofTTL v1.0.0',
   openGraph: {
-    title: 'ProofTTL — Truth with an expiry date',
+    title: 'ProofTTL v1.0.0 — Truth with an expiry date',
     description: 'Expiring, source-backed Fact Leases for machines.',
     type: 'website',
   },
@@ -58,6 +58,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             textTransform: 'uppercase',
           }}
         >
+          <strong>PROOFTTL v1.0.0</strong>
           <strong>TESTNET PREVIEW</strong>
           <span>Base Sepolia settlement · Mainnet disabled</span>
           <span aria-hidden="true">·</span>
