@@ -1,5 +1,5 @@
 import SecurityCenter from '../../components/SecurityCenter'
-import { AccountEntitlementTelemetry, AssistantUsageTelemetry, ReadinessTelemetry } from '../../components/ConsoleTelemetry'
+import { AccountEntitlementTelemetry, AssistantUsageTelemetry, LeaseTrustTelemetry, ReadinessTelemetry } from '../../components/ConsoleTelemetry'
 
 export const metadata = {
   title: 'Console — ProofTTL',
@@ -21,6 +21,8 @@ export default function ConsolePage() {
           {nav.map((item, index) => (
             <a className={index === 0 ? 'active' : ''} href={`#${item.toLowerCase().replaceAll(' ', '-')}`} key={item}>{item}</a>
           ))}
+          <a href="/verify-lease.html">Verify Lease</a>
+          <a href="/lease-ops.html">Lease Ops</a>
           <a href="/login/">Sign in / switch account</a>
         </aside>
 
@@ -29,7 +31,7 @@ export default function ConsolePage() {
             <div>
               <p className="app-kicker">PROOFTTL CONSOLE</p>
               <h1>Overview</h1>
-              <p className="app-copy">Public verification is live independently of customer accounts. Live infrastructure and assistant usage are shown below; account-scoped lease/payment history remains locked until ownership can be verified server-side.</p>
+              <p className="app-copy">Public verification is live independently of customer accounts. Live infrastructure, signing, monitoring, and assistant usage are shown below; account-scoped lease/payment history remains locked until ownership can be verified server-side.</p>
             </div>
             <span className="app-status">TESTNET</span>
           </header>
@@ -38,6 +40,11 @@ export default function ConsolePage() {
             <article className="console-panel wide">
               <h2>DEPLOYMENT READINESS</h2>
               <ReadinessTelemetry />
+            </article>
+
+            <article className="console-panel wide">
+              <h2>LEASE TRUST LAYER</h2>
+              <LeaseTrustTelemetry />
             </article>
 
             <article className="console-panel">
@@ -54,11 +61,13 @@ export default function ConsolePage() {
             </article>
 
             <article className="console-panel wide" id="fact-leases">
-              <h2>RECENT FACT LEASES</h2>
+              <h2>FACT LEASE OPERATIONS</h2>
               <div className="app-empty">
-                <div className="app-empty-meta">ACCOUNT ATTRIBUTION PENDING</div>
-                <strong>No account-scoped Fact Leases loaded.</strong>
-                Lease history will appear only after ProofTTL has a verifiable payer/account linking mechanism and server-side ownership checks.
+                <div className="app-empty-meta">PUBLIC TRUST TOOLS AVAILABLE</div>
+                <strong>Inspect, verify, export, share, diagnose, or prepare a renewal for any Lease ID.</strong>
+                Account-scoped Lease lists stay hidden until ProofTTL can prove payer/account ownership rather than guessing it.
+                <a className="text-link" href="/verify-lease.html">VERIFY SIGNATURE + EVENT CHAIN →</a>
+                <a className="text-link" href="/lease-ops.html">OPEN LEASE OPERATIONS →</a>
               </div>
             </article>
 
@@ -70,9 +79,7 @@ export default function ConsolePage() {
 
             <article className="console-panel wide" id="payments">
               <h2>X402 PAYMENT HISTORY</h2>
-              <div className="app-table">
-                <div className="app-table-head"><span>TRANSACTION</span><span>NETWORK</span><span>AMOUNT</span></div>
-              </div>
+              <div className="app-table"><div className="app-table-head"><span>TRANSACTION</span><span>NETWORK</span><span>AMOUNT</span></div></div>
               <div className="app-empty">
                 <div className="app-empty-meta">PAYMENT ATTRIBUTION PENDING</div>
                 <strong>No wallet is silently assigned to your account.</strong>
@@ -90,18 +97,11 @@ export default function ConsolePage() {
               </div>
             </article>
 
-            <article className="console-panel wide security-panel" id="security">
-              <h2>SECURITY</h2>
-              <SecurityCenter />
-            </article>
+            <article className="console-panel wide security-panel" id="security"><h2>SECURITY</h2><SecurityCenter /></article>
 
             <article className="console-panel" id="support">
               <h2>SUPPORT</h2>
-              <div className="app-empty">
-                <div className="app-empty-meta">TESTNET</div>
-                <strong>Support currently routes to GitHub issues.</strong>
-                <a className="text-link" href="https://github.com/tasx13ok-create/proofttl/issues" target="_blank" rel="noreferrer">OPEN ISSUES ↗</a>
-              </div>
+              <div className="app-empty"><div className="app-empty-meta">TESTNET</div><strong>Support currently routes to GitHub issues.</strong><a className="text-link" href="https://github.com/tasx13ok-create/proofttl/issues" target="_blank" rel="noreferrer">OPEN ISSUES ↗</a></div>
             </article>
 
             <article className="console-panel wide" id="account">
