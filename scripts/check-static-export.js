@@ -25,6 +25,7 @@ const requiredFiles = [
   'components/ProofTTLAds.tsx',
   'components/ProofTTLAssistant.tsx',
   'components/ProofTTLChatBar.tsx',
+  'components/LoveEntity.module.css',
   'lib/proofttl-assistant.ts',
   'app/nav-glass.css',
   'app/chat-bar.css',
@@ -87,12 +88,17 @@ async function main() {
     'fetchProofTTLAssistantUsage',
     "placeholder={remaining === 0 ? 'AI limit reached' : 'Message L.O.V.E.…'}",
     'remaining === 0',
-    "fullscreen ? 'Listening.' : 'L.O.V.E.'",
-    'fullscreen',
-    'pttl-chat-mist',
+    'LoveEntity',
+    "type LoveState = 'idle' | 'listening' | 'thinking' | 'awake'",
+    'trackEntity',
     'AssistantHistoryMessage',
   ]) {
-    if (!chat.includes(expected)) throw new Error(`L.O.V.E. chat bar is missing required quota/conversation/fullscreen behavior: ${expected}`)
+    if (!chat.includes(expected)) throw new Error(`L.O.V.E. chat bar is missing required quota/conversation/reactive-entity behavior: ${expected}`)
+  }
+
+  const entityStyles = await readFile('components/LoveEntity.module.css', 'utf8')
+  for (const expected of ['.stage', '.eyes', '.smoke', '[data-state=', '@media (prefers-reduced-motion: reduce)']) {
+    if (!entityStyles.includes(expected)) throw new Error(`Reactive L.O.V.E. entity is missing required visual behavior: ${expected}`)
   }
 
   const layout = await readFile('app/layout.tsx', 'utf8')
@@ -150,7 +156,7 @@ async function main() {
   }
   if (headers.includes('microphone=()')) throw new Error('Pages headers disable the L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL static export, paid audit offer, public sample audit, auth/security routes, unified L.O.V.E. chat, bounded conversation context, fullscreen smoke layer, voice capability wiring, developer docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
+  console.log('\nSUCCESS: ProofTTL static export, paid audit offer, public sample audit, auth/security routes, unified reactive L.O.V.E. chat, bounded conversation context, voice capability wiring, developer docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
 }
 
 main().catch((error) => {
