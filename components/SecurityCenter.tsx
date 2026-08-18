@@ -18,6 +18,10 @@ type PasskeyRow = {
   createdAt?: string | Date | null
 }
 
+type SessionUser = NonNullable<NonNullable<ReturnType<typeof authClient.useSession>['data']>['user']> & {
+  twoFactorEnabled?: boolean
+}
+
 function safeDate(value: unknown) {
   if (!value) return 'Unknown'
   const date = new Date(value as string | number | Date)
@@ -40,7 +44,7 @@ export default function SecurityCenter() {
   const [totpCode, setTotpCode] = useState('')
   const [recoveryCodes, setRecoveryCodes] = useState<string[]>([])
 
-  const user = sessionData?.user as (typeof sessionData.user & { twoFactorEnabled?: boolean }) | undefined
+  const user = sessionData?.user as SessionUser | undefined
   const signedIn = Boolean(sessionData?.session && user)
   const currentSessionToken = sessionData?.session?.token
   const twoFactorEnabled = Boolean(user?.twoFactorEnabled)
