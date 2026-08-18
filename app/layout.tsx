@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import ProofTTLAssistant from '../components/ProofTTLAssistant'
 import './globals.css'
 import './app-ui.css'
+import './security-ui.css'
 import './assistant-navigation.css'
 import './assistant.css'
 
