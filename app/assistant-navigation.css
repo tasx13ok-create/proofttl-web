@@ -1,0 +1,31 @@
+/* Safe visual focus for allowlisted assistant deep links. */
+.console-heading,
+.console-panel {
+  scroll-margin-top: 24px;
+}
+
+.console-panel:target,
+.console-heading:target {
+  outline: 1px solid rgba(34, 211, 238, 0.72);
+  outline-offset: 3px;
+  animation: proofttl-assistant-focus 1800ms ease-out 1;
+}
+
+@keyframes proofttl-assistant-focus {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.34);
+  }
+  45% {
+    box-shadow: 0 0 0 8px rgba(34, 211, 238, 0.08);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 211, 238, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .console-panel:target,
+  .console-heading:target {
+    animation: none;
+  }
+}
