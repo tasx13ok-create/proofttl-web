@@ -9,6 +9,7 @@ import './security-ui.css'
 import './assistant-navigation.css'
 import './assistant.css'
 import './chat-bar.css'
+import './glass-polish.css'
 
 export const metadata: Metadata = {
   title: 'ProofTTL — Truth with an expiry date',
