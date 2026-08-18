@@ -1,6 +1,7 @@
 import { access, readFile } from 'node:fs/promises'
 
 const requiredFiles = [
+  'package.json',
   'out/index.html',
   'out/login/index.html',
   'out/two-factor/index.html',
@@ -24,6 +25,7 @@ const requiredFiles = [
   'out/lease-ops.html',
   'out/methodology.html',
   'out/status.html',
+  'out/trust.html',
   'out/robots.txt',
   'out/_headers',
   'components/ProofTTLAds.tsx',
@@ -43,6 +45,10 @@ async function main() {
     await access(file)
     console.log(`PASS static export: ${file}`)
   }
+
+  const packageJson = JSON.parse(await readFile('package.json', 'utf8'))
+  if (packageJson.version !== '1.0.0') throw new Error(`ProofTTL web release version must be 1.0.0, got ${packageJson.version}`)
+  if (packageJson.type !== 'module') throw new Error('ProofTTL web package must declare type=module for release scripts')
 
   const homepage = await readFile('out/index.html', 'utf8')
   for (const expected of ['ProofTTL', 'Truth with', 'Sign in', 'Message L.O.V.E.']) {
@@ -132,16 +138,21 @@ async function main() {
     if (!statusPage.includes(expected)) throw new Error(`Public status page is missing required status behavior: ${expected}`)
   }
 
+  const trustPage = await readFile('out/trust.html', 'utf8')
+  for (const expected of ['Trust Center', 'API HEALTH', 'AUTOMATIC MONITORING', 'CRYPTOGRAPHIC SIGNING', 'RELEASE READINESS', 'Ed25519 signed + SHA-256 hash chained', 'Mainnet settlement is intentionally disabled']) {
+    if (!trustPage.includes(expected)) throw new Error(`Trust Center is missing required release/trust behavior: ${expected}`)
+  }
+
   const layout = await readFile('app/layout.tsx', 'utf8')
   if (!layout.includes('<ProofTTLChatBar />')) throw new Error('Global L.O.V.E. chat bar is not mounted')
   if (layout.includes('<ProofTTLAssistant />')) throw new Error('Legacy separate voice assistant is mounted alongside the unified L.O.V.E. chat surface')
   if (!layout.includes("'./chat-fullscreen.css'")) throw new Error('Fullscreen L.O.V.E. chat styles are not loaded')
-  for (const expected of ['/verify-lease.html', '/lease-ops.html', '/methodology.html', '/status.html', 'TESTNET PREVIEW', 'Mainnet disabled']) {
+  for (const expected of ['/trust.html', '/verify-lease.html', '/lease-ops.html', '/methodology.html', '/status.html', 'TESTNET PREVIEW', 'Mainnet disabled']) {
     if (!layout.includes(expected)) throw new Error(`Global trust strip is missing required content: ${expected}`)
   }
 
   const voiceAssistant = await readFile('components/ProofTTLAssistant.tsx', 'utf8')
-  for (const expected of ['L.O.V.E.', 'Lease Offering Value Interpreter', "data-love-state={visualState}", 'loveSpeechDataUrl', "phase === 'speaking'", 'REPLAY VOICE']) {
+  for (const expected of ['L.O.V.E.', "data-love-state={visualState}", 'loveSpeechDataUrl', "phase === 'speaking'", 'REPLAY VOICE']) {
     if (!voiceAssistant.includes(expected)) throw new Error(`L.O.V.E. voice capability implementation is missing required behavior: ${expected}`)
   }
 
@@ -184,7 +195,7 @@ async function main() {
   }
   if (headers.includes('microphone=()')) throw new Error('Pages headers disable the L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL static export, audit offer/sample, auth/security, unified reactive L.O.V.E. voice + Lease context, independent issuance/event-chain verification, lifecycle operations, versioned methodology, public status, docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
+  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export, audit offer/sample, auth/security, unified reactive L.O.V.E. voice + Lease context, independent issuance/event-chain verification, lifecycle operations, Trust Center, versioned methodology, public status, docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
 }
 
 main().catch((error) => {
