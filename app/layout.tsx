@@ -61,6 +61,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <strong>TESTNET PREVIEW</strong>
           <span>Base Sepolia settlement · Mainnet disabled</span>
           <span aria-hidden="true">·</span>
+          <a href="/trust.html" style={trustLinkStyle}>Trust Center</a>
           <a href="/verify-lease.html" style={trustLinkStyle}>Verify Lease</a>
           <a href="/lease-ops.html" style={trustLinkStyle}>Lease Ops</a>
           <a href="/methodology.html" style={trustLinkStyle}>Methodology</a>
