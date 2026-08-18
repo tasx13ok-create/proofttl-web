@@ -1,4 +1,5 @@
 import SecurityCenter from '../../components/SecurityCenter'
+import { AssistantUsageTelemetry, ReadinessTelemetry } from '../../components/ConsoleTelemetry'
 
 export const metadata = {
   title: 'Console — ProofTTL',
@@ -28,12 +29,17 @@ export default function ConsolePage() {
             <div>
               <p className="app-kicker">PROOFTTL CONSOLE</p>
               <h1>Overview</h1>
-              <p className="app-copy">Public verification is live independently of customer accounts. Account-scoped history, payments, and security controls activate only when the authentication backend confirms a signed-in session.</p>
+              <p className="app-copy">Public verification is live independently of customer accounts. Live infrastructure and anonymous assistant usage are shown below; account-scoped lease/payment history remains locked until ownership can be verified server-side.</p>
             </div>
             <span className="app-status">TESTNET</span>
           </header>
 
           <div className="console-grid">
+            <article className="console-panel wide">
+              <h2>DEPLOYMENT READINESS</h2>
+              <ReadinessTelemetry />
+            </article>
+
             <article className="console-panel">
               <h2>ACTIVE FACT LEASES</h2>
               <div className="console-number">—<small>Account-scoped lease attribution pending</small></div>
@@ -56,13 +62,10 @@ export default function ConsolePage() {
               </div>
             </article>
 
-            <article className="console-panel" id="usage">
-              <h2>USAGE</h2>
-              <div className="app-empty">
-                <div className="app-empty-meta">NO ACCOUNT METRICS</div>
-                <strong>Usage data is not connected yet.</strong>
-                ProofTTL will expose only real account-scoped activity here.
-              </div>
+            <article className="console-panel wide" id="usage">
+              <h2>AI USAGE</h2>
+              <AssistantUsageTelemetry />
+              <p className="app-note">The free allowance is shared between typed and voice assistant requests and resets daily in UTC. Paid membership is not enabled yet.</p>
             </article>
 
             <article className="console-panel wide" id="payments">
