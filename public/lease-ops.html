@@ -11,7 +11,7 @@
 </head>
 <body>
 <main>
-  <div class="kicker">ProofTTL / lease lifecycle</div>
+  <div class="kicker">ProofTTL / Lease Operations</div>
   <h1>Operate a <em>Fact Lease.</em></h1>
   <p class="note">Load an existing Lease to diagnose monitoring failures, create a portable share link, export the artifact, and prepare a renewal request that preserves the original claim/source relationship.</p>
   <div class="testnet">Testnet Preview — renewal preparation below does not silently spend funds. A new Lease still requires the normal x402 issuance flow on Base Sepolia.</div>
@@ -26,7 +26,7 @@
     <div class="kicker">Current lease state</div>
     <div id="metrics" class="grid"></div>
     <div class="actions">
-      <button id="copyShare" type="button">Copy public verification link</button>
+      <button id="copyShare" type="button">Share verification link</button>
       <button id="download" type="button">Export Lease JSON</button>
       <a id="openVerify" href="/verify-lease.html">Open independent verifier →</a>
     </div>
@@ -34,12 +34,12 @@
 
   <section id="diagnosticsCard" class="card hide">
     <div class="kicker">Source monitoring diagnostics</div>
-    <p class="note">ProofTTL exposes source failures as explicit monitoring events. These explanations do not change the Lease verdict by themselves; they explain why a check could not obtain usable evidence.</p>
+    <p class="note">ProofTTL exposes source failures as explicit monitoring events. These explanations do not change the Lease verdict by themselves; they explain why a check could not obtain usable evidence. SOURCE_UNAVAILABLE remains explicit machine-readable state.</p>
     <div id="diagnostics"></div>
   </section>
 
   <section id="renewCard" class="card hide">
-    <div class="kicker">Renew / re-issue preparation</div>
+    <div class="kicker">Prepare renewal / re-issue</div>
     <p class="note">Renewal creates a new Lease rather than mutating the old issuance signature. The previous Lease remains independently verifiable and can be linked alongside the new one.</p>
     <label for="renewPayload">New issuance payload</label>
     <textarea id="renewPayload" readonly></textarea>
