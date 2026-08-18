@@ -28,6 +28,7 @@ export default function ProofTTLChatBar() {
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(false)
   const [expanded, setExpanded] = useState(false)
+  const [fullscreen, setFullscreen] = useState(false)
   const [remaining, setRemaining] = useState<number | null>(null)
   const [limit, setLimit] = useState(20)
   const abortRef = useRef<AbortController | null>(null)
@@ -46,6 +47,19 @@ export default function ProofTTLChatBar() {
   }, [])
 
   useEffect(() => {
+    if (!fullscreen) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setFullscreen(false)
+    }
+    document.body.classList.add('pttl-chat-fullscreen-open')
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.classList.remove('pttl-chat-fullscreen-open')
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [fullscreen])
+
+  useEffect(() => {
     if (!expanded) return
     const frame = window.requestAnimationFrame(() => {
       endRef.current?.scrollIntoView({ block: 'end', behavior: messages.length > 1 ? 'smooth' : 'auto' })
@@ -53,7 +67,7 @@ export default function ProofTTLChatBar() {
       if (node) node.scrollTop = node.scrollHeight
     })
     return () => window.cancelAnimationFrame(frame)
-  }, [expanded, messages, loading])
+  }, [expanded, fullscreen, messages, loading])
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -82,7 +96,7 @@ export default function ProofTTLChatBar() {
         ...current,
         {
           role: 'assistant',
-          text: result.response || 'I can help with ProofTTL, Fact Leases, x402, monitoring, and the API.',
+          text: result.response || 'L.O.V.E. did not return a usable response. Try that again.',
         },
       ])
 
@@ -108,18 +122,33 @@ export default function ProofTTLChatBar() {
       ? 'FREE LIMIT REACHED'
       : `${remaining} OF ${limit} LEFT`
 
+  function closeChat() {
+    setFullscreen(false)
+    setExpanded(false)
+  }
+
   return (
-    <div className={`pttl-chat-dock ${expanded ? 'expanded' : ''}`}>
+    <div className={`pttl-chat-dock ${expanded ? 'expanded' : ''} ${fullscreen ? 'fullscreen' : ''}`}>
+      {fullscreen && <div className="pttl-chat-mist" aria-hidden="true" />}
       {expanded && (
         <div className="pttl-chat-transcript" aria-live="polite">
           <div className="pttl-chat-transcript-head">
-            <div>
-              <span>PROOFTTL AI</span>
-              <strong>Product copilot</strong>
+            <div className="pttl-chat-identity">
+              <span className="pttl-chat-kicker">L.O.V.E. / PROOFTTL AI</span>
+              <strong>{fullscreen ? 'The system is listening.' : 'Product intelligence'}</strong>
+              {fullscreen && <small>Language · Observation · Verification · Execution</small>}
             </div>
-            <div className="pttl-chat-head-actions">
+            <div className="pttl-chat-window-actions">
               <small>{quotaLabel}</small>
-              <button type="button" onClick={() => setExpanded(false)} aria-label="Minimize chat">×</button>
+              <button
+                type="button"
+                onClick={() => setFullscreen((current) => !current)}
+                aria-label={fullscreen ? 'Exit fullscreen chat' : 'Open fullscreen chat'}
+                title={fullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+              >
+                {fullscreen ? '↙' : '↗'}
+              </button>
+              <button type="button" onClick={closeChat} aria-label="Minimize chat">×</button>
             </div>
           </div>
           <div ref={messagesRef} className="pttl-chat-messages">
@@ -128,7 +157,7 @@ export default function ProofTTLChatBar() {
             )}
             {messages.map((message, index) => (
               <div key={`${message.role}-${index}`} className={`pttl-chat-message ${message.role}`}>
-                <span>{message.role === 'user' ? 'YOU' : 'PROOFTTL'}</span>
+                <span>{message.role === 'user' ? 'YOU' : 'L.O.V.E.'}</span>
                 <p>{message.text}</p>
               </div>
             ))}
@@ -144,12 +173,12 @@ export default function ProofTTLChatBar() {
           value={value}
           onChange={(event) => setValue(event.target.value)}
           onFocus={() => setExpanded(true)}
-          placeholder={remaining === 0 ? 'Free AI limit reached' : 'Ask ProofTTL…'}
+          placeholder={remaining === 0 ? 'Free AI limit reached' : 'Ask L.O.V.E.…'}
           maxLength={1200}
-          aria-label="Ask ProofTTL Assistant"
+          aria-label="Ask L.O.V.E."
           disabled={remaining === 0}
         />
-        <button type="submit" className="pttl-chat-send" disabled={!value.trim() || loading || remaining === 0} aria-label="Send to ProofTTL Assistant">
+        <button type="submit" className="pttl-chat-send" disabled={!value.trim() || loading || remaining === 0} aria-label="Send to L.O.V.E.">
           <SendIcon />
         </button>
       </form>
