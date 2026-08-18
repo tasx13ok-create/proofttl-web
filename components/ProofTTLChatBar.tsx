@@ -1,9 +1,10 @@
 'use client'
 
-import { FormEvent, useRef, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import {
   askProofTTLByText,
   assistantNavigationHref,
+  fetchProofTTLAssistantUsage,
   type AssistantNavigationAction,
 } from '../lib/proofttl-assistant'
 
@@ -27,12 +28,24 @@ export default function ProofTTLChatBar() {
   const [loading, setLoading] = useState(false)
   const [expanded, setExpanded] = useState(false)
   const [remaining, setRemaining] = useState<number | null>(null)
+  const [limit, setLimit] = useState(20)
   const abortRef = useRef<AbortController | null>(null)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    fetchProofTTLAssistantUsage(controller.signal)
+      .then((quota) => {
+        if (typeof quota?.limit === 'number') setLimit(quota.limit)
+        if (typeof quota?.remaining === 'number') setRemaining(quota.remaining)
+      })
+      .catch(() => {})
+    return () => controller.abort()
+  }, [])
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const message = value.replace(/\s+/g, ' ').trim()
-    if (!message || loading) return
+    if (!message || loading || remaining === 0) return
 
     setExpanded(true)
     setValue('')
@@ -45,6 +58,7 @@ export default function ProofTTLChatBar() {
 
     try {
       const result = await askProofTTLByText(message, controller.signal)
+      if (typeof result.quota?.limit === 'number') setLimit(result.quota.limit)
       if (typeof result.quota?.remaining === 'number') setRemaining(result.quota.remaining)
       setMessages((current) => [
         ...current,
@@ -61,18 +75,20 @@ export default function ProofTTLChatBar() {
       }
     } catch (caught) {
       if (controller.signal.aborted) return
-      setMessages((current) => [
-        ...current,
-        {
-          role: 'assistant',
-          text: caught instanceof Error ? caught.message : 'ProofTTL Assistant is unavailable right now.',
-        },
-      ])
+      const text = caught instanceof Error ? caught.message : 'ProofTTL Assistant is unavailable right now.'
+      if (/free ProofTTL AI limit/i.test(text)) setRemaining(0)
+      setMessages((current) => [...current, { role: 'assistant', text }])
     } finally {
       if (abortRef.current === controller) abortRef.current = null
       setLoading(false)
     }
   }
+
+  const quotaLabel = remaining === null
+    ? `${limit} FREE / DAY`
+    : remaining === 0
+      ? 'FREE LIMIT REACHED'
+      : `${remaining} OF ${limit} LEFT`
 
   return (
     <div className={`pttl-chat-dock ${expanded ? 'expanded' : ''}`}>
@@ -84,7 +100,7 @@ export default function ProofTTLChatBar() {
               <strong>Product copilot</strong>
             </div>
             <div className="pttl-chat-head-actions">
-              <small>{remaining === null ? '20 FREE / DAY' : `${remaining} FREE LEFT`}</small>
+              <small>{quotaLabel}</small>
               <button type="button" onClick={() => setExpanded(false)} aria-label="Minimize chat">×</button>
             </div>
           </div>
@@ -98,9 +114,7 @@ export default function ProofTTLChatBar() {
                 <p>{message.text}</p>
               </div>
             ))}
-            {loading && (
-              <div className="pttl-chat-thinking"><i /><i /><i /></div>
-            )}
+            {loading && <div className="pttl-chat-thinking"><i /><i /><i /></div>}
           </div>
         </div>
       )}
@@ -111,11 +125,12 @@ export default function ProofTTLChatBar() {
           value={value}
           onChange={(event) => setValue(event.target.value)}
           onFocus={() => setExpanded(true)}
-          placeholder="Ask ProofTTL…"
+          placeholder={remaining === 0 ? 'Free AI limit reached' : 'Ask ProofTTL…'}
           maxLength={1200}
           aria-label="Ask ProofTTL Assistant"
+          disabled={remaining === 0}
         />
-        <button type="submit" className="pttl-chat-send" disabled={!value.trim() || loading} aria-label="Send to ProofTTL Assistant">
+        <button type="submit" className="pttl-chat-send" disabled={!value.trim() || loading || remaining === 0} aria-label="Send to ProofTTL Assistant">
           <SendIcon />
         </button>
       </form>
