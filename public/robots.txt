@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /login/
+Disallow: /onboarding/
+Disallow: /console/
+
+# Sitemap will be added once the free public Pages hostname is created.
