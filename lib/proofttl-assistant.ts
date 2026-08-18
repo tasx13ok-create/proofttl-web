@@ -5,6 +5,7 @@ export const PROOFTTL_API_URL = (
 
 export const ASSISTANT_VOICE_ENDPOINT = `${PROOFTTL_API_URL}/assistant/voice`
 export const ASSISTANT_TEXT_ENDPOINT = `${PROOFTTL_API_URL}/assistant/text`
+export const ASSISTANT_USAGE_ENDPOINT = `${PROOFTTL_API_URL}/assistant/usage`
 
 export type AssistantSection =
   | 'payments'
@@ -29,9 +30,11 @@ export type AssistantQuota = {
   allowed?: boolean
   plan?: string
   limit?: number
+  used?: number | null
   remaining?: number | null
   reset?: string
   retry_after_seconds?: number
+  accounting_backend?: string
 }
 
 export type AssistantResponse = {
@@ -56,6 +59,20 @@ const ALLOWED_TARGETS: Readonly<Record<AssistantSection, string>> = Object.freez
   login: '/login/',
   home: '/',
 })
+
+export async function fetchProofTTLAssistantUsage(signal?: AbortSignal) {
+  const response = await fetch(ASSISTANT_USAGE_ENDPOINT, {
+    method: 'GET',
+    cache: 'no-store',
+    signal,
+  })
+
+  const body = await response.json().catch(() => ({})) as { quota?: AssistantQuota; message?: string; error?: string }
+  if (!response.ok) {
+    throw new Error(body.message || body.error || `Assistant usage request failed with HTTP ${response.status}.`)
+  }
+  return body.quota || null
+}
 
 export async function askProofTTLByVoice(audio: Blob, signal?: AbortSignal) {
   if (!audio.type.toLowerCase().startsWith('audio/')) {
