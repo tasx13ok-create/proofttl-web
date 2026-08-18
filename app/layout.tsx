@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from 'next'
+import ProofTTLAssistant from '../components/ProofTTLAssistant'
 import './globals.css'
 import './app-ui.css'
 import './assistant-navigation.css'
+import './assistant.css'
 
 export const metadata: Metadata = {
   title: 'ProofTTL — Truth with an expiry date',
@@ -20,5 +22,12 @@ export const viewport: Viewport = {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" className="dark"><body>{children}</body></html>
+  return (
+    <html lang="en" className="dark">
+      <body>
+        {children}
+        <ProofTTLAssistant />
+      </body>
+    </html>
+  )
 }
