@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>ProofTTL — Trust Center</title>
+  <style>
+    :root{--bg:#071017;--panel:#0d1822;--line:rgba(103,232,249,.18);--cyan:#67e8f9;--muted:#94a3b8;--text:#eefcff;--ok:#4ade80;--bad:#fb7185;--warn:#fbbf24}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 18% 0,rgba(34,211,238,.09),transparent 34%),var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}main{width:min(1040px,calc(100% - 32px));margin:auto;padding:38px 0 80px}h1{font-size:clamp(38px,7vw,68px);line-height:1;margin:.3rem 0 1rem}h1 em{color:var(--cyan);font-style:normal}.k{font:11px ui-monospace,monospace;letter-spacing:.15em;color:var(--cyan);text-transform:uppercase}.lead,.note{color:var(--muted)}.banner{padding:10px 13px;border:1px solid rgba(251,191,36,.25);background:rgba(251,191,36,.07);color:#fde68a;border-radius:11px;margin:18px 0}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01)),var(--panel);border:1px solid var(--line);border-radius:16px;padding:19px;box-shadow:0 20px 70px rgba(0,0,0,.22)}.card h2{font-size:15px;margin:0 0 12px}.status{font:11px ui-monospace,monospace;letter-spacing:.08em}.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}.metric{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:7px 0;border-top:1px solid rgba(148,163,184,.09)}.metric:first-of-type{border-top:0}.metric span{color:var(--muted);font-size:12px}.metric b{font-family:ui-monospace,monospace;font-size:12px;overflow-wrap:anywhere}a{color:var(--cyan)}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.actions a{border:1px solid rgba(103,232,249,.25);border-radius:9px;padding:9px 11px;text-decoration:none;font:11px ui-monospace,monospace}.wide{grid-column:1/-1}@media(max-width:760px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.metric{grid-template-columns:1fr}main{width:min(100% - 20px,1040px);padding-top:22px}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="k">ProofTTL / trust center</div>
+  <h1>Proof you can <em>inspect.</em></h1>
+  <p class="lead">Live service health, monitoring status, signing-key discovery, release readiness, verification methodology, and independent Lease verification in one place.</p>
+  <div class="banner"><b>TESTNET PREVIEW</b> — x402 settlement is Base Sepolia test USDC. Mainnet settlement is intentionally disabled.</div>
+
+  <div class="grid">
+    <section class="card"><h2>API HEALTH</h2><div id="apiState" class="status warn">CHECKING…</div><div id="apiMetrics"></div></section>
+    <section class="card"><h2>AUTOMATIC MONITORING</h2><div id="monitorState" class="status warn">CHECKING…</div><div id="monitorMetrics"></div></section>
+    <section class="card"><h2>CRYPTOGRAPHIC SIGNING</h2><div id="signState" class="status warn">CHECKING…</div><div id="signMetrics"></div></section>
+    <section class="card"><h2>RELEASE READINESS</h2><div id="readyState" class="status warn">CHECKING…</div><div id="readyMetrics"></div></section>
+    <section class="card wide">
+      <h2>PUBLIC VERIFICATION SURFACES</h2>
+      <p class="note">These tools are intentionally public so a third party does not need a ProofTTL account to inspect the methodology, public key, Lease signature, or service state.</p>
+      <div class="actions">
+        <a href="/verify-lease.html">VERIFY FACT LEASE</a>
+        <a href="/lease-ops.html">LEASE OPERATIONS</a>
+        <a href="/methodology.html">METHODOLOGY V1</a>
+        <a href="/status.html">SERVICE STATUS</a>
+      </div>
+    </section>
+    <section class="card wide">
+      <h2>TRUST BOUNDARY</h2>
+      <div class="metric"><span>Issuance</span><b>Ed25519 signed attestation</b></div>
+      <div class="metric"><span>Monitoring history</span><b>Ed25519 signed + SHA-256 hash chained for newly signed events</b></div>
+      <div class="metric"><span>Verdicts</span><b>SUPPORTED / CONTRADICTED / UNKNOWN</b></div>
+      <div class="metric"><span>Lease states</span><b>ACTIVE / REVOKED / EXPIRED</b></div>
+      <div class="metric"><span>Current payment network</span><b>Base Sepolia testnet only</b></div>
+      <div class="metric"><span>Mainnet</span><b>Disabled until deliberate production settlement launch</b></div>
+    </section>
+  </div>
+</main>
+<script>
+const API='https://proofttl.tasx13ok.workers.dev';
+const $=id=>document.getElementById(id);
+function esc(v){return String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function rows(items){return items.map(([a,b])=>`<div class="metric"><span>${esc(a)}</span><b>${esc(b)}</b></div>`).join('')}
+function state(id,ok,text){const n=$(id);n.className='status '+(ok?'ok':'bad');n.textContent=text}
+async function read(path){const r=await fetch(API+path,{cache:'no-store'});const body=await r.json().catch(()=>({}));if(!r.ok)throw new Error(body.message||body.error||`HTTP ${r.status}`);return body}
+async function checkHealth(){try{const h=await read('/health');state('apiState',h.ok===true,h.ok?'OPERATIONAL':'DEGRADED');$('apiMetrics').innerHTML=rows([['Service',h.service],['Version',h.version],['Protocol',h.protocol],['Storage',h.storage?'BOUND':'MISSING'],['AI',h.ai?'BOUND':'MISSING']])}catch(e){state('apiState',false,'UNAVAILABLE');$('apiMetrics').innerHTML=rows([['Error',e.message]])}}
+async function checkMonitor(){try{const m=await read('/monitor/status');state('monitorState',m.enabled===true,m.enabled?'ACTIVE':'DISABLED');const l=m.last_run||{};$('monitorMetrics').innerHTML=rows([['Schedule',m.schedule],['Last run',l.finished_at||l.started_at||'No persisted run yet'],['Checked',l.checked??'—'],['Revoked',l.revoked??'—'],['Expired',l.expired??'—'],['Errors',l.errors??'—']])}catch(e){state('monitorState',false,'UNAVAILABLE');$('monitorMetrics').innerHTML=rows([['Error',e.message]])}}
+async function checkSigning(){try{const s=await read('/.well-known/proofttl-keys.json');const key=(s.keys||[])[0];state('signState',s.signing_enabled===true,s.signing_enabled?'ENABLED':'DISABLED');$('signMetrics').innerHTML=rows([['Algorithm',key?.crv||'—'],['Key ID',key?.kid||'—'],['Signature schema',s.signature_version],['Attestation schema',s.attestation_version],['Published keys',(s.keys||[]).length]])}catch(e){state('signState',false,'UNAVAILABLE');$('signMetrics').innerHTML=rows([['Error',e.message]])}}
+async function checkReadiness(){try{const r=await read('/readiness');const t=r.testnet||{};state('readyState',t.ready===true,t.ready?'TESTNET READY':'INCOMPLETE');$('readyMetrics').innerHTML=rows([['Environment',r.environment],['Score',t.score!=null?t.score+'%':'—'],['Checks',`${t.passing_checks??'—'} / ${t.total_checks??'—'}`],['Production',r.production?.ready?'READY':'LOCKED'],['Blockers',(r.production?.blockers||[]).join(', ')||'—']])}catch(e){state('readyState',false,'UNAVAILABLE');$('readyMetrics').innerHTML=rows([['Error',e.message]])}}
+Promise.allSettled([checkHealth(),checkMonitor(),checkSigning(),checkReadiness()]);
+</script>
+</body>
+</html>
