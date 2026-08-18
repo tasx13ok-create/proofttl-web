@@ -53,7 +53,7 @@ export default async function SearchIntentPage({ params }: PageProps) {
         <a className={styles.brand} href="/">PROOF<span>TTL</span></a>
         <div className={styles.navLinks}>
           <a href="/solutions/">Solutions</a>
-          <a href="/#api">API</a>
+          <a href="/docs/">Docs</a>
           <a href="/support/">Support</a>
           <a href="/console/">Console</a>
         </div>
@@ -91,7 +91,7 @@ export default async function SearchIntentPage({ params }: PageProps) {
           </div>
           <div className={styles.actions}>
             <a className={styles.primary} href="/#verify">Try verifier</a>
-            <a className={styles.secondary} href={`${API_URL}/openapi.json`}>OpenAPI</a>
+            <a className={styles.secondary} href="/docs/">Read docs</a>
           </div>
         </div>
 
