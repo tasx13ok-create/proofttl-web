@@ -26,6 +26,7 @@ export default function ProofTTLChatBar() {
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(false)
   const [expanded, setExpanded] = useState(false)
+  const [remaining, setRemaining] = useState<number | null>(null)
   const abortRef = useRef<AbortController | null>(null)
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -44,6 +45,7 @@ export default function ProofTTLChatBar() {
 
     try {
       const result = await askProofTTLByText(message, controller.signal)
+      if (typeof result.quota?.remaining === 'number') setRemaining(result.quota.remaining)
       setMessages((current) => [
         ...current,
         {
@@ -79,13 +81,16 @@ export default function ProofTTLChatBar() {
           <div className="pttl-chat-transcript-head">
             <div>
               <span>PROOFTTL AI</span>
-              <strong>Ask about the product.</strong>
+              <strong>Product copilot</strong>
             </div>
-            <button type="button" onClick={() => setExpanded(false)} aria-label="Minimize chat">×</button>
+            <div className="pttl-chat-head-actions">
+              <small>{remaining === null ? '20 FREE / DAY' : `${remaining} FREE LEFT`}</small>
+              <button type="button" onClick={() => setExpanded(false)} aria-label="Minimize chat">×</button>
+            </div>
           </div>
           <div className="pttl-chat-messages">
             {messages.length === 0 && (
-              <p className="pttl-chat-empty">Ask about Fact Leases, x402, monitoring, pricing, security, or where to find something.</p>
+              <p className="pttl-chat-empty">Ask about ProofTTL, Fact Leases, x402, monitoring, pricing, security, the API, or how to use the product.</p>
             )}
             {messages.map((message, index) => (
               <div key={`${message.role}-${index}`} className={`pttl-chat-message ${message.role}`}>
@@ -106,11 +111,10 @@ export default function ProofTTLChatBar() {
           value={value}
           onChange={(event) => setValue(event.target.value)}
           onFocus={() => setExpanded(true)}
-          placeholder="Ask ProofTTL anything…"
+          placeholder="Ask ProofTTL…"
           maxLength={1200}
           aria-label="Ask ProofTTL Assistant"
         />
-        <div className="pttl-chat-shortcut" aria-hidden="true">AI</div>
         <button type="submit" className="pttl-chat-send" disabled={!value.trim() || loading} aria-label="Send to ProofTTL Assistant">
           <SendIcon />
         </button>
