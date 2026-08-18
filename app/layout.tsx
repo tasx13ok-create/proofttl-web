@@ -1,11 +1,14 @@
 import type { Metadata, Viewport } from 'next'
 import ProofTTLAssistant from '../components/ProofTTLAssistant'
 import ProofTTLAds from '../components/ProofTTLAds'
+import ProofTTLChatBar from '../components/ProofTTLChatBar'
 import './globals.css'
+import './nav-glass.css'
 import './app-ui.css'
 import './security-ui.css'
 import './assistant-navigation.css'
 import './assistant.css'
+import './chat-bar.css'
 
 export const metadata: Metadata = {
   title: 'ProofTTL — Truth with an expiry date',
@@ -29,6 +32,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         {children}
         <ProofTTLAds />
+        <ProofTTLChatBar />
         <ProofTTLAssistant />
       </body>
     </html>
