@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import ProofTTLAssistant from '../components/ProofTTLAssistant'
+import ProofTTLAds from '../components/ProofTTLAds'
 import './globals.css'
 import './app-ui.css'
 import './security-ui.css'
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" className="dark">
       <body>
         {children}
+        <ProofTTLAds />
         <ProofTTLAssistant />
       </body>
     </html>
