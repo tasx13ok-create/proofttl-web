@@ -37,6 +37,11 @@ export type AssistantQuota = {
   accounting_backend?: string
 }
 
+export type AssistantHistoryMessage = {
+  role: 'user' | 'assistant'
+  content: string
+}
+
 export type AssistantResponse = {
   transcript?: string
   message?: string
@@ -81,9 +86,7 @@ export async function askProofTTLByVoice(audio: Blob, signal?: AbortSignal) {
 
   const response = await fetch(ASSISTANT_VOICE_ENDPOINT, {
     method: 'POST',
-    headers: {
-      'content-type': audio.type,
-    },
+    headers: { 'content-type': audio.type },
     body: audio,
     signal,
   })
@@ -98,16 +101,26 @@ export async function askProofTTLByVoice(audio: Blob, signal?: AbortSignal) {
   }
 }
 
-export async function askProofTTLByText(message: string, signal?: AbortSignal) {
+export async function askProofTTLByText(
+  message: string,
+  history: AssistantHistoryMessage[] = [],
+  signal?: AbortSignal,
+) {
   const clean = message.replace(/\s+/g, ' ').trim().slice(0, 1200)
   if (!clean) throw new Error('Enter a ProofTTL question.')
 
+  const boundedHistory = history
+    .slice(-6)
+    .map((item) => ({
+      role: item.role,
+      content: item.content.replace(/\s+/g, ' ').trim().slice(0, 600),
+    }))
+    .filter((item) => item.content)
+
   const response = await fetch(ASSISTANT_TEXT_ENDPOINT, {
     method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({ message: clean }),
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ message: clean, history: boundedHistory }),
     signal,
   })
 
@@ -143,19 +156,13 @@ export function validateAssistantAction(value: unknown): AssistantNavigationActi
     return null
   }
 
-  if (!Object.prototype.hasOwnProperty.call(ALLOWED_TARGETS, action.section)) {
-    return null
-  }
+  if (!Object.prototype.hasOwnProperty.call(ALLOWED_TARGETS, action.section)) return null
 
   const section = action.section as AssistantSection
   const allowedRoute = ALLOWED_TARGETS[section]
   if (action.route !== allowedRoute) return null
 
-  return {
-    type: 'navigate',
-    route: allowedRoute,
-    section,
-  }
+  return { type: 'navigate', route: allowedRoute, section }
 }
 
 export function assistantNavigationHref(action: AssistantNavigationAction) {
