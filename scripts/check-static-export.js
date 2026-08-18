@@ -21,6 +21,12 @@ const requiredFiles = [
   'out/robots.txt',
   'out/_headers',
   'components/ProofTTLAds.tsx',
+  'components/ProofTTLAssistant.tsx',
+  'components/ProofTTLChatBar.tsx',
+  'lib/proofttl-assistant.ts',
+  'app/nav-glass.css',
+  'app/chat-bar.css',
+  'app/glass-polish.css',
   'ADSENSE-SETUP.md',
 ]
 
@@ -77,6 +83,50 @@ async function main() {
     }
   }
 
+  const chat = await readFile('components/ProofTTLChatBar.tsx', 'utf8')
+  for (const expected of [
+    'fetchProofTTLAssistantUsage',
+    "placeholder={remaining === 0 ? 'Free AI limit reached' : 'Ask ProofTTL…'}",
+    'remaining === 0',
+    'Product copilot',
+  ]) {
+    if (!chat.includes(expected)) {
+      throw new Error(`AI chat bar is missing required quota/product behavior: ${expected}`)
+    }
+  }
+
+  const assistantClient = await readFile('lib/proofttl-assistant.ts', 'utf8')
+  for (const expected of [
+    'NEXT_PUBLIC_PROOFTTL_API_URL',
+    'https://proofttl.tasx13ok.workers.dev',
+    '/assistant/text',
+    '/assistant/voice',
+    '/assistant/usage',
+  ]) {
+    if (!assistantClient.includes(expected)) {
+      throw new Error(`Assistant API client is missing required production wiring: ${expected}`)
+    }
+  }
+
+  const glass = await readFile('app/glass-polish.css', 'utf8')
+  for (const expected of [
+    'backdrop-filter: blur(34px) saturate(185%)',
+    'env(safe-area-inset-bottom)',
+    '.pttl-chat-dock',
+    '.pttl-assistant-trigger',
+  ]) {
+    if (!glass.includes(expected)) {
+      throw new Error(`Final glass/mobile polish is missing required rule: ${expected}`)
+    }
+  }
+
+  const navGlass = await readFile('app/nav-glass.css', 'utf8')
+  for (const expected of ['.nav::before', '.nav::after', '@media (max-width: 900px)']) {
+    if (!navGlass.includes(expected)) {
+      throw new Error(`Floating navigation glass layer is missing required rule: ${expected}`)
+    }
+  }
+
   const adsSource = await readFile('components/ProofTTLAds.tsx', 'utf8')
   for (const expected of ["AD_ELIGIBLE_PREFIXES = ['/docs/', '/solutions/']", "AD_ELIGIBLE_EXACT = new Set(['/'])", 'NEXT_PUBLIC_ADSENSE_CLIENT', 'ca-pub-']) {
     if (!adsSource.includes(expected)) {
@@ -120,7 +170,7 @@ async function main() {
     throw new Error('Pages headers disable the ProofTTL voice assistant microphone')
   }
 
-  console.log('\nSUCCESS: ProofTTL static export contains all required public/account routes, MFA challenge UI, Security Center locked state, developer docs, search-intent pages, voice assistant trigger, public-only side-rail ad policy, noindex rules, crawl rules, and microphone-safe Pages security headers.')
+  console.log('\nSUCCESS: ProofTTL static export, auth/security routes, product AI quota wiring, floating glass/mobile surfaces, developer docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
 }
 
 main().catch((error) => {
