@@ -25,11 +25,21 @@ export type AssistantNavigationAction = {
   section: AssistantSection
 }
 
+export type AssistantQuota = {
+  allowed?: boolean
+  plan?: string
+  limit?: number
+  remaining?: number | null
+  reset?: string
+  retry_after_seconds?: number
+}
+
 export type AssistantResponse = {
   transcript?: string
   message?: string
   response?: string
   action?: AssistantNavigationAction | null
+  quota?: AssistantQuota
   error?: string
 }
 
@@ -67,6 +77,7 @@ export async function askProofTTLByVoice(audio: Blob, signal?: AbortSignal) {
     transcript: typeof body.transcript === 'string' ? body.transcript : '',
     response: typeof body.response === 'string' ? body.response : '',
     action: validateAssistantAction(body.action),
+    quota: body.quota,
   }
 }
 
@@ -89,6 +100,7 @@ export async function askProofTTLByText(message: string, signal?: AbortSignal) {
     message: clean,
     response: typeof body.response === 'string' ? body.response : '',
     action: validateAssistantAction(body.action),
+    quota: body.quota,
   }
 }
 
