@@ -28,13 +28,34 @@ export type AssistantNavigationAction = {
 
 export type AssistantQuota = {
   allowed?: boolean
+  authenticated?: boolean
   plan?: string
+  membership_status?: string
   limit?: number
   used?: number | null
   remaining?: number | null
   reset?: string
   retry_after_seconds?: number
   accounting_backend?: string
+}
+
+export type LoveCapability = {
+  persona?: string
+  expansion?: string
+  voice_mode?: boolean
+  member_only?: boolean
+  preview_enabled?: boolean
+  plan?: string
+  speaker?: string
+}
+
+export type LoveSpeech = {
+  available?: boolean
+  reason?: string
+  mime_type?: string
+  audio_base64?: string
+  model?: string
+  speaker?: string
 }
 
 export type AssistantHistoryMessage = {
@@ -48,6 +69,8 @@ export type AssistantResponse = {
   response?: string
   action?: AssistantNavigationAction | null
   quota?: AssistantQuota
+  love?: LoveCapability
+  speech?: LoveSpeech
   error?: string
 }
 
@@ -100,6 +123,8 @@ export async function askProofTTLByVoice(audio: Blob, signal?: AbortSignal) {
     response: typeof body.response === 'string' ? body.response : '',
     action: validateAssistantAction(body.action),
     quota: body.quota,
+    love: body.love,
+    speech: body.speech,
   }
 }
 
@@ -149,6 +174,12 @@ async function readAssistantResponse(response: Response) {
   }
 
   return body
+}
+
+export function loveSpeechDataUrl(speech?: LoveSpeech) {
+  if (!speech?.available || !speech.audio_base64) return null
+  const mime = speech.mime_type || 'audio/mpeg'
+  return `data:${mime};base64,${speech.audio_base64}`
 }
 
 export function validateAssistantAction(value: unknown): AssistantNavigationAction | null {
