@@ -37,14 +37,14 @@ async function main() {
   }
 
   const homepage = await readFile('out/index.html', 'utf8')
-  for (const expected of ['ProofTTL', 'Truth with', 'Sign in', 'Talk to ProofTTL Assistant']) {
+  for (const expected of ['ProofTTL', 'Truth with', 'Sign in', 'Talk to L.O.V.E.']) {
     if (!homepage.includes(expected)) {
       throw new Error(`Static homepage is missing expected content: ${expected}`)
     }
   }
 
   const consolePage = await readFile('out/console/index.html', 'utf8')
-  for (const expected of ['CUSTOMER CONSOLE', 'SECURITY', 'SECURITY BACKEND LOCKED', 'Talk to ProofTTL Assistant', 'noindex']) {
+  for (const expected of ['CUSTOMER CONSOLE', 'SECURITY', 'SECURITY BACKEND LOCKED', 'Talk to L.O.V.E.', 'noindex']) {
     if (!consolePage.toLowerCase().includes(expected.toLowerCase())) {
       throw new Error(`Static console is missing expected content: ${expected}`)
     }
@@ -77,7 +77,7 @@ async function main() {
   }
 
   const solution = await readFile('out/solutions/ai-agent-verification/index.html', 'utf8')
-  for (const expected of ['AI Agent', 'ProofTTL', 'Fact Lease', 'Talk to ProofTTL Assistant', '/docs/']) {
+  for (const expected of ['AI Agent', 'ProofTTL', 'Fact Lease', 'Talk to L.O.V.E.', '/docs/']) {
     if (!solution.includes(expected)) {
       throw new Error(`Static solution page is missing expected content: ${expected}`)
     }
@@ -95,6 +95,20 @@ async function main() {
     }
   }
 
+  const voiceAssistant = await readFile('components/ProofTTLAssistant.tsx', 'utf8')
+  for (const expected of [
+    'L.O.V.E.',
+    'Lease Offering Value Interpreter',
+    "data-love-state={visualState}",
+    'loveSpeechDataUrl',
+    "phase === 'speaking'",
+    'REPLAY VOICE',
+  ]) {
+    if (!voiceAssistant.includes(expected)) {
+      throw new Error(`L.O.V.E. voice surface is missing required behavior: ${expected}`)
+    }
+  }
+
   const assistantClient = await readFile('lib/proofttl-assistant.ts', 'utf8')
   for (const expected of [
     'NEXT_PUBLIC_PROOFTTL_API_URL',
@@ -102,9 +116,12 @@ async function main() {
     '/assistant/text',
     '/assistant/voice',
     '/assistant/usage',
+    "credentials: 'include'",
+    'loveSpeechDataUrl',
+    'audio_base64',
   ]) {
     if (!assistantClient.includes(expected)) {
-      throw new Error(`Assistant API client is missing required production wiring: ${expected}`)
+      throw new Error(`Assistant API client is missing required production/L.O.V.E. wiring: ${expected}`)
     }
   }
 
@@ -167,10 +184,10 @@ async function main() {
     }
   }
   if (headers.includes('microphone=()')) {
-    throw new Error('Pages headers disable the ProofTTL voice assistant microphone')
+    throw new Error('Pages headers disable the L.O.V.E. microphone')
   }
 
-  console.log('\nSUCCESS: ProofTTL static export, auth/security routes, product AI quota wiring, floating glass/mobile surfaces, developer docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
+  console.log('\nSUCCESS: ProofTTL static export, auth/security routes, product AI quota wiring, L.O.V.E. voice playback hooks, floating glass/mobile surfaces, developer docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
 }
 
 main().catch((error) => {
