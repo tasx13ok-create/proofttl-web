@@ -5,7 +5,7 @@ const API_URL = process.env.NEXT_PUBLIC_PROOFTTL_API_URL || 'https://proofttl.ta
 
 export const metadata: Metadata = {
   title: 'ProofTTL API Docs — Fact Verification & Expiring Fact Leases',
-  description: 'Developer documentation for ProofTTL: verify source-backed claims, handle x402 payment challenges, read Fact Leases, and integrate expiration-aware evidence into apps and AI agents.',
+  description: 'Developer documentation for ProofTTL: verify source-backed claims, handle x402 payment challenges, read Fact Leases, use the product AI assistant, and integrate expiration-aware evidence into apps and AI agents.',
   robots: { index: true, follow: true },
   openGraph: {
     title: 'ProofTTL API Docs',
@@ -48,58 +48,44 @@ export default function DocsPage() {
       <section className={`${styles.shell} ${styles.mainGrid}`}>
         <article className={styles.panel}>
           <h2>1. Verify a claim</h2>
-          <p>
-            Send a precise claim, a public HTTP(S) source URL, and a TTL. The current protected testnet endpoint is <code>POST /verify</code>.
-          </p>
-          <p>
-            Requests must use <code>application/json</code>. Claims are limited to 1,000 characters and TTLs are currently accepted from 60 to 604,800 seconds.
-          </p>
+          <p>Send a precise claim, a public HTTP(S) source URL, and a TTL. The current protected testnet endpoint is <code>POST /verify</code>.</p>
+          <p>Requests must use <code>application/json</code>. Claims are limited to 1,000 characters and TTLs are currently accepted from 60 to 604,800 seconds.</p>
         </article>
 
         <article className={styles.panel}>
           <h2>2. Handle HTTP 402</h2>
-          <p>
-            An unpaid verification returns HTTP 402 with an x402 v2 <code>PAYMENT-REQUIRED</code> response header. The current testnet price is $0.001 USDC on Base Sepolia.
-          </p>
-          <p>
-            An x402-capable client settles the requirement, retries with <code>PAYMENT-SIGNATURE</code>, and can read settlement metadata from <code>PAYMENT-RESPONSE</code>.
-          </p>
+          <p>An unpaid verification returns HTTP 402 with an x402 v2 <code>PAYMENT-REQUIRED</code> response header. The current testnet price is $0.001 USDC on Base Sepolia.</p>
+          <p>An x402-capable client settles the requirement, retries with <code>PAYMENT-SIGNATURE</code>, and can read settlement metadata from <code>PAYMENT-RESPONSE</code>.</p>
         </article>
 
         <article className={styles.panel}>
           <h2>3. Receive a Fact Lease</h2>
-          <p>
-            A successful verification records the claim, source, evidence, verdict, issue time, expiry, SHA-256 source fingerprint, confidence, verifier, monitoring state, and lease ID.
-          </p>
-          <p>
-            Verdicts are <strong>SUPPORTED</strong>, <strong>CONTRADICTED</strong>, or <strong>UNKNOWN</strong>. Lease states are <strong>ACTIVE</strong>, <strong>REVOKED</strong>, or <strong>EXPIRED</strong>.
-          </p>
+          <p>A successful verification records the claim, source, evidence, verdict, issue time, expiry, SHA-256 source fingerprint, confidence, verifier, monitoring state, and lease ID.</p>
+          <p>Verdicts are <strong>SUPPORTED</strong>, <strong>CONTRADICTED</strong>, or <strong>UNKNOWN</strong>. Lease states are <strong>ACTIVE</strong>, <strong>REVOKED</strong>, or <strong>EXPIRED</strong>.</p>
         </article>
 
         <article className={styles.panel}>
           <h2>4. Read it later</h2>
           <p>Fetch a stored lease by ID without creating another verification:</p>
-          <div className={styles.card} style={{ marginTop: 16 }}>
-            <code>{readExample}</code>
-          </div>
-          <p>
-            Prefer <code>current_status</code> when evaluating the lease now. <code>issued_status</code> preserves the original issuance verdict.
-          </p>
+          <div className={styles.card} style={{ marginTop: 16 }}><code>{readExample}</code></div>
+          <p>Prefer <code>current_status</code> when evaluating the lease now. <code>issued_status</code> preserves the original issuance verdict.</p>
         </article>
 
         <article className={styles.panel}>
           <h2>Automatic monitoring</h2>
-          <p>
-            Active leases are rechecked automatically. If the source changes and ProofTTL can no longer maintain the original verdict, the lease can move to <strong>REVOKED</strong>. A lease reaches <strong>EXPIRED</strong> when its TTL ends.
-          </p>
+          <p>Active leases are rechecked automatically. If the source changes and ProofTTL can no longer maintain the original verdict, the lease can move to <strong>REVOKED</strong>. A lease reaches <strong>EXPIRED</strong> when its TTL ends.</p>
           <p>Public manual reverification is intentionally disabled so callers cannot force unmetered source-fetch and AI work.</p>
         </article>
 
         <article className={styles.panel}>
+          <h2>ProofTTL product AI</h2>
+          <p>The assistant is deliberately product-scoped rather than general-purpose chat. Use <code>POST /assistant/text</code> for typed questions or <code>POST /assistant/voice</code> for short microphone recordings. Both return text.</p>
+          <p>Text chat can send up to six recent bounded conversation messages for useful follow-ups. Text and voice share the same daily free allowance. Read the current anonymous allowance without invoking AI at <code>GET /assistant/usage</code>.</p>
+        </article>
+
+        <article className={styles.panel}>
           <h2>Browser integrations</h2>
-          <p>
-            ProofTTL exposes CORS for the browser x402 flow, including <code>Content-Type</code> and <code>Payment-Signature</code> request headers and the <code>Payment-Required</code>, <code>Payment-Response</code>, and <code>Retry-After</code> response headers.
-          </p>
+          <p>ProofTTL exposes CORS for the browser x402 flow, including <code>Content-Type</code> and <code>Payment-Signature</code> request headers and the <code>Payment-Required</code>, <code>Payment-Response</code>, and <code>Retry-After</code> response headers.</p>
           <p>The public website demo intentionally does not pretend to hold a wallet or payment signature.</p>
         </article>
 
@@ -109,17 +95,17 @@ export default function DocsPage() {
             <li><a href={`${API_URL}/openapi.json`}>OpenAPI 3.1 specification</a></li>
             <li><a href={`${API_URL}/.well-known/proofttl.json`}>ProofTTL discovery document</a></li>
             <li><a href={`${API_URL}/pricing`}>Machine-readable pricing</a></li>
+            <li><a href={`${API_URL}/readiness`}>Deployment readiness</a></li>
+            <li><a href={`${API_URL}/assistant/usage`}>Current assistant usage allowance</a></li>
             <li><a href={`${API_URL}/.well-known/proofttl-keys.json`}>Fact Lease public signing keys</a></li>
-            <li><a href={`${API_URL}/.well-known/proofttl-assistant.json`}>Voice assistant discovery</a></li>
+            <li><a href={`${API_URL}/.well-known/proofttl-assistant.json`}>Product assistant discovery</a></li>
           </ul>
         </article>
 
         <article className={styles.panel}>
           <h2>Current environment</h2>
-          <p>
-            ProofTTL is currently operating on <strong>Base Sepolia testnet</strong>. Mainnet is not enabled. The current public verifier price is $0.001 per Fact Lease issuance in test USDC.
-          </p>
-          <p>No account is required for the public x402 API path.</p>
+          <p>ProofTTL is currently operating on <strong>Base Sepolia testnet</strong>. Mainnet is not enabled. The current public verifier price is $0.001 per Fact Lease issuance in test USDC.</p>
+          <p>No account is required for the public x402 API path. Paid AI membership is not enabled yet.</p>
         </article>
 
         <div className={styles.cta}>
@@ -134,9 +120,7 @@ export default function DocsPage() {
         </div>
       </section>
 
-      <footer className={`${styles.shell} ${styles.footer}`}>
-        ProofTTL · ProofTTL/0.3.1 · Base Sepolia testnet
-      </footer>
+      <footer className={`${styles.shell} ${styles.footer}`}>ProofTTL · ProofTTL/0.3.1 · Base Sepolia testnet</footer>
     </main>
   )
 }
