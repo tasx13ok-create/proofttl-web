@@ -34,10 +34,20 @@ async function main() {
   }
 
   const consolePage = await readFile('out/console/index.html', 'utf8')
-  for (const expected of ['CUSTOMER CONSOLE', 'Talk to ProofTTL Assistant']) {
-    if (!consolePage.includes(expected)) {
+  for (const expected of ['CUSTOMER CONSOLE', 'Talk to ProofTTL Assistant', 'noindex']) {
+    if (!consolePage.toLowerCase().includes(expected.toLowerCase())) {
       throw new Error(`Static console is missing expected content: ${expected}`)
     }
+  }
+
+  const loginPage = await readFile('out/login/index.html', 'utf8')
+  if (!loginPage.toLowerCase().includes('noindex')) {
+    throw new Error('Static login page is missing its noindex directive')
+  }
+
+  const onboardingPage = await readFile('out/onboarding/index.html', 'utf8')
+  if (!onboardingPage.toLowerCase().includes('noindex')) {
+    throw new Error('Static onboarding page is missing its noindex directive')
   }
 
   const solution = await readFile('out/solutions/ai-agent-verification/index.html', 'utf8')
@@ -48,9 +58,12 @@ async function main() {
   }
 
   const robots = await readFile('out/robots.txt', 'utf8')
-  for (const expected of ['Allow: /', 'Disallow: /console/', 'Disallow: /login/']) {
-    if (!robots.includes(expected)) {
-      throw new Error(`robots.txt is missing expected crawl rule: ${expected}`)
+  if (!robots.includes('Allow: /')) {
+    throw new Error('robots.txt must allow crawlers to reach indexable pages and page-level noindex directives')
+  }
+  for (const forbidden of ['Disallow: /console/', 'Disallow: /login/', 'Disallow: /onboarding/']) {
+    if (robots.includes(forbidden)) {
+      throw new Error(`robots.txt blocks a page whose noindex directive must remain crawlable: ${forbidden}`)
     }
   }
 
@@ -65,7 +78,7 @@ async function main() {
     }
   }
 
-  console.log('\nSUCCESS: ProofTTL static export contains all required public/app preview routes, search-intent pages, voice assistant trigger, crawl rules, and Pages security headers.')
+  console.log('\nSUCCESS: ProofTTL static export contains all required public/app preview routes, search-intent pages, voice assistant trigger, page-level noindex rules, crawl rules, and Pages security headers.')
 }
 
 main().catch((error) => {
