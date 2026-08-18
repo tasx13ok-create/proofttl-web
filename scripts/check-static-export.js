@@ -39,14 +39,14 @@ async function main() {
   }
 
   const homepage = await readFile('out/index.html', 'utf8')
-  for (const expected of ['ProofTTL', 'Truth with', 'Sign in', 'Ask L.O.V.E.']) {
+  for (const expected of ['ProofTTL', 'Truth with', 'Sign in', 'Message L.O.V.E.']) {
     if (!homepage.includes(expected)) {
       throw new Error(`Static homepage is missing expected content: ${expected}`)
     }
   }
 
   const consolePage = await readFile('out/console/index.html', 'utf8')
-  for (const expected of ['CUSTOMER CONSOLE', 'SECURITY', 'SECURITY BACKEND LOCKED', 'Ask L.O.V.E.', 'noindex']) {
+  for (const expected of ['CUSTOMER CONSOLE', 'SECURITY', 'SECURITY BACKEND LOCKED', 'Message L.O.V.E.', 'noindex']) {
     if (!consolePage.toLowerCase().includes(expected.toLowerCase())) {
       throw new Error(`Static console is missing expected content: ${expected}`)
     }
@@ -79,7 +79,7 @@ async function main() {
   }
 
   const solution = await readFile('out/solutions/ai-agent-verification/index.html', 'utf8')
-  for (const expected of ['AI Agent', 'ProofTTL', 'Fact Lease', 'Ask L.O.V.E.', '/docs/']) {
+  for (const expected of ['AI Agent', 'ProofTTL', 'Fact Lease', 'Message L.O.V.E.', '/docs/']) {
     if (!solution.includes(expected)) {
       throw new Error(`Static solution page is missing expected content: ${expected}`)
     }
@@ -95,9 +95,9 @@ async function main() {
   const chat = await readFile('components/ProofTTLChatBar.tsx', 'utf8')
   for (const expected of [
     'fetchProofTTLAssistantUsage',
-    "placeholder={remaining === 0 ? 'Free AI limit reached' : 'Ask L.O.V.E.…'}",
+    "placeholder={remaining === 0 ? 'AI limit reached' : 'Message L.O.V.E.…'}",
     'remaining === 0',
-    'Product intelligence',
+    "fullscreen ? 'Listening.' : 'L.O.V.E.'",
     'fullscreen',
     'pttl-chat-mist',
     'AssistantHistoryMessage',
