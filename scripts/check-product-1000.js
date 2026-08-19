@@ -7,6 +7,7 @@ const requiredFiles = [
   'app/page.tsx',
   'app/audit/page.tsx',
   'app/login/page.tsx',
+  'components/AuthLoginPanel.tsx',
   'app/console/page.tsx',
   'app/how-proofttl-works/page.tsx',
   'app/studio/page.tsx',
@@ -23,7 +24,7 @@ for (const relative of requiredFiles) {
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8')
 const layout = read('app/layout.tsx')
 const home = read('app/page.tsx')
-const login = read('app/login/page.tsx')
+const loginPanel = read('components/AuthLoginPanel.tsx')
 const guide = read('app/how-proofttl-works/page.tsx')
 const studio = read('components/StudioWorkbench.tsx')
 const assistant = read('lib/proofttl-assistant.ts')
@@ -32,11 +33,11 @@ const audit = read('app/audit/page.tsx')
 const checks = [
   [layout.includes('TESTNET PREVIEW') && layout.includes('Mainnet disabled'), 'network truth banner'],
   [layout.includes('/trust.html') && layout.includes('/how-proofttl-works/') && layout.includes('/studio/'), 'global trust/guide/studio links'],
-  [home.includes('Claim Stress Test') && home.includes('$129') && home.includes('$500'), 'two-tier commercial offer'],
-  [audit.includes('Claim Stress Test') && audit.includes('Verification Audit'), 'audit offer ladder'],
-  [login.includes('Google') && login.includes('Discord') && /Passkey/i.test(login), 'Google + Discord + passkey login surface'],
+  [/claim stress test/i.test(home) && home.includes('$129') && home.includes('$500'), 'two-tier commercial offer'],
+  [/claim stress test/i.test(audit) && /verification audit/i.test(audit), 'audit offer ladder'],
+  [/Google/i.test(loginPanel) && /Discord/i.test(loginPanel) && /Passkey/i.test(loginPanel), 'Google + Discord + passkey login surface'],
   [/Fact Lease/i.test(guide) && /L\.O\.V\.E\./i.test(guide) && /monitor/i.test(guide), 'full product explainer'],
-  [/MODEL PLAYGROUND/i.test(studio) && /TERMINAL/i.test(studio) && /NO HOST SHELL/i.test(studio), 'Studio model/editor/terminal surface'],
+  [/MODEL PLAYGROUND/i.test(studio) && /TERMINAL/i.test(studio) && /NO HOST SHELL/i.test(studio) && /EXECUTION JOBS/i.test(studio), 'Studio workspace/model/terminal/sandbox boundary'],
   [assistant.includes("'studio'") && assistant.includes("'/studio/'"), 'L.O.V.E. Studio navigation'],
   [assistant.includes('I will not execute arbitrary JavaScript'), 'assistant arbitrary-script refusal'],
 ]
