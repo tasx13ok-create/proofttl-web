@@ -13,14 +13,25 @@
 <main>
   <div class="k">ProofTTL / trust center</div>
   <h1>Proof you can <em>inspect.</em></h1>
-  <p class="lead">Live service health, monitoring status, signing-key discovery, release readiness, verification methodology, and independent Lease verification in one place.</p>
+  <p class="lead">Live service health, customer-authentication posture, monitoring status, signing-key discovery, release readiness, verification methodology, and independent Lease verification in one place.</p>
   <div class="banner"><b>TESTNET PREVIEW</b> — x402 settlement is Base Sepolia test USDC. Mainnet settlement is intentionally disabled.</div>
 
   <div class="grid">
     <section class="card"><h2>API HEALTH</h2><div id="apiState" class="status warn">CHECKING…</div><div id="apiMetrics"></div></section>
+    <section class="card"><h2>CUSTOMER AUTHENTICATION</h2><div id="authState" class="status warn">CHECKING…</div><div id="authMetrics"></div></section>
     <section class="card"><h2>AUTOMATIC MONITORING</h2><div id="monitorState" class="status warn">CHECKING…</div><div id="monitorMetrics"></div></section>
     <section class="card"><h2>CRYPTOGRAPHIC SIGNING</h2><div id="signState" class="status warn">CHECKING…</div><div id="signMetrics"></div></section>
-    <section class="card"><h2>RELEASE READINESS</h2><div id="readyState" class="status warn">CHECKING…</div><div id="readyMetrics"></div></section>
+    <section class="card wide"><h2>RELEASE READINESS</h2><div id="readyState" class="status warn">CHECKING…</div><div id="readyMetrics"></div></section>
+    <section class="card wide">
+      <h2>ACCOUNT SECURITY BOUNDARY</h2>
+      <p class="note">Customer launch requires Google, Discord, and passkey sign-in to be configured. The Trust Center reports the live backend state instead of displaying an enabled login option before its credentials and hostname are deployed.</p>
+      <div class="metric"><span>Primary sign-in</span><b>Google OAuth / Discord OAuth / WebAuthn passkeys</b></div>
+      <div class="metric"><span>Password storage</span><b>No ProofTTL email/password login</b></div>
+      <div class="metric"><span>Sessions</span><b>Secure HttpOnly cookies</b></div>
+      <div class="metric"><span>Request protection</span><b>Trusted-origin allowlist + CSRF protection</b></div>
+      <div class="metric"><span>Account hardening</span><b>TOTP + recovery-code support</b></div>
+      <div class="actions"><a href="/login/">SECURE SIGN IN</a></div>
+    </section>
     <section class="card wide">
       <h2>PUBLIC VERIFICATION SURFACES</h2>
       <p class="note">These tools are intentionally public so a third party does not need a ProofTTL account to inspect the methodology, public key, Lease signature, or service state.</p>
@@ -50,10 +61,11 @@ function rows(items){return items.map(([a,b])=>`<div class="metric"><span>${esc(
 function state(id,ok,text){const n=$(id);n.className='status '+(ok?'ok':'bad');n.textContent=text}
 async function read(path){const r=await fetch(API+path,{cache:'no-store'});const body=await r.json().catch(()=>({}));if(!r.ok)throw new Error(body.message||body.error||`HTTP ${r.status}`);return body}
 async function checkHealth(){try{const h=await read('/health');state('apiState',h.ok===true,h.ok?'OPERATIONAL':'DEGRADED');$('apiMetrics').innerHTML=rows([['Service',h.service],['Version',h.version],['Protocol',h.protocol],['Storage',h.storage?'BOUND':'MISSING'],['AI',h.ai?'BOUND':'MISSING']])}catch(e){state('apiState',false,'UNAVAILABLE');$('apiMetrics').innerHTML=rows([['Error',e.message]])}}
+async function checkAuth(){try{const a=await read('/.well-known/proofttl-auth.json');const ready=Boolean(a.configured&&a.sign_in?.google&&a.sign_in?.discord&&a.sign_in?.passkey);state('authState',ready,ready?'TRUSTED CUSTOMER AUTH READY':'LOCKED UNTIL COMPLETE');$('authMetrics').innerHTML=rows([['Backend',a.configured?'READY':'LOCKED'],['Google',a.sign_in?.google?'READY':'LOCKED'],['Discord',a.sign_in?.discord?'READY':'LOCKED'],['Passkeys',a.sign_in?.passkey?'READY':'LOCKED'],['HttpOnly sessions',a.security?.secure_http_only_sessions?'YES':'NO'],['CSRF protection',a.security?.csrf_protection?'YES':'NO'],['Origin allowlist',a.security?.origin_allowlist?'YES':'NO'],['TOTP',a.security?.totp?'READY':'PENDING'],['Recovery codes',a.security?.recovery_codes?'READY':'PENDING']])}catch(e){state('authState',false,'UNAVAILABLE');$('authMetrics').innerHTML=rows([['Error',e.message]])}}
 async function checkMonitor(){try{const m=await read('/monitor/status');state('monitorState',m.enabled===true,m.enabled?'ACTIVE':'DISABLED');const l=m.last_run||{};$('monitorMetrics').innerHTML=rows([['Schedule',m.schedule],['Last run',l.finished_at||l.started_at||'No persisted run yet'],['Checked',l.checked??'—'],['Revoked',l.revoked??'—'],['Expired',l.expired??'—'],['Errors',l.errors??'—']])}catch(e){state('monitorState',false,'UNAVAILABLE');$('monitorMetrics').innerHTML=rows([['Error',e.message]])}}
 async function checkSigning(){try{const s=await read('/.well-known/proofttl-keys.json');const key=(s.keys||[])[0];state('signState',s.signing_enabled===true,s.signing_enabled?'ENABLED':'DISABLED');$('signMetrics').innerHTML=rows([['Algorithm',key?.crv||'—'],['Key ID',key?.kid||'—'],['Signature schema',s.signature_version],['Attestation schema',s.attestation_version],['Published keys',(s.keys||[]).length]])}catch(e){state('signState',false,'UNAVAILABLE');$('signMetrics').innerHTML=rows([['Error',e.message]])}}
-async function checkReadiness(){try{const r=await read('/readiness');const t=r.testnet||{};state('readyState',t.ready===true,t.ready?'TESTNET READY':'INCOMPLETE');$('readyMetrics').innerHTML=rows([['Environment',r.environment],['Score',t.score!=null?t.score+'%':'—'],['Checks',`${t.passing_checks??'—'} / ${t.total_checks??'—'}`],['Production',r.production?.ready?'READY':'LOCKED'],['Blockers',(r.production?.blockers||[]).join(', ')||'—']])}catch(e){state('readyState',false,'UNAVAILABLE');$('readyMetrics').innerHTML=rows([['Error',e.message]])}}
-Promise.allSettled([checkHealth(),checkMonitor(),checkSigning(),checkReadiness()]);
+async function checkReadiness(){try{const r=await read('/readiness');const t=r.testnet||{};$('readyState').className='status '+(t.ready?'ok':'warn');$('readyState').textContent=t.ready?'TESTNET READY':'INCOMPLETE';$('readyMetrics').innerHTML=rows([['Environment',r.environment],['Score',t.score!=null?t.score+'%':'—'],['Checks',`${t.passing_checks??'—'} / ${t.total_checks??'—'}`],['Trusted customer auth',r.customer_auth?.trusted_customer_auth_ready?'READY':'LOCKED'],['Production',r.production?.ready?'READY':'LOCKED'],['Blockers',(r.production?.blockers||[]).join(', ')||'—']])}catch(e){state('readyState',false,'UNAVAILABLE');$('readyMetrics').innerHTML=rows([['Error',e.message]])}}
+Promise.allSettled([checkHealth(),checkAuth(),checkMonitor(),checkSigning(),checkReadiness()]);
 </script>
 </body>
 </html>
