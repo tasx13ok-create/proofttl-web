@@ -61,7 +61,7 @@ async function main() {
   }
 
   const loginPage = await readFile('out/login/index.html', 'utf8')
-  for (const expected of ['noindex', 'CONTINUE WITH GITHUB', 'TOTP', 'RECOVERY CODES', 'PASSKEYS']) {
+  for (const expected of ['noindex', 'CONTINUE WITH GOOGLE', 'CONTINUE WITH DISCORD', 'CONTINUE WITH PASSKEY', 'TOTP', 'RECOVERY CODES', 'HTTPONLY SESSIONS', 'CSRF PROTECTION']) {
     if (!loginPage.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static login page is missing auth capability content: ${expected}`)
   }
 
@@ -139,7 +139,7 @@ async function main() {
   }
 
   const trustPage = await readFile('out/trust.html', 'utf8')
-  for (const expected of ['Trust Center', 'API HEALTH', 'AUTOMATIC MONITORING', 'CRYPTOGRAPHIC SIGNING', 'RELEASE READINESS', 'Ed25519 signed + SHA-256 hash chained', 'Mainnet settlement is intentionally disabled']) {
+  for (const expected of ['Trust Center', 'API HEALTH', 'CUSTOMER AUTHENTICATION', 'Google OAuth / Discord OAuth / WebAuthn passkeys', 'Secure HttpOnly cookies', 'Trusted-origin allowlist + CSRF protection', 'AUTOMATIC MONITORING', 'CRYPTOGRAPHIC SIGNING', 'RELEASE READINESS', 'Ed25519 signed + SHA-256 hash chained', 'Mainnet settlement is intentionally disabled']) {
     if (!trustPage.includes(expected)) throw new Error(`Trust Center is missing required release/trust behavior: ${expected}`)
   }
 
@@ -195,7 +195,7 @@ async function main() {
   }
   if (headers.includes('microphone=()')) throw new Error('Pages headers disable the L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export, audit offer/sample, auth/security, unified reactive L.O.V.E. voice + Lease context, independent issuance/event-chain verification, lifecycle operations, Trust Center, versioned methodology, public status, docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
+  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export, audit offer/sample, Google/Discord/passkey auth trust, security, unified reactive L.O.V.E. voice + Lease context, independent issuance/event-chain verification, lifecycle operations, Trust Center, versioned methodology, public status, docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
 }
 
 main().catch((error) => {
