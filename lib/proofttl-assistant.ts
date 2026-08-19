@@ -20,6 +20,7 @@ export type AssistantSection =
   | 'login'
   | 'home'
   | 'trust'
+  | 'how-it-works'
   | 'audit'
   | 'audit-status'
   | 'docs'
@@ -121,6 +122,7 @@ const ALLOWED_TARGETS: Readonly<Record<AssistantSection, string>> = Object.freez
   login: '/login/',
   home: '/',
   trust: '/trust.html',
+  'how-it-works': '/how-proofttl-works/',
   audit: '/audit/',
   'audit-status': '/audit/status/',
   docs: '/docs/',
@@ -154,6 +156,7 @@ const LOCAL_NAVIGATION_RULES: NavigationRule[] = [
   { section: 'usage', label: 'Usage', patterns: [/\busage\b/i, /\bactivity\b/i] },
   { section: 'api', label: 'API', patterns: [/\bapi(?:\s+section)?\b/i, /\bapi\s+keys?\b/i] },
   { section: 'trust', label: 'Trust Center', patterns: [/\btrust\s+center\b/i, /\btrust\s+page\b/i] },
+  { section: 'how-it-works', label: 'How ProofTTL Works', patterns: [/\bhow\s+(?:proofttl|this|the\s+site|the\s+website)\s+works?\b/i, /\bhow\s+it\s+works?\b/i, /\bproduct\s+guide\b/i, /\bl\.o\.v\.e\.?\s+guide\b/i, /\blove\s+guide\b/i] },
   { section: 'audit-status', label: 'Audit status', patterns: [/\baudit\s+status\b/i, /\brequest\s+status\b/i] },
   { section: 'audit', label: 'Verification Audit', patterns: [/\bverification\s+audit\b/i, /\bclaim\s+stress\s+test\b/i, /\baudit\s+page\b/i] },
   { section: 'lease-verifier', label: 'Lease verifier', patterns: [/\blease\s+verifier\b/i, /\bverify\s+(?:a\s+)?lease\b/i, /\bsignature\s+verifier\b/i] },
@@ -195,6 +198,10 @@ function clickByAriaLabel(label: string) {
 function resolveLocalLoveCommand(message: string): LocalLoveCommand | null {
   const text = normalizeCommand(message)
   if (!text || text.length > 500) return null
+
+  if (/^(?:how\s+does\s+(?:proofttl|this|the\s+site|the\s+website|love|l\.o\.v\.e\.?)\s+work\??|explain\s+(?:proofttl|the\s+website|the\s+site|love|l\.o\.v\.e\.?)|what\s+does\s+(?:proofttl|love|l\.o\.v\.e\.?)\s+do\??)$/i.test(text)) {
+    return navigationCommand('how-it-works', 'the full ProofTTL guide')
+  }
 
   if (/^(?:close|minimi[sz]e|hide|dismiss)(?:\s+(?:the|this|love|l\.o\.v\.e\.?))?\s+(?:chat|panel|assistant|window)$/i.test(text) || /^(?:close|minimi[sz]e)\s+love$/i.test(text)) {
     return {
