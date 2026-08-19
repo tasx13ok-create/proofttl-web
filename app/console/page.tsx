@@ -1,4 +1,5 @@
 import SecurityCenter from '../../components/SecurityCenter'
+import AccountWorkspacePanel from '../../components/AccountWorkspacePanel'
 import { AccountEntitlementTelemetry, AssistantUsageTelemetry, LeaseTrustTelemetry, ReadinessTelemetry } from '../../components/ConsoleTelemetry'
 
 export const metadata = {
@@ -32,7 +33,7 @@ export default function ConsolePage() {
             <div>
               <p className="app-kicker">PROOFTTL CONSOLE</p>
               <h1>Overview</h1>
-              <p className="app-copy">Public verification is live independently of customer accounts. Live infrastructure, signing, monitoring, and assistant usage are shown below; account-scoped lease/payment history remains locked until ownership can be verified server-side.</p>
+              <p className="app-copy">Public verification remains independently inspectable. Signed-in customer data is now designed around explicit server-side ownership: account preferences, owned audits, and Studio projects are keyed to the Better Auth user ID rather than inferred from a browser or reference alone.</p>
             </div>
             <span className="app-status">TESTNET</span>
           </header>
@@ -106,9 +107,10 @@ export default function ConsolePage() {
             </article>
 
             <article className="console-panel wide" id="account">
-              <h2>ACCOUNT PLAN</h2>
+              <h2>ACCOUNT PLAN + OWNED DATA</h2>
               <AccountEntitlementTelemetry />
-              <p className="app-note">Profile changes, provider linking, account deletion, and payer-wallet ownership remain locked until their server-side authorization flows are complete.</p>
+              <div style={{ marginTop: 18 }}><AccountWorkspacePanel /></div>
+              <p className="app-note">Provider linking, account deletion, payer-wallet ownership, and account-scoped Fact Lease attribution remain locked until their authorization flows are complete.</p>
             </article>
           </div>
         </section>
