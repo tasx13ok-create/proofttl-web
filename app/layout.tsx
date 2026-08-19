@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import ProofTTLAds from '../components/ProofTTLAds'
 import ProofTTLChatBar from '../components/ProofTTLChatBar'
 import ProofTTLSalesCTA from '../components/ProofTTLSalesCTA'
+import AccountPreferenceBridge from '../components/AccountPreferenceBridge'
 import './globals.css'
 import './nav-glass.css'
 import './app-ui.css'
@@ -12,6 +13,7 @@ import './chat-bar.css'
 import './chat-fullscreen.css'
 import './glass-polish.css'
 import './sales-cta.css'
+import './account-preferences.css'
 
 export const metadata: Metadata = {
   title: 'ProofTTL v1.0.0 — Truth with an expiry date',
@@ -39,6 +41,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className="dark">
       <body>
+        <AccountPreferenceBridge />
         <div
           data-proofttl-network-banner="testnet"
           style={{
