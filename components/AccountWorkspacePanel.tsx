@@ -15,13 +15,15 @@ type Preferences = {
 type Audit = {
   intake_id: string
   offer_type?: string
-  company_project?: string
+  company_or_project?: string
   status?: string
-  amount_due_cents?: number
-  amount_paid_cents?: number
+  payment_state?: string
+  amount_due_usd?: number
+  amount_paid_usd?: number
   payment_provider?: string
-  created_at?: string
-  updated_at?: string
+  created_at_ms?: number
+  paid_at_ms?: number
+  fulfilled_at_ms?: number
 }
 
 const defaults: Preferences = {
@@ -48,10 +50,7 @@ export default function AccountWorkspacePanel() {
         fetch(`${API_URL}/account/preferences`, { credentials: 'include', cache: 'no-store' }),
         fetch(`${API_URL}/account/audits`, { credentials: 'include', cache: 'no-store' }),
       ])
-      if (prefsResponse.status === 401 || auditsResponse.status === 401) {
-        setState('signed-out')
-        return
-      }
+      if (prefsResponse.status === 401 || auditsResponse.status === 401) { setState('signed-out'); return }
       if (!prefsResponse.ok || !auditsResponse.ok) throw new Error('Account workspace is not available on this deployment yet.')
       const prefs = await prefsResponse.json() as { preferences?: Preferences }
       const auditData = await auditsResponse.json() as { audits?: Audit[] }
@@ -68,20 +67,18 @@ export default function AccountWorkspacePanel() {
 
   async function patchPreference(patch: Partial<Preferences>) {
     if (state !== 'ready' || saving) return
-    const next = { ...preferences, ...patch }
-    setPreferences(next)
+    const previous = preferences
+    setPreferences({ ...preferences, ...patch })
     setSaving(true)
     setMessage('')
     try {
-      const response = await fetch(`${API_URL}/account/preferences`, {
-        method: 'PATCH', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify(patch),
-      })
+      const response = await fetch(`${API_URL}/account/preferences`, { method: 'PATCH', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify(patch) })
       const body = await response.json().catch(() => ({})) as { preferences?: Preferences; message?: string; error?: string }
       if (!response.ok) throw new Error(body.message || body.error || `HTTP ${response.status}`)
       if (body.preferences) setPreferences(body.preferences)
       setMessage('Preferences saved to your ProofTTL account.')
     } catch (error) {
-      setPreferences(preferences)
+      setPreferences(previous)
       setMessage(error instanceof Error ? error.message : 'Could not save preferences.')
     } finally { setSaving(false) }
   }
@@ -89,21 +86,16 @@ export default function AccountWorkspacePanel() {
   async function claimAudit(event: FormEvent) {
     event.preventDefault()
     const id = intakeId.trim().toLowerCase()
-    if (!/^ati_[a-f0-9]{32}$/.test(id) || saving) {
-      setMessage('Enter a valid ati_ audit reference.')
-      return
-    }
+    if (!/^ati_[a-f0-9]{32}$/.test(id) || saving) { setMessage('Enter a valid ati_ audit reference.'); return }
     setSaving(true)
     setMessage('')
     try {
-      const response = await fetch(`${API_URL}/account/audits`, {
-        method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ intake_id: id }),
-      })
+      const response = await fetch(`${API_URL}/account/audits`, { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ intake_id: id }) })
       const body = await response.json().catch(() => ({})) as { message?: string; error?: string }
       if (!response.ok) throw new Error(body.message || body.error || `HTTP ${response.status}`)
       setIntakeId('')
-      setMessage('Audit linked to your account.')
       await load()
+      setMessage('Audit linked to your account.')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Could not link audit.')
     } finally { setSaving(false) }
@@ -126,8 +118,8 @@ export default function AccountWorkspacePanel() {
     <div>
       <div className="app-empty-meta">OWNED AUDITS</div>
       {audits.length === 0 ? <div className="app-empty"><strong>No audits linked to this account yet.</strong>When an audit was submitted with the same email as your sign-in provider, you can claim it below.</div> : <div className="app-table">
-        <div className="app-table-head"><span>REFERENCE</span><span>STATUS</span><span>PAID</span></div>
-        {audits.map((audit) => <div className="app-table-head" key={audit.intake_id} style={{ textTransform: 'none' }}><span>{audit.intake_id}</span><span>{audit.status || 'received'}</span><span>{audit.amount_paid_cents ? `$${(audit.amount_paid_cents / 100).toFixed(2)}` : '—'}</span></div>)}
+        <div className="app-table-head"><span>REFERENCE</span><span>STATUS</span><span>PAYMENT</span></div>
+        {audits.map((audit) => <div className="app-table-head" key={audit.intake_id} style={{ textTransform: 'none' }}><span>{audit.intake_id}</span><span>{audit.status || 'received'}</span><span>{audit.payment_state === 'paid' ? `$${Number(audit.amount_paid_usd || audit.amount_due_usd || 0).toFixed(2)} paid` : audit.amount_due_usd ? `$${Number(audit.amount_due_usd).toFixed(2)} · ${audit.payment_state || 'pending'}` : audit.payment_state || 'not requested'}</span></div>)}
       </div>}
       <form onSubmit={claimAudit} style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
         <input value={intakeId} onChange={(event) => setIntakeId(event.target.value)} placeholder="ati_…" aria-label="Audit intake reference" style={{ flex: '1 1 280px' }} />
