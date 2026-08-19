@@ -21,6 +21,7 @@ export default function ConsolePage() {
           {nav.map((item, index) => (
             <a className={index === 0 ? 'active' : ''} href={`#${item.toLowerCase().replaceAll(' ', '-')}`} key={item}>{item}</a>
           ))}
+          <a href="/studio/">Studio · Code / Models / Terminal</a>
           <a href="/verify-lease.html">Verify Lease</a>
           <a href="/lease-ops.html">Lease Ops</a>
           <a href="/login/">Sign in / switch account</a>
@@ -88,12 +89,12 @@ export default function ConsolePage() {
             </article>
 
             <article className="console-panel" id="api">
-              <h2>API</h2>
+              <h2>API + STUDIO</h2>
               <div className="app-empty">
-                <div className="app-empty-meta">PUBLIC X402 API</div>
-                <strong>No account API key is required today.</strong>
-                ProofTTL currently protects verification with x402 rather than inventing customer API keys before an account authorization model exists.
+                <div className="app-empty-meta">DEVELOPER SURFACES</div>
+                <strong>Use the public x402 API directly or open Studio for code, model help, and terminal-style commands.</strong>
                 <a className="text-link" href="/docs/">OPEN DEVELOPER DOCS →</a>
+                <a className="text-link" href="/studio/">OPEN PROOFTTL STUDIO →</a>
               </div>
             </article>
 
