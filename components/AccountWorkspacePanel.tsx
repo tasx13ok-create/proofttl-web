@@ -136,7 +136,6 @@ export default function AccountWorkspacePanel() {
       <div className="auth-capability-grid" style={{ marginTop: 8 }}>
         <button type="button" className={preferences.love_voice_enabled ? 'auth-capability live' : 'auth-capability'} onClick={() => void patchPreference({ love_voice_enabled: !preferences.love_voice_enabled })}>L.O.V.E. VOICE {preferences.love_voice_enabled ? 'ON' : 'OFF'}</button>
         <button type="button" className={preferences.love_compact_mode ? 'auth-capability live' : 'auth-capability'} onClick={() => void patchPreference({ love_compact_mode: !preferences.love_compact_mode })}>COMPACT MODE {preferences.love_compact_mode ? 'ON' : 'OFF'}</button>
-        <button type="button" className={preferences.studio_autosave ? 'auth-capability live' : 'auth-capability'} onClick={() => void patchPreference({ studio_autosave: !preferences.studio_autosave })}>STUDIO AUTOSAVE {preferences.studio_autosave ? 'ON' : 'OFF'}</button>
       </div>
       <label className="app-input-label" style={{ display: 'grid', gap: 6, marginTop: 12 }}>PREFERRED STUDIO AI MODEL
         <select value={selectedModel} onChange={(event) => chooseModel(event.target.value)} disabled={saving}>
@@ -144,7 +143,7 @@ export default function AccountWorkspacePanel() {
           {models.map((item) => <option key={`${item.provider}:${item.model}`} value={`${item.provider}::${item.model}`}>{item.provider} · {item.model}</option>)}
         </select>
       </label>
-      <p className="app-note">Only server-approved models appear here. Provider URLs and API keys cannot be supplied through this setting.</p>
+      <p className="app-note">Only server-approved models appear here. Provider URLs and API keys cannot be supplied through this setting. Studio local autosave remains always-on as a safety fallback; cloud saves are explicit.</p>
     </div>
 
     <div>
