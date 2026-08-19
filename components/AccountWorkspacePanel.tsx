@@ -35,6 +35,10 @@ const defaults: Preferences = {
   studio_autosave: true,
 }
 
+function broadcastPreferences(preferences: Preferences) {
+  window.dispatchEvent(new CustomEvent('proofttl-preferences-changed', { detail: preferences }))
+}
+
 export default function AccountWorkspacePanel() {
   const [preferences, setPreferences] = useState<Preferences>(defaults)
   const [models, setModels] = useState<ModelOption[]>([])
@@ -58,7 +62,9 @@ export default function AccountWorkspacePanel() {
       const prefs = await prefsResponse.json() as { preferences?: Preferences }
       const auditData = await auditsResponse.json() as { audits?: Audit[] }
       const modelData = modelsResponse.ok ? await modelsResponse.json() as { catalog?: { cloudflare?: ModelOption[]; openai_compatible?: ModelOption[] } } : {}
-      setPreferences(prefs.preferences || defaults)
+      const applied = prefs.preferences || defaults
+      setPreferences(applied)
+      broadcastPreferences(applied)
       setAudits(Array.isArray(auditData.audits) ? auditData.audits : [])
       setModels([...(modelData.catalog?.cloudflare || []), ...(modelData.catalog?.openai_compatible || [])])
       setState('ready')
@@ -73,17 +79,22 @@ export default function AccountWorkspacePanel() {
   async function patchPreference(patch: Partial<Preferences>) {
     if (state !== 'ready' || saving) return
     const previous = preferences
-    setPreferences({ ...preferences, ...patch })
+    const optimistic = { ...preferences, ...patch }
+    setPreferences(optimistic)
+    broadcastPreferences(optimistic)
     setSaving(true)
     setMessage('')
     try {
       const response = await fetch(`${API_URL}/account/preferences`, { method: 'PATCH', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify(patch) })
       const body = await response.json().catch(() => ({})) as { preferences?: Preferences; message?: string; error?: string }
       if (!response.ok) throw new Error(body.message || body.error || `HTTP ${response.status}`)
-      if (body.preferences) setPreferences(body.preferences)
+      const applied = body.preferences || optimistic
+      setPreferences(applied)
+      broadcastPreferences(applied)
       setMessage('Preferences saved to your ProofTTL account.')
     } catch (error) {
       setPreferences(previous)
+      broadcastPreferences(previous)
       setMessage(error instanceof Error ? error.message : 'Could not save preferences.')
     } finally { setSaving(false) }
   }
