@@ -12,6 +12,7 @@ type Preferences = {
   studio_autosave: boolean
 }
 
+type ModelOption = { provider: string; model: string }
 type Audit = {
   intake_id: string
   offer_type?: string
@@ -36,6 +37,7 @@ const defaults: Preferences = {
 
 export default function AccountWorkspacePanel() {
   const [preferences, setPreferences] = useState<Preferences>(defaults)
+  const [models, setModels] = useState<ModelOption[]>([])
   const [audits, setAudits] = useState<Audit[]>([])
   const [state, setState] = useState<'loading' | 'signed-out' | 'ready' | 'error'>('loading')
   const [message, setMessage] = useState('')
@@ -46,16 +48,19 @@ export default function AccountWorkspacePanel() {
     setState('loading')
     setMessage('')
     try {
-      const [prefsResponse, auditsResponse] = await Promise.all([
+      const [prefsResponse, auditsResponse, modelsResponse] = await Promise.all([
         fetch(`${API_URL}/account/preferences`, { credentials: 'include', cache: 'no-store' }),
         fetch(`${API_URL}/account/audits`, { credentials: 'include', cache: 'no-store' }),
+        fetch(`${API_URL}/assistant/models`, { credentials: 'include', cache: 'no-store' }),
       ])
       if (prefsResponse.status === 401 || auditsResponse.status === 401) { setState('signed-out'); return }
       if (!prefsResponse.ok || !auditsResponse.ok) throw new Error('Account workspace is not available on this deployment yet.')
       const prefs = await prefsResponse.json() as { preferences?: Preferences }
       const auditData = await auditsResponse.json() as { audits?: Audit[] }
+      const modelData = modelsResponse.ok ? await modelsResponse.json() as { catalog?: { cloudflare?: ModelOption[]; openai_compatible?: ModelOption[] } } : {}
       setPreferences(prefs.preferences || defaults)
       setAudits(Array.isArray(auditData.audits) ? auditData.audits : [])
+      setModels([...(modelData.catalog?.cloudflare || []), ...(modelData.catalog?.openai_compatible || [])])
       setState('ready')
     } catch (error) {
       setState('error')
@@ -83,6 +88,13 @@ export default function AccountWorkspacePanel() {
     } finally { setSaving(false) }
   }
 
+  function chooseModel(value: string) {
+    if (!value) { void patchPreference({ preferred_ai_provider: null, preferred_ai_model: null }); return }
+    const [provider, model] = value.split('::')
+    const allowed = models.some((item) => item.provider === provider && item.model === model)
+    if (allowed) void patchPreference({ preferred_ai_provider: provider, preferred_ai_model: model })
+  }
+
   async function claimAudit(event: FormEvent) {
     event.preventDefault()
     const id = intakeId.trim().toLowerCase()
@@ -105,6 +117,8 @@ export default function AccountWorkspacePanel() {
   if (state === 'signed-out') return <div className="app-empty"><div className="app-empty-meta">SIGN IN REQUIRED</div><strong>Your preferences, Studio projects, and audit ownership are designed to follow your ProofTTL account.</strong><a className="text-link" href="/login/">SIGN IN →</a></div>
   if (state === 'error') return <div className="app-empty"><strong>Account workspace is not live yet.</strong>{message}</div>
 
+  const selectedModel = preferences.preferred_ai_provider && preferences.preferred_ai_model ? `${preferences.preferred_ai_provider}::${preferences.preferred_ai_model}` : ''
+
   return <div style={{ display: 'grid', gap: 18 }}>
     <div>
       <div className="app-empty-meta">ACCOUNT PREFERENCES</div>
@@ -113,6 +127,13 @@ export default function AccountWorkspacePanel() {
         <button type="button" className={preferences.love_compact_mode ? 'auth-capability live' : 'auth-capability'} onClick={() => void patchPreference({ love_compact_mode: !preferences.love_compact_mode })}>COMPACT MODE {preferences.love_compact_mode ? 'ON' : 'OFF'}</button>
         <button type="button" className={preferences.studio_autosave ? 'auth-capability live' : 'auth-capability'} onClick={() => void patchPreference({ studio_autosave: !preferences.studio_autosave })}>STUDIO AUTOSAVE {preferences.studio_autosave ? 'ON' : 'OFF'}</button>
       </div>
+      <label className="app-input-label" style={{ display: 'grid', gap: 6, marginTop: 12 }}>PREFERRED STUDIO AI MODEL
+        <select value={selectedModel} onChange={(event) => chooseModel(event.target.value)} disabled={saving}>
+          <option value="">Deployment default</option>
+          {models.map((item) => <option key={`${item.provider}:${item.model}`} value={`${item.provider}::${item.model}`}>{item.provider} · {item.model}</option>)}
+        </select>
+      </label>
+      <p className="app-note">Only server-approved models appear here. Provider URLs and API keys cannot be supplied through this setting.</p>
     </div>
 
     <div>
