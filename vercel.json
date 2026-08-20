@@ -4,6 +4,11 @@
       "source": "/trust.html",
       "destination": "/trust/",
       "permanent": true
+    },
+    {
+      "source": "/lease-ops.html",
+      "destination": "/lease-ops/",
+      "permanent": true
     }
   ]
 }
