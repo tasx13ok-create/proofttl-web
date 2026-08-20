@@ -4,7 +4,7 @@ const root = process.cwd()
 const requiredFiles = [
   'app/page.tsx','app/audit/page.tsx','app/login/page.tsx','components/AuthLoginPanel.tsx','app/console/page.tsx',
   'components/ProductNav.tsx','app/how-proofttl-works/page.tsx','app/workspace/page.tsx','components/WorkspaceDesktopShell.tsx',
-  'app/worlds/page.tsx','components/WorldBuilder.tsx','app/cinematics/page.tsx','components/CinematicsStudio.tsx',
+  'app/worlds/page.tsx','components/WorldBuilder.tsx','app/cinematics/page.tsx','components/CinematicsStudio.tsx','components/LocalCinematicPreview.tsx',
   'components/AssistantRichText.tsx','components/ProofTTLChatBar.tsx','app/trust/page.tsx','components/TrustCenter.tsx',
   'lib/proofttl-capabilities.ts','lib/proofttl-command.ts','lib/proofttl-visuals.ts','app/money/page.tsx','app/work/page.tsx',
   'components/WorkTaskCenter.tsx','app/files/page.tsx','components/FilesCenter.tsx','app/automations/page.tsx','components/AutomationCenter.tsx',
@@ -21,6 +21,7 @@ const workspacePage = read('app/workspace/page.tsx')
 const workspace = read('components/WorkspaceDesktopShell.tsx')
 const worlds = read('components/WorldBuilder.tsx')
 const cinematics = read('components/CinematicsStudio.tsx')
+const localCinematics = read('components/LocalCinematicPreview.tsx')
 const richText = read('components/AssistantRichText.tsx')
 const chat = read('components/ProofTTLChatBar.tsx')
 const trust = read('components/TrustCenter.tsx')
@@ -47,9 +48,10 @@ const checks = [
   [workspacePage.includes('WorkspaceDesktopShell') && !workspacePage.includes('WorkspaceLaunchpad') && !workspacePage.includes('ProofTTLOSWorkspace'), 'Workspace stays sparse instead of duplicating documentation'],
   [workspace.includes('os-activity') && workspace.includes('os-sidebar') && workspace.includes('os-tabs') && workspace.includes('os-terminal') && workspace.includes('os-status'), 'VS Code familiar Workspace shell'],
   [workspace.includes('/studio/') && workspace.includes('/worlds/') && workspace.includes('/cinematics/') && workspace.includes('/files/'), 'Workspace routes to canonical capability pages'],
-  [worlds.includes('LIVE WEBGL PREVIEW') && worlds.includes('GENERATE WORLD') && worlds.includes('EXPORT JSON') && worlds.includes('OrbitControls'), 'real browser Worlds renderer'],
-  [cinematics.includes('CLOUD RENDER · LOCKED') && cinematics.includes('WATERMARK · ON') && cinematics.includes('GENERATE IN CLOUD') && cinematics.includes('TIMELINE') && cinematics.includes('IMPORT WORLD'), 'cloud-first Cinematics director surface'],
-  [cinematics.includes('schema: \'proofttl-cinematic-v1\'') && cinematics.includes('cinematic.json'), 'portable cinematic plan export'],
+  [worlds.includes('LIVE WEBGL PREVIEW') && worlds.includes('GENERATE LOCALLY') && worlds.includes('EXPORT JSON') && worlds.includes('OrbitControls'), 'real browser Worlds renderer'],
+  [cinematics.includes('LOCAL MOVIE · READY') && cinematics.includes('CLOUD AI · OPTIONAL') && cinematics.includes('TIMELINE') && cinematics.includes('IMPORT WORLD') && cinematics.includes('LocalCinematicPreview'), 'local-first Cinematics director surface'],
+  [localCinematics.includes('captureStream') && localCinematics.includes('MediaRecorder') && localCinematics.includes('MeshToonMaterial') && localCinematics.includes('RECORD 12S WEBM'), 'free local cinematic renderer'],
+  [cinematics.includes("schema: 'proofttl-cinematic-v1'") && cinematics.includes('cinematic.json'), 'portable cinematic plan export'],
   [richText.includes('```') && richText.includes('data-love-code-block') && richText.includes('navigator.clipboard.writeText'), 'safe copyable chat code blocks'],
   [chat.includes('AssistantRichText') && chat.includes('LoveVisualStrip') && chat.includes('fetchRelevantVisuals'), 'L.O.V.E. rich answer rendering'],
   [chat.includes('askProofTTLByVoice') && chat.includes('loveSpeechDataUrl') && chat.includes("type LoveState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'awake'"), 'voice and reactive L.O.V.E. preserved'],
