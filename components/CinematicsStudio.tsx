@@ -7,14 +7,14 @@ import { parseCinematicPrompt } from '../cinematics/prompt/PromptParser'
 type Shot = { id: string; name: string; seconds: number; camera: string; note: string }
 
 const STARTER_SHOTS: Shot[] = [
-  { id: 'establish', name: 'Establishing', seconds: 4, camera: '24mm · slow push', note: 'Reveal the environment.' },
-  { id: 'subject', name: 'Subject', seconds: 5, camera: '50mm · tracking', note: 'Follow the subject through frame.' },
-  { id: 'detail', name: 'Impact', seconds: 3, camera: '70mm · impact cut', note: 'Prioritize the strongest contact.' },
+  { id: 'establish', name: 'Establishing', seconds: 4, camera: '24mm · stable wide', note: 'Reveal the environment without creeping forward.' },
+  { id: 'subject', name: 'Subject', seconds: 5, camera: '50mm · tracking', note: 'Follow the subject while preserving distance.' },
+  { id: 'detail', name: 'Impact', seconds: 3, camera: '70mm · impact cut', note: 'Use a short cut for the strongest contact, not a continuous zoom.' },
 ]
 
 export default function CinematicsStudio() {
   const [title, setTitle] = useState('Kitchen fight test')
-  const [prompt, setPrompt] = useState('A tired martial artist enters a dim restaurant kitchen and gets surrounded by three attackers. He blocks a bottle swing, parries a punch, throws one attacker into a metal table, dodges the next attack, then finishes with a spinning kick. Dynamic handheld camera that opens into a wide overhead finale.')
+  const [prompt, setPrompt] = useState('A tired martial artist enters a dim restaurant kitchen and gets surrounded by three attackers. He blocks a bottle swing, parries a punch, throws one attacker into a metal table, dodges the next attack, then finishes with a spinning kick. Stable wide cinematic framing with clean impact cuts and no continuous zoom.')
   const [shots, setShots] = useState<Shot[]>(STARTER_SHOTS)
   const [activeId, setActiveId] = useState(STARTER_SHOTS[0].id)
   const totalSeconds = useMemo(() => shots.reduce((sum, shot) => sum + shot.seconds, 0), [shots])
@@ -52,7 +52,13 @@ export default function CinematicsStudio() {
   return (
     <div className="cine-shell" data-cinematic-version="2">
       <header className="cine-toolbar">
-        <input aria-label="Cinematic title" value={title} onChange={(event) => setTitle(event.target.value)} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flex: '1 1 360px' }}>
+          <a href="/" aria-label="ProofTTL home" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', flexShrink: 0 }}>
+            <img src="/proofttl-logo.png" alt="ProofTTL" style={{ width: 54, height: 42, objectFit: 'contain', display: 'block' }} />
+            <strong style={{ color: '#f8fafc', fontSize: 15, letterSpacing: '-.03em' }}>ProofTTL</strong>
+          </a>
+          <input aria-label="Cinematic title" value={title} onChange={(event) => setTitle(event.target.value)} style={{ minWidth: 180, flex: '1 1 240px' }} />
+        </div>
         <div className="cine-toolbar-actions">
           <span className="cine-pill">LOCAL MOVIE · READY</span>
           <span className="cine-pill">PROMPT PLANNER · V2</span>
@@ -76,7 +82,7 @@ export default function CinematicsStudio() {
             <div className="cine-preview-subject" />
             <div className="cine-frame-corners"><i /><i /><i /><i /></div>
             <div className="cine-watermark">PROOFTTL · DIRECTOR</div>
-            <div className="cine-stage-status"><span>PROMPT PLAN</span><strong>{plan.environment.replaceAll('_', ' ')} · 1 VS {plan.attackers}</strong></div>
+            <div className="cine-stage-status"><span>PROMPT PLAN</span><strong>{plan.environment.replaceAll('_', ' ')} · 1 VS {plan.attackers} · {plan.cameraStyle.toUpperCase()}</strong></div>
           </div>
 
           <div className="cine-prompt">
