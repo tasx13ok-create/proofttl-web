@@ -7,6 +7,7 @@ export const PROOFTTL_API_URL = (
 
 export const ASSISTANT_VOICE_ENDPOINT = `${PROOFTTL_API_URL}/assistant/voice`
 export const ASSISTANT_TEXT_ENDPOINT = `${PROOFTTL_API_URL}/assistant/text`
+export const ASSISTANT_SPEECH_ENDPOINT = `${PROOFTTL_API_URL}/assistant/speech`
 export const ASSISTANT_USAGE_ENDPOINT = `${PROOFTTL_API_URL}/assistant/usage`
 
 export type AssistantSection =
@@ -75,6 +76,7 @@ export type LoveSpeech = {
   audio_base64?: string
   model?: string
   speaker?: string
+  source?: string
 }
 
 export type AssistantHistoryMessage = {
@@ -106,6 +108,8 @@ export type AssistantInference = {
   command_planner?: boolean
   action_id?: string
   action_risk?: string
+  final_response_tts?: boolean
+  tts_error?: string
 }
 
 export type AssistantResponse = {
@@ -133,7 +137,7 @@ const ALLOWED_TARGETS: Readonly<Record<AssistantSection, string>> = Object.freez
   solutions: '/solutions/',
   login: '/login/',
   home: '/',
-  trust: '/trust.html',
+  trust: '/trust/',
   'how-it-works': '/how-proofttl-works/',
   studio: '/studio/',
   workspace: '/workspace/',
@@ -168,7 +172,7 @@ const NAVIGATION_COMMAND_PREFIX = /\b(?:go(?:\s+to)?|open|show|take\s+me(?:\s+to
 
 const LOCAL_NAVIGATION_RULES: NavigationRule[] = [
   { section: 'home', label: 'Home', patterns: [/\bhome(?:\s*page)?\b/i, /\bhomepage\b/i, /\bmain\s*page\b/i] },
-  { section: 'workspace', label: 'Workspace', patterns: [/\bworkspace\b/i, /\bcommand\s+center\b/i, /\bcontrol\s+center\b/i, /\bai\s+os\b/i] },
+  { section: 'workspace', label: 'Workspace', patterns: [/\bworkspace\b/i, /\bcommand\s+center\b/i, /\bcontrol\s+center\b/i, /\bai\s+os\b/i, /\bmain\s+menu\b/i, /\bmain\s+workspace\b/i, /\bdashboard\b/i] },
   { section: 'money', label: 'Money', patterns: [/\bmoney\b/i, /\bfinancial\b/i, /\bbanking\b/i] },
   { section: 'work', label: 'Work', patterns: [/\bwork\b/i, /\bemail\b/i, /\bcalendar\b/i] },
   { section: 'files', label: 'Files', patterns: [/\bfiles?\b/i, /\blibrary\b/i] },
@@ -344,6 +348,40 @@ export async function fetchProofTTLAssistantUsage(signal?: AbortSignal) {
   return body.quota || null
 }
 
+async function requestFinalLoveSpeech(text: string, signal?: AbortSignal): Promise<{ speech?: LoveSpeech; error?: string }> {
+  const clean = text.replace(/\s+/g, ' ').trim().slice(0, 900)
+  if (!clean) return { error: 'empty_response' }
+  try {
+    const response = await fetch(ASSISTANT_SPEECH_ENDPOINT, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ text: clean }),
+      signal,
+    })
+    const body = await response.json().catch(() => ({})) as { speech?: LoveSpeech; message?: string; error?: string }
+    if (!response.ok || !body.speech?.available || !body.speech.audio_base64) return { error: body.message || body.error || `HTTP ${response.status}` }
+    return { speech: body.speech }
+  } catch (caught) {
+    if (signal?.aborted) throw caught
+    return { error: caught instanceof Error ? caught.message : 'tts_request_failed' }
+  }
+}
+
+async function finalizeVoiceResult<T extends { response?: string; inference?: AssistantInference }>(result: T, signal?: AbortSignal) {
+  const finalText = typeof result.response === 'string' ? result.response : ''
+  const spoken = await requestFinalLoveSpeech(finalText, signal)
+  return {
+    ...result,
+    speech: spoken.speech,
+    inference: {
+      ...(result.inference || {}),
+      final_response_tts: Boolean(spoken.speech?.available),
+      ...(spoken.error ? { tts_error: spoken.error } : {}),
+    },
+  }
+}
+
 export async function askProofTTLByVoice(audio: Blob, signal?: AbortSignal) {
   if (!audio.type.toLowerCase().startsWith('audio/')) throw new Error('Microphone recording must have an audio/* content type.')
 
@@ -357,42 +395,39 @@ export async function askProofTTLByVoice(audio: Blob, signal?: AbortSignal) {
 
   if (localCommand) {
     executeLocalCommand(localCommand)
-    return {
+    return finalizeVoiceResult({
       transcript,
       response: localCommand.response,
       action: localCommand.action ? validateAssistantAction(localCommand.action) : null,
       quota: body.quota,
       love: body.love,
-      speech: body.speech,
       context: body.context,
       inference: { ...(body.inference || {}), deterministic_route: true, client_command: true },
-    }
+    }, signal)
   }
 
   const platform = await resolvePlatformCommand(transcript, signal)
   if (platform) {
-    return {
+    return finalizeVoiceResult({
       transcript,
       response: platform.response,
       action: platform.action,
       quota: body.quota,
       love: body.love,
-      speech: undefined,
       context: body.context,
       inference: { ...(body.inference || {}), ...(platform.inference || {}), deterministic_route: true, command_planner: true },
-    }
+    }, signal)
   }
 
-  return {
+  return finalizeVoiceResult({
     transcript,
     response: typeof body.response === 'string' ? body.response : '',
     action: validateAssistantAction(body.action),
     quota: body.quota,
     love: body.love,
-    speech: body.speech,
     context: body.context,
     inference: body.inference,
-  }
+  }, signal)
 }
 
 export async function askProofTTLByText(
@@ -401,7 +436,7 @@ export async function askProofTTLByText(
   signal?: AbortSignal,
 ) {
   const clean = message.replace(/\s+/g, ' ').trim().slice(0, 1200)
-  if (!clean) throw new Error('Enter a ProofTTL question.')
+  if (!clean) throw new Error('Enter a message.')
 
   const localCommand = resolveLocalLoveCommand(clean)
   if (localCommand) {
