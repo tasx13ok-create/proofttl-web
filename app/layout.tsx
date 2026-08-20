@@ -17,23 +17,22 @@ import './sales-cta.css'
 import './account-preferences.css'
 import './product-nav.css'
 import './workspace-polish.css'
+import './workspace-shell.css'
 import './worlds.css'
+import './cinematics.css'
 
 export const metadata: Metadata = {
   title: 'ProofTTL v1.0.0 — Workspace intelligence, verification, and creation',
-  description: 'L.O.V.E. is the intelligence and control layer across ProofTTL Workspace: verification, coding, 3D worlds, files, tasks, automations, integrations, and connected tools.',
+  description: 'L.O.V.E. is the intelligence and control layer across ProofTTL Workspace: verification, coding, 3D worlds, cinematics, files, tasks, automations, integrations, and connected tools.',
   generator: 'ProofTTL v1.0.0',
   openGraph: {
     title: 'ProofTTL v1.0.0 — Workspace intelligence, verification, and creation',
-    description: 'One Workspace for L.O.V.E., verification, coding, 3D worlds, files, tasks, automations, and connected tools.',
+    description: 'One Workspace for L.O.V.E., verification, coding, 3D worlds, cinematics, files, tasks, automations, and connected tools.',
     type: 'website',
   },
 }
 
-export const viewport: Viewport = {
-  colorScheme: 'dark',
-  themeColor: '#0b0f14',
-}
+export const viewport: Viewport = { colorScheme: 'dark', themeColor: '#0b0f14' }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
