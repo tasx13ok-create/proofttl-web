@@ -1,0 +1,124 @@
+.workspace-launchpad {
+  margin-top: 30px;
+  padding: 26px;
+  border: 1px solid rgba(148, 163, 184, .14);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(34, 211, 238, .09), transparent 34%),
+    linear-gradient(180deg, rgba(12, 20, 31, .96), rgba(8, 14, 23, .98));
+  box-shadow: 0 34px 90px rgba(0, 0, 0, .25);
+}
+.workspace-launchpad-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 30px;
+  align-items: end;
+}
+.workspace-launchpad-head h1 {
+  margin: 0;
+  max-width: 850px;
+  font-size: clamp(30px, 4.5vw, 54px);
+  line-height: 1.02;
+  font-weight: 500;
+  letter-spacing: -.04em;
+}
+.workspace-launchpad-head p:not(.app-kicker) {
+  max-width: 850px;
+  margin: 15px 0 0;
+  color: var(--muted-foreground);
+  line-height: 1.65;
+}
+.workspace-readiness-key {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid rgba(148, 163, 184, .12);
+  border-radius: 11px;
+  background: rgba(2, 6, 12, .38);
+  color: #94a3b8;
+  font: 9px 'IBM Plex Mono', ui-monospace, monospace;
+  white-space: nowrap;
+}
+.workspace-readiness-key span { display: flex; align-items: center; gap: 8px; }
+.workspace-readiness-key i { width: 7px; height: 7px; border-radius: 999px; }
+.workspace-readiness-key .ready { background: #22d3ee; box-shadow: 0 0 12px rgba(34, 211, 238, .55); }
+.workspace-readiness-key .locked { background: #f59e0b; }
+.workspace-readiness-key .planned { background: #64748b; }
+.workspace-area-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 24px;
+}
+.workspace-area-card {
+  min-height: 205px;
+  display: flex;
+  flex-direction: column;
+  padding: 17px;
+  border: 1px solid rgba(148, 163, 184, .13);
+  border-radius: 13px;
+  background: rgba(15, 23, 42, .43);
+  color: #e2e8f0;
+  text-decoration: none;
+  transition: transform 170ms ease, border-color 170ms ease, background 170ms ease;
+}
+.workspace-area-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(103, 232, 249, .3);
+  background: rgba(15, 34, 49, .58);
+}
+.workspace-area-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.workspace-area-top small {
+  color: #67e8f9;
+  font: 8px 'IBM Plex Mono', ui-monospace, monospace;
+  letter-spacing: .08em;
+}
+.workspace-area-icon {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(34, 211, 238, .08);
+  color: #a5f3fc;
+  font: 14px 'IBM Plex Mono', ui-monospace, monospace;
+}
+.workspace-area-card > strong { margin-top: 18px; font-size: 17px; font-weight: 550; }
+.workspace-area-card > p { margin: 8px 0 18px; color: #94a3b8; font-size: 12px; line-height: 1.55; }
+.workspace-area-open { margin-top: auto; color: #67e8f9; font: 9px 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .07em; }
+.workspace-prompt-strip {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: 18px;
+  align-items: start;
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid rgba(148, 163, 184, .11);
+  border-radius: 12px;
+  background: rgba(2, 6, 12, .34);
+}
+.workspace-prompt-strip > div:first-child span,
+.workspace-prompt-strip > div:first-child strong { display: block; }
+.workspace-prompt-strip > div:first-child span { color: #67e8f9; font: 8px 'IBM Plex Mono', monospace; letter-spacing: .1em; }
+.workspace-prompt-strip > div:first-child strong { margin-top: 7px; font-size: 12px; line-height: 1.45; font-weight: 500; }
+.workspace-prompt-list { display: flex; gap: 7px; flex-wrap: wrap; }
+.workspace-prompt-list code {
+  padding: 7px 9px;
+  border: 1px solid rgba(148, 163, 184, .1);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, .55);
+  color: #cbd5e1;
+  font-size: 9px;
+}
+@media (max-width: 980px) {
+  .workspace-area-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workspace-launchpad-head { grid-template-columns: 1fr; }
+  .workspace-readiness-key { grid-template-columns: repeat(3, auto); justify-content: start; }
+}
+@media (max-width: 620px) {
+  .workspace-launchpad { padding: 18px; margin-top: 18px; }
+  .workspace-area-grid { grid-template-columns: 1fr; }
+  .workspace-area-card { min-height: 165px; }
+  .workspace-prompt-strip { grid-template-columns: 1fr; }
+  .workspace-readiness-key { grid-template-columns: 1fr; }
+}
