@@ -34,7 +34,7 @@ export default function ProductNav() {
         </a>
         <nav className="product-nav-primary" aria-label="Product">{PRIMARY.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}</nav>
         <div className="product-nav-actions">
-          <div className="product-nav-more"><button type="button" aria-haspopup="true">More</button><div className="product-nav-menu">{SECONDARY.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}<a href="/how-proofttl-works/">How it works</a><a href="/status.html">Status</a></div></div>
+          <div className="product-nav-more"><button type="button" aria-haspopup="true">More</button><div className="product-nav-menu">{SECONDARY.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}<a href="/how-proofttl-works/">How it works</a><a href="/status/">Status</a></div></div>
           <a className="product-nav-signin" href="/login/">Sign in</a>
           <a className="product-nav-workspace" href="/workspace/">Open Workspace <span>→</span></a>
         </div>
