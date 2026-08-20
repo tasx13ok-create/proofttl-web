@@ -16,6 +16,7 @@ import './glass-polish.css'
 import './sales-cta.css'
 import './account-preferences.css'
 import './product-nav.css'
+import './workspace-polish.css'
 
 export const metadata: Metadata = {
   title: 'ProofTTL v1.0.0 — Workspace intelligence, verification, and creation',
