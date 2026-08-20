@@ -1,0 +1,33 @@
+.world-builder { display: grid; gap: 16px; padding-top: 28px; }
+.world-builder-command,
+.world-stage,
+.world-json,
+.world-capabilities article {
+  border: 1px solid rgba(148,163,184,.14);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(15,23,42,.84), rgba(8,13,22,.96));
+}
+.world-builder-command { padding: 24px; display: grid; grid-template-columns: minmax(0, .9fr) minmax(420px, 1.1fr); gap: 26px; align-items: end; }
+.world-builder-command h1 { margin: 0; font-size: clamp(30px,4.2vw,52px); line-height: 1.02; font-weight: 500; letter-spacing: -.04em; }
+.world-builder-command p:not(.app-kicker) { color: var(--muted-foreground); line-height: 1.65; margin: 14px 0 0; }
+.world-builder-command form { display: grid; gap: 10px; }
+.world-builder-command textarea { width: 100%; min-height: 108px; resize: vertical; border: 1px solid rgba(148,163,184,.18); border-radius: 12px; background: rgba(2,6,12,.55); color: #f8fafc; padding: 13px 14px; outline: none; font: 14px/1.55 'IBM Plex Sans', sans-serif; }
+.world-builder-command textarea:focus { border-color: rgba(103,232,249,.5); box-shadow: 0 0 0 3px rgba(34,211,238,.07); }
+.world-builder-command form > div { display: flex; gap: 8px; flex-wrap: wrap; }
+.world-stage { overflow: hidden; min-height: 560px; background: #02040a; box-shadow: 0 30px 90px rgba(0,0,0,.28); }
+.world-stage-head { min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 16px; border-bottom: 1px solid rgba(148,163,184,.12); background: rgba(6,10,17,.94); }
+.world-stage-head span,.world-stage-head small { color: #64748b; font: 8px 'IBM Plex Mono', monospace; letter-spacing: .09em; text-transform: uppercase; }
+.world-stage-head strong { display: block; margin-top: 4px; color: #e2e8f0; font-size: 13px; font-weight: 500; }
+.world-stage-head > div:last-child { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+.world-stage iframe { display: block; width: 100%; height: 500px; border: 0; background: #02040a; }
+.world-json { padding: 22px; display: grid; grid-template-columns: .7fr 1.3fr; gap: 20px; }
+.world-json h2 { margin: 0; font-size: 22px; }
+.world-json p:not(.app-kicker) { color: var(--muted-foreground); line-height: 1.6; }
+.world-json pre { max-height: 420px; margin: 0; overflow: auto; padding: 16px; border: 1px solid rgba(148,163,184,.12); border-radius: 12px; background: #030711; color: #a5f3fc; font: 10px/1.55 'IBM Plex Mono', monospace; }
+.world-capabilities { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; }
+.world-capabilities article { padding: 17px; min-height: 170px; }
+.world-capabilities span { color: #67e8f9; font: 8px 'IBM Plex Mono', monospace; letter-spacing: .1em; }
+.world-capabilities strong { display: block; margin-top: 14px; font-size: 14px; }
+.world-capabilities p { color: #94a3b8; font-size: 11px; line-height: 1.55; }
+@media (max-width: 900px) { .world-builder-command { grid-template-columns: 1fr; } .world-capabilities { grid-template-columns: repeat(2,1fr); } .world-json { grid-template-columns: 1fr; } }
+@media (max-width: 620px) { .world-builder { padding-top: 18px; } .world-builder-command { padding: 18px; } .world-stage { min-height: 470px; } .world-stage iframe { height: 410px; } .world-stage-head { align-items: flex-start; flex-direction: column; } .world-capabilities { grid-template-columns: 1fr; } }
