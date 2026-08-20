@@ -12,6 +12,22 @@ function stateLabel(state: 'live' | 'built_locked' | 'planned') {
   return 'PLANNED'
 }
 
+function localAreaRoute(value: string) {
+  const text = value.toLowerCase().replace(/\s+/g, ' ').trim()
+  const navigation = /\b(?:open|show|go(?:\s+to)?|take\s+me(?:\s+to)?|view|visit|launch)\b/
+  if (!navigation.test(text)) return null
+  const routes: Array<[RegExp, string, string]> = [
+    [/\b(?:workspace|command center|control center|ai os)\b/, '/workspace/', 'Workspace'],
+    [/\b(?:money|financial|banking)\b/, '/money/', 'Money'],
+    [/\b(?:work|email|calendar)\b/, '/work/', 'Work'],
+    [/\b(?:files?|library)\b/, '/files/', 'Files'],
+    [/\bautomations?\b/, '/automations/', 'Automations'],
+    [/\b(?:connections?|integrations?|providers?)\b/, '/connections/', 'Connections'],
+  ]
+  for (const [pattern, route, label] of routes) if (pattern.test(text)) return { route, label }
+  return null
+}
+
 export default function ProofTTLOSWorkspace() {
   const [command, setCommand] = useState('')
   const [answer, setAnswer] = useState('')
@@ -24,6 +40,15 @@ export default function ProofTTLOSWorkspace() {
     event.preventDefault()
     const value = command.trim()
     if (!value || loading) return
+
+    const local = localAreaRoute(value)
+    if (local) {
+      setAnswer(`Opening ${local.label}.`)
+      setCommand('')
+      window.setTimeout(() => window.location.assign(local.route), 350)
+      return
+    }
+
     setLoading(true)
     setAnswer('')
     try {
@@ -58,7 +83,7 @@ export default function ProofTTLOSWorkspace() {
         {answer && <div className="app-empty" style={{ marginTop: 12 }}><div className="app-empty-meta">L.O.V.E.</div><strong>{answer}</strong></div>}
 
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 14 }}>
-          {['Open Studio', 'Show my audits', 'Verify a claim', 'Go to security'].map((sample) => (
+          {['Open Studio', 'Open Money', 'Open Connections', 'Show my audits', 'Verify a claim', 'Go to security'].map((sample) => (
             <button key={sample} type="button" className="text-link" onClick={() => setCommand(sample)}>{sample}</button>
           ))}
         </div>
