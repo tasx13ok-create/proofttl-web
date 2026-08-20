@@ -1,6 +1,7 @@
 'use client'
 
 import { FormEvent, useMemo, useState } from 'react'
+import { askProofTTLByText, assistantNavigationHref } from '../lib/proofttl-assistant'
 import { AREA_META, PROOFTTL_CAPABILITIES, RISK_POLICY, type CapabilityRisk } from '../lib/proofttl-capabilities'
 
 const AREA_ORDER = ['love', 'truth', 'studio', 'money', 'work', 'files', 'automations', 'connections', 'security'] as const
@@ -13,16 +14,31 @@ function stateLabel(state: 'live' | 'built_locked' | 'planned') {
 
 export default function ProofTTLOSWorkspace() {
   const [command, setCommand] = useState('')
+  const [answer, setAnswer] = useState('')
+  const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState<'all' | 'live' | 'built_locked' | 'planned'>('all')
 
   const visible = useMemo(() => filter === 'all' ? PROOFTTL_CAPABILITIES : PROOFTTL_CAPABILITIES.filter((item) => item.state === filter), [filter])
 
-  function submit(event: FormEvent) {
+  async function submit(event: FormEvent) {
     event.preventDefault()
     const value = command.trim()
-    if (!value) return
-    window.dispatchEvent(new CustomEvent('proofttl:love-command', { detail: { message: value } }))
-    setCommand('')
+    if (!value || loading) return
+    setLoading(true)
+    setAnswer('')
+    try {
+      const result = await askProofTTLByText(value, [])
+      setAnswer(result.response || 'L.O.V.E. did not return a response.')
+      if (result.action) {
+        const href = assistantNavigationHref(result.action)
+        if (href) window.setTimeout(() => window.location.assign(href), 450)
+      }
+    } catch (error) {
+      setAnswer(error instanceof Error ? error.message : 'L.O.V.E. is unavailable right now.')
+    } finally {
+      setLoading(false)
+      setCommand('')
+    }
   }
 
   return (
@@ -36,8 +52,10 @@ export default function ProofTTLOSWorkspace() {
 
         <form onSubmit={submit} style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 10, marginTop: 20 }}>
           <input value={command} onChange={(event) => setCommand(event.target.value)} placeholder="Ask L.O.V.E. or enter a command…" aria-label="Universal ProofTTL command" style={{ minHeight: 48 }} />
-          <button className="button button-primary" disabled={!command.trim()}>RUN WITH L.O.V.E. →</button>
+          <button className="button button-primary" disabled={!command.trim() || loading}>{loading ? 'RUNNING…' : 'RUN WITH L.O.V.E. →'}</button>
         </form>
+
+        {answer && <div className="app-empty" style={{ marginTop: 12 }}><div className="app-empty-meta">L.O.V.E.</div><strong>{answer}</strong></div>}
 
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 14 }}>
           {['Open Studio', 'Show my audits', 'Verify a claim', 'Go to security'].map((sample) => (
