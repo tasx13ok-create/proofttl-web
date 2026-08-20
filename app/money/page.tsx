@@ -1,12 +1,18 @@
-import PlatformAreaPage from '../../components/PlatformAreaPage'
+import MoneyCenter from '../../components/MoneyCenter'
 
-export const metadata = { title: 'Money — ProofTTL' }
+export const metadata = {
+  title: 'Money — ProofTTL',
+  description: 'The financial control layer for future connected data, analysis, transfers, bills and confirmation-gated money actions through L.O.V.E.',
+}
 
 export default function MoneyPage() {
-  return <PlatformAreaPage
-    area="money"
-    headline="Financial intelligence first. Regulated money movement later."
-    description="Money is the future financial layer for balances, transactions, spending explanations, cash-flow forecasting, savings rules, bills, and eventually sponsor-bank-backed financial actions through L.O.V.E."
-    connectionNote="ProofTTL does not currently hold customer deposits or claim to be a bank. Financial data and money movement stay locked until approved data, payment, and/or sponsor-bank providers are deliberately integrated with the required compliance controls."
-  />
+  return (
+    <main className="app-page">
+      <div className="app-shell app-topbar">
+        <div><div className="app-meta">MONEY / CONTROL + PERMISSION</div><small style={{ color: 'var(--muted-foreground)' }}>No fake balances · no unconfirmed movement · regulated rails required</small></div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}><a className="text-link" href="/workspace/">WORKSPACE</a><a className="text-link" href="/connections/">CONNECTIONS</a></div>
+      </div>
+      <section className="app-shell" style={{ padding: '28px 0 110px' }}><MoneyCenter /></section>
+    </main>
+  )
 }
