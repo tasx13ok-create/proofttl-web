@@ -11,7 +11,7 @@ export default function WorldsPage() {
       <div className="app-shell app-topbar">
         <div>
           <div className="app-meta">WORLDS / CREATIVE SYSTEM</div>
-          <small style={{ color: 'var(--muted-foreground)' }}>Real WebGL preview · structured scene contract · provider honesty</small>
+          <small style={{ color: 'var(--muted-foreground)' }}>LIVE WEBGL · SCENE SPEC · LOCAL COMPOSITION · PROVIDER-GENERATED ASSETS LOCKED</small>
         </div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           <a className="text-link" href="/studio/">STUDIO</a>
