@@ -1,5 +1,6 @@
 const AREAS = [
   { href: '/studio/', icon: '⌘', label: 'Studio', state: 'LIVE CORE', description: 'Code, models, projects, terminal-style execution and isolated runner jobs.' },
+  { href: '/worlds/', icon: '⬡', label: 'Worlds', state: 'WEBGL LIVE', description: 'Describe environments, render structured 3D scenes, orbit them, and export scene JSON.' },
   { href: '/work/', icon: '✓', label: 'Work', state: 'NATIVE TASKS', description: 'Tasks now; connected mail, calendar and docs plug into the same surface later.' },
   { href: '/files/', icon: '▤', label: 'Files', state: 'NATIVE', description: 'Account-owned text, code, JSON and project artifacts with connected storage later.' },
   { href: '/automations/', icon: '↻', label: 'Automations', state: 'DEFINITIONS LIVE', description: 'Own recurring rules now. Execution remains locked until real provider adapters exist.' },
@@ -11,13 +12,13 @@ const AREAS = [
 
 const PROMPTS = [
   'Open Studio and help me build a website',
+  'Open Worlds and make a cyberpunk alley',
   'Show my tasks and tell me what matters today',
   'Find the file I was working on',
   'Verify this claim before I publish it',
   'Run this JavaScript in the sandbox',
   'Show me an alternator',
   'Deploy this project to Vercel',
-  'Generate a 3D environment for a game level',
 ] as const
 
 export default function WorkspaceLaunchpad() {
@@ -26,7 +27,7 @@ export default function WorkspaceLaunchpad() {
       <div className="workspace-launchpad-head">
         <div>
           <p className="app-kicker">YOUR OPERATING LAYER</p>
-          <h1>One place to ask, build, verify, organize, and connect.</h1>
+          <h1>One place to ask, build, render, verify, organize, and connect.</h1>
           <p>L.O.V.E. is the front door. The cards below are the systems underneath it. Native capabilities work inside ProofTTL; provider-backed actions stay visibly locked until their real connection exists.</p>
         </div>
         <div className="workspace-readiness-key" aria-label="Capability state key">
