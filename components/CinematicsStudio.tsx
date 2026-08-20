@@ -53,9 +53,8 @@ export default function CinematicsStudio() {
     <div className="cine-shell" data-cinematic-version="2">
       <header className="cine-toolbar">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flex: '1 1 360px' }}>
-          <a href="/" aria-label="ProofTTL home" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', flexShrink: 0 }}>
-            <img src="/proofttl-logo.png" alt="ProofTTL" style={{ width: 54, height: 42, objectFit: 'contain', display: 'block' }} />
-            <strong style={{ color: '#f8fafc', fontSize: 15, letterSpacing: '-.03em' }}>ProofTTL</strong>
+          <a href="/" aria-label="ProofTTL home" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
+            <img src="/proofttl-logo-lockup.png" alt="ProofTTL" style={{ width: 150, height: 46, objectFit: 'contain', objectPosition: 'left center', display: 'block' }} />
           </a>
           <input aria-label="Cinematic title" value={title} onChange={(event) => setTitle(event.target.value)} style={{ minWidth: 180, flex: '1 1 240px' }} />
         </div>
