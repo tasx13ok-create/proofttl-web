@@ -45,11 +45,11 @@ export default function CinematicsStudio() {
   }
 
   function exportPlan() {
-    const blob = new Blob([JSON.stringify({ ...plan, schema: 'proofttl-cinematic-v1', title, shotPlan: shots, watermark: true }, null, 2)], { type: 'application/json' })
+    const blob = new Blob([JSON.stringify({ ...plan, schema: 'proofttl-cinematic-v2', title, shotPlan: shots, watermark: true }, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const anchor = document.createElement('a')
     anchor.href = url
-    anchor.download = `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'cinematic'}.cinematic.json`
+    anchor.download = `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'cinematic'}.cinematic-v2.json`
     anchor.click()
     URL.revokeObjectURL(url)
   }
@@ -66,7 +66,7 @@ export default function CinematicsStudio() {
           <span className="cine-pill">LOCAL MOVIE · READY</span>
           <span className="cine-pill">PROMPT PLANNER · V2</span>
           <span className="cine-pill">CLOUD AI · OPTIONAL</span>
-          <button type="button" onClick={exportPlan}>EXPORT PLAN</button>
+          <button type="button" onClick={exportPlan}>EXPORT V2 PLAN</button>
         </div>
       </header>
 
