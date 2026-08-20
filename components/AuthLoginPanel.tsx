@@ -10,6 +10,7 @@ import {
 } from '../lib/proofttl-auth'
 
 const PRIMARY_PROVIDERS: Array<{ id: SocialProvider; label: string }> = [
+  { id: 'github', label: 'GitHub' },
   { id: 'google', label: 'Google' },
   { id: 'discord', label: 'Discord' },
 ]
@@ -70,6 +71,7 @@ export default function AuthLoginPanel() {
   }
 
   const configured = Boolean(discovery?.configured)
+  const githubReady = configured && Boolean(discovery?.sign_in.github)
   const googleReady = configured && Boolean(discovery?.sign_in.google)
   const discordReady = configured && Boolean(discovery?.sign_in.discord)
   const passkeyReady = configured && Boolean(discovery?.sign_in.passkey)
@@ -80,7 +82,7 @@ export default function AuthLoginPanel() {
       <p className="app-kicker">SECURE CUSTOMER ACCESS</p>
       <h1 className="app-title">Sign in without handing ProofTTL a password.</h1>
       <p className="app-copy">
-        Customer access is built around Google, Discord, and passkeys. ProofTTL keeps password/email sign-in disabled so we do not create another reusable password database or pretend an email-delivery channel exists before it does.
+        Customer access supports GitHub, Google, Discord, and passkeys. ProofTTL keeps password/email sign-in disabled so we do not create another reusable password database or pretend an email-delivery channel exists before it does.
       </p>
 
       <div className="provider-grid" aria-label="ProofTTL sign-in providers">
@@ -120,6 +122,7 @@ export default function AuthLoginPanel() {
       <div className="auth-divider">TRUST STATUS</div>
 
       <div className="auth-capability-grid" aria-live="polite">
+        <span className={githubReady ? 'auth-capability live' : 'auth-capability'}>GITHUB {githubReady ? 'READY' : 'LOCKED'}</span>
         <span className={googleReady ? 'auth-capability live' : 'auth-capability'}>GOOGLE {googleReady ? 'READY' : 'LOCKED'}</span>
         <span className={discordReady ? 'auth-capability live' : 'auth-capability'}>DISCORD {discordReady ? 'READY' : 'LOCKED'}</span>
         <span className={passkeyReady ? 'auth-capability live' : 'auth-capability'}>PASSKEYS {passkeyReady ? 'READY' : 'LOCKED'}</span>
@@ -133,15 +136,15 @@ export default function AuthLoginPanel() {
       <div className="onboarding-card" style={{ marginTop: 20 }}>
         <p className="app-kicker">WHAT PROOFTTL TRUSTS</p>
         <p className="app-copy">
-          Google and Discord authenticate through their provider flows. Passkeys use device-bound WebAuthn credentials. ProofTTL sessions are server-managed with secure HttpOnly cookies, a trusted-origin allowlist, CSRF protection, and optional TOTP/recovery-code hardening.
+          GitHub, Google, and Discord authenticate through their provider OAuth flows. Passkeys use device-bound WebAuthn credentials. ProofTTL sessions are server-managed with secure HttpOnly cookies, a trusted-origin allowlist, CSRF protection, and optional TOTP/recovery-code hardening.
         </p>
-        <a className="text-link" href="/trust.html">Inspect the live Trust Center →</a>
+        <a className="text-link" href="/trust/">Inspect the live Trust Center →</a>
       </div>
 
       {loadState === 'loading' && <p className="app-note">Checking the live authentication capabilities…</p>}
       {loadState === 'error' && <p className="app-note"><strong>Authentication discovery is unavailable.</strong> {message}</p>}
       {loadState === 'ready' && !trustedCustomerAuthReady && (
-        <p className="app-note"><strong>Customer authentication is intentionally locked until all three trusted paths are ready:</strong> Google, Discord, and passkeys.</p>
+        <p className="app-note"><strong>Core customer authentication remains locked until Google, Discord, and passkeys are ready.</strong> GitHub is an additional supported OAuth path and reports its own live configuration state above.</p>
       )}
       {message && loadState !== 'error' && <p className="app-note"><strong>Sign-in status:</strong> {message}</p>}
 
