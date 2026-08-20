@@ -3,6 +3,7 @@ import ProofTTLAds from '../components/ProofTTLAds'
 import ProofTTLChatBar from '../components/ProofTTLChatBar'
 import ProofTTLSalesCTA from '../components/ProofTTLSalesCTA'
 import AccountPreferenceBridge from '../components/AccountPreferenceBridge'
+import ProductNav from '../components/ProductNav'
 import './globals.css'
 import './nav-glass.css'
 import './app-ui.css'
@@ -14,14 +15,15 @@ import './chat-fullscreen.css'
 import './glass-polish.css'
 import './sales-cta.css'
 import './account-preferences.css'
+import './product-nav.css'
 
 export const metadata: Metadata = {
-  title: 'ProofTTL v1.0.0 — Truth with an expiry date',
-  description: 'Expiring, source-backed Fact Leases for machines. Verify what a source supports now and monitor whether the evidence changes.',
+  title: 'ProofTTL v1.0.0 — Workspace intelligence, verification, and creation',
+  description: 'L.O.V.E. is the intelligence and control layer across ProofTTL Workspace: verification, coding, files, tasks, automations, integrations, and connected tools.',
   generator: 'ProofTTL v1.0.0',
   openGraph: {
-    title: 'ProofTTL v1.0.0 — Truth with an expiry date',
-    description: 'Expiring, source-backed Fact Leases for machines.',
+    title: 'ProofTTL v1.0.0 — Workspace intelligence, verification, and creation',
+    description: 'One Workspace for L.O.V.E., verification, coding, files, tasks, automations, and connected tools.',
     type: 'website',
   },
 }
@@ -31,49 +33,18 @@ export const viewport: Viewport = {
   themeColor: '#0b0f14',
 }
 
-const trustLinkStyle = {
-  color: '#a5f3fc',
-  textDecoration: 'none',
-  whiteSpace: 'nowrap' as const,
-}
-
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="dark">
       <body>
         <AccountPreferenceBridge />
-        <div
-          data-proofttl-network-banner="testnet"
-          style={{
-            position: 'relative',
-            zIndex: 1300,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 14,
-            flexWrap: 'wrap',
-            padding: '8px 16px',
-            borderBottom: '1px solid rgba(251,191,36,.2)',
-            background: 'rgba(30,22,6,.92)',
-            color: '#fde68a',
-            font: "10px 'IBM Plex Mono', ui-monospace, monospace",
-            letterSpacing: '.08em',
-            textTransform: 'uppercase',
-          }}
-        >
-          <strong>PROOFTTL v1.0.0</strong>
-          <strong>TESTNET PREVIEW</strong>
-          <span>Base Sepolia settlement · Mainnet disabled</span>
+        <div className="product-network-strip" data-proofttl-network-banner="testnet">
+          <strong>PROOFTTL v1.0.0 · TESTNET PREVIEW</strong>
+          <span>Protocol settlement: Base Sepolia · Mainnet disabled</span>
           <span aria-hidden="true">·</span>
-          <a href="/workspace/" style={{ ...trustLinkStyle, fontWeight: 800 }}>OPEN WORKSPACE</a>
-          <a href="/how-proofttl-works/" style={trustLinkStyle}>How It Works</a>
-          <a href="/studio/" style={trustLinkStyle}>Studio</a>
-          <a href="/trust/" style={trustLinkStyle}>Trust Center</a>
-          <a href="/verify-lease.html" style={trustLinkStyle}>Verify Lease</a>
-          <a href="/lease-ops.html" style={trustLinkStyle}>Lease Ops</a>
-          <a href="/methodology.html" style={trustLinkStyle}>Methodology</a>
-          <a href="/status.html" style={trustLinkStyle}>Status</a>
+          <a href="/trust/">Trust boundary</a>
         </div>
+        <ProductNav />
         {children}
         <ProofTTLAds />
         <ProofTTLSalesCTA />
