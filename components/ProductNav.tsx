@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 const PRIMARY = [
   { href: '/workspace/', label: 'Workspace' },
   { href: '/studio/', label: 'Studio' },
+  { href: '/worlds/', label: 'Worlds' },
   { href: '/work/', label: 'Work' },
   { href: '/files/', label: 'Files' },
   { href: '/automations/', label: 'Automations' },
