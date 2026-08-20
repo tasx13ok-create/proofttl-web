@@ -29,7 +29,9 @@ export default function ProductNav() {
   return (
     <header className="product-nav" data-product-nav>
       <div className="product-nav-inner">
-        <a href="/" className="product-brand" aria-label="ProofTTL home"><span className="product-brand-mark">P</span><span>PROOF<b>TTL</b></span></a>
+        <a href="/" className="product-brand" aria-label="ProofTTL home">
+          <img src="/proofttl-logo-lockup.png" alt="ProofTTL" className="product-brand-logo" />
+        </a>
         <nav className="product-nav-primary" aria-label="Product">{PRIMARY.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}</nav>
         <div className="product-nav-actions">
           <div className="product-nav-more"><button type="button" aria-haspopup="true">More</button><div className="product-nav-menu">{SECONDARY.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}<a href="/how-proofttl-works/">How it works</a><a href="/status.html">Status</a></div></div>
