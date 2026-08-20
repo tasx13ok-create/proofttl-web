@@ -1,9 +1,9 @@
 'use client'
 
-import { FormEvent, useMemo, useState } from 'react'
+import { ChangeEvent, FormEvent, useMemo, useState } from 'react'
 
 type SceneObject = { kind: 'box' | 'sphere' | 'cylinder' | 'cone'; x: number; y: number; z: number; sx: number; sy: number; sz: number; color: string; emissive?: string }
-type SceneSpec = { name: string; mood: string; background: string; fog: string; ground: string; camera: [number, number, number]; objects: SceneObject[] }
+type SceneSpec = { schema?: 'proofttl-world-v1'; name: string; mood: string; background: string; fog: string; ground: string; camera: [number, number, number]; objects: SceneObject[] }
 
 const PRESETS: Record<string, SceneSpec> = {
   cyberpunk: { name: 'Neon Alley', mood: 'cyberpunk / night', background: '#02030a', fog: '#070919', ground: '#0b1020', camera: [9, 6, 12], objects: [
@@ -41,11 +41,30 @@ const PRESETS: Record<string, SceneSpec> = {
   ] },
 }
 
+function hash(value: string) { let h = 2166136261; for (let i = 0; i < value.length; i += 1) h = Math.imul(h ^ value.charCodeAt(i), 16777619); return h >>> 0 }
+function rng(seed: number) { let x = seed || 1; return () => { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; return (x >>> 0) / 4294967296 } }
+
 function sceneFromPrompt(prompt: string): SceneSpec {
   const q = prompt.toLowerCase()
   const key = /forest|trees?|woods?|cabin/.test(q) ? 'forest' : /room|interior|apartment|tavern|house|showroom/.test(q) ? 'interior' : /desert|dune|outpost|sand/.test(q) ? 'desert' : /space|orbital|station|moon|planet/.test(q) ? 'space' : 'cyberpunk'
   const base = PRESETS[key]
-  return { ...base, name: prompt.trim().slice(0, 64) || base.name, objects: base.objects.map((item) => ({ ...item })) }
+  const random = rng(hash(prompt))
+  const extras: SceneObject[] = []
+  const count = 3 + Math.floor(random() * 6)
+  for (let i = 0; i < count; i += 1) {
+    extras.push({
+      kind: key === 'forest' ? (i % 2 ? 'cone' : 'cylinder') : key === 'space' ? (i % 2 ? 'sphere' : 'cylinder') : 'box',
+      x: Math.round((random() * 18 - 9) * 10) / 10,
+      y: key === 'forest' ? 1 + random() * 3 : .5 + random() * 2.5,
+      z: Math.round((random() * 18 - 9) * 10) / 10,
+      sx: .4 + random() * 2.5,
+      sy: .8 + random() * 4,
+      sz: .4 + random() * 2.5,
+      color: key === 'forest' ? '#14532d' : key === 'desert' ? '#8b5e3c' : key === 'space' ? '#334155' : '#111827',
+      emissive: key === 'cyberpunk' && random() > .55 ? (random() > .5 ? '#22d3ee' : '#e879f9') : undefined,
+    })
+  }
+  return { schema: 'proofttl-world-v1', ...base, name: prompt.trim().slice(0, 64) || base.name, objects: [...base.objects.map((item) => ({ ...item })), ...extras] }
 }
 
 function sceneDocument(spec: SceneSpec) {
@@ -57,44 +76,35 @@ export default function WorldBuilder() {
   const [prompt, setPrompt] = useState('A rainy neon cyberpunk alley with dark buildings, glowing signs, fog, and a cinematic night atmosphere')
   const [spec, setSpec] = useState<SceneSpec>(() => sceneFromPrompt(prompt))
   const [jsonOpen, setJsonOpen] = useState(false)
+  const [status, setStatus] = useState('LOCAL WORLD READY')
   const previewDocument = useMemo(() => sceneDocument(spec), [spec])
 
-  function generate(event: FormEvent) {
-    event.preventDefault()
-    if (!prompt.trim()) return
-    setSpec(sceneFromPrompt(prompt))
-  }
-
-  function exportJson() {
-    if (typeof window === 'undefined') return
-    const blob = new Blob([JSON.stringify(spec, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const anchor = window.document.createElement('a')
-    anchor.href = url
-    anchor.download = `${spec.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'world'}.scene.json`
-    anchor.click()
-    URL.revokeObjectURL(url)
-  }
+  function generate(event: FormEvent) { event.preventDefault(); if (!prompt.trim()) return; setSpec(sceneFromPrompt(prompt)); setStatus('GENERATED LOCALLY') }
+  function exportJson() { const blob = new Blob([JSON.stringify(spec, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const anchor = document.createElement('a'); anchor.href = url; anchor.download = `${spec.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'world'}.scene.json`; anchor.click(); URL.revokeObjectURL(url) }
+  function saveLocal() { localStorage.setItem('proofttl:world:last', JSON.stringify(spec)); setStatus('SAVED IN THIS BROWSER') }
+  function loadLocal() { const raw = localStorage.getItem('proofttl:world:last'); if (!raw) { setStatus('NO LOCAL WORLD FOUND'); return } try { setSpec(JSON.parse(raw) as SceneSpec); setStatus('LOCAL WORLD RESTORED') } catch { setStatus('LOCAL WORLD INVALID') } }
+  function sendToCinematics() { localStorage.setItem('proofttl:world:cinematics', JSON.stringify(spec)); window.location.href = '/cinematics/' }
+  function importJson(event: ChangeEvent<HTMLInputElement>) { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const next = JSON.parse(String(reader.result || '')) as SceneSpec; if (!next?.name || !Array.isArray(next.objects)) throw new Error('invalid'); setSpec(next); setStatus('WORLD JSON IMPORTED') } catch { setStatus('IMPORT FAILED') } }; reader.readAsText(file); event.target.value = '' }
 
   return (
     <div className="world-builder">
       <section className="world-builder-command">
-        <div><p className="app-kicker">WORLDS / 3D STUDIO</p><h1>Describe a world. Build it in the browser.</h1><p>This first native renderer turns scene intent into a structured, inspectable scene and renders it live. It does not pretend a cloud model created assets when no 3D provider is connected.</p></div>
-        <form onSubmit={generate}><textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={3} maxLength={500} aria-label="Describe a 3D world" /><div><button className="button button-primary">GENERATE WORLD →</button><button className="button button-secondary" type="button" onClick={() => setJsonOpen((value) => !value)}>{jsonOpen ? 'HIDE SCENE JSON' : 'VIEW SCENE JSON'}</button><button className="button button-secondary" type="button" onClick={exportJson}>EXPORT JSON</button></div></form>
+        <div><p className="app-kicker">WORLDS / 3D STUDIO</p><h1>Describe a world. Build it in the browser.</h1><p>ProofTTL now owns the local world contract: procedural composition, live WebGL rendering, project save/load, portable JSON and Cinematics handoff. Cloud generators can become optional adapters later instead of the product dependency.</p></div>
+        <form onSubmit={generate}><textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={3} maxLength={500} aria-label="Describe a 3D world" /><div><button className="button button-primary">GENERATE LOCALLY →</button><button className="button button-secondary" type="button" onClick={saveLocal}>SAVE</button><button className="button button-secondary" type="button" onClick={loadLocal}>LOAD</button><label className="button button-secondary">IMPORT JSON<input hidden type="file" accept="application/json,.json" onChange={importJson} /></label><button className="button button-secondary" type="button" onClick={() => setJsonOpen((value) => !value)}>{jsonOpen ? 'HIDE JSON' : 'VIEW JSON'}</button><button className="button button-secondary" type="button" onClick={exportJson}>EXPORT JSON</button><button className="button button-secondary" type="button" onClick={sendToCinematics}>SEND TO CINEMATICS</button></div></form>
       </section>
 
       <section className="world-stage">
-        <div className="world-stage-head"><div><span>LIVE WEBGL PREVIEW</span><strong>{spec.name}</strong></div><div><small>{spec.mood}</small><small>{spec.objects.length} OBJECTS</small><small>ORBIT / ZOOM ENABLED</small></div></div>
+        <div className="world-stage-head"><div><span>LIVE WEBGL PREVIEW</span><strong>{spec.name}</strong></div><div><small>{spec.mood}</small><small>{spec.objects.length} OBJECTS</small><small>{status}</small><small>ORBIT / ZOOM ENABLED</small></div></div>
         <iframe title={`3D preview: ${spec.name}`} srcDoc={previewDocument} sandbox="allow-scripts" />
       </section>
 
-      {jsonOpen && <section className="world-json"><div><p className="app-kicker">SCENE SPEC</p><h2>Portable by design.</h2><p>The renderer consumes structured scene data rather than hiding the world inside model output. Cloud generation, game-engine export, asset generation and project save can build on the same contract.</p></div><pre>{JSON.stringify(spec, null, 2)}</pre></section>}
+      {jsonOpen && <section className="world-json"><div><p className="app-kicker">SCENE SPEC</p><h2>Portable by design.</h2><p>This scene is native ProofTTL data. We can progressively add asset generation, terrain, materials, characters, animation, physics and game-engine exports without changing the core project format.</p></div><pre>{JSON.stringify(spec, null, 2)}</pre></section>}
 
       <section className="world-capabilities">
-        <article><span>NOW</span><strong>Procedural scene composition</strong><p>Prompt-selected world presets, lighting, fog, geometry, camera, orbit controls and scene JSON.</p></article>
-        <article><span>NEXT ADAPTER</span><strong>L.O.V.E. scene planning</strong><p>A connected model can generate the same bounded scene schema instead of choosing from local presets.</p></article>
-        <article><span>PROVIDER RAIL</span><strong>Generated assets</strong><p>Meshes, textures, image references and animation stay locked until a real generation provider is connected.</p></article>
-        <article><span>EXPORT RAIL</span><strong>Games and projects</strong><p>The scene contract is designed to grow toward Three.js, Godot and other project/export adapters.</p></article>
+        <article><span>WORKING NOW</span><strong>Prompt → procedural world</strong><p>Deterministic prompt-driven composition, lighting, fog, geometry, camera, orbit controls and live WebGL.</p></article>
+        <article><span>WORKING NOW</span><strong>Native projects</strong><p>Save and restore worlds locally, import/export portable scene JSON and keep the project independent from paid APIs.</p></article>
+        <article><span>WORKING NOW</span><strong>Cinematics handoff</strong><p>A world can be handed directly into ProofTTL Cinematics as the basis for shot planning and future camera paths.</p></article>
+        <article><span>BUILDING UP</span><strong>Marble-class generation</strong><p>Terrain, generated meshes, textures, spatial editing, characters, animation and richer scene synthesis can be layered onto this native engine.</p></article>
       </section>
     </div>
   )
