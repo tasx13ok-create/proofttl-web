@@ -11,11 +11,13 @@ import {
   type AssistantNavigationAction,
   type AssistantHistoryMessage,
 } from '../lib/proofttl-assistant'
+import { fetchRelevantVisuals, type LoveVisual } from '../lib/proofttl-visuals'
 import love from './LoveEntity.module.css'
 
 type Message = {
   role: 'user' | 'assistant'
   text: string
+  visuals?: LoveVisual[]
 }
 
 type LeasePreview = {
@@ -86,7 +88,7 @@ function LoveEntity({ state, offset, formation }: { state: LoveState; offset: { 
     <div className={love.stage} data-state={state} style={style} aria-hidden="true">
       <div className={`${love.shard} ${love.shardA}`}>signal<strong>{state === 'listening' ? 'microphone live' : 'conversation online'}</strong></div>
       <div className={`${love.shard} ${love.shardB}`}>response model<strong>granite micro</strong></div>
-      <div className={`${love.shard} ${love.shardC}`}>truth layer<strong>{formation}</strong></div>
+      <div className={`${love.shard} ${love.shardC}`}>grounding<strong>{formation}</strong></div>
       <div className={`${love.shard} ${love.shardD}`}>improvement loop<strong>MIRA observing</strong></div>
       <div className={love.core}>
         <div className={love.orbit} />
@@ -140,6 +142,39 @@ function FactLeaseCard({ lease }: { lease: LeasePreview }) {
   )
 }
 
+function LoveVisualStrip({ visuals }: { visuals: LoveVisual[] }) {
+  if (!visuals.length) return null
+  return (
+    <div data-love-visuals="grounded" style={{ marginTop: 10 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'center', marginBottom: 7 }}>
+        <span style={{ fontSize: 10, letterSpacing: '.12em', fontFamily: 'ui-monospace, monospace', color: '#a5f3fc' }}>RELEVANT VISUALS</span>
+        <span style={{ fontSize: 9, color: '#64748b', fontFamily: 'ui-monospace, monospace' }}>SOURCED · WIKIMEDIA COMMONS</span>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(135px,1fr))', gap: 8 }}>
+        {visuals.map((visual, index) => (
+          <a
+            key={`${visual.source_url}-${index}`}
+            href={visual.source_url}
+            target="_blank"
+            rel="noreferrer noopener"
+            style={{ display: 'block', minWidth: 0, border: '1px solid rgba(148,163,184,.14)', borderRadius: 10, overflow: 'hidden', textDecoration: 'none', background: 'rgba(2,8,14,.72)' }}
+          >
+            <img
+              src={visual.image_url}
+              alt={visual.alt || visual.title}
+              loading="lazy"
+              decoding="async"
+              style={{ width: '100%', height: 120, objectFit: 'cover', display: 'block', background: '#020617' }}
+            />
+            <span style={{ display: 'block', padding: '7px 8px 3px', color: '#dbeafe', fontSize: 10, lineHeight: 1.25, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{visual.title}</span>
+            <span style={{ display: 'block', padding: '0 8px 7px', color: '#64748b', fontSize: 9, lineHeight: 1.2 }}>{visual.license ? `${visual.source_name} · ${visual.license}` : visual.source_name}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 async function inspectLeaseFromMessage(message: string, signal: AbortSignal): Promise<LeasePreview | null> {
   const match = message.match(LEASE_ID_PATTERN)
   if (!match) return null
@@ -179,6 +214,16 @@ async function inspectLeaseFromMessage(message: string, signal: AbortSignal): Pr
   }
 }
 
+async function visualsFromMessage(message: string, signal: AbortSignal): Promise<LoveVisual[]> {
+  try {
+    const result = await fetchRelevantVisuals(message, signal)
+    return result?.visuals || []
+  } catch {
+    if (signal.aborted) return []
+    return []
+  }
+}
+
 export default function ProofTTLChatBar() {
   const [value, setValue] = useState('')
   const [messages, setMessages] = useState<Message[]>([])
@@ -191,7 +236,7 @@ export default function ProofTTLChatBar() {
   const [entityOffset, setEntityOffset] = useState({ x: 0, y: 0 })
   const [voicePhase, setVoicePhase] = useState<VoicePhase>('idle')
   const [voiceError, setVoiceError] = useState('')
-  const [formation, setFormation] = useState('ProofTTL grounded')
+  const [formation, setFormation] = useState('context active')
   const [leasePreview, setLeasePreview] = useState<LeasePreview | null>(null)
 
   const abortRef = useRef<AbortController | null>(null)
@@ -298,28 +343,31 @@ export default function ProofTTLChatBar() {
     setValue('')
     setMessages((current) => [...current, { role: 'user', text: message }])
     setLoading(true)
-    setFormation(hasLeaseId ? 'Fact Lease lock acquiring' : /verify|claim|source|lease/i.test(message) ? 'verification forming' : 'ProofTTL grounded')
+    setFormation(hasLeaseId ? 'Fact Lease lock acquiring' : /verify|claim|source|lease/i.test(message) ? 'verification forming' : 'reasoning')
 
     abortRef.current?.abort()
     const controller = new AbortController()
     abortRef.current = controller
 
     try {
-      const [result, inspectedLease] = await Promise.all([
+      const [result, inspectedLease, visuals] = await Promise.all([
         askProofTTLByText(message, history, controller.signal),
         inspectLeaseFromMessage(message, controller.signal),
+        visualsFromMessage(message, controller.signal),
       ])
       updateQuota(result.quota)
       if (inspectedLease) setLeasePreview(inspectedLease)
-      setMessages((current) => [...current, { role: 'assistant', text: result.response || 'I missed that one. Try it again.' }])
+      setMessages((current) => [...current, { role: 'assistant', text: result.response || 'I missed that one. Try it again.', ...(visuals.length ? { visuals } : {}) }])
 
       const grounded = Boolean(result.context?.lease_grounding?.found || inspectedLease?.found)
       if (grounded && inspectedLease) {
         setFormation(`${inspectedLease.lease_state || 'LEASE'} · ${inspectedLease.current_status || inspectedLease.issued_status || 'UNKNOWN'}`)
       } else if (result.context?.lease_grounding?.requested && !result.context.lease_grounding.found) {
         setFormation('Fact Lease not found')
+      } else if (visuals.length) {
+        setFormation('visual references sourced')
       } else {
-        setFormation(result.action ? 'navigation resolved' : 'response grounded')
+        setFormation(result.action ? 'navigation resolved' : 'response ready')
       }
 
       const action = result.action as AssistantNavigationAction | null
@@ -330,7 +378,7 @@ export default function ProofTTLChatBar() {
     } catch (caught) {
       if (controller.signal.aborted) return
       const text = caught instanceof Error ? caught.message : 'L.O.V.E. is unavailable right now.'
-      if (/ProofTTL AI limit/i.test(text)) setRemaining(0)
+      if (/AI limit/i.test(text)) setRemaining(0)
       setMessages((current) => [...current, { role: 'assistant', text }])
       setFormation('signal interrupted')
     } finally {
@@ -429,9 +477,12 @@ export default function ProofTTLChatBar() {
       if (operationId !== voiceOperationRef.current) return
       updateQuota(result.quota)
 
+      const visuals = result.transcript ? await visualsFromMessage(result.transcript, controller.signal) : []
+      if (operationId !== voiceOperationRef.current) return
+
       if (result.transcript) setMessages((current) => [...current, { role: 'user', text: result.transcript }])
-      if (result.response) setMessages((current) => [...current, { role: 'assistant', text: result.response }])
-      setFormation(result.action ? 'navigation resolved' : 'voice response grounded')
+      if (result.response) setMessages((current) => [...current, { role: 'assistant', text: result.response, ...(visuals.length ? { visuals } : {}) }])
+      setFormation(result.action ? 'navigation resolved' : visuals.length ? 'visual references sourced' : 'voice response ready')
 
       const speechUrl = loveSpeechDataUrl(result.speech)
       if (speechUrl) {
@@ -527,7 +578,7 @@ export default function ProofTTLChatBar() {
         <div className="pttl-chat-transcript" aria-live="polite" style={fullscreen ? { position: 'relative', zIndex: 2 } : undefined}>
           <div className="pttl-chat-transcript-head">
             <div className="pttl-chat-identity">
-              <span className="pttl-chat-kicker">L.O.V.E. / PROOFTTL AI</span>
+              <span className="pttl-chat-kicker">L.O.V.E. / WORKSPACE AI</span>
               <strong>L.O.V.E.</strong>
               {fullscreen && <small>{statusLabel}</small>}
             </div>
@@ -538,12 +589,13 @@ export default function ProofTTLChatBar() {
             </div>
           </div>
           <div ref={messagesRef} className="pttl-chat-messages">
-            {messages.length === 0 && <p className="pttl-chat-empty">Say hi, ask a question, paste a Fact Lease ID, or use the microphone and talk to L.O.V.E.</p>}
+            {messages.length === 0 && <p className="pttl-chat-empty">Ask anything, request a visual, paste a Fact Lease ID, or use the microphone and talk to L.O.V.E.</p>}
             {leasePreview && <FactLeaseCard lease={leasePreview} />}
             {messages.map((message, index) => (
               <div key={`${message.role}-${index}`} className={`pttl-chat-message ${message.role}`}>
                 <span>{message.role === 'user' ? 'YOU' : 'L.O.V.E.'}</span>
                 <p>{message.text}</p>
+                {message.role === 'assistant' && message.visuals?.length ? <LoveVisualStrip visuals={message.visuals} /> : null}
               </div>
             ))}
             {(loading || voicePhase === 'processing') && <div className="pttl-chat-thinking"><i /><i /><i /></div>}
