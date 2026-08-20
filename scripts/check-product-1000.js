@@ -12,6 +12,14 @@ const requiredFiles = [
   'components/AccountWorkspacePanel.tsx',
   'components/AccountPreferenceBridge.tsx',
   'app/how-proofttl-works/page.tsx',
+  'app/workspace/page.tsx',
+  'components/ProofTTLOSWorkspace.tsx',
+  'lib/proofttl-capabilities.ts',
+  'app/money/page.tsx',
+  'app/work/page.tsx',
+  'app/files/page.tsx',
+  'app/automations/page.tsx',
+  'app/connections/page.tsx',
   'app/studio/page.tsx',
   'components/ProofTTLChatBar.tsx',
   'components/StudioWorkbench.tsx',
@@ -31,6 +39,8 @@ const loginPanel = read('components/AuthLoginPanel.tsx')
 const accountWorkspace = read('components/AccountWorkspacePanel.tsx')
 const preferenceBridge = read('components/AccountPreferenceBridge.tsx')
 const guide = read('app/how-proofttl-works/page.tsx')
+const workspace = read('components/ProofTTLOSWorkspace.tsx')
+const capabilities = read('lib/proofttl-capabilities.ts')
 const studio = read('components/StudioWorkbench.tsx')
 const runner = read('components/StudioRunnerPanel.tsx')
 const assistant = read('lib/proofttl-assistant.ts')
@@ -38,11 +48,14 @@ const audit = read('app/audit/page.tsx')
 
 const checks = [
   [layout.includes('TESTNET PREVIEW') && layout.includes('Mainnet disabled'), 'network truth banner'],
-  [layout.includes('/trust.html') && layout.includes('/how-proofttl-works/') && layout.includes('/studio/'), 'global trust/guide/studio links'],
+  [layout.includes('/trust.html') && layout.includes('/how-proofttl-works/') && layout.includes('/studio/') && layout.includes('/workspace/'), 'global trust/guide/studio/workspace links'],
   [/claim stress test/i.test(home) && home.includes('$129') && home.includes('$500'), 'two-tier commercial offer'],
   [/claim stress test/i.test(audit) && /verification audit/i.test(audit), 'audit offer ladder'],
   [/Google/i.test(loginPanel) && /Discord/i.test(loginPanel) && /Passkey/i.test(loginPanel), 'Google + Discord + passkey login surface'],
   [/Fact Lease/i.test(guide) && /L\.O\.V\.E\./i.test(guide) && /monitor/i.test(guide), 'full product explainer'],
+  [/Don.t choose an app/i.test(workspace) && workspace.includes('askProofTTLByText') && /PERMISSION MODEL/i.test(workspace), 'universal L.O.V.E. command workspace'],
+  [capabilities.includes("'money'") && capabilities.includes("'work'") && capabilities.includes("'files'") && capabilities.includes("'automations'") && capabilities.includes("'connections'"), 'cross-platform capability map'],
+  [capabilities.includes('MONEY / SEND / DELETE / SECURITY') && capabilities.includes('Explicit user confirmation'), 'sensitive-action permission policy'],
   [/MODEL PLAYGROUND/i.test(studio) && /TERMINAL/i.test(studio) && /NO HOST SHELL/i.test(studio) && /EXECUTION JOBS/i.test(studio), 'Studio workspace/model/terminal/sandbox boundary'],
   [studio.includes('/studio/projects') && /CREATE CLOUD PROJECT/i.test(studio) && /LOCAL FALLBACK/i.test(studio), 'Studio authenticated cloud sync with local fallback'],
   [runner.includes('/studio/run') && runner.includes('/studio/runner') && /production secrets/i.test(runner) && /PowerShell execution stays disabled/i.test(runner), 'Studio isolated runner truth surface'],
