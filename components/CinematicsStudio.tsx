@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import LocalCinematicPreview from './LocalCinematicPreview'
 
 type Shot = { id: string; name: string; seconds: number; camera: string; note: string }
 
@@ -12,7 +13,7 @@ const STARTER_SHOTS: Shot[] = [
 
 export default function CinematicsStudio() {
   const [title, setTitle] = useState('Untitled cinematic')
-  const [prompt, setPrompt] = useState('A rainy neon alley at night. Slow cinematic camera movement, fog, reflections, a lone figure crossing frame.')
+  const [prompt, setPrompt] = useState('A stylized martial-arts duel in a moody neon courtyard. Graphic shadows, painterly low-poly forms, fast hand-to-hand choreography, dramatic camera movement.')
   const [shots, setShots] = useState<Shot[]>(STARTER_SHOTS)
   const [activeId, setActiveId] = useState(STARTER_SHOTS[0].id)
   const totalSeconds = useMemo(() => shots.reduce((sum, shot) => sum + shot.seconds, 0), [shots])
@@ -51,11 +52,13 @@ export default function CinematicsStudio() {
       <header className="cine-toolbar">
         <input aria-label="Cinematic title" value={title} onChange={(event) => setTitle(event.target.value)} />
         <div className="cine-toolbar-actions">
-          <span className="cine-pill">CLOUD RENDER · LOCKED</span>
-          <span className="cine-pill">WATERMARK · ON</span>
+          <span className="cine-pill">LOCAL MOVIE · READY</span>
+          <span className="cine-pill">CLOUD AI · OPTIONAL</span>
           <button type="button" onClick={exportPlan}>EXPORT PLAN</button>
         </div>
       </header>
+
+      <LocalCinematicPreview prompt={prompt} />
 
       <div className="cine-main">
         <aside className="cine-sidebar">
@@ -69,13 +72,13 @@ export default function CinematicsStudio() {
             <div className="cine-preview-grid" />
             <div className="cine-preview-subject" />
             <div className="cine-frame-corners"><i /><i /><i /><i /></div>
-            <div className="cine-watermark">PROOFTTL · PREVIEW</div>
-            <div className="cine-stage-status"><span>LOCAL DIRECTOR PREVIEW</span><strong>{active?.name}</strong></div>
+            <div className="cine-watermark">PROOFTTL · DIRECTOR</div>
+            <div className="cine-stage-status"><span>SHOT BLOCKING PREVIEW</span><strong>{active?.name}</strong></div>
           </div>
 
           <div className="cine-prompt">
             <textarea aria-label="Describe the cinematic" value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={2} maxLength={900} />
-            <button type="button" disabled title="Connect a cloud cinematic provider first">GENERATE IN CLOUD</button>
+            <button type="button" onClick={() => setPrompt((value) => value.trim())}>APPLY TO LOCAL TAKE</button>
           </div>
 
           <div className="cine-timeline">
@@ -93,11 +96,11 @@ export default function CinematicsStudio() {
           <label>CAMERA<input value={active?.camera || ''} onChange={(event) => updateActive({ camera: event.target.value })} /></label>
           <label>DIRECTOR NOTE<textarea rows={5} value={active?.note || ''} onChange={(event) => updateActive({ note: event.target.value })} /></label>
           <button className="cine-danger" type="button" onClick={removeActive} disabled={shots.length <= 1}>REMOVE SHOT</button>
-          <div className="cine-provider-card"><span>RENDER PROVIDERS</span><strong>WORLD LABS / MARBLE</strong><small>World generation rail</small><strong>CINEMATIC VIDEO / GPU</strong><small>Not connected</small><a href="/connections/">OPEN CONNECTIONS →</a></div>
+          <div className="cine-provider-card"><span>RENDER PATHS</span><strong>LOCAL PROCEDURAL ENGINE</strong><small>Ready now · no paid provider</small><strong>CLOUD VIDEO / GPU</strong><small>Optional later</small><a href="/worlds/">OPEN WORLDS →</a></div>
         </aside>
       </div>
 
-      <footer className="cine-statusbar"><span>☁ Cloud-first pipeline</span><span>Local device: director UI only</span><span>Heavy generation: provider jobs</span><span>Export policy: watermarked preview</span></footer>
+      <footer className="cine-statusbar"><span>◉ Local movie engine ready</span><span>Browser-rendered WebM export</span><span>Cloud generation optional</span><span>Stylized 3D pipeline</span></footer>
     </div>
   )
 }
