@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { authClient, PROOFTTL_API_URL } from '../lib/proofttl-auth'
 
@@ -48,9 +48,11 @@ function prettyPlan(value?: string) {
 
 export default function ProductNav() {
   const pathname = usePathname()
+  const accountRef = useRef<HTMLDivElement | null>(null)
   const [user, setUser] = useState<SessionUser | null>(null)
   const [quota, setQuota] = useState<Quota | null>(null)
   const [accountOpen, setAccountOpen] = useState(false)
+  const [accountLoading, setAccountLoading] = useState(true)
 
   useEffect(() => {
     let cancelled = false
@@ -80,6 +82,8 @@ export default function ProductNav() {
           setUser(null)
           setQuota(null)
         }
+      } finally {
+        if (!cancelled) setAccountLoading(false)
       }
     }
 
@@ -92,6 +96,24 @@ export default function ProductNav() {
     }
   }, [pathname])
 
+  useEffect(() => {
+    if (!accountOpen) return
+    const onPointerDown = (event: PointerEvent) => {
+      if (!accountRef.current?.contains(event.target as Node)) setAccountOpen(false)
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setAccountOpen(false)
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [accountOpen])
+
+  useEffect(() => setAccountOpen(false), [pathname])
+
   const username = useMemo(() => {
     if (!user) return ''
     const name = String(user.name || '').trim()
@@ -100,10 +122,12 @@ export default function ProductNav() {
     return email ? email.split('@')[0] : 'Account'
   }, [user])
 
+  const initial = useMemo(() => username.trim().charAt(0).toUpperCase() || 'P', [username])
+
   const usedPercent = useMemo(() => {
     const used = Number(quota?.used)
     const limit = Number(quota?.limit)
-    if (!Number.isFinite(used) || !Number.isFinite(limit) || limit <= 0) return null
+    if (!Number.isFinite(used) || !Number.isFinite(limit) || limit <= 0) return 0
     return Math.max(0, Math.min(100, Math.round((used / limit) * 100)))
   }, [quota])
 
@@ -119,49 +143,75 @@ export default function ProductNav() {
     <header className="product-nav" data-product-nav>
       <div className="product-nav-inner">
         <a href="/" className="product-brand" aria-label="ProofTTL home">
-          <img src="/proofttl-logo-lockup.png" alt="ProofTTL" className="product-brand-logo" />
+          <span className="product-brand-mark" aria-hidden="true"><span>P</span></span>
+          <span className="product-brand-wordmark">ProofTTL</span>
         </a>
-        <nav className="product-nav-primary" aria-label="Product">{PRIMARY.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}</nav>
+
+        <nav className="product-nav-primary" aria-label="Product">
+          {PRIMARY.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}
+        </nav>
+
         <div className="product-nav-actions">
           <div className="product-nav-more"><button type="button" aria-haspopup="true">More</button><div className="product-nav-menu">{SECONDARY.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}<a href="/how-proofttl-works/">How it works</a><a href="/status/">Status</a></div></div>
 
-          {user ? (
-            <div className="product-account">
-              <span className="product-account-name" title={user.email || username}>{username}</span>
+          {!accountLoading && user ? (
+            <div className="product-account" ref={accountRef}>
               <button
                 type="button"
-                className="product-account-toggle"
+                className="product-account-trigger"
                 aria-label="Open account menu"
                 aria-haspopup="menu"
                 aria-expanded={accountOpen}
                 onClick={() => setAccountOpen((open) => !open)}
               >
-                <span />
-                <span />
-                <span />
+                <span className="product-account-name" title={user.email || username}>{username}</span>
+                <span className="product-account-toggle" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                </span>
               </button>
-              {accountOpen && (
-                <div className="product-account-menu" role="menu">
-                  <div className="product-account-head">
+
+              <div className={`product-account-menu${accountOpen ? ' is-open' : ''}`} role="menu" aria-hidden={!accountOpen}>
+                <div className="product-account-head">
+                  <span className="product-account-avatar">{initial}</span>
+                  <div>
                     <strong>{username}</strong>
                     {user.email && <span>{user.email}</span>}
                   </div>
-                  <div className="product-account-row"><span>Plan</span><strong>{prettyPlan(quota?.plan)}</strong></div>
-                  <div className="product-account-row"><span>Daily limit</span><strong>{quota?.limit ?? '—'}</strong></div>
-                  <div className="product-account-row"><span>Used today</span><strong>{quota?.used ?? '—'}{usedPercent !== null ? ` · ${usedPercent}%` : ''}</strong></div>
-                  <div className="product-account-meter" aria-label={`${usedPercent ?? 0}% of daily limit used`}>
-                    <span style={{ width: `${usedPercent ?? 0}%` }} />
-                  </div>
-                  <div className="product-account-row"><span>Remaining</span><strong>{quota?.remaining ?? '—'}</strong></div>
-                  <div className="product-account-row"><span>Status</span><strong>{quota?.membership_status || 'active'}</strong></div>
-                  <a href="/console/" role="menuitem">Account & security</a>
-                  <a href="/connections/" role="menuitem">Connections</a>
-                  <button type="button" role="menuitem" onClick={() => void signOut()}>Sign out</button>
+                  <span className="product-account-plan-pill">{prettyPlan(quota?.plan)}</span>
                 </div>
-              )}
+
+                <div className="product-account-usage">
+                  <div className="product-account-usage-top">
+                    <span>Daily L.O.V.E. usage</span>
+                    <strong>{usedPercent}%</strong>
+                  </div>
+                  <div className="product-account-meter" aria-label={`${usedPercent}% of daily limit used`}>
+                    <span style={{ width: `${usedPercent}%` }} />
+                  </div>
+                  <div className="product-account-usage-bottom">
+                    <span>{quota?.used ?? 0} used</span>
+                    <span>{quota?.limit ?? '—'} daily limit</span>
+                  </div>
+                </div>
+
+                <div className="product-account-grid">
+                  <div><span>Remaining</span><strong>{quota?.remaining ?? '—'}</strong></div>
+                  <div><span>Status</span><strong>{quota?.membership_status || 'active'}</strong></div>
+                </div>
+
+                <div className="product-account-links">
+                  <a href="/console/" role="menuitem"><span>Account & security</span><b>↗</b></a>
+                  <a href="/connections/" role="menuitem"><span>Connections</span><b>↗</b></a>
+                  <button type="button" role="menuitem" onClick={() => void signOut()}><span>Sign out</span><b>→</b></button>
+                </div>
+              </div>
             </div>
-          ) : (
+          ) : !accountLoading ? (
             <a className="product-nav-signin" href="/login/">Sign in</a>
+          ) : (
+            <span className="product-account-loading" aria-hidden="true" />
           )}
 
           <a className="product-nav-workspace" href="/workspace/">Open Workspace <span>→</span></a>
