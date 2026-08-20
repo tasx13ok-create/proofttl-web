@@ -21,11 +21,12 @@ const requiredFiles = [
   'out/solutions/evidence-verification-api/index.html',
   'out/solutions/x402-verification-api/index.html',
   'out/solutions/fact-leases/index.html',
+  'out/trust/index.html',
+  'out/workspace/index.html',
   'out/verify-lease.html',
   'out/lease-ops.html',
   'out/methodology.html',
   'out/status.html',
-  'out/trust.html',
   'out/robots.txt',
   'out/_headers',
   'components/ProofTTLAds.tsx',
@@ -93,6 +94,11 @@ async function main() {
     if (!sampleAudit.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static sample audit is missing required evidence content: ${expected}`)
   }
 
+  const workspace = await readFile('out/workspace/index.html', 'utf8')
+  for (const expected of ['WORKSPACE', 'ONE INTERFACE', 'L.O.V.E.']) {
+    if (!workspace.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static Workspace is missing required command-center content: ${expected}`)
+  }
+
   const chat = await readFile('components/ProofTTLChatBar.tsx', 'utf8')
   for (const expected of [
     'fetchProofTTLAssistantUsage',
@@ -138,17 +144,17 @@ async function main() {
     if (!statusPage.includes(expected)) throw new Error(`Public status page is missing required status behavior: ${expected}`)
   }
 
-  const trustPage = await readFile('out/trust.html', 'utf8')
-  for (const expected of ['Trust Center', 'API HEALTH', 'CUSTOMER AUTHENTICATION', 'Google OAuth / Discord OAuth / WebAuthn passkeys', 'Secure HttpOnly cookies', 'Trusted-origin allowlist + CSRF protection', 'AUTOMATIC MONITORING', 'CRYPTOGRAPHIC SIGNING', 'RELEASE READINESS', 'Ed25519 signed + SHA-256 hash chained', 'Mainnet settlement is intentionally disabled']) {
-    if (!trustPage.includes(expected)) throw new Error(`Trust Center is missing required release/trust behavior: ${expected}`)
+  const trustPage = await readFile('out/trust/index.html', 'utf8')
+  for (const expected of ['TRUST CENTER', 'API HEALTH', 'CUSTOMER AUTHENTICATION', 'AUTOMATIC MONITORING', 'CRYPTOGRAPHIC SIGNING', 'RELEASE READINESS', 'TRUST BOUNDARY']) {
+    if (!trustPage.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Trust Center is missing required release/trust behavior: ${expected}`)
   }
 
   const layout = await readFile('app/layout.tsx', 'utf8')
   if (!layout.includes('<ProofTTLChatBar />')) throw new Error('Global L.O.V.E. chat bar is not mounted')
   if (layout.includes('<ProofTTLAssistant />')) throw new Error('Legacy separate voice assistant is mounted alongside the unified L.O.V.E. chat surface')
   if (!layout.includes("'./chat-fullscreen.css'")) throw new Error('Fullscreen L.O.V.E. chat styles are not loaded')
-  for (const expected of ['/trust.html', '/verify-lease.html', '/lease-ops.html', '/methodology.html', '/status.html', 'TESTNET PREVIEW', 'Mainnet disabled']) {
-    if (!layout.includes(expected)) throw new Error(`Global trust strip is missing required content: ${expected}`)
+  for (const expected of ['/trust/', '/workspace/', 'OPEN WORKSPACE', '/verify-lease.html', '/lease-ops.html', '/methodology.html', '/status.html', 'TESTNET PREVIEW', 'Mainnet disabled']) {
+    if (!layout.includes(expected)) throw new Error(`Global trust/workspace strip is missing required content: ${expected}`)
   }
 
   const voiceAssistant = await readFile('components/ProofTTLAssistant.tsx', 'utf8')
@@ -157,7 +163,7 @@ async function main() {
   }
 
   const assistantClient = await readFile('lib/proofttl-assistant.ts', 'utf8')
-  for (const expected of ['NEXT_PUBLIC_PROOFTTL_API_URL', 'https://proofttl.tasx13ok.workers.dev', '/assistant/text', '/assistant/voice', '/assistant/usage', "credentials: 'include'", 'loveSpeechDataUrl', 'audio_base64', 'lease_grounding']) {
+  for (const expected of ['NEXT_PUBLIC_PROOFTTL_API_URL', 'https://proofttl.tasx13ok.workers.dev', '/assistant/text', '/assistant/voice', '/assistant/speech', '/assistant/usage', "credentials: 'include'", 'loveSpeechDataUrl', 'audio_base64', 'lease_grounding', 'requestFinalLoveSpeech', 'final_response_tts', "trust: '/trust/'"]) {
     if (!assistantClient.includes(expected)) throw new Error(`Assistant API client is missing required production/L.O.V.E. wiring: ${expected}`)
   }
 
@@ -195,7 +201,7 @@ async function main() {
   }
   if (headers.includes('microphone=()')) throw new Error('Pages headers disable the L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export, audit offer/sample, Google/Discord/passkey auth trust, security, unified reactive L.O.V.E. voice + Lease context, independent issuance/event-chain verification, lifecycle operations, Trust Center, versioned methodology, public status, docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
+  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export, canonical Trust + Workspace routing, final-response L.O.V.E. TTS contract, audit offer/sample, Google/Discord/passkey auth trust, security, reactive voice + Lease context, independent issuance/event-chain verification, lifecycle operations, methodology, status, docs, ad policy, crawl rules, and microphone-safe security headers all passed release checks.')
 }
 
 main().catch((error) => {
