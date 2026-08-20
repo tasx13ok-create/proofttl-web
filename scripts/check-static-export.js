@@ -24,7 +24,7 @@ async function main() {
   await expect('out/audit/index.html', ['ProofTTL','Verification Audit','$500','/audit/sample/'], 'Audit')
   await expect('out/audit/sample/index.html', ['Sample Verification Audit','PX-006','CONTRADICTED','PUBLIC DEMONSTRATION'], 'Sample audit')
   await expect('out/workspace/index.html', ['Workspace','Code','Build a world','Direct a scene','Open files'], 'Workspace')
-  await expect('out/worlds/index.html', ['WORLDS / 3D STUDIO','LIVE WEBGL PREVIEW','GENERATE WORLD','EXPORT JSON'], 'Worlds')
+  await expect('out/worlds/index.html', ['WORLDS / 3D STUDIO','LIVE WEBGL PREVIEW','GENERATE LOCALLY','EXPORT JSON'], 'Worlds')
   await expect('out/cinematics/index.html', ['CINEMATICS','DIRECT · GENERATE · RENDER · EXPORT','LOCAL MOVIE · READY','CLOUD AI · OPTIONAL','TIMELINE','APPLY TO LOCAL TAKE'], 'Cinematics')
   await expect('out/trust/index.html', ['TRUST CENTER','API HEALTH','CUSTOMER AUTHENTICATION','AUTOMATIC MONITORING','CRYPTOGRAPHIC SIGNING','VOICE PIPELINE','RELEASE READINESS','TRUST BOUNDARY'], 'Trust Center')
   await expect('out/verify-lease.html', ['Verify a signed','Ed25519','proofttl-issuance-v1','/.well-known/proofttl-keys.json','Export signed Lease JSON'], 'Lease verifier')
