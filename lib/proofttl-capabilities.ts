@@ -27,10 +27,11 @@ export const PROOFTTL_CAPABILITIES: ProofTTLCapability[] = [
   { id: 'studio-runner', area: 'studio', label: 'Isolated execution', description: 'Run approved runtimes in ephemeral sandboxes rather than the production server.', route: '/studio/', risk: 'sensitive', state: 'built_locked', examples: ['Run this Python file', 'Execute JavaScript in sandbox'] },
   { id: 'money-intelligence', area: 'money', label: 'Money intelligence', description: 'Understand balances, spending, bills, cash flow and goals after a financial-data provider is connected.', route: '/money/', risk: 'read', state: 'planned', examples: ['Why did I spend more?', 'Can I afford this next month?'] },
   { id: 'money-movement', area: 'money', label: 'Money movement', description: 'Future sponsor-bank or payments integrations for transfers, savings rules and bill actions.', route: '/money/', risk: 'sensitive', state: 'planned', examples: ['Move $75 to savings', 'Pay this bill'] },
+  { id: 'work-tasks', area: 'work', label: 'Native Tasks', description: 'Account-owned tasks with notes, priority, due dates, completion state, and L.O.V.E. command planning.', route: '/work/', risk: 'modify', state: 'built_locked', examples: ['Show my tasks', 'Add a task', 'Mark this task done'] },
   { id: 'work-mail', area: 'work', label: 'Email', description: 'Read, search, draft and eventually send through connected mail providers.', route: '/work/', risk: 'sensitive', state: 'planned', examples: ['Find the email from John', 'Draft a reply'] },
   { id: 'work-calendar', area: 'work', label: 'Calendar', description: 'Read schedule, find free time and create or update events with confirmation.', route: '/work/', risk: 'modify', state: 'planned', examples: ['What meetings do I have?', 'Schedule this tomorrow'] },
-  { id: 'files-library', area: 'files', label: 'Files', description: 'One account-scoped library for generated, uploaded and connected files.', route: '/files/', risk: 'modify', state: 'planned', examples: ['Find my resume', 'Open the report'] },
-  { id: 'automations', area: 'automations', label: 'Automations', description: 'Recurring and condition-based actions using only connected capabilities and explicit permissions.', route: '/automations/', risk: 'sensitive', state: 'planned', examples: ['Every Friday summarize my week', 'When X happens do Y'] },
+  { id: 'files-library', area: 'files', label: 'Native Files', description: 'Account-owned bounded text/code artifacts with create, read, edit and delete controls; external drives can connect later.', route: '/files/', risk: 'modify', state: 'built_locked', examples: ['Open my files', 'Create notes.md', 'Edit this file'] },
+  { id: 'automations', area: 'automations', label: 'Automation definitions', description: 'Account-owned recurring/conditional definitions bound to central capability/risk policy. Execution adapters remain disconnected.', route: '/automations/', risk: 'sensitive', state: 'built_locked', examples: ['Create a daily rule', 'Show my automations'] },
   { id: 'connections', area: 'connections', label: 'Connections', description: 'Central permissioned integrations for identity, AI models, developer tools, work apps and future financial providers.', route: '/connections/', risk: 'sensitive', state: 'built_locked', examples: ['Connect Google', 'Connect GitHub', 'Choose an AI model'] },
   { id: 'security-account', area: 'security', label: 'Account security', description: 'Passkeys, TOTP, recovery codes, session management and provider-backed identity.', route: '/console/#security', risk: 'sensitive', state: 'built_locked', examples: ['Add a passkey', 'Log out other devices'] },
 ]
@@ -38,11 +39,11 @@ export const PROOFTTL_CAPABILITIES: ProofTTLCapability[] = [
 export const AREA_META = {
   love: { label: 'L.O.V.E.', description: 'INTELLIGENCE + CONTROL' },
   money: { label: 'MONEY', description: 'FINANCIAL INTELLIGENCE + ACTIONS' },
-  work: { label: 'WORK', description: 'MAIL + CALENDAR + TASKS' },
+  work: { label: 'WORK', description: 'TASKS + FUTURE MAIL / CALENDAR' },
   truth: { label: 'TRUTH', description: 'VERIFY + MONITOR + AUDIT' },
   studio: { label: 'STUDIO', description: 'CODE + MODELS + RUNNER' },
-  files: { label: 'FILES', description: 'USER CONTENT + OUTPUTS' },
-  automations: { label: 'AUTOMATIONS', description: 'RECURRING + CONDITION-BASED WORK' },
+  files: { label: 'FILES', description: 'NATIVE CONTENT + CONNECTED STORAGE' },
+  automations: { label: 'AUTOMATIONS', description: 'DEFINITIONS + FUTURE EXECUTION' },
   connections: { label: 'CONNECTIONS', description: 'INTEGRATIONS + PROVIDERS' },
   security: { label: 'SECURITY', description: 'IDENTITY + PERMISSIONS + SESSIONS' },
 } as const
