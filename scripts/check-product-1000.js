@@ -14,12 +14,16 @@ const requiredFiles = [
   'app/how-proofttl-works/page.tsx',
   'app/workspace/page.tsx',
   'components/ProofTTLOSWorkspace.tsx',
+  'components/ActionHistoryPanel.tsx',
   'lib/proofttl-capabilities.ts',
+  'lib/proofttl-command.ts',
   'app/money/page.tsx',
   'app/work/page.tsx',
   'app/files/page.tsx',
   'app/automations/page.tsx',
+  'components/AutomationCenter.tsx',
   'app/connections/page.tsx',
+  'components/ConnectionsCenter.tsx',
   'app/studio/page.tsx',
   'components/ProofTTLChatBar.tsx',
   'components/StudioWorkbench.tsx',
@@ -40,7 +44,11 @@ const accountWorkspace = read('components/AccountWorkspacePanel.tsx')
 const preferenceBridge = read('components/AccountPreferenceBridge.tsx')
 const guide = read('app/how-proofttl-works/page.tsx')
 const workspace = read('components/ProofTTLOSWorkspace.tsx')
+const actionHistory = read('components/ActionHistoryPanel.tsx')
 const capabilities = read('lib/proofttl-capabilities.ts')
+const commandClient = read('lib/proofttl-command.ts')
+const automations = read('components/AutomationCenter.tsx')
+const connections = read('components/ConnectionsCenter.tsx')
 const studio = read('components/StudioWorkbench.tsx')
 const runner = read('components/StudioRunnerPanel.tsx')
 const assistant = read('lib/proofttl-assistant.ts')
@@ -53,17 +61,22 @@ const checks = [
   [/claim stress test/i.test(audit) && /verification audit/i.test(audit), 'audit offer ladder'],
   [/Google/i.test(loginPanel) && /Discord/i.test(loginPanel) && /Passkey/i.test(loginPanel), 'Google + Discord + passkey login surface'],
   [/Fact Lease/i.test(guide) && /L\.O\.V\.E\./i.test(guide) && /monitor/i.test(guide), 'full product explainer'],
-  [/Don.t choose an app/i.test(workspace) && workspace.includes('askProofTTLByText') && /PERMISSION MODEL/i.test(workspace), 'universal L.O.V.E. command workspace'],
+  [/Don.t choose an app/i.test(workspace) && workspace.includes('/commands/plan') && workspace.includes('/actions/plan') && /CONFIRM ACTION/i.test(workspace), 'universal command planning and confirmation workspace'],
+  [actionHistory.includes('/account/actions') && /receipt trail/i.test(actionHistory), 'account action ledger surface'],
   [capabilities.includes("'money'") && capabilities.includes("'work'") && capabilities.includes("'files'") && capabilities.includes("'automations'") && capabilities.includes("'connections'"), 'cross-platform capability map'],
   [capabilities.includes('MONEY / SEND / DELETE / SECURITY') && capabilities.includes('Explicit user confirmation'), 'sensitive-action permission policy'],
+  [commandClient.includes('/commands/plan') && commandClient.includes('/actions/plan') && commandClient.includes("credentials: 'include'"), 'credential-aware command/action planner client'],
+  [assistant.includes('resolvePlatformCommand') && assistant.includes('command_planner') && assistant.includes("'/workspace/'"), 'global L.O.V.E. platform command routing'],
+  [automations.includes('/account/automations') && /EXECUTION ENGINE/i.test(automations) && /SENSITIVE PRE-AUTH/i.test(automations), 'account automation definition center'],
+  [connections.includes('/capabilities') && connections.includes('/readiness') && connections.includes('/studio/runner') && /SERVER SIDE ONLY/i.test(connections), 'live connections control plane'],
   [/MODEL PLAYGROUND/i.test(studio) && /TERMINAL/i.test(studio) && /NO HOST SHELL/i.test(studio) && /EXECUTION JOBS/i.test(studio), 'Studio workspace/model/terminal/sandbox boundary'],
   [studio.includes('/studio/projects') && /CREATE CLOUD PROJECT/i.test(studio) && /LOCAL FALLBACK/i.test(studio), 'Studio authenticated cloud sync with local fallback'],
   [runner.includes('/studio/run') && runner.includes('/studio/runner') && /production secrets/i.test(runner) && /PowerShell execution stays disabled/i.test(runner), 'Studio isolated runner truth surface'],
   [accountWorkspace.includes('/account/preferences') && accountWorkspace.includes('/account/audits') && /signed-in account email exactly matches/i.test(accountWorkspace), 'account-owned preferences and audit claiming'],
   [accountWorkspace.includes('/assistant/models') && /server-approved models/i.test(accountWorkspace), 'safe server-approved model selector'],
   [preferenceBridge.includes('pttl-pref-love-voice-off') && preferenceBridge.includes('pttl-pref-love-compact') && accountWorkspace.includes('proofttl-preferences-changed'), 'live account preference bridge'],
-  [assistant.includes("'studio'") && assistant.includes("'/studio/'"), 'L.O.V.E. Studio navigation'],
-  [assistant.includes('I will not execute arbitrary JavaScript'), 'assistant arbitrary-script refusal'],
+  [assistant.includes("'studio'") && assistant.includes("'/studio/'") && assistant.includes("'money'") && assistant.includes("'connections'"), 'L.O.V.E. cross-platform navigation'],
+  [/will not execute arbitrary code/i.test(assistant), 'assistant arbitrary-code production-process refusal'],
 ]
 
 const failed = checks.filter(([ok]) => !ok).map(([, label]) => label)
