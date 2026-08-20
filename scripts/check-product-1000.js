@@ -12,7 +12,7 @@ const checks=[
 [!fs.existsSync(path.join(root,'app/trust.html/page.tsx'))&&!fs.existsSync(path.join(root,'public/trust.html')),'no conflicting legacy Trust export'],
 [/claim stress test/i.test(home)&&home.includes('$129')&&home.includes('$500'),'two-tier commercial offer'],
 [/claim stress test/i.test(audit)&&/verification audit/i.test(audit),'audit offer ladder'],
-[/Google/i.test(loginPanel)&&/Discord/i.test(loginPanel)&&/Passkey/i.test(loginPanel),'Google + Discord + passkey login surface'],
+[/GitHub/i.test(loginPanel)&&/Google/i.test(loginPanel)&&/Discord/i.test(loginPanel)&&/Passkey/i.test(loginPanel),'GitHub + Google + Discord + passkey login surface'],
 [/Fact Lease/i.test(guide)&&/L\.O\.V\.E\./i.test(guide)&&/monitor/i.test(guide),'full product explainer'],
 [/Don.t choose an app/i.test(workspace)&&workspace.includes('/commands/plan')&&workspace.includes('/actions/plan')&&/CONFIRM ACTION/i.test(workspace),'universal command planning and confirmation workspace'],
 [actionHistory.includes('/account/actions')&&/receipt trail/i.test(actionHistory),'account action ledger surface'],
