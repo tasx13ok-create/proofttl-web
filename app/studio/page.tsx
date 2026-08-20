@@ -1,5 +1,6 @@
 import StudioWorkbench from '../../components/StudioWorkbench'
 import StudioRunnerPanel from '../../components/StudioRunnerPanel'
+import './studio-hotfix.css'
 
 export const metadata = {
   title: 'Studio — ProofTTL',
