@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/trust.html",
+      "destination": "/trust/",
+      "permanent": true
+    }
+  ]
+}
