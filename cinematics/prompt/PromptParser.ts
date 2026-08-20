@@ -36,9 +36,9 @@ function styleFrom(text: string): FightStyle {
 function cameraFrom(text: string): CameraStyle {
   if (/overhead|top[- ]down/.test(text)) return 'overhead'
   if (/handheld|shaky|close[- ]up/.test(text)) return 'handheld'
-  if (/wide|establishing/.test(text)) return 'wide'
   if (/side view|profile/.test(text)) return 'side'
-  return 'director'
+  if (/director|dynamic camera|orbit/.test(text)) return 'director'
+  return 'wide'
 }
 
 function buildActors(count: number): PlannedActor[] {
