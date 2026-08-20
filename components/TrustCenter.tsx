@@ -27,6 +27,9 @@ export default function TrustCenter() {
   const empty: Section = { status: 'loading', rows: [] }
   const [health, setHealth] = useState<Section>(empty)
   const [auth, setAuth] = useState<Section>(empty)
+  const [monitoring, setMonitoring] = useState<Section>(empty)
+  const [signing, setSigning] = useState<Section>(empty)
+  const [voice, setVoice] = useState<Section>(empty)
   const [readiness, setReadiness] = useState<Section>(empty)
 
   useEffect(() => {
@@ -53,6 +56,7 @@ export default function TrustCenter() {
       const ready = Boolean(body?.configured && body?.sign_in?.google && body?.sign_in?.discord && body?.sign_in?.passkey)
       setAuth({ status: ready ? 'ready' : 'locked', rows: [
         ['Backend', body?.configured ? 'READY' : 'LOCKED'],
+        ['GitHub', body?.sign_in?.github ? 'READY' : 'LOCKED'],
         ['Google', body?.sign_in?.google ? 'READY' : 'LOCKED'],
         ['Discord', body?.sign_in?.discord ? 'READY' : 'LOCKED'],
         ['Passkeys', body?.sign_in?.passkey ? 'READY' : 'LOCKED'],
@@ -60,6 +64,48 @@ export default function TrustCenter() {
         ['CSRF protection', body?.security?.csrf_protection ? 'YES' : 'NO'],
       ] })
     }).catch((error) => setAuth({ status: 'error', rows: [['Error', error instanceof Error ? error.message : 'Unavailable']] }))
+
+    read('/monitor/status').then((body) => {
+      const last = body?.last_run || {}
+      setMonitoring({ status: body?.enabled === true ? 'ready' : 'locked', rows: [
+        ['Automatic monitoring', body?.enabled ? 'ACTIVE' : 'DISABLED'],
+        ['Schedule', String(body?.schedule || '—')],
+        ['Last run', String(last?.finished_at || last?.started_at || 'NO PERSISTED RUN YET')],
+        ['Checked', String(last?.checked ?? '—')],
+        ['Revoked', String(last?.revoked ?? '—')],
+        ['Expired', String(last?.expired ?? '—')],
+        ['Errors', String(last?.errors ?? '—')],
+      ] })
+    }).catch((error) => setMonitoring({ status: 'error', rows: [['Error', error instanceof Error ? error.message : 'Unavailable']] }))
+
+    read('/.well-known/proofttl-keys.json').then((body) => {
+      const key = Array.isArray(body?.keys) ? body.keys[0] : null
+      setSigning({ status: body?.signing_enabled === true ? 'ready' : 'locked', rows: [
+        ['Signing', body?.signing_enabled ? 'ENABLED' : 'DISABLED'],
+        ['Algorithm', String(key?.crv || '—')],
+        ['Key ID', String(key?.kid || '—')],
+        ['Signature schema', String(body?.signature_version || '—')],
+        ['Attestation schema', String(body?.attestation_version || '—')],
+        ['Published keys', String(Array.isArray(body?.keys) ? body.keys.length : 0)],
+      ] })
+    }).catch((error) => setSigning({ status: 'error', rows: [['Error', error instanceof Error ? error.message : 'Unavailable']] }))
+
+    read('/.well-known/proofttl-assistant.json').then((body) => {
+      const speechEndpoint = Boolean(body?.endpoints?.speech)
+      const voiceOutput = body?.output?.voice === true
+      const finalTextSource = body?.output?.voice_source === 'final_response_text'
+      const voiceEnabled = body?.output?.voice_capability?.voice_mode === true
+      const configured = body?.configured === true
+      const ready = Boolean(configured && speechEndpoint && voiceOutput && finalTextSource && voiceEnabled)
+      setVoice({ status: ready ? 'ready' : 'locked', rows: [
+        ['Assistant runtime', configured ? 'READY' : 'LOCKED'],
+        ['STT endpoint', body?.endpoints?.voice ? 'READY' : 'LOCKED'],
+        ['Final-response TTS endpoint', speechEndpoint ? 'READY' : 'LOCKED'],
+        ['Voice output', voiceOutput ? 'ENABLED' : 'DISABLED'],
+        ['Speech source', finalTextSource ? 'FINAL RESPONSE TEXT' : 'LEGACY / UNKNOWN'],
+        ['Voice entitlement / preview', voiceEnabled ? 'ENABLED' : 'LOCKED'],
+      ] })
+    }).catch((error) => setVoice({ status: 'error', rows: [['Error', error instanceof Error ? error.message : 'Unavailable']] }))
 
     read('/readiness').then((body) => {
       const workspace = body?.workspace || {}
@@ -84,7 +130,7 @@ export default function TrustCenter() {
     <section className="onboarding-card" style={{ padding: 26 }}>
       <p className="app-kicker">PROOFTTL / TRUST CENTER</p>
       <h1 className="app-title">Proof you can inspect.</h1>
-      <p className="app-copy">Live backend health, customer authentication posture, Workspace readiness, commercial readiness, and execution boundaries. Nothing here marks an unfinished provider as live.</p>
+      <p className="app-copy">Live backend health, authentication, automatic monitoring, cryptographic signing, L.O.V.E. voice readiness, Workspace readiness, commercial readiness, and execution boundaries. Nothing here marks an unfinished provider as live.</p>
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
         <a className="button button-primary" href="/workspace/">OPEN WORKSPACE →</a>
         <a className="button button-secondary" href="/login/">SIGN IN</a>
@@ -95,6 +141,9 @@ export default function TrustCenter() {
     <div className="pricing-cards">
       <Card title="API HEALTH" data={health} />
       <Card title="CUSTOMER AUTHENTICATION" data={auth} />
+      <Card title="AUTOMATIC MONITORING" data={monitoring} />
+      <Card title="CRYPTOGRAPHIC SIGNING" data={signing} />
+      <Card title="VOICE PIPELINE" data={voice} />
     </div>
     <Card title="RELEASE READINESS" data={readiness} />
 
@@ -105,6 +154,7 @@ export default function TrustCenter() {
       <div className="app-table" style={{ marginTop: 12 }}>
         <div className="app-table-row"><span>Fact Lease verdicts</span><span>SUPPORTED / CONTRADICTED / UNKNOWN</span></div>
         <div className="app-table-row"><span>Lease states</span><span>ACTIVE / REVOKED / EXPIRED</span></div>
+        <div className="app-table-row"><span>Monitoring history</span><span>TAMPER-EVIDENT SIGNED EVENT CHAIN</span></div>
         <div className="app-table-row"><span>Protocol settlement</span><span>BASE SEPOLIA TESTNET · MAINNET DISABLED</span></div>
         <div className="app-table-row"><span>Sensitive actions</span><span>EXPLICIT CONFIRMATION REQUIRED</span></div>
       </div>
