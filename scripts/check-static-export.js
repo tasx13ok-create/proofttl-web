@@ -1,7 +1,7 @@
 import { access, readFile } from 'node:fs/promises'
 
 const requiredFiles = [
-  'package.json','out/index.html','out/login/index.html','out/two-factor/index.html','out/onboarding/index.html','out/get-started/index.html','out/console/index.html','out/support/index.html','out/docs/index.html','out/audit/index.html','out/audit/sample/index.html','out/solutions/index.html','out/solutions/ai-agent-verification/index.html','out/trust/index.html','out/workspace/index.html','out/worlds/index.html','out/cinematics/index.html','out/verify-lease.html','out/lease-ops.html','out/methodology.html','out/status.html','out/robots.txt','out/_headers','public/proofttl-logo.png','public/proofttl-logo-lockup.png','components/ProductNav.tsx','components/WorkspaceDesktopShell.tsx','components/WorldBuilder.tsx','components/CinematicsStudio.tsx','components/AssistantRichText.tsx','components/ProofTTLAds.tsx','components/ProofTTLAssistant.tsx','components/ProofTTLChatBar.tsx','components/LoveEntity.module.css','lib/proofttl-assistant.ts','app/product-nav.css','app/workspace-shell.css','app/worlds.css','app/cinematics.css','app/chat-bar.css','app/chat-fullscreen.css','app/glass-polish.css','ADSENSE-SETUP.md'
+  'package.json','out/index.html','out/login/index.html','out/two-factor/index.html','out/onboarding/index.html','out/get-started/index.html','out/console/index.html','out/support/index.html','out/docs/index.html','out/audit/index.html','out/audit/sample/index.html','out/solutions/index.html','out/solutions/ai-agent-verification/index.html','out/trust/index.html','out/workspace/index.html','out/worlds/index.html','out/cinematics/index.html','out/verify-lease.html','out/lease-ops.html','out/methodology.html','out/status.html','out/robots.txt','out/_headers','public/proofttl-logo.png','public/proofttl-logo-lockup.png','components/ProductNav.tsx','components/WorkspaceDesktopShell.tsx','components/WorldBuilder.tsx','components/CinematicsStudio.tsx','components/LocalCinematicPreview.tsx','components/AssistantRichText.tsx','components/ProofTTLAds.tsx','components/ProofTTLAssistant.tsx','components/ProofTTLChatBar.tsx','components/LoveEntity.module.css','lib/proofttl-assistant.ts','app/product-nav.css','app/workspace-shell.css','app/worlds.css','app/cinematics.css','app/chat-bar.css','app/chat-fullscreen.css','app/glass-polish.css','ADSENSE-SETUP.md'
 ]
 
 async function expect(file, values, label = file) {
@@ -25,12 +25,14 @@ async function main() {
   await expect('out/audit/sample/index.html', ['Sample Verification Audit','PX-006','CONTRADICTED','PUBLIC DEMONSTRATION'], 'Sample audit')
   await expect('out/workspace/index.html', ['Workspace','Code','Build a world','Direct a scene','Open files'], 'Workspace')
   await expect('out/worlds/index.html', ['WORLDS / 3D STUDIO','LIVE WEBGL PREVIEW','GENERATE WORLD','EXPORT JSON'], 'Worlds')
-  await expect('out/cinematics/index.html', ['CINEMATICS','DIRECT · GENERATE · RENDER · EXPORT','CLOUD RENDER · LOCKED','WATERMARK · ON','TIMELINE','GENERATE IN CLOUD'], 'Cinematics')
+  await expect('out/cinematics/index.html', ['CINEMATICS','DIRECT · GENERATE · RENDER · EXPORT','LOCAL MOVIE · READY','CLOUD AI · OPTIONAL','TIMELINE','APPLY TO LOCAL TAKE'], 'Cinematics')
   await expect('out/trust/index.html', ['TRUST CENTER','API HEALTH','CUSTOMER AUTHENTICATION','AUTOMATIC MONITORING','CRYPTOGRAPHIC SIGNING','VOICE PIPELINE','RELEASE READINESS','TRUST BOUNDARY'], 'Trust Center')
   await expect('out/verify-lease.html', ['Verify a signed','Ed25519','proofttl-issuance-v1','/.well-known/proofttl-keys.json','Export signed Lease JSON'], 'Lease verifier')
   await expect('out/lease-ops.html', ['Lease Operations','Share verification link','Prepare renewal'], 'Lease operations')
   await expect('out/methodology.html', ['SUPPORTED','CONTRADICTED','UNKNOWN','ACTIVE','REVOKED','EXPIRED'], 'Methodology')
   await expect('out/status.html', ['System status','/health','/monitor/status','Base Sepolia testnet'], 'Status')
+
+  await expect('components/LocalCinematicPreview.tsx', ['data-local-cinematic','GRAPHIC MARTIAL-ARTS PREVIEW','RECORD 12S WEBM','captureStream','MediaRecorder','MeshToonMaterial','NEW TAKE'], 'Local cinematic renderer')
 
   const chat = await expect('components/ProofTTLChatBar.tsx', ['fetchProofTTLAssistantUsage','Message L.O.V.E.…','voicePhase === \'recording\'','LoveEntity','askProofTTLByVoice','loveSpeechDataUrl','AssistantHistoryMessage','FactLeaseCard','LoveVisualStrip','AssistantRichText'], 'L.O.V.E. chat')
   if (!chat.includes('data-love-fact-lease="materialized"')) throw new Error('L.O.V.E. chat is missing materialized Lease context')
@@ -57,7 +59,7 @@ async function main() {
   for (const expected of ['X-Content-Type-Options: nosniff','X-Frame-Options: DENY','Permissions-Policy: camera=(), microphone=(self), geolocation=()']) if (!headers.includes(expected)) throw new Error(`Static headers missing: ${expected}`)
   if (headers.includes('microphone=()')) throw new Error('Static headers disable L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export, canonical branding, sparse VS Code-style Workspace, Cinematics, Worlds, rich L.O.V.E. code/visual/voice rendering, canonical navigation, Trust, auth, verification, security and export policy passed release checks.')
+  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export, canonical branding, sparse VS Code-style Workspace, Cinematics with free local movie rendering, Worlds, rich L.O.V.E. code/visual/voice rendering, canonical navigation, Trust, auth, verification, security and export policy passed release checks.')
 }
 
 main().catch((error) => { console.error('\nSTATIC EXPORT CHECK FAILED:', error.message || error); process.exitCode = 1 })
