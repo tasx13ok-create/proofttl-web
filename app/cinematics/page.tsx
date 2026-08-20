@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function CinematicsPage() {
   return (
-    <main className="app-page cinematic-page">
+    <main className="app-page cinematic-page" data-cinematics-root="ai-film-v3">
       <section className="cine-page-head app-shell">
         <div><span>CINEMATICS</span><strong>DIRECT · STORYBOARD · RENDER · CUT</strong></div>
         <nav><a href="/worlds/">WORLDS</a><a href="/studio/">STUDIO</a><a href="/files/">FILES</a><a href="/connections/">CONNECTIONS</a></nav>
