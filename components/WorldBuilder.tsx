@@ -3,8 +3,9 @@
 import { ChangeEvent, FormEvent, useMemo, useState } from 'react'
 
 type SceneObject = { kind: 'box' | 'sphere' | 'cylinder' | 'cone'; x: number; y: number; z: number; sx: number; sy: number; sz: number; color: string; emissive?: string }
-type SceneSpec = { schema?: 'proofttl-world-v1'; name: string; mood: string; background: string; fog: string; ground: string; camera: [number, number, number]; objects: SceneObject[] }
+type SceneSpec = { schema?: 'proofttl-world-v1'; name: string; mood: string; background: string; fog: string; ground: string; camera: [number, number, number]; objects: SceneObject[]; marbleWorldUrl?: string }
 
+const MARBLE_CREATE_URL = 'https://marble.worldlabs.ai/'
 const PRESETS: Record<string, SceneSpec> = {
   cyberpunk: { name: 'Neon Alley', mood: 'cyberpunk / night', background: '#02030a', fog: '#070919', ground: '#0b1020', camera: [9, 6, 12], objects: [
     { kind: 'box', x: -4, y: 2.5, z: -2, sx: 3, sy: 5, sz: 3, color: '#111827', emissive: '#082f49' },
@@ -72,39 +73,68 @@ function sceneDocument(spec: SceneSpec) {
   return `<!doctype html><html><head><meta charset="utf-8"><style>html,body,#app{width:100%;height:100%;margin:0;overflow:hidden;background:${spec.background}}canvas{display:block}</style></head><body><div id="app"></div><script type="module">import * as THREE from 'https://esm.sh/three@0.179.1'; import { OrbitControls } from 'https://esm.sh/three@0.179.1/examples/jsm/controls/OrbitControls.js'; const spec=${serialized}; const scene=new THREE.Scene(); scene.background=new THREE.Color(spec.background); scene.fog=new THREE.FogExp2(spec.fog,.025); const camera=new THREE.PerspectiveCamera(52,innerWidth/innerHeight,.1,1000); camera.position.set(...spec.camera); const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight); renderer.shadowMap.enabled=true; document.querySelector('#app').appendChild(renderer.domElement); const controls=new OrbitControls(camera,renderer.domElement); controls.enableDamping=true; controls.target.set(0,1,0); const hemi=new THREE.HemisphereLight(0xbfefff,0x20140c,2.2); scene.add(hemi); const key=new THREE.DirectionalLight(0xffffff,2.8); key.position.set(6,10,6); key.castShadow=true; scene.add(key); const floor=new THREE.Mesh(new THREE.PlaneGeometry(80,80),new THREE.MeshStandardMaterial({color:spec.ground,roughness:.92,metalness:.04})); floor.rotation.x=-Math.PI/2; floor.receiveShadow=true; scene.add(floor); for(const item of spec.objects){ let g; if(item.kind==='sphere')g=new THREE.SphereGeometry(1,32,20); else if(item.kind==='cylinder')g=new THREE.CylinderGeometry(1,1,1,24); else if(item.kind==='cone')g=new THREE.ConeGeometry(1,1,24); else g=new THREE.BoxGeometry(1,1,1); const m=new THREE.MeshStandardMaterial({color:item.color,roughness:.65,metalness:.15,emissive:item.emissive||0x000000,emissiveIntensity:item.emissive?1.25:0}); const mesh=new THREE.Mesh(g,m); mesh.position.set(item.x,item.y,item.z); mesh.scale.set(item.sx,item.sy,item.sz); mesh.castShadow=true; mesh.receiveShadow=true; scene.add(mesh); if(item.emissive){const light=new THREE.PointLight(item.emissive,16,10); light.position.copy(mesh.position); scene.add(light);} } const grid=new THREE.GridHelper(40,40,0x164e63,0x111827); grid.material.transparent=true; grid.material.opacity=.18; scene.add(grid); function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)} addEventListener('resize',resize); function loop(){controls.update();renderer.render(scene,camera);requestAnimationFrame(loop)} loop();</script></body></html>`
 }
 
+function validMarbleWorldUrl(value: string) {
+  try {
+    const url = new URL(value)
+    return url.protocol === 'https:' && url.hostname === 'marble.worldlabs.ai' && url.pathname.startsWith('/world/')
+  } catch { return false }
+}
+
 export default function WorldBuilder() {
   const [prompt, setPrompt] = useState('A rainy neon cyberpunk alley with dark buildings, glowing signs, fog, and a cinematic night atmosphere')
   const [spec, setSpec] = useState<SceneSpec>(() => sceneFromPrompt(prompt))
   const [jsonOpen, setJsonOpen] = useState(false)
   const [status, setStatus] = useState('LOCAL WORLD READY')
+  const [marbleUrl, setMarbleUrl] = useState('')
   const previewDocument = useMemo(() => sceneDocument(spec), [spec])
 
   function generate(event: FormEvent) { event.preventDefault(); if (!prompt.trim()) return; setSpec(sceneFromPrompt(prompt)); setStatus('GENERATED LOCALLY') }
   function exportJson() { const blob = new Blob([JSON.stringify(spec, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const anchor = document.createElement('a'); anchor.href = url; anchor.download = `${spec.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'world'}.scene.json`; anchor.click(); URL.revokeObjectURL(url) }
   function saveLocal() { localStorage.setItem('proofttl:world:last', JSON.stringify(spec)); setStatus('SAVED IN THIS BROWSER') }
-  function loadLocal() { const raw = localStorage.getItem('proofttl:world:last'); if (!raw) { setStatus('NO LOCAL WORLD FOUND'); return } try { setSpec(JSON.parse(raw) as SceneSpec); setStatus('LOCAL WORLD RESTORED') } catch { setStatus('LOCAL WORLD INVALID') } }
+  function loadLocal() { const raw = localStorage.getItem('proofttl:world:last'); if (!raw) { setStatus('NO LOCAL WORLD FOUND'); return } try { const next = JSON.parse(raw) as SceneSpec; setSpec(next); setMarbleUrl(next.marbleWorldUrl || ''); setStatus('LOCAL WORLD RESTORED') } catch { setStatus('LOCAL WORLD INVALID') } }
   function sendToCinematics() { localStorage.setItem('proofttl:world:cinematics', JSON.stringify(spec)); window.location.href = '/cinematics/' }
-  function importJson(event: ChangeEvent<HTMLInputElement>) { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const next = JSON.parse(String(reader.result || '')) as SceneSpec; if (!next?.name || !Array.isArray(next.objects)) throw new Error('invalid'); setSpec(next); setStatus('WORLD JSON IMPORTED') } catch { setStatus('IMPORT FAILED') } }; reader.readAsText(file); event.target.value = '' }
+  function importJson(event: ChangeEvent<HTMLInputElement>) { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const next = JSON.parse(String(reader.result || '')) as SceneSpec; if (!next?.name || !Array.isArray(next.objects)) throw new Error('invalid'); setSpec(next); setMarbleUrl(next.marbleWorldUrl || ''); setStatus('WORLD JSON IMPORTED') } catch { setStatus('IMPORT FAILED') } }; reader.readAsText(file); event.target.value = '' }
+  async function openMarbleFree() {
+    const text = prompt.trim()
+    if (!text) { setStatus('ADD A PROMPT FIRST'); return }
+    try { await navigator.clipboard.writeText(text); setStatus('PROMPT COPIED · OPENING MARBLE FREE') }
+    catch { setStatus('OPENING MARBLE FREE · COPY PROMPT MANUALLY') }
+    window.open(MARBLE_CREATE_URL, '_blank', 'noopener,noreferrer')
+  }
+  function attachMarbleWorld() {
+    const value = marbleUrl.trim()
+    if (!validMarbleWorldUrl(value)) { setStatus('INVALID MARBLE WORLD LINK'); return }
+    const next = { ...spec, marbleWorldUrl: value }
+    setSpec(next)
+    localStorage.setItem('proofttl:world:last', JSON.stringify(next))
+    setStatus('MARBLE WORLD LINKED')
+  }
+  function openLinkedMarbleWorld() {
+    const value = (spec.marbleWorldUrl || marbleUrl).trim()
+    if (!validMarbleWorldUrl(value)) { setStatus('NO VALID MARBLE WORLD LINK'); return }
+    window.open(value, '_blank', 'noopener,noreferrer')
+  }
 
   return (
     <div className="world-builder">
       <section className="world-builder-command">
-        <div><p className="app-kicker">WORLDS / 3D STUDIO</p><h1>Describe a world. Build it in the browser.</h1><p>ProofTTL now owns the local world contract: procedural composition, live WebGL rendering, project save/load, portable JSON and Cinematics handoff. Cloud generators can become optional adapters later instead of the product dependency.</p></div>
-        <form onSubmit={generate}><textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={3} maxLength={500} aria-label="Describe a 3D world" /><div><button className="button button-primary">GENERATE LOCALLY →</button><button className="button button-secondary" type="button" onClick={saveLocal}>SAVE</button><button className="button button-secondary" type="button" onClick={loadLocal}>LOAD</button><label className="button button-secondary">IMPORT JSON<input hidden type="file" accept="application/json,.json" onChange={importJson} /></label><button className="button button-secondary" type="button" onClick={() => setJsonOpen((value) => !value)}>{jsonOpen ? 'HIDE JSON' : 'VIEW JSON'}</button><button className="button button-secondary" type="button" onClick={exportJson}>EXPORT JSON</button><button className="button button-secondary" type="button" onClick={sendToCinematics}>SEND TO CINEMATICS</button></div></form>
+        <div><p className="app-kicker">WORLDS / 3D STUDIO</p><h1>Describe a world. Build it in the browser.</h1><p>Use ProofTTL's instant local world builder for free, or hand the same prompt to Marble's free web plan for a high-fidelity generated environment. Marble's API is paid, so ProofTTL does not pretend the free web credits are API credits.</p></div>
+        <form onSubmit={generate}><textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={3} maxLength={500} aria-label="Describe a 3D world" /><div><button className="button button-primary">GENERATE LOCALLY →</button><button className="button button-secondary" type="button" onClick={() => void openMarbleFree()}>OPEN IN MARBLE FREE ↗</button><button className="button button-secondary" type="button" onClick={saveLocal}>SAVE</button><button className="button button-secondary" type="button" onClick={loadLocal}>LOAD</button><label className="button button-secondary">IMPORT JSON<input hidden type="file" accept="application/json,.json" onChange={importJson} /></label><button className="button button-secondary" type="button" onClick={() => setJsonOpen((value) => !value)}>{jsonOpen ? 'HIDE JSON' : 'VIEW JSON'}</button><button className="button button-secondary" type="button" onClick={exportJson}>EXPORT JSON</button><button className="button button-secondary" type="button" onClick={sendToCinematics}>SEND TO CINEMATICS</button></div></form>
+        <div className="world-marble-link"><input value={marbleUrl} onChange={(event) => setMarbleUrl(event.target.value)} placeholder="Paste Marble share link after generation: https://marble.worldlabs.ai/world/..." aria-label="Marble world share link" /><button className="button button-secondary" type="button" onClick={attachMarbleWorld}>LINK MARBLE WORLD</button><button className="button button-secondary" type="button" onClick={openLinkedMarbleWorld}>OPEN LINKED WORLD ↗</button></div>
       </section>
 
       <section className="world-stage">
-        <div className="world-stage-head"><div><span>LIVE WEBGL PREVIEW</span><strong>{spec.name}</strong></div><div><small>{spec.mood}</small><small>{spec.objects.length} OBJECTS</small><small>{status}</small><small>ORBIT / ZOOM ENABLED</small></div></div>
+        <div className="world-stage-head"><div><span>LIVE WEBGL PREVIEW</span><strong>{spec.name}</strong></div><div><small>{spec.mood}</small><small>{spec.objects.length} OBJECTS</small><small>{status}</small><small>{spec.marbleWorldUrl ? 'MARBLE LINKED' : 'LOCAL ONLY'}</small><small>ORBIT / ZOOM ENABLED</small></div></div>
         <iframe title={`3D preview: ${spec.name}`} srcDoc={previewDocument} sandbox="allow-scripts" />
       </section>
 
-      {jsonOpen && <section className="world-json"><div><p className="app-kicker">SCENE SPEC</p><h2>Portable by design.</h2><p>This scene is native ProofTTL data. We can progressively add asset generation, terrain, materials, characters, animation, physics and game-engine exports without changing the core project format.</p></div><pre>{JSON.stringify(spec, null, 2)}</pre></section>}
+      {jsonOpen && <section className="world-json"><div><p className="app-kicker">SCENE SPEC</p><h2>Portable by design.</h2><p>This scene is native ProofTTL data. A linked Marble share URL is stored with the project without pretending ProofTTL owns or downloads Marble's paid export assets.</p></div><pre>{JSON.stringify(spec, null, 2)}</pre></section>}
 
       <section className="world-capabilities">
         <article><span>WORKING NOW</span><strong>Prompt → procedural world</strong><p>Deterministic prompt-driven composition, lighting, fog, geometry, camera, orbit controls and live WebGL.</p></article>
+        <article><span>FREE CLOUD BRIDGE</span><strong>Marble web generation</strong><p>Copy the current prompt, open Marble Free, generate with its free monthly web credits, then attach the share link back to this ProofTTL project.</p></article>
         <article><span>WORKING NOW</span><strong>Native projects</strong><p>Save and restore worlds locally, import/export portable scene JSON and keep the project independent from paid APIs.</p></article>
         <article><span>WORKING NOW</span><strong>Cinematics handoff</strong><p>A world can be handed directly into ProofTTL Cinematics as the basis for shot planning and future camera paths.</p></article>
-        <article><span>BUILDING UP</span><strong>Marble-class generation</strong><p>Terrain, generated meshes, textures, spatial editing, characters, animation and richer scene synthesis can be layered onto this native engine.</p></article>
       </section>
     </div>
   )
