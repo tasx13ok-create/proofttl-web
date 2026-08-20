@@ -1,14 +1,8 @@
 {
   "redirects": [
-    {
-      "source": "/trust.html",
-      "destination": "/trust/",
-      "permanent": true
-    },
-    {
-      "source": "/lease-ops.html",
-      "destination": "/lease-ops/",
-      "permanent": true
-    }
+    { "source": "/trust.html", "destination": "/trust/", "permanent": true },
+    { "source": "/lease-ops.html", "destination": "/lease-ops/", "permanent": true },
+    { "source": "/status.html", "destination": "/status/", "permanent": true },
+    { "source": "/methodology.html", "destination": "/how-proofttl-works/", "permanent": true }
   ]
 }
