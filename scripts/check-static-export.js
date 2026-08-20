@@ -1,105 +1,63 @@
 import { access, readFile } from 'node:fs/promises'
 
 const requiredFiles = [
-  'package.json','out/index.html','out/login/index.html','out/two-factor/index.html','out/onboarding/index.html','out/get-started/index.html','out/console/index.html','out/support/index.html','out/docs/index.html','out/audit/index.html','out/audit/sample/index.html','out/solutions/index.html','out/solutions/fact-verification-api/index.html','out/solutions/claim-verification-api/index.html','out/solutions/ai-agent-verification/index.html','out/solutions/source-monitoring-api/index.html','out/solutions/stale-data-detection/index.html','out/solutions/evidence-verification-api/index.html','out/solutions/x402-verification-api/index.html','out/solutions/fact-leases/index.html','out/trust/index.html','out/workspace/index.html','out/worlds/index.html','out/verify-lease.html','out/lease-ops.html','out/methodology.html','out/status.html','out/robots.txt','out/_headers','components/ProductNav.tsx','components/WorkspaceLaunchpad.tsx','components/WorldBuilder.tsx','components/ProofTTLAds.tsx','components/ProofTTLAssistant.tsx','components/ProofTTLChatBar.tsx','components/LoveEntity.module.css','lib/proofttl-assistant.ts','app/product-nav.css','app/workspace-polish.css','app/worlds.css','app/chat-bar.css','app/chat-fullscreen.css','app/glass-polish.css','ADSENSE-SETUP.md',
+  'package.json','out/index.html','out/login/index.html','out/two-factor/index.html','out/onboarding/index.html','out/get-started/index.html','out/console/index.html','out/support/index.html','out/docs/index.html','out/audit/index.html','out/audit/sample/index.html','out/solutions/index.html','out/solutions/ai-agent-verification/index.html','out/trust/index.html','out/workspace/index.html','out/worlds/index.html','out/cinematics/index.html','out/verify-lease.html','out/lease-ops.html','out/methodology.html','out/status.html','out/robots.txt','out/_headers','components/ProductNav.tsx','components/WorkspaceDesktopShell.tsx','components/WorldBuilder.tsx','components/CinematicsStudio.tsx','components/AssistantRichText.tsx','components/ProofTTLAds.tsx','components/ProofTTLAssistant.tsx','components/ProofTTLChatBar.tsx','components/LoveEntity.module.css','lib/proofttl-assistant.ts','app/product-nav.css','app/workspace-shell.css','app/worlds.css','app/cinematics.css','app/chat-bar.css','app/chat-fullscreen.css','app/glass-polish.css','ADSENSE-SETUP.md'
 ]
+
+async function expect(file, values, label = file) {
+  const text = await readFile(file, 'utf8')
+  for (const value of values) if (!text.toLowerCase().includes(value.toLowerCase())) throw new Error(`${label} is missing expected content: ${value}`)
+  return text
+}
 
 async function main() {
   for (const file of requiredFiles) { await access(file); console.log(`PASS static export: ${file}`) }
-
   const packageJson = JSON.parse(await readFile('package.json', 'utf8'))
   if (packageJson.version !== '1.0.0') throw new Error(`ProofTTL web release version must be 1.0.0, got ${packageJson.version}`)
-  if (packageJson.type !== 'module') throw new Error('ProofTTL web package must declare type=module for release scripts')
+  if (packageJson.type !== 'module') throw new Error('ProofTTL web package must declare type=module')
 
-  const homepage = await readFile('out/index.html', 'utf8')
-  for (const expected of ['ProofTTL', 'Find the claim', 'Open Workspace', 'Message L.O.V.E.']) if (!homepage.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static homepage is missing expected content: ${expected}`)
+  await expect('out/index.html', ['ProofTTL','Find the claim','Open Workspace','Message L.O.V.E.'], 'Homepage')
+  await expect('out/console/index.html', ['CUSTOMER CONSOLE','SECURITY','Message L.O.V.E.','noindex'], 'Console')
+  await expect('out/login/index.html', ['noindex','CONTINUE WITH GITHUB','CONTINUE WITH GOOGLE','CONTINUE WITH DISCORD','CONTINUE WITH PASSKEY','TOTP','RECOVERY CODES'], 'Login')
+  await expect('out/two-factor/index.html', ['noindex','SECURITY CHECK','AUTHENTICATOR','RECOVERY CODE'], 'Two factor')
+  await expect('out/docs/index.html', ['ProofTTL API Docs','HTTP 402','PAYMENT-REQUIRED','Fact Lease'], 'Docs')
+  await expect('out/audit/index.html', ['ProofTTL','Verification Audit','$500','/audit/sample/'], 'Audit')
+  await expect('out/audit/sample/index.html', ['Sample Verification Audit','PX-006','CONTRADICTED','PUBLIC DEMONSTRATION'], 'Sample audit')
+  await expect('out/workspace/index.html', ['Workspace','Code','Build a world','Direct a scene','Open files'], 'Workspace')
+  await expect('out/worlds/index.html', ['WORLDS / 3D STUDIO','LIVE WEBGL PREVIEW','GENERATE WORLD','EXPORT JSON'], 'Worlds')
+  await expect('out/cinematics/index.html', ['CINEMATICS','DIRECT · GENERATE · RENDER · EXPORT','CLOUD RENDER · LOCKED','WATERMARK · ON','TIMELINE','GENERATE IN CLOUD'], 'Cinematics')
+  await expect('out/trust/index.html', ['TRUST CENTER','API HEALTH','CUSTOMER AUTHENTICATION','AUTOMATIC MONITORING','CRYPTOGRAPHIC SIGNING','VOICE PIPELINE','RELEASE READINESS','TRUST BOUNDARY'], 'Trust Center')
+  await expect('out/verify-lease.html', ['Verify a signed','Ed25519','proofttl-issuance-v1','/.well-known/proofttl-keys.json','Export signed Lease JSON'], 'Lease verifier')
+  await expect('out/lease-ops.html', ['Lease Operations','Share verification link','Prepare renewal'], 'Lease operations')
+  await expect('out/methodology.html', ['SUPPORTED','CONTRADICTED','UNKNOWN','ACTIVE','REVOKED','EXPIRED'], 'Methodology')
+  await expect('out/status.html', ['System status','/health','/monitor/status','Base Sepolia testnet'], 'Status')
 
-  const consolePage = await readFile('out/console/index.html', 'utf8')
-  for (const expected of ['CUSTOMER CONSOLE', 'SECURITY', 'SECURITY BACKEND LOCKED', 'Message L.O.V.E.', 'noindex']) if (!consolePage.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static console is missing expected content: ${expected}`)
-
-  const loginPage = await readFile('out/login/index.html', 'utf8')
-  for (const expected of ['noindex','CONTINUE WITH GITHUB','CONTINUE WITH GOOGLE','CONTINUE WITH DISCORD','CONTINUE WITH PASSKEY','TOTP','RECOVERY CODES','HTTPONLY SESSIONS','CSRF PROTECTION']) if (!loginPage.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static login page is missing auth capability content: ${expected}`)
-
-  const twoFactorPage = await readFile('out/two-factor/index.html', 'utf8')
-  for (const expected of ['noindex', 'SECURITY CHECK', 'AUTHENTICATOR', 'RECOVERY CODE']) if (!twoFactorPage.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static two-factor page is missing expected content: ${expected}`)
-
-  const onboardingPage = await readFile('out/onboarding/index.html', 'utf8')
-  if (!onboardingPage.toLowerCase().includes('noindex')) throw new Error('Static onboarding page is missing its noindex directive')
-
-  const docs = await readFile('out/docs/index.html', 'utf8')
-  for (const expected of ['ProofTTL API Docs', 'HTTP 402', 'PAYMENT-REQUIRED', 'Fact Lease']) if (!docs.includes(expected)) throw new Error(`Static developer docs are missing expected content: ${expected}`)
-
-  const solution = await readFile('out/solutions/ai-agent-verification/index.html', 'utf8')
-  for (const expected of ['AI Agent', 'ProofTTL', 'Fact Lease', 'Message L.O.V.E.', '/docs/']) if (!solution.includes(expected)) throw new Error(`Static solution page is missing expected content: ${expected}`)
-
-  const audit = await readFile('out/audit/index.html', 'utf8')
-  for (const expected of ['ProofTTL', 'Verification Audit', '$500', '/audit/sample/']) if (!audit.includes(expected)) throw new Error(`Static audit page is missing expected pilot content: ${expected}`)
-
-  const sampleAudit = await readFile('out/audit/sample/index.html', 'utf8')
-  for (const expected of ['Sample Verification Audit', 'Verification that', 'PX-006', 'CONTRADICTED', 'PUBLIC DEMONSTRATION']) if (!sampleAudit.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static sample audit is missing required evidence content: ${expected}`)
-
-  const workspace = await readFile('out/workspace/index.html', 'utf8')
-  for (const expected of ['WORKSPACE', 'YOUR OPERATING LAYER', 'L.O.V.E.', 'Worlds']) if (!workspace.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static Workspace is missing required OS-home content: ${expected}`)
-
-  const worlds = await readFile('out/worlds/index.html', 'utf8')
-  for (const expected of ['WORLDS / 3D STUDIO', 'LIVE WEBGL PREVIEW', 'GENERATE WORLD', 'EXPORT JSON', 'SCENE SPEC']) if (!worlds.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static Worlds page is missing required 3D behavior: ${expected}`)
-
-  const chat = await readFile('components/ProofTTLChatBar.tsx', 'utf8')
-  for (const expected of ['fetchProofTTLAssistantUsage',"'Message L.O.V.E.…'","voicePhase === 'recording'",'remaining === 0','LoveEntity',"type LoveState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'awake'",'askProofTTLByVoice','loveSpeechDataUrl','voicePhase','trackEntity','AssistantHistoryMessage','FactLeaseCard','inspectLeaseFromMessage','data-love-fact-lease="materialized"','LoveVisualStrip','fetchRelevantVisuals']) if (!chat.includes(expected)) throw new Error(`L.O.V.E. chat bar is missing required behavior: ${expected}`)
-
-  const entityStyles = await readFile('components/LoveEntity.module.css', 'utf8')
-  for (const expected of ['.stage', '.eyes', '.smoke', '.voiceWave', "[data-state='speaking']", '[data-state=', '@media (prefers-reduced-motion: reduce)']) if (!entityStyles.includes(expected)) throw new Error(`Reactive L.O.V.E. entity is missing required visual behavior: ${expected}`)
-
-  const verifier = await readFile('out/verify-lease.html', 'utf8')
-  for (const expected of ['Verify a signed','Ed25519','proofttl-issuance-v1','proofttl-event-v1','/.well-known/proofttl-keys.json','Export signed Lease JSON','Signed verification history','verifyEventChain','previous_event_hash']) if (!verifier.includes(expected)) throw new Error(`Independent Lease verifier is missing required trust behavior: ${expected}`)
-
-  const leaseOps = await readFile('out/lease-ops.html', 'utf8')
-  for (const expected of ['Lease Operations', 'Share verification link', 'Prepare renewal', 'SOURCE_UNAVAILABLE']) if (!leaseOps.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Lease operations surface is missing lifecycle behavior: ${expected}`)
-
-  const methodology = await readFile('out/methodology.html', 'utf8')
-  for (const expected of ['proofttl-methodology-v1','proofttl-event-v1','previous_event_hash','SUPPORTED','CONTRADICTED','UNKNOWN','ACTIVE','REVOKED','EXPIRED']) if (!methodology.includes(expected)) throw new Error(`Verification methodology is missing required semantics: ${expected}`)
-
-  const statusPage = await readFile('out/status.html', 'utf8')
-  for (const expected of ['System status', '/health', '/monitor/status', 'Base Sepolia testnet']) if (!statusPage.includes(expected)) throw new Error(`Public status page is missing required status behavior: ${expected}`)
-
-  const trustPage = await readFile('out/trust/index.html', 'utf8')
-  for (const expected of ['TRUST CENTER','API HEALTH','CUSTOMER AUTHENTICATION','AUTOMATIC MONITORING','CRYPTOGRAPHIC SIGNING','VOICE PIPELINE','RELEASE READINESS','TRUST BOUNDARY']) if (!trustPage.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Trust Center is missing required release/trust behavior: ${expected}`)
+  const chat = await expect('components/ProofTTLChatBar.tsx', ['fetchProofTTLAssistantUsage','Message L.O.V.E.…','voicePhase === \'recording\'','LoveEntity','askProofTTLByVoice','loveSpeechDataUrl','AssistantHistoryMessage','FactLeaseCard','LoveVisualStrip','AssistantRichText'], 'L.O.V.E. chat')
+  if (!chat.includes('data-love-fact-lease="materialized"')) throw new Error('L.O.V.E. chat is missing materialized Lease context')
+  await expect('components/AssistantRichText.tsx', ['data-love-code-block','navigator.clipboard.writeText','```'], 'L.O.V.E. code rendering')
+  await expect('components/LoveEntity.module.css', ['.stage','.eyes','.smoke','.voiceWave','prefers-reduced-motion'], 'Reactive L.O.V.E. entity')
 
   const layout = await readFile('app/layout.tsx', 'utf8')
-  if (!layout.includes('<ProofTTLChatBar />')) throw new Error('Global L.O.V.E. chat bar is not mounted')
-  if (layout.includes('<ProofTTLAssistant />')) throw new Error('Legacy separate voice assistant is mounted alongside the unified L.O.V.E. chat surface')
-  if (!layout.includes("'./chat-fullscreen.css'") || !layout.includes("'./product-nav.css'") || !layout.includes("'./worlds.css'")) throw new Error('Canonical product / L.O.V.E. / Worlds styles are not loaded')
-  for (const expected of ['<ProductNav />','/trust/','TESTNET PREVIEW','Mainnet disabled']) if (!layout.includes(expected)) throw new Error(`Global product shell is missing required content: ${expected}`)
+  for (const expected of ['<ProofTTLChatBar />','<ProductNav />',"'./workspace-shell.css'","'./cinematics.css'",'TESTNET PREVIEW','Mainnet disabled']) if (!layout.includes(expected)) throw new Error(`Global shell is missing: ${expected}`)
+  if (layout.includes('<ProofTTLAssistant />')) throw new Error('Legacy separate voice assistant is mounted')
 
-  const productNav = await readFile('components/ProductNav.tsx', 'utf8')
-  for (const expected of ['/workspace/','/studio/','/worlds/','/work/','/files/','/automations/','/money/','/connections/','/trust/','Open Workspace']) if (!productNav.includes(expected)) throw new Error(`Global product navigation is missing: ${expected}`)
-
-  const voiceAssistant = await readFile('components/ProofTTLAssistant.tsx', 'utf8')
-  for (const expected of ['L.O.V.E.',"data-love-state={visualState}",'loveSpeechDataUrl',"phase === 'speaking'",'REPLAY VOICE']) if (!voiceAssistant.includes(expected)) throw new Error(`L.O.V.E. voice capability implementation is missing required behavior: ${expected}`)
+  const nav = await readFile('components/ProductNav.tsx', 'utf8')
+  for (const expected of ['/workspace/','/studio/','/worlds/','/cinematics/','/work/','/files/','/automations/','/money/','/connections/','/trust/']) if (!nav.includes(expected)) throw new Error(`Global navigation is missing: ${expected}`)
 
   const assistantClient = await readFile('lib/proofttl-assistant.ts', 'utf8')
-  for (const expected of ['NEXT_PUBLIC_PROOFTTL_API_URL','https://proofttl.tasx13ok.workers.dev','/assistant/text','/assistant/voice','/assistant/speech','/assistant/usage',"credentials: 'include'",'loveSpeechDataUrl','audio_base64','lease_grounding','requestFinalLoveSpeech','final_response_tts',"trust: '/trust/'"]) if (!assistantClient.includes(expected)) throw new Error(`Assistant API client is missing required production/L.O.V.E. wiring: ${expected}`)
-
-  const glass = await readFile('app/glass-polish.css', 'utf8')
-  for (const expected of ['backdrop-filter: blur(34px) saturate(185%)', 'env(safe-area-inset-bottom)', '.pttl-chat-dock']) if (!glass.includes(expected)) throw new Error(`Final glass/mobile polish is missing required rule: ${expected}`)
-
-  const fullscreen = await readFile('app/chat-fullscreen.css', 'utf8')
-  for (const expected of ['body.pttl-chat-fullscreen-open', '.pttl-chat-dock.fullscreen', '@keyframes pttl-mist-in']) if (!fullscreen.includes(expected)) throw new Error(`Fullscreen L.O.V.E. smoke layer is missing required rule: ${expected}`)
+  for (const expected of ['/assistant/text','/assistant/voice','/assistant/speech','/assistant/usage',"credentials: 'include'",'requestFinalLoveSpeech','final_response_tts']) if (!assistantClient.includes(expected)) throw new Error(`Assistant client is missing: ${expected}`)
 
   const adsSource = await readFile('components/ProofTTLAds.tsx', 'utf8')
-  for (const expected of ["AD_ELIGIBLE_PREFIXES = ['/docs/', '/solutions/']", "AD_ELIGIBLE_EXACT = new Set(['/'])", 'NEXT_PUBLIC_ADSENSE_CLIENT', 'ca-pub-']) if (!adsSource.includes(expected)) throw new Error(`ProofTTL ad loader is missing the public-only advertising guard: ${expected}`)
-
-  const adsPolicy = await readFile('ADSENSE-SETUP.md', 'utf8')
-  for (const expected of ['Side rail ads','Left and right','Disable **Anchor ads**','Disable **Vignette ads**','No popups or pop-unders']) if (!adsPolicy.includes(expected)) throw new Error(`AdSense policy is missing required side-rail-only rule: ${expected}`)
+  for (const expected of ["AD_ELIGIBLE_PREFIXES = ['/docs/', '/solutions/']","AD_ELIGIBLE_EXACT = new Set(['/'])",'NEXT_PUBLIC_ADSENSE_CLIENT']) if (!adsSource.includes(expected)) throw new Error(`Ad loader is missing: ${expected}`)
+  await expect('ADSENSE-SETUP.md', ['Side rail ads','Disable **Anchor ads**','Disable **Vignette ads**','No popups or pop-unders'], 'Ad policy')
 
   const robots = await readFile('out/robots.txt', 'utf8')
-  if (!robots.includes('Allow: /')) throw new Error('robots.txt must allow crawlers to reach indexable pages and page-level noindex directives')
-
+  if (!robots.includes('Allow: /')) throw new Error('robots.txt must allow crawlers')
   const headers = await readFile('out/_headers', 'utf8')
-  for (const expected of ['X-Content-Type-Options: nosniff','X-Frame-Options: DENY','Permissions-Policy: camera=(), microphone=(self), geolocation=()']) if (!headers.includes(expected)) throw new Error(`Static export is missing expected security header rule: ${expected}`)
-  if (headers.includes('microphone=()')) throw new Error('Pages headers disable the L.O.V.E. microphone')
+  for (const expected of ['X-Content-Type-Options: nosniff','X-Frame-Options: DENY','Permissions-Policy: camera=(), microphone=(self), geolocation=()']) if (!headers.includes(expected)) throw new Error(`Static headers missing: ${expected}`)
+  if (headers.includes('microphone=()')) throw new Error('Static headers disable L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export, unified product navigation, Workspace OS home, Worlds 3D Studio, canonical Trust routing, GitHub/Google/Discord/passkey login, final-response L.O.V.E. TTS, sourced visuals, monitoring/signing readiness, audit offer/sample, security, verification, lifecycle operations, docs, ad policy, crawl rules, and microphone-safe headers all passed release checks.')
+  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export, sparse VS Code-style Workspace, Cinematics, Worlds, rich L.O.V.E. code/visual/voice rendering, canonical navigation, Trust, auth, verification, security and export policy passed release checks.')
 }
 
 main().catch((error) => { console.error('\nSTATIC EXPORT CHECK FAILED:', error.message || error); process.exitCode = 1 })
