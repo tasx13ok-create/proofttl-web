@@ -1,7 +1,7 @@
 import { access, readFile } from 'node:fs/promises'
 
 const requiredFiles = [
-  'package.json','out/index.html','out/login/index.html','out/two-factor/index.html','out/onboarding/index.html','out/get-started/index.html','out/console/index.html','out/support/index.html','out/docs/index.html','out/audit/index.html','out/audit/sample/index.html','out/solutions/index.html','out/solutions/fact-verification-api/index.html','out/solutions/claim-verification-api/index.html','out/solutions/ai-agent-verification/index.html','out/solutions/source-monitoring-api/index.html','out/solutions/stale-data-detection/index.html','out/solutions/evidence-verification-api/index.html','out/solutions/x402-verification-api/index.html','out/solutions/fact-leases/index.html','out/trust/index.html','out/workspace/index.html','out/verify-lease.html','out/lease-ops.html','out/methodology.html','out/status.html','out/robots.txt','out/_headers','components/ProofTTLAds.tsx','components/ProofTTLAssistant.tsx','components/ProofTTLChatBar.tsx','components/LoveEntity.module.css','lib/proofttl-assistant.ts','app/nav-glass.css','app/chat-bar.css','app/chat-fullscreen.css','app/glass-polish.css','ADSENSE-SETUP.md',
+  'package.json','out/index.html','out/login/index.html','out/two-factor/index.html','out/onboarding/index.html','out/get-started/index.html','out/console/index.html','out/support/index.html','out/docs/index.html','out/audit/index.html','out/audit/sample/index.html','out/solutions/index.html','out/solutions/fact-verification-api/index.html','out/solutions/claim-verification-api/index.html','out/solutions/ai-agent-verification/index.html','out/solutions/source-monitoring-api/index.html','out/solutions/stale-data-detection/index.html','out/solutions/evidence-verification-api/index.html','out/solutions/x402-verification-api/index.html','out/solutions/fact-leases/index.html','out/trust/index.html','out/workspace/index.html','out/worlds/index.html','out/verify-lease.html','out/lease-ops.html','out/methodology.html','out/status.html','out/robots.txt','out/_headers','components/ProductNav.tsx','components/WorkspaceLaunchpad.tsx','components/WorldBuilder.tsx','components/ProofTTLAds.tsx','components/ProofTTLAssistant.tsx','components/ProofTTLChatBar.tsx','components/LoveEntity.module.css','lib/proofttl-assistant.ts','app/product-nav.css','app/workspace-polish.css','app/worlds.css','app/chat-bar.css','app/chat-fullscreen.css','app/glass-polish.css','ADSENSE-SETUP.md',
 ]
 
 async function main() {
@@ -12,7 +12,7 @@ async function main() {
   if (packageJson.type !== 'module') throw new Error('ProofTTL web package must declare type=module for release scripts')
 
   const homepage = await readFile('out/index.html', 'utf8')
-  for (const expected of ['ProofTTL', 'Truth with', 'Sign in', 'Message L.O.V.E.']) if (!homepage.includes(expected)) throw new Error(`Static homepage is missing expected content: ${expected}`)
+  for (const expected of ['ProofTTL', 'Find the claim', 'Open Workspace', 'Message L.O.V.E.']) if (!homepage.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static homepage is missing expected content: ${expected}`)
 
   const consolePage = await readFile('out/console/index.html', 'utf8')
   for (const expected of ['CUSTOMER CONSOLE', 'SECURITY', 'SECURITY BACKEND LOCKED', 'Message L.O.V.E.', 'noindex']) if (!consolePage.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static console is missing expected content: ${expected}`)
@@ -39,10 +39,13 @@ async function main() {
   for (const expected of ['Sample Verification Audit', 'Verification that', 'PX-006', 'CONTRADICTED', 'PUBLIC DEMONSTRATION']) if (!sampleAudit.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static sample audit is missing required evidence content: ${expected}`)
 
   const workspace = await readFile('out/workspace/index.html', 'utf8')
-  for (const expected of ['WORKSPACE', 'ONE INTERFACE', 'L.O.V.E.']) if (!workspace.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static Workspace is missing required command-center content: ${expected}`)
+  for (const expected of ['WORKSPACE', 'YOUR OPERATING LAYER', 'L.O.V.E.', 'Worlds']) if (!workspace.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static Workspace is missing required OS-home content: ${expected}`)
+
+  const worlds = await readFile('out/worlds/index.html', 'utf8')
+  for (const expected of ['WORLDS / 3D STUDIO', 'LIVE WEBGL PREVIEW', 'GENERATE WORLD', 'EXPORT JSON', 'SCENE SPEC']) if (!worlds.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Static Worlds page is missing required 3D behavior: ${expected}`)
 
   const chat = await readFile('components/ProofTTLChatBar.tsx', 'utf8')
-  for (const expected of ['fetchProofTTLAssistantUsage',"'Message L.O.V.E.…'","voicePhase === 'recording'",'remaining === 0','LoveEntity',"type LoveState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'awake'",'askProofTTLByVoice','loveSpeechDataUrl','voicePhase','trackEntity','AssistantHistoryMessage','FactLeaseCard','inspectLeaseFromMessage','data-love-fact-lease="materialized"']) if (!chat.includes(expected)) throw new Error(`L.O.V.E. chat bar is missing required behavior: ${expected}`)
+  for (const expected of ['fetchProofTTLAssistantUsage',"'Message L.O.V.E.…'","voicePhase === 'recording'",'remaining === 0','LoveEntity',"type LoveState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'awake'",'askProofTTLByVoice','loveSpeechDataUrl','voicePhase','trackEntity','AssistantHistoryMessage','FactLeaseCard','inspectLeaseFromMessage','data-love-fact-lease="materialized"','LoveVisualStrip','fetchRelevantVisuals']) if (!chat.includes(expected)) throw new Error(`L.O.V.E. chat bar is missing required behavior: ${expected}`)
 
   const entityStyles = await readFile('components/LoveEntity.module.css', 'utf8')
   for (const expected of ['.stage', '.eyes', '.smoke', '.voiceWave', "[data-state='speaking']", '[data-state=', '@media (prefers-reduced-motion: reduce)']) if (!entityStyles.includes(expected)) throw new Error(`Reactive L.O.V.E. entity is missing required visual behavior: ${expected}`)
@@ -65,8 +68,11 @@ async function main() {
   const layout = await readFile('app/layout.tsx', 'utf8')
   if (!layout.includes('<ProofTTLChatBar />')) throw new Error('Global L.O.V.E. chat bar is not mounted')
   if (layout.includes('<ProofTTLAssistant />')) throw new Error('Legacy separate voice assistant is mounted alongside the unified L.O.V.E. chat surface')
-  if (!layout.includes("'./chat-fullscreen.css'")) throw new Error('Fullscreen L.O.V.E. chat styles are not loaded')
-  for (const expected of ['/trust/','/workspace/','OPEN WORKSPACE','/verify-lease.html','/lease-ops.html','/methodology.html','/status.html','TESTNET PREVIEW','Mainnet disabled']) if (!layout.includes(expected)) throw new Error(`Global trust/workspace strip is missing required content: ${expected}`)
+  if (!layout.includes("'./chat-fullscreen.css'") || !layout.includes("'./product-nav.css'") || !layout.includes("'./worlds.css'")) throw new Error('Canonical product / L.O.V.E. / Worlds styles are not loaded')
+  for (const expected of ['<ProductNav />','/trust/','TESTNET PREVIEW','Mainnet disabled']) if (!layout.includes(expected)) throw new Error(`Global product shell is missing required content: ${expected}`)
+
+  const productNav = await readFile('components/ProductNav.tsx', 'utf8')
+  for (const expected of ['/workspace/','/studio/','/worlds/','/work/','/files/','/automations/','/money/','/connections/','/trust/','Open Workspace']) if (!productNav.includes(expected)) throw new Error(`Global product navigation is missing: ${expected}`)
 
   const voiceAssistant = await readFile('components/ProofTTLAssistant.tsx', 'utf8')
   for (const expected of ['L.O.V.E.',"data-love-state={visualState}",'loveSpeechDataUrl',"phase === 'speaking'",'REPLAY VOICE']) if (!voiceAssistant.includes(expected)) throw new Error(`L.O.V.E. voice capability implementation is missing required behavior: ${expected}`)
@@ -79,9 +85,6 @@ async function main() {
 
   const fullscreen = await readFile('app/chat-fullscreen.css', 'utf8')
   for (const expected of ['body.pttl-chat-fullscreen-open', '.pttl-chat-dock.fullscreen', '@keyframes pttl-mist-in']) if (!fullscreen.includes(expected)) throw new Error(`Fullscreen L.O.V.E. smoke layer is missing required rule: ${expected}`)
-
-  const navGlass = await readFile('app/nav-glass.css', 'utf8')
-  for (const expected of ['.nav::before', '.nav::after', '@media (max-width: 900px)']) if (!navGlass.includes(expected)) throw new Error(`Floating navigation glass layer is missing required rule: ${expected}`)
 
   const adsSource = await readFile('components/ProofTTLAds.tsx', 'utf8')
   for (const expected of ["AD_ELIGIBLE_PREFIXES = ['/docs/', '/solutions/']", "AD_ELIGIBLE_EXACT = new Set(['/'])", 'NEXT_PUBLIC_ADSENSE_CLIENT', 'ca-pub-']) if (!adsSource.includes(expected)) throw new Error(`ProofTTL ad loader is missing the public-only advertising guard: ${expected}`)
@@ -96,7 +99,7 @@ async function main() {
   for (const expected of ['X-Content-Type-Options: nosniff','X-Frame-Options: DENY','Permissions-Policy: camera=(), microphone=(self), geolocation=()']) if (!headers.includes(expected)) throw new Error(`Static export is missing expected security header rule: ${expected}`)
   if (headers.includes('microphone=()')) throw new Error('Pages headers disable the L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export, canonical Trust + Workspace routing, GitHub/Google/Discord/passkey login, final-response L.O.V.E. TTS, monitoring/signing/voice readiness, audit offer/sample, security, reactive voice + Lease context, verification, lifecycle operations, methodology, status, docs, ad policy, crawl rules, and microphone-safe headers all passed release checks.')
+  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export, unified product navigation, Workspace OS home, Worlds 3D Studio, canonical Trust routing, GitHub/Google/Discord/passkey login, final-response L.O.V.E. TTS, sourced visuals, monitoring/signing readiness, audit offer/sample, security, verification, lifecycle operations, docs, ad policy, crawl rules, and microphone-safe headers all passed release checks.')
 }
 
 main().catch((error) => { console.error('\nSTATIC EXPORT CHECK FAILED:', error.message || error); process.exitCode = 1 })
