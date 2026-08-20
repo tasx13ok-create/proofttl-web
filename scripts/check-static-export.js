@@ -47,7 +47,7 @@ async function main() {
   if (layout.includes('<ProofTTLAssistant />')) throw new Error('Legacy separate voice assistant is mounted')
 
   const nav = await readFile('components/ProductNav.tsx', 'utf8')
-  for (const expected of ['/workspace/','/studio/','/worlds/','/cinematics/','/work/','/files/','/automations/','/money/','/connections/','/trust/','/proofttl-logo-lockup.png','alt="ProofTTL"']) if (!nav.includes(expected)) throw new Error(`Global navigation is missing: ${expected}`)
+  for (const expected of ['/workspace/','/studio/','/worlds/','/cinematics/','/work/','/files/','/automations/','/money/','/connections/','/trust/','product-brand-mark','product-brand-wordmark','ProofTTL']) if (!nav.includes(expected)) throw new Error(`Global navigation is missing: ${expected}`)
 
   const assistantClient = await readFile('lib/proofttl-assistant.ts', 'utf8')
   for (const expected of ['/assistant/text','/assistant/voice','/assistant/speech','/assistant/usage',"credentials: 'include'",'requestFinalLoveSpeech','final_response_tts']) if (!assistantClient.includes(expected)) throw new Error(`Assistant client is missing: ${expected}`)
