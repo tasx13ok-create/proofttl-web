@@ -38,17 +38,25 @@
 .product-brand {
   display: inline-flex;
   align-items: center;
-  min-width: 132px;
+  gap: 9px;
+  min-width: 170px;
   color: #f8fafc;
   text-decoration: none;
 }
 .product-brand-logo {
   display: block;
-  width: 132px;
+  width: 54px;
   height: 42px;
   object-fit: contain;
   object-position: left center;
-  filter: drop-shadow(0 0 12px rgba(34, 211, 238, .16));
+  filter: drop-shadow(0 0 12px rgba(34, 211, 238, .2));
+}
+.product-brand-wordmark {
+  display: inline-block;
+  color: #f8fafc;
+  font: 800 18px/1 'IBM Plex Mono', ui-monospace, monospace;
+  letter-spacing: -.04em;
+  white-space: nowrap;
 }
 .product-nav-primary {
   display: flex;
@@ -113,7 +121,6 @@
 .product-nav-more:focus-within .product-nav-menu { display: grid; }
 .product-nav-menu a { padding: 10px; border-radius: 7px; }
 
-/* The landing page used to ship its own competing header. The global product nav is now canonical. */
 .product-nav + main > .nav.shell { display: none; }
 
 @media (max-width: 1040px) {
@@ -124,8 +131,9 @@
 @media (max-width: 760px) {
   .product-network-strip { justify-content: flex-start; overflow-x: auto; white-space: nowrap; }
   .product-nav-inner { grid-template-columns: auto 1fr; min-height: 58px; }
-  .product-brand { min-width: 112px; }
-  .product-brand-logo { width: 112px; height: 36px; }
+  .product-brand { min-width: 142px; }
+  .product-brand-logo { width: 45px; height: 36px; }
+  .product-brand-wordmark { font-size: 16px; }
   .product-nav-primary { grid-column: 1 / -1; order: 3; padding-bottom: 8px; }
   .product-nav-primary a:nth-child(n+4) { display: inline-block; }
   .product-nav-actions { justify-self: end; }
@@ -134,8 +142,9 @@
 }
 @media (max-width: 520px) {
   .product-nav-inner { width: min(100% - 20px, 1240px); gap: 10px; }
-  .product-brand { min-width: 98px; }
-  .product-brand-logo { width: 98px; height: 34px; }
+  .product-brand { min-width: 124px; }
+  .product-brand-logo { width: 38px; height: 34px; }
+  .product-brand-wordmark { font-size: 15px; }
   .product-nav-workspace span { display: none; }
   .product-nav-primary a { padding: 8px 9px; }
 }
