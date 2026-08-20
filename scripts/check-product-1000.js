@@ -4,7 +4,7 @@ const root = process.cwd()
 const requiredFiles = [
   'app/page.tsx','app/audit/page.tsx','app/login/page.tsx','components/AuthLoginPanel.tsx','app/console/page.tsx',
   'components/ProductNav.tsx','app/how-proofttl-works/page.tsx','app/workspace/page.tsx','components/WorkspaceDesktopShell.tsx',
-  'app/worlds/page.tsx','components/WorldBuilder.tsx','app/cinematics/page.tsx','components/CinematicsStudio.tsx','components/LocalCinematicPreview.tsx','cinematics/core/Types.ts','cinematics/prompt/PromptParser.ts',
+  'app/worlds/page.tsx','components/WorldBuilder.tsx','app/cinematics/page.tsx','app/cinematics-v3.css','components/CinematicsStudio.tsx','components/LocalCinematicPreview.tsx','cinematics/core/Types.ts','cinematics/prompt/PromptParser.ts','cinematics/ai/Types.ts','lib/proofttl-cinematics.ts',
   'components/AssistantRichText.tsx','components/ProofTTLChatBar.tsx','app/trust/page.tsx','components/TrustCenter.tsx',
   'lib/proofttl-capabilities.ts','lib/proofttl-command.ts','lib/proofttl-visuals.ts','app/money/page.tsx','app/work/page.tsx',
   'components/WorkTaskCenter.tsx','app/files/page.tsx','components/FilesCenter.tsx','app/automations/page.tsx','components/AutomationCenter.tsx',
@@ -21,9 +21,10 @@ const workspacePage = read('app/workspace/page.tsx')
 const workspace = read('components/WorkspaceDesktopShell.tsx')
 const worlds = read('components/WorldBuilder.tsx')
 const cinematics = read('components/CinematicsStudio.tsx')
+const cinematicsCss = read('app/cinematics-v3.css')
 const localCinematics = read('components/LocalCinematicPreview.tsx')
-const cinematicTypes = read('cinematics/core/Types.ts')
-const cinematicParser = read('cinematics/prompt/PromptParser.ts')
+const cinematicAiTypes = read('cinematics/ai/Types.ts')
+const cinematicClient = read('lib/proofttl-cinematics.ts')
 const richText = read('components/AssistantRichText.tsx')
 const chat = read('components/ProofTTLChatBar.tsx')
 const trust = read('components/TrustCenter.tsx')
@@ -51,11 +52,14 @@ const checks = [
   [workspace.includes('os-activity') && workspace.includes('os-sidebar') && workspace.includes('os-tabs') && workspace.includes('os-terminal') && workspace.includes('os-status'), 'VS Code familiar Workspace shell'],
   [workspace.includes('/studio/') && workspace.includes('/worlds/') && workspace.includes('/cinematics/') && workspace.includes('/files/'), 'Workspace routes to canonical capability pages'],
   [worlds.includes('LIVE WEBGL PREVIEW') && worlds.includes('GENERATE LOCALLY') && worlds.includes('EXPORT JSON') && worlds.includes('OrbitControls'), 'real browser Worlds renderer'],
-  [cinematics.includes('LOCAL MOVIE · READY') && cinematics.includes('PROMPT PLANNER · V2') && cinematics.includes('CLOUD AI · OPTIONAL') && cinematics.includes('TIMELINE') && cinematics.includes('IMPORT WORLD') && cinematics.includes('LocalCinematicPreview'), 'local-first Cinematics v2 director surface'],
-  [localCinematics.includes('proofttl-cinematic-v2') && localCinematics.includes('captureStream') && localCinematics.includes('MediaRecorder') && localCinematics.includes('MeshToonMaterial') && localCinematics.includes('RECORD WEBM') && localCinematics.includes('TIMELINE IS SCRUBBABLE'), 'free local cinematic v2 renderer'],
-  [cinematicTypes.includes("schema: 'proofttl-cinematic-v2'") && cinematicTypes.includes('PlannedAction') && cinematicTypes.includes('CinematicPlan'), 'portable cinematic v2 schema'],
-  [cinematicParser.includes('parseCinematicPrompt') && cinematicParser.includes('restaurant_kitchen') && cinematicParser.includes('spinning_kick') && cinematicParser.includes('throw_success'), 'deterministic local cinematic prompt planner'],
-  [cinematics.includes('cinematic-v2.json') && cinematics.includes('EXPORT V2 PLAN'), 'portable cinematic v2 plan export'],
+  [cinematics.includes('data-ai-render-mode="true"') && cinematics.includes('DIRECT SCENE WITH AI') && cinematics.includes('STORYBOARD ALL') && cinematics.includes('RENDER SCENE') && cinematics.includes('PLAY REEL'), 'AI-first Cinematics v3 surface'],
+  [cinematics.includes('LOCAL PREVIS') && cinematics.includes('LocalCinematicPreview') && cinematics.includes('IMPORT WORLD') && cinematics.includes('TIMELINE'), 'Cinematics keeps local previs and canonical world handoff'],
+  [cinematics.includes('CONTINUITY BIBLE') && cinematics.includes('CONTACT') && cinematics.includes('continuity_in') && cinematics.includes('continuity_out'), 'Cinematics exposes continuity and physical-contact planning'],
+  [cinematics.includes('cinematic-v3.json') && cinematics.includes('EXPORT V3 PROJECT'), 'portable Cinematics v3 project export'],
+  [cinematicAiTypes.includes("schema: 'proofttl-cinematic-v3'") && cinematicAiTypes.includes('CinematicShotV3') && cinematicAiTypes.includes('ShotGenerationState'), 'portable Cinematics v3 AI schema'],
+  [cinematicClient.includes('/cinematics/plan') && cinematicClient.includes('/cinematics/storyboard') && cinematicClient.includes('/cinematics/render') && cinematicClient.includes("credentials: 'include'"), 'credential-aware Cinematics AI client'],
+  [cinematicsCss.includes('.cine-v3-workspace') && cinematicsCss.includes('.cine-v3-stage') && cinematicsCss.includes('.cine-v3-timeline'), 'film-first Cinematics desktop layout'],
+  [localCinematics.includes('proofttl-cinematic-v2') && localCinematics.includes('captureStream') && localCinematics.includes('MediaRecorder') && localCinematics.includes('RECORD WEBM') && localCinematics.includes('TIMELINE IS SCRUBBABLE'), 'free local cinematic previs remains available'],
   [richText.includes('```') && richText.includes('data-love-code-block') && richText.includes('navigator.clipboard.writeText'), 'safe copyable chat code blocks'],
   [chat.includes('AssistantRichText') && chat.includes('LoveVisualStrip') && chat.includes('fetchRelevantVisuals'), 'L.O.V.E. rich answer rendering'],
   [chat.includes('askProofTTLByVoice') && chat.includes('loveSpeechDataUrl') && chat.includes("type LoveState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'awake'"), 'voice and reactive L.O.V.E. preserved'],
