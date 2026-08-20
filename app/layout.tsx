@@ -25,10 +25,12 @@ export const metadata: Metadata = {
   title: 'ProofTTL v1.0.0 — Workspace intelligence, verification, and creation',
   description: 'L.O.V.E. is the intelligence and control layer across ProofTTL Workspace: verification, coding, 3D worlds, cinematics, files, tasks, automations, integrations, and connected tools.',
   generator: 'ProofTTL v1.0.0',
+  icons: { icon: '/proofttl-logo.png', apple: '/proofttl-logo.png' },
   openGraph: {
     title: 'ProofTTL v1.0.0 — Workspace intelligence, verification, and creation',
     description: 'One Workspace for L.O.V.E., verification, coding, 3D worlds, cinematics, files, tasks, automations, and connected tools.',
     type: 'website',
+    images: [{ url: '/proofttl-logo.png', alt: 'ProofTTL' }],
   },
 }
 
