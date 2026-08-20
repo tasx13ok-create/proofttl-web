@@ -1,109 +1,342 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import LocalCinematicPreview from './LocalCinematicPreview'
-import { parseCinematicPrompt } from '../cinematics/prompt/PromptParser'
+import {
+  generateStoryboard,
+  getCinematicsCapability,
+  planCinematic,
+  renderCinematicShot,
+} from '../lib/proofttl-cinematics'
+import type {
+  CinematicCapability,
+  CinematicPlanV3,
+  CinematicShotV3,
+  ShotGenerationState,
+} from '../cinematics/ai/Types'
 
-type Shot = { id: string; name: string; seconds: number; camera: string; note: string }
+type RenderMode = 'ai-film' | 'previs'
+type Resolution = '768P' | '1080P'
 
-const STARTER_SHOTS: Shot[] = [
-  { id: 'establish', name: 'Establishing', seconds: 4, camera: '24mm · stable wide', note: 'Reveal the environment and cast.' },
-  { id: 'pressure', name: 'Pressure', seconds: 4, camera: '35mm · side pressure', note: 'Bring the attackers into the frame without zoom creep.' },
-  { id: 'counter', name: 'Counter', seconds: 4, camera: '50mm · counter angle', note: 'Cut on the parry and counter.' },
-  { id: 'finish', name: 'Finish', seconds: 3, camera: '40mm · low finish', note: 'Give the final strike a clean silhouette.' },
+const DEFAULT_PROMPT = 'A tired martial artist enters a dim restaurant kitchen and gets surrounded by three attackers. One attacker swings a glass bottle. The hero catches the forearm and blocks the bottle, parries a punch from the second attacker, counters with a body strike, throws the first attacker across a stainless steel table, slips under a third attacker\'s hook, and ends with a spinning kick that lands cleanly. Keep the geography consistent and make every hit, block, miss, stumble, and impact physically readable.'
+
+const STYLES = [
+  'graphic grounded martial-arts cinema',
+  'painterly neo-noir action film',
+  'warm analog crime thriller',
+  'high-contrast urban graphic novel',
 ]
 
-const FILM_FIRST_CSS = `
-.cine-shell-film-first{border-radius:10px}.cine-main-film-first{grid-template-columns:176px minmax(0,1fr) 208px;min-height:0}.cine-film-column{display:block;min-width:0}.cine-shell-film-first .cine-local-movie{padding:8px;background:#05070a;border-bottom:1px solid rgba(148,163,184,.1)}.cine-shell-film-first .cine-local-head{margin:0 0 7px}.cine-shell-film-first .cine-local-movie iframe{height:min(68vh,680px);min-height:520px;border-radius:5px;border-color:rgba(148,163,184,.16)}.cine-shell-film-first .cine-local-movie>small{display:none}.cine-brand-row{display:flex;align-items:center;gap:10px;min-width:0;flex:1}.cine-brand-link{display:inline-flex;align-items:center;flex:0 0 auto}.cine-brand-link img{display:block;width:128px;height:34px;object-fit:contain;object-position:left center}.cine-brand-row input{min-width:150px;max-width:420px;flex:1;border:0;border-left:1px solid rgba(148,163,184,.13);background:transparent;color:#e5e7eb;padding:5px 10px;outline:0;font:600 12px 'IBM Plex Sans',sans-serif}.cine-sidebar-plan{margin:8px 3px 0;padding:9px;border:1px solid rgba(148,163,184,.09);border-radius:6px;display:grid;gap:4px}.cine-sidebar-plan small{color:#64748b;font:8px 'IBM Plex Mono',monospace;letter-spacing:.1em}.cine-sidebar-plan strong{color:#e2e8f0;font:10px 'IBM Plex Sans',sans-serif;text-transform:capitalize}.cine-sidebar-plan span{color:#7f8da0;font:8px 'IBM Plex Mono',monospace}.cine-film-prompt{border-top:0}.cine-shell-film-first .cine-timeline{border-top:1px solid rgba(148,163,184,.08)}@media(max-width:1100px){.cine-main-film-first{grid-template-columns:150px minmax(0,1fr)}.cine-main-film-first .cine-inspector{grid-column:1/-1}.cine-shell-film-first .cine-local-movie iframe{height:560px}}@media(max-width:760px){.cine-main-film-first{display:block}.cine-shell-film-first .cine-local-movie iframe{height:58vh;min-height:390px}.cine-brand-link img{width:105px}.cine-pill{display:none}}
-`
+function emptyGeneration(): ShotGenerationState {
+  return { status: 'idle' }
+}
+
+function generationMap(plan: CinematicPlanV3 | null) {
+  const next: Record<string, ShotGenerationState> = {}
+  for (const shot of plan?.shots || []) next[shot.id] = emptyGeneration()
+  return next
+}
+
+function humanError(error: unknown) {
+  const value = error as Error & { status?: number; code?: string }
+  if (value?.status === 401) return 'Sign in is required before paid AI video rendering. Planning and AI storyboards already work without it.'
+  if (value?.code === 'explicit_cost_confirmation_required') return 'The render was stopped because paid generation was not explicitly confirmed.'
+  return value?.message || 'Generation failed.'
+}
 
 export default function CinematicsStudio() {
-  const [title, setTitle] = useState('Kitchen fight test')
-  const [prompt, setPrompt] = useState('A tired martial artist enters a dim restaurant kitchen and gets surrounded by three attackers. He blocks a bottle swing, parries a punch, throws one attacker into a metal table, dodges the next attack, then finishes with a spinning kick. Stable wide cinematic framing with clean impact cuts and no continuous zoom.')
-  const [shots, setShots] = useState<Shot[]>(STARTER_SHOTS)
-  const [activeId, setActiveId] = useState(STARTER_SHOTS[0].id)
-  const totalSeconds = useMemo(() => shots.reduce((sum, shot) => sum + shot.seconds, 0), [shots])
-  const active = shots.find((shot) => shot.id === activeId) || shots[0]
-  const plan = useMemo(() => parseCinematicPrompt(prompt), [prompt])
+  const [mode, setMode] = useState<RenderMode>('ai-film')
+  const [prompt, setPrompt] = useState(DEFAULT_PROMPT)
+  const [style, setStyle] = useState(STYLES[0])
+  const [shotCount, setShotCount] = useState(4)
+  const [duration, setDuration] = useState(22)
+  const [resolution, setResolution] = useState<Resolution>('768P')
+  const [plan, setPlan] = useState<CinematicPlanV3 | null>(null)
+  const [selectedId, setSelectedId] = useState<string>('')
+  const [generation, setGeneration] = useState<Record<string, ShotGenerationState>>({})
+  const [capability, setCapability] = useState<CinematicCapability | null>(null)
+  const [planning, setPlanning] = useState(false)
+  const [storyboardingAll, setStoryboardingAll] = useState(false)
+  const [renderingAll, setRenderingAll] = useState(false)
+  const [status, setStatus] = useState('READY FOR A SCENE')
+  const [reelIndex, setReelIndex] = useState<number | null>(null)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
 
-  function updateActive(patch: Partial<Shot>) {
-    setShots((current) => current.map((shot) => shot.id === activeId ? { ...shot, ...patch } : shot))
+  useEffect(() => {
+    getCinematicsCapability().then(setCapability).catch(() => setCapability(null))
+  }, [])
+
+  const selected = useMemo(() => plan?.shots.find((shot) => shot.id === selectedId) || plan?.shots[0] || null, [plan, selectedId])
+  const selectedGeneration = selected ? generation[selected.id] || emptyGeneration() : emptyGeneration()
+  const renderedShots = useMemo(() => (plan?.shots || []).filter((shot) => generation[shot.id]?.video), [plan, generation])
+
+  async function directScene() {
+    if (!prompt.trim()) return
+    setPlanning(true)
+    setStatus('L.O.V.E. IS DIRECTING THE SCENE…')
+    setReelIndex(null)
+    try {
+      const next = await planCinematic({
+        prompt: prompt.trim(),
+        shotCount,
+        durationSeconds: duration,
+        aspectRatio: '16:9',
+        style,
+      })
+      setPlan(next)
+      setSelectedId(next.shots[0]?.id || '')
+      setGeneration(generationMap(next))
+      setStatus(next.planning?.mode === 'ai' ? 'AI SCENE PLAN READY' : 'SCENE PLAN READY · LOCAL FALLBACK')
+    } catch (error) {
+      setStatus(humanError(error))
+    } finally {
+      setPlanning(false)
+    }
   }
 
-  function addShot() {
-    const id = `shot-${Date.now()}`
-    const shot: Shot = { id, name: `Shot ${shots.length + 1}`, seconds: 4, camera: '35mm · static', note: '' }
-    setShots((current) => [...current, shot])
-    setActiveId(id)
+  function patchGeneration(id: string, patch: Partial<ShotGenerationState>) {
+    setGeneration((current) => ({
+      ...current,
+      [id]: { ...(current[id] || emptyGeneration()), ...patch },
+    }))
   }
 
-  function removeActive() {
-    if (shots.length <= 1) return
-    const next = shots.filter((shot) => shot.id !== activeId)
-    setShots(next)
-    setActiveId(next[0].id)
+  async function storyboardShot(shot: CinematicShotV3) {
+    patchGeneration(shot.id, { status: 'storyboarding', error: undefined })
+    setStatus(`GENERATING FRAME · ${shot.name.toUpperCase()}`)
+    try {
+      const result = await generateStoryboard({ prompt: shot.storyboard_prompt })
+      patchGeneration(shot.id, {
+        status: 'storyboard-ready',
+        storyboard: result.image_data_url,
+        storyboardModel: result.model,
+      })
+      setStatus(`FRAME READY · ${shot.name.toUpperCase()}`)
+      return result.image_data_url
+    } catch (error) {
+      const message = humanError(error)
+      patchGeneration(shot.id, { status: 'error', error: message })
+      setStatus(message)
+      return undefined
+    }
   }
 
-  function exportPlan() {
-    const blob = new Blob([JSON.stringify({ ...plan, schema: 'proofttl-cinematic-v2', title, shotPlan: shots, watermark: true }, null, 2)], { type: 'application/json' })
+  async function storyboardScene() {
+    if (!plan || storyboardingAll) return
+    setStoryboardingAll(true)
+    for (const shot of plan.shots) {
+      if (!generation[shot.id]?.storyboard) await storyboardShot(shot)
+    }
+    setStoryboardingAll(false)
+    setStatus('FULL STORYBOARD READY')
+  }
+
+  async function renderShot(shot: CinematicShotV3, allowCost = false) {
+    if (!allowCost) {
+      const ok = window.confirm(`Render “${shot.name}” with the paid AI video provider? This can incur Cloudflare AI provider charges.`)
+      if (!ok) return undefined
+    }
+    patchGeneration(shot.id, { status: 'rendering', error: undefined })
+    setStatus(`AI RENDERING · ${shot.name.toUpperCase()}`)
+    try {
+      let firstFrame = generation[shot.id]?.storyboard
+      if (!firstFrame) firstFrame = await storyboardShot(shot)
+      const result = await renderCinematicShot({
+        prompt: shot.render_prompt,
+        firstFrameImage: firstFrame,
+        durationSeconds: shot.duration_seconds,
+        resolution,
+        confirmCost: true,
+      })
+      patchGeneration(shot.id, {
+        status: 'video-ready',
+        video: result.video_url,
+        videoModel: result.model,
+      })
+      setStatus(`SHOT RENDERED · ${shot.name.toUpperCase()}`)
+      return result.video_url
+    } catch (error) {
+      const message = humanError(error)
+      patchGeneration(shot.id, { status: 'error', error: message })
+      setStatus(message)
+      return undefined
+    }
+  }
+
+  async function renderScene() {
+    if (!plan || renderingAll) return
+    const ok = window.confirm(`Render all ${plan.shots.length} shots as AI video? Each shot is a paid provider generation. Continue?`)
+    if (!ok) return
+    setRenderingAll(true)
+    setReelIndex(null)
+    for (const shot of plan.shots) {
+      if (!generation[shot.id]?.video) {
+        const result = await renderShot(shot, true)
+        if (!result) break
+      }
+    }
+    setRenderingAll(false)
+    setStatus('SCENE RENDER PASS COMPLETE')
+  }
+
+  function playReel() {
+    if (!plan) return
+    const first = plan.shots.findIndex((shot) => Boolean(generation[shot.id]?.video))
+    if (first < 0) return
+    setSelectedId(plan.shots[first].id)
+    setReelIndex(first)
+  }
+
+  function advanceReel() {
+    if (reelIndex === null || !plan) return
+    let next = reelIndex + 1
+    while (next < plan.shots.length && !generation[plan.shots[next].id]?.video) next += 1
+    if (next >= plan.shots.length) {
+      setReelIndex(null)
+      setStatus('REEL COMPLETE')
+      return
+    }
+    setReelIndex(next)
+    setSelectedId(plan.shots[next].id)
+  }
+
+  useEffect(() => {
+    if (reelIndex === null || !selectedGeneration.video) return
+    const timer = window.setTimeout(() => videoRef.current?.play().catch(() => undefined), 80)
+    return () => window.clearTimeout(timer)
+  }, [reelIndex, selectedGeneration.video])
+
+  function exportProject() {
+    if (!plan) return
+    const project = {
+      ...plan,
+      generated: generation,
+      exported_at: new Date().toISOString(),
+    }
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
-    const anchor = document.createElement('a')
-    anchor.href = url
-    anchor.download = `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'cinematic'}.cinematic-v2.json`
-    anchor.click()
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${(plan.title || 'cinematic').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}.cinematic-v3.json`
+    a.click()
     URL.revokeObjectURL(url)
   }
 
+  if (mode === 'previs') {
+    return (
+      <div className="cine-v3-shell">
+        <header className="cine-v3-topbar">
+          <a href="/" className="cine-v3-brand"><img src="/proofttl-logo-lockup.png" alt="ProofTTL" /></a>
+          <div className="cine-v3-mode-switch"><button onClick={() => setMode('ai-film')}>AI FILM</button><button className="active">LOCAL PREVIS</button></div>
+          <span className="cine-v3-status">LOCAL MOVIE · READY</span>
+        </header>
+        <div className="cine-v3-previs"><LocalCinematicPreview prompt={prompt} /></div>
+      </div>
+    )
+  }
+
   return (
-    <div className="cine-shell cine-shell-film-first" data-cinematic-version="2">
-      <style>{FILM_FIRST_CSS}</style>
-      <header className="cine-toolbar">
-        <div className="cine-brand-row">
-          <a href="/" aria-label="ProofTTL home" className="cine-brand-link"><img src="/proofttl-logo-lockup.png" alt="ProofTTL" /></a>
-          <input aria-label="Cinematic title" value={title} onChange={(event) => setTitle(event.target.value)} />
-        </div>
-        <div className="cine-toolbar-actions">
-          <span className="cine-pill">LOCAL MOVIE · READY</span>
-          <span className="cine-pill">PROMPT PLANNER · V2</span>
-          <span className="cine-pill">CLOUD AI · OPTIONAL</span>
-          <button type="button" onClick={exportPlan}>EXPORT V2 PLAN</button>
+    <div className="cine-v3-shell" data-cinematic-version="3" data-ai-render-mode="true">
+      <header className="cine-v3-topbar">
+        <a href="/" className="cine-v3-brand"><img src="/proofttl-logo-lockup.png" alt="ProofTTL" /></a>
+        <div className="cine-v3-mode-switch"><button className="active">AI FILM</button><button onClick={() => setMode('previs')}>LOCAL PREVIS</button></div>
+        <div className="cine-v3-engine-state">
+          <span className={capability?.ai_binding ? 'online' : 'offline'}>●</span>
+          {capability?.ai_binding ? 'AI PIPELINE ONLINE' : 'AI STATUS CHECKING'}
         </div>
       </header>
 
-      <div className="cine-main cine-main-film-first">
-        <aside className="cine-sidebar">
-          <div className="cine-side-head"><span>SHOTS</span><button type="button" onClick={addShot}>＋</button></div>
-          {shots.map((shot, index) => <button key={shot.id} type="button" className={shot.id === activeId ? 'active' : ''} onClick={() => setActiveId(shot.id)}><small>{String(index + 1).padStart(2, '0')}</small><span>{shot.name}</span><b>{shot.seconds}s</b></button>)}
-          <div className="cine-sidebar-plan"><small>PROMPT PLAN</small><strong>{plan.environment.replaceAll('_', ' ')}</strong><span>1 VS {plan.attackers}</span><span>{plan.actions.length} actions</span></div>
-          <a href="/worlds/">IMPORT WORLD →</a>
+      <div className="cine-v3-workspace">
+        <aside className="cine-v3-director-panel">
+          <div className="cine-v3-panel-title"><span>DIRECTOR</span><b>01</b></div>
+          <label className="cine-v3-field">
+            <span>SCENE</span>
+            <textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={10} maxLength={1800} />
+          </label>
+          <label className="cine-v3-field">
+            <span>VISUAL LANGUAGE</span>
+            <select value={style} onChange={(event) => setStyle(event.target.value)}>{STYLES.map((item) => <option key={item}>{item}</option>)}</select>
+          </label>
+          <div className="cine-v3-two">
+            <label className="cine-v3-field"><span>SHOTS</span><input type="number" min={1} max={6} value={shotCount} onChange={(event) => setShotCount(Math.max(1, Math.min(6, Number(event.target.value) || 1)))} /></label>
+            <label className="cine-v3-field"><span>LENGTH</span><input type="number" min={6} max={60} value={duration} onChange={(event) => setDuration(Math.max(6, Math.min(60, Number(event.target.value) || 6)))} /></label>
+          </div>
+          <label className="cine-v3-field"><span>FINAL QUALITY</span><select value={resolution} onChange={(event) => setResolution(event.target.value as Resolution)}><option value="768P">768P · iteration</option><option value="1080P">1080P · final</option></select></label>
+          <button className="cine-v3-primary" type="button" disabled={planning} onClick={directScene}>{planning ? 'DIRECTING…' : 'DIRECT SCENE WITH AI'}</button>
+          <div className="cine-v3-model-card">
+            <span>PLANNER</span><strong>{capability?.planner_model || 'Workers AI'}</strong>
+            <span>STORYBOARD</span><strong>{capability?.storyboard_model || 'FLUX'}</strong>
+            <span>VIDEO</span><strong>{capability?.video_models?.image_to_video || 'AI video provider'}</strong>
+          </div>
         </aside>
 
-        <section className="cine-stage-column cine-film-column">
-          <LocalCinematicPreview prompt={prompt} />
-          <div className="cine-prompt cine-film-prompt">
-            <textarea aria-label="Describe the cinematic" value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={3} maxLength={1200} />
-            <button type="button" onClick={() => setPrompt((value) => value.trim())}>GENERATE LOCAL PLAN</button>
-          </div>
-          <div className="cine-timeline">
-            <div className="cine-timeline-head"><span>TIMELINE / SHOT PLAN</span><strong>{totalSeconds}s · runtime {plan.duration.toFixed(1)}s</strong></div>
-            <div className="cine-ruler">{shots.map((shot) => <button key={shot.id} type="button" onClick={() => setActiveId(shot.id)} className={shot.id === activeId ? 'active' : ''} style={{ flexGrow: Math.max(1, shot.seconds) }}><span>{shot.name}</span><small>{shot.seconds}s</small></button>)}</div>
-            <div className="cine-track"><span>CAMERA</span><div>{shots.map((shot) => <i key={shot.id} style={{ flexGrow: Math.max(1, shot.seconds) }}>{shot.camera}</i>)}</div></div>
-            <div className="cine-track"><span>ACTIONS</span><div className="cine-waveform">{plan.actions.map((action) => `${action.actorId}:${action.action}`).join(' · ')}</div></div>
-          </div>
-        </section>
+        <main className="cine-v3-stage-column">
+          <section className="cine-v3-stage">
+            {!selected ? (
+              <div className="cine-v3-empty">
+                <span>PROOFTTL CINEMATICS</span>
+                <h2>Describe one scene.</h2>
+                <p>The director will break it into continuous shots, generate keyframes, then render the selected shots as AI video.</p>
+              </div>
+            ) : selectedGeneration.video ? (
+              <video ref={videoRef} key={selectedGeneration.video} src={selectedGeneration.video} controls playsInline onEnded={advanceReel} />
+            ) : selectedGeneration.storyboard ? (
+              <img src={selectedGeneration.storyboard} alt={`${selected.name} storyboard`} />
+            ) : (
+              <div className="cine-v3-shot-placeholder">
+                <span>SHOT {String((plan?.shots.indexOf(selected) || 0) + 1).padStart(2, '0')}</span>
+                <h2>{selected.name}</h2>
+                <p>{selected.action}</p>
+                <small>{selected.camera}</small>
+              </div>
+            )}
+            {selected && <div className="cine-v3-stage-overlay"><span>{selected.name}</span><b>{selectedGeneration.status.replaceAll('-', ' ')}</b></div>}
+          </section>
 
-        <aside className="cine-inspector">
-          <div className="cine-inspector-head">DIRECTOR</div>
-          <label>SHOT<input value={active?.name || ''} onChange={(event) => updateActive({ name: event.target.value })} /></label>
-          <label>DURATION<input type="number" min="1" max="30" value={active?.seconds || 1} onChange={(event) => updateActive({ seconds: Math.max(1, Math.min(30, Number(event.target.value) || 1)) })} /></label>
-          <label>CAMERA<input value={active?.camera || ''} onChange={(event) => updateActive({ camera: event.target.value })} /></label>
-          <label>NOTE<textarea rows={4} value={active?.note || ''} onChange={(event) => updateActive({ note: event.target.value })} /></label>
-          <button className="cine-danger" type="button" onClick={removeActive} disabled={shots.length <= 1}>REMOVE SHOT</button>
-          <div className="cine-provider-card"><span>LOCAL ENGINE</span><strong>{plan.actors.length} ACTORS</strong><small>{plan.actions.length} choreographed events · {plan.style}</small><strong>NO PAID PROVIDER</strong><small>Humanoid preview + local WebM export</small><a href="/worlds/">OPEN WORLDS →</a></div>
+          <section className="cine-v3-commandbar">
+            <div><span>STATUS</span><strong>{status}</strong></div>
+            <div className="cine-v3-command-actions">
+              <button disabled={!plan || storyboardingAll} onClick={storyboardScene}>{storyboardingAll ? 'STORYBOARDING…' : 'STORYBOARD ALL'}</button>
+              <button disabled={!selected || selectedGeneration.status === 'rendering'} onClick={() => selected && renderShot(selected)}>RENDER SHOT</button>
+              <button className="render-all" disabled={!plan || renderingAll} onClick={renderScene}>{renderingAll ? 'RENDERING SCENE…' : 'RENDER SCENE'}</button>
+              <button disabled={!renderedShots.length} onClick={playReel}>PLAY REEL</button>
+            </div>
+          </section>
+
+          <section className="cine-v3-timeline">
+            <div className="cine-v3-timeline-head"><span>TIMELINE</span><b>{plan ? `${plan.shots.length} SHOTS · ${plan.shots.reduce((n, shot) => n + shot.duration_seconds, 0)}S` : 'NO SCENE YET'}</b></div>
+            <div className="cine-v3-shots">
+              {(plan?.shots || []).map((shot, index) => {
+                const state = generation[shot.id] || emptyGeneration()
+                return <button key={shot.id} className={shot.id === selected?.id ? 'active' : ''} onClick={() => { setSelectedId(shot.id); setReelIndex(null) }}>
+                  {state.storyboard ? <img src={state.storyboard} alt="" /> : <i>{String(index + 1).padStart(2, '0')}</i>}
+                  <span><strong>{shot.name}</strong><small>{shot.duration_seconds}s · {state.status}</small></span>
+                  {state.video && <b>▶</b>}
+                </button>
+              })}
+            </div>
+          </section>
+        </main>
+
+        <aside className="cine-v3-shot-panel">
+          <div className="cine-v3-panel-title"><span>SHOT</span><b>02</b></div>
+          {selected ? <>
+            <div className="cine-v3-shot-meta"><small>{selected.id}</small><h3>{selected.name}</h3><p>{selected.camera}</p></div>
+            <div className="cine-v3-inspector-section"><span>ACTION</span><p>{selected.action}</p></div>
+            <div className="cine-v3-inspector-section contact"><span>CONTACT</span><p>{selected.contact}</p></div>
+            <div className="cine-v3-inspector-section"><span>CONTINUITY IN</span><p>{selected.continuity_in}</p></div>
+            <div className="cine-v3-inspector-section"><span>CONTINUITY OUT</span><p>{selected.continuity_out}</p></div>
+            {selectedGeneration.error && <div className="cine-v3-error">{selectedGeneration.error}</div>}
+            <div className="cine-v3-shot-buttons">
+              <button onClick={() => storyboardShot(selected)} disabled={selectedGeneration.status === 'storyboarding'}>GENERATE FRAME</button>
+              <button onClick={() => renderShot(selected)} disabled={selectedGeneration.status === 'rendering'}>GENERATE VIDEO</button>
+            </div>
+          </> : <p className="cine-v3-muted">Direct a scene to create the shot plan.</p>}
+          {plan && <div className="cine-v3-bible"><span>CONTINUITY BIBLE</span><p>{plan.character_bible}</p><p>{plan.continuity_bible}</p><button onClick={exportProject}>EXPORT V3 PROJECT</button><a href="/worlds/">IMPORT WORLD →</a></div>}
         </aside>
       </div>
 
-      <footer className="cine-statusbar"><span>◉ Cinematics v2</span><span>Prompt → plan → performance → camera → WebM</span><span>Cloud generation optional</span><span>Project JSON portable</span></footer>
+      <footer className="cine-v3-footer"><span>AI DIRECTOR</span><span>KEYFRAME → IMAGE-TO-VIDEO</span><span>CONTINUITY-AWARE SHOTS</span><span>PAID VIDEO RENDER REQUIRES SIGN-IN</span></footer>
     </div>
   )
 }
