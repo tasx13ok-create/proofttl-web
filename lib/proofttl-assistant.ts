@@ -1,3 +1,5 @@
+import { createProofTTLActionPlan, planProofTTLCommand } from './proofttl-command'
+
 export const PROOFTTL_API_URL = (
   process.env.NEXT_PUBLIC_PROOFTTL_API_URL ||
   'https://proofttl.tasx13ok.workers.dev'
@@ -22,6 +24,12 @@ export type AssistantSection =
   | 'trust'
   | 'how-it-works'
   | 'studio'
+  | 'workspace'
+  | 'money'
+  | 'work'
+  | 'files'
+  | 'automations'
+  | 'connections'
   | 'audit'
   | 'audit-status'
   | 'docs'
@@ -95,6 +103,9 @@ export type AssistantInference = {
   casual_turn?: boolean
   lease_grounded?: boolean
   client_command?: boolean
+  command_planner?: boolean
+  action_id?: string
+  action_risk?: string
 }
 
 export type AssistantResponse = {
@@ -125,6 +136,12 @@ const ALLOWED_TARGETS: Readonly<Record<AssistantSection, string>> = Object.freez
   trust: '/trust.html',
   'how-it-works': '/how-proofttl-works/',
   studio: '/studio/',
+  workspace: '/workspace/',
+  money: '/money/',
+  work: '/work/',
+  files: '/files/',
+  automations: '/automations/',
+  connections: '/connections/',
   audit: '/audit/',
   'audit-status': '/audit/status/',
   docs: '/docs/',
@@ -151,6 +168,12 @@ const NAVIGATION_COMMAND_PREFIX = /\b(?:go(?:\s+to)?|open|show|take\s+me(?:\s+to
 
 const LOCAL_NAVIGATION_RULES: NavigationRule[] = [
   { section: 'home', label: 'Home', patterns: [/\bhome(?:\s*page)?\b/i, /\bhomepage\b/i, /\bmain\s*page\b/i] },
+  { section: 'workspace', label: 'Workspace', patterns: [/\bworkspace\b/i, /\bcommand\s+center\b/i, /\bcontrol\s+center\b/i, /\bai\s+os\b/i] },
+  { section: 'money', label: 'Money', patterns: [/\bmoney\b/i, /\bfinancial\b/i, /\bbanking\b/i] },
+  { section: 'work', label: 'Work', patterns: [/\bwork\b/i, /\bemail\b/i, /\bcalendar\b/i] },
+  { section: 'files', label: 'Files', patterns: [/\bfiles?\b/i, /\blibrary\b/i] },
+  { section: 'automations', label: 'Automations', patterns: [/\bautomations?\b/i] },
+  { section: 'connections', label: 'Connections', patterns: [/\bconnections?\b/i, /\bintegrations?\b/i, /\bproviders?\b/i] },
   { section: 'account', label: 'Account settings', patterns: [/\bsettings?\b/i, /\baccount(?:\s+settings?)?\b/i, /\bprofile\b/i] },
   { section: 'security', label: 'Security', patterns: [/\bsecurity\b/i, /\bpasskeys?\b/i, /\b2fa\b/i, /\bmfa\b/i, /\brecovery\s+codes?\b/i] },
   { section: 'payments', label: 'Payments', patterns: [/\bpayments?\b/i, /\bbilling\b/i, /\btransactions?\b/i] },
@@ -206,109 +229,57 @@ function resolveLocalLoveCommand(message: string): LocalLoveCommand | null {
     return navigationCommand('how-it-works', 'the full ProofTTL guide')
   }
 
-  if (/^(?:open|go\s+to|show|launch)\s+(?:the\s+)?(?:proofttl\s+)?(?:studio|coding\s+section|coding\s+workspace|developer\s+workspace|model\s+playground|code\s+editor)$/i.test(text)) {
-    return navigationCommand('studio', 'ProofTTL Studio')
-  }
-
   if (/^(?:close|minimi[sz]e|hide|dismiss)(?:\s+(?:the|this|love|l\.o\.v\.e\.?))?\s+(?:chat|panel|assistant|window)$/i.test(text) || /^(?:close|minimi[sz]e)\s+love$/i.test(text)) {
-    return {
-      response: 'Closing L.O.V.E.',
-      execute: () => { clickByAriaLabel('Minimize chat') },
-    }
+    return { response: 'Closing L.O.V.E.', execute: () => { clickByAriaLabel('Minimize chat') } }
   }
 
   if (/^(?:exit|leave|close)\s+(?:chat\s+)?fullscreen$/i.test(text) || /^exit\s+full\s*screen$/i.test(text)) {
-    return {
-      response: 'Exiting fullscreen.',
-      execute: () => { clickByAriaLabel('Exit fullscreen chat') },
-    }
+    return { response: 'Exiting fullscreen.', execute: () => { clickByAriaLabel('Exit fullscreen chat') } }
   }
 
   if (/^(?:open|enter|go)\s+(?:chat\s+)?fullscreen$/i.test(text) || /^(?:full\s*screen|fullscreen)\s+(?:chat|love)$/i.test(text)) {
-    return {
-      response: 'Opening fullscreen.',
-      execute: () => { clickByAriaLabel('Open fullscreen chat') },
-    }
+    return { response: 'Opening fullscreen.', execute: () => { clickByAriaLabel('Open fullscreen chat') } }
   }
 
   if (/^(?:scroll|go|jump)\s+(?:to\s+)?(?:the\s+)?top(?:\s+of\s+(?:the\s+)?page)?$/i.test(text)) {
-    return {
-      response: 'Going to the top.',
-      execute: () => { if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' }) },
-    }
+    return { response: 'Going to the top.', execute: () => { if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' }) } }
   }
 
   if (/^(?:scroll|go|jump)\s+(?:to\s+)?(?:the\s+)?bottom(?:\s+of\s+(?:the\s+)?page)?$/i.test(text)) {
-    return {
-      response: 'Going to the bottom.',
-      execute: () => {
-        if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-          window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' })
-        }
-      },
-    }
+    return { response: 'Going to the bottom.', execute: () => { if (typeof window !== 'undefined' && typeof document !== 'undefined') window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' }) } }
   }
 
   if (/^(?:go\s+)?back(?:\s+(?:a\s+)?page)?$/i.test(text) || /^previous\s+page$/i.test(text)) {
-    return {
-      response: 'Going back.',
-      execute: () => { if (typeof window !== 'undefined') window.history.back() },
-    }
+    return { response: 'Going back.', execute: () => { if (typeof window !== 'undefined') window.history.back() } }
   }
 
   if (/^(?:go\s+)?forward(?:\s+(?:a\s+)?page)?$/i.test(text) || /^next\s+page$/i.test(text)) {
-    return {
-      response: 'Going forward.',
-      execute: () => { if (typeof window !== 'undefined') window.history.forward() },
-    }
+    return { response: 'Going forward.', execute: () => { if (typeof window !== 'undefined') window.history.forward() } }
   }
 
   if (/^(?:reload|refresh)(?:\s+(?:the|this))?\s*(?:page|site|tab)?$/i.test(text)) {
-    return {
-      response: 'Reloading.',
-      execute: () => { if (typeof window !== 'undefined') window.setTimeout(() => window.location.reload(), 250) },
-    }
+    return { response: 'Reloading.', execute: () => { if (typeof window !== 'undefined') window.setTimeout(() => window.location.reload(), 250) } }
   }
 
   if (/^(?:close|exit)\s+(?:this\s+)?(?:browser\s+)?(?:tab|window)(?:\s+out)?$/i.test(text) || /^close\s+tab\s+out$/i.test(text)) {
     const canClose = typeof window !== 'undefined' && Boolean(window.opener)
     return canClose
-      ? {
-          response: 'Closing this tab.',
-          execute: () => { if (typeof window !== 'undefined') window.setTimeout(() => window.close(), 250) },
-        }
-      : {
-          response: 'I understand the command, but browsers block a site from closing a tab it did not open. I can minimize this chat, go back, or navigate somewhere else instead.',
-        }
+      ? { response: 'Closing this tab.', execute: () => { if (typeof window !== 'undefined') window.setTimeout(() => window.close(), 250) } }
+      : { response: 'I understand the command, but browsers block a site from closing a tab it did not open. I can minimize this chat, go back, or navigate somewhere else instead.' }
   }
 
-  if (/^(?:run|start|launch|execute)\s+(?:the\s+)?(?:claim\s+|live\s+)?verifier(?:\s+script)?$/i.test(text)) {
-    return navigationCommand('live-verifier', 'the live verifier')
-  }
-
-  if (/^(?:run|start|launch|execute)\s+(?:the\s+)?(?:lease|signature)\s+verifier(?:\s+script)?$/i.test(text)) {
-    return navigationCommand('lease-verifier', 'the Lease verifier')
-  }
-
-  if (/^(?:run|start|launch|execute)\s+(?:the\s+)?(?:status|health)\s+(?:check|script)$/i.test(text)) {
-    return navigationCommand('service-status', 'the service status check')
-  }
-
-  if (/^(?:run|start|launch|execute)\s+(?:the\s+)?(?:audit|stress\s+test)(?:\s+script)?$/i.test(text)) {
-    return navigationCommand('audit', 'the audit flow')
-  }
+  if (/^(?:run|start|launch|execute)\s+(?:the\s+)?(?:claim\s+|live\s+)?verifier(?:\s+script)?$/i.test(text)) return navigationCommand('live-verifier', 'the live verifier')
+  if (/^(?:run|start|launch|execute)\s+(?:the\s+)?(?:lease|signature)\s+verifier(?:\s+script)?$/i.test(text)) return navigationCommand('lease-verifier', 'the Lease verifier')
+  if (/^(?:run|start|launch|execute)\s+(?:the\s+)?(?:status|health)\s+(?:check|script)$/i.test(text)) return navigationCommand('service-status', 'the service status check')
+  if (/^(?:run|start|launch|execute)\s+(?:the\s+)?(?:audit|stress\s+test)(?:\s+script)?$/i.test(text)) return navigationCommand('audit', 'the audit flow')
 
   if (/^(?:run|execute|start|launch)\s+(?:a\s+|the\s+)?script$/i.test(text) || /^(?:scripts?|commands?)$/i.test(text)) {
-    return {
-      response: 'I can run approved ProofTTL commands such as the live verifier, Lease verifier, service status check, or audit flow. I will not execute arbitrary JavaScript from chat. Tell me which one to run.',
-    }
+    return { response: 'I can route approved ProofTTL tools and isolated Studio jobs. I will not execute arbitrary code in the production site process. Tell me what you want to run.' }
   }
 
   if (NAVIGATION_COMMAND_PREFIX.test(text)) {
     for (const rule of LOCAL_NAVIGATION_RULES) {
-      if (rule.patterns.some((pattern) => pattern.test(text))) {
-        return navigationCommand(rule.section, rule.label)
-      }
+      if (rule.patterns.some((pattern) => pattern.test(text))) return navigationCommand(rule.section, rule.label)
     }
   }
 
@@ -316,37 +287,68 @@ function resolveLocalLoveCommand(message: string): LocalLoveCommand | null {
 }
 
 function executeLocalCommand(command: LocalLoveCommand) {
-  if (!command.execute) return
-  if (typeof window === 'undefined') return
+  if (!command.execute || typeof window === 'undefined') return
   window.setTimeout(() => command.execute?.(), 120)
 }
 
-export async function fetchProofTTLAssistantUsage(signal?: AbortSignal) {
-  const response = await fetch(ASSISTANT_USAGE_ENDPOINT, {
-    method: 'GET',
-    credentials: 'include',
-    cache: 'no-store',
-    signal,
-  })
-
-  const body = await response.json().catch(() => ({})) as { quota?: AssistantQuota; message?: string; error?: string }
-  if (!response.ok) {
-    throw new Error(body.message || body.error || `Assistant usage request failed with HTTP ${response.status}.`)
+function sectionForRoute(route?: string): AssistantSection | null {
+  if (!route) return null
+  for (const [section, allowed] of Object.entries(ALLOWED_TARGETS)) {
+    if (allowed === route) return section as AssistantSection
   }
+  return null
+}
+
+async function resolvePlatformCommand(clean: string, signal?: AbortSignal) {
+  const plan = await planProofTTLCommand(clean, signal)
+  if (!plan?.resolved) return null
+
+  if (plan.type === 'navigate' && plan.route) {
+    const section = sectionForRoute(plan.route)
+    if (!section) return null
+    return {
+      message: clean,
+      response: `Opening ${plan.label || section}.`,
+      action: validateAssistantAction({ type: 'navigate', route: plan.route, section }),
+      quota: undefined,
+      context: { history_messages_used: 0, max_history_messages: 6, lease_grounding: null },
+      inference: { response_model: null, deterministic_route: true, client_command: true, command_planner: true },
+    }
+  }
+
+  if (plan.type === 'capability_action' && plan.action_id) {
+    const actionPlan = await createProofTTLActionPlan(plan.action_id, clean, signal)
+    const risk = plan.risk || 'unknown'
+    const sensitive = Boolean(plan.confirmation_required)
+    const persisted = Boolean(actionPlan?.receipt?.persisted)
+    const response = sensitive
+      ? `I understand that as ${plan.action_id}. It is a ${String(plan.risk_label || risk).toUpperCase()} action and requires explicit confirmation. Nothing has been executed.${persisted ? ' I created an account receipt; open Workspace to review and confirm it.' : ' Sign in and open Workspace to review it.'}`
+      : `I understand that as ${plan.action_id}. Policy allows the plan to advance, but no provider execution has happened yet. Open Workspace to continue.`
+    return {
+      message: clean,
+      response,
+      action: validateAssistantAction({ type: 'navigate', route: '/workspace/', section: 'workspace' }),
+      quota: undefined,
+      context: { history_messages_used: 0, max_history_messages: 6, lease_grounding: null },
+      inference: { response_model: null, deterministic_route: true, client_command: true, command_planner: true, action_id: plan.action_id, action_risk: risk },
+    }
+  }
+
+  return null
+}
+
+export async function fetchProofTTLAssistantUsage(signal?: AbortSignal) {
+  const response = await fetch(ASSISTANT_USAGE_ENDPOINT, { method: 'GET', credentials: 'include', cache: 'no-store', signal })
+  const body = await response.json().catch(() => ({})) as { quota?: AssistantQuota; message?: string; error?: string }
+  if (!response.ok) throw new Error(body.message || body.error || `Assistant usage request failed with HTTP ${response.status}.`)
   return body.quota || null
 }
 
 export async function askProofTTLByVoice(audio: Blob, signal?: AbortSignal) {
-  if (!audio.type.toLowerCase().startsWith('audio/')) {
-    throw new Error('Microphone recording must have an audio/* content type.')
-  }
+  if (!audio.type.toLowerCase().startsWith('audio/')) throw new Error('Microphone recording must have an audio/* content type.')
 
   const response = await fetch(ASSISTANT_VOICE_ENDPOINT, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'content-type': audio.type },
-    body: audio,
-    signal,
+    method: 'POST', credentials: 'include', headers: { 'content-type': audio.type }, body: audio, signal,
   })
 
   const body = await readAssistantResponse(response)
@@ -364,6 +366,20 @@ export async function askProofTTLByVoice(audio: Blob, signal?: AbortSignal) {
       speech: body.speech,
       context: body.context,
       inference: { ...(body.inference || {}), deterministic_route: true, client_command: true },
+    }
+  }
+
+  const platform = await resolvePlatformCommand(transcript, signal)
+  if (platform) {
+    return {
+      transcript,
+      response: platform.response,
+      action: platform.action,
+      quota: body.quota,
+      love: body.love,
+      speech: undefined,
+      context: body.context,
+      inference: { ...(body.inference || {}), ...(platform.inference || {}), deterministic_route: true, command_planner: true },
     }
   }
 
@@ -400,12 +416,12 @@ export async function askProofTTLByText(
     }
   }
 
+  const platform = await resolvePlatformCommand(clean, signal)
+  if (platform) return platform
+
   const boundedHistory = history
     .slice(-6)
-    .map((item) => ({
-      role: item.role,
-      content: item.content.replace(/\s+/g, ' ').trim().slice(0, 600),
-    }))
+    .map((item) => ({ role: item.role, content: item.content.replace(/\s+/g, ' ').trim().slice(0, 600) }))
     .filter((item) => item.content)
 
   const response = await fetch(ASSISTANT_TEXT_ENDPOINT, {
@@ -452,10 +468,7 @@ export function validateAssistantAction(value: unknown): AssistantNavigationActi
   if (!value || typeof value !== 'object') return null
 
   const action = value as Partial<AssistantNavigationAction>
-  if (action.type !== 'navigate' || typeof action.section !== 'string' || typeof action.route !== 'string') {
-    return null
-  }
-
+  if (action.type !== 'navigate' || typeof action.section !== 'string' || typeof action.route !== 'string') return null
   if (!Object.prototype.hasOwnProperty.call(ALLOWED_TARGETS, action.section)) return null
 
   const section = action.section as AssistantSection
@@ -469,9 +482,6 @@ export function assistantNavigationHref(action: AssistantNavigationAction) {
   const safe = validateAssistantAction(action)
   if (!safe) return null
 
-  if (safe.route === '/console/' && safe.section !== 'home') {
-    return `${safe.route}#${encodeURIComponent(safe.section)}`
-  }
-
+  if (safe.route === '/console/' && safe.section !== 'home') return `${safe.route}#${encodeURIComponent(safe.section)}`
   return safe.route
 }
