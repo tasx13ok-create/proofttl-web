@@ -1,0 +1,10 @@
+.root { display: grid; gap: 8px; min-width: 0; }
+.root p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.inline { padding: 1px 5px; border-radius: 5px; border: 1px solid rgba(148,163,184,.15); background: rgba(15,23,42,.75); color: #dbeafe; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: .92em; }
+.block { margin: 3px 0; overflow: hidden; border: 1px solid rgba(103,232,249,.16); border-radius: 10px; background: rgba(2,6,12,.92); }
+.block header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 9px; border-bottom: 1px solid rgba(148,163,184,.1); background: rgba(15,23,42,.76); }
+.block header span { margin: 0; color: #67e8f9; font: 9px 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; }
+.block header button { border: 0; background: transparent; color: #94a3b8; cursor: pointer; font: 9px 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .08em; }
+.block header button:hover { color: #e2e8f0; }
+.block pre { margin: 0; padding: 11px 12px 13px; overflow: auto; tab-size: 2; }
+.block code { color: #dbeafe; font: 11px/1.55 'IBM Plex Mono', ui-monospace, monospace; white-space: pre; }
