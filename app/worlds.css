@@ -1,6 +1,7 @@
 .world-builder { display: grid; gap: 16px; padding-top: 28px; }
 .world-builder-command,
 .world-stage,
+.world-inspector,
 .world-json,
 .world-capabilities article {
   border: 1px solid rgba(148,163,184,.14);
@@ -18,12 +19,33 @@
 .world-marble-link input { min-width: 0; height: 38px; border: 1px solid rgba(103,232,249,.16); border-radius: 10px; background: rgba(2,6,12,.48); color: #dbeafe; padding: 0 12px; outline: none; font: 10px 'IBM Plex Mono', monospace; }
 .world-marble-link input:focus { border-color: rgba(103,232,249,.45); box-shadow: 0 0 0 3px rgba(34,211,238,.06); }
 .world-marble-link input::placeholder { color: #475569; }
-.world-stage { overflow: hidden; min-height: 560px; background: #02040a; box-shadow: 0 30px 90px rgba(0,0,0,.28); }
+.world-editor-shell { display: grid; grid-template-columns: minmax(0,1fr) 310px; gap: 12px; align-items: stretch; }
+.world-stage { overflow: hidden; min-height: 620px; background: #02040a; box-shadow: 0 30px 90px rgba(0,0,0,.28); }
 .world-stage-head { min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 16px; border-bottom: 1px solid rgba(148,163,184,.12); background: rgba(6,10,17,.94); }
 .world-stage-head span,.world-stage-head small { color: #64748b; font: 8px 'IBM Plex Mono', monospace; letter-spacing: .09em; text-transform: uppercase; }
 .world-stage-head strong { display: block; margin-top: 4px; color: #e2e8f0; font-size: 13px; font-weight: 500; }
 .world-stage-head > div:last-child { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
-.world-stage iframe { display: block; width: 100%; height: 500px; border: 0; background: #02040a; }
+.world-stage iframe { display: block; width: 100%; height: 560px; border: 0; background: #02040a; }
+.world-inspector { min-width: 0; padding: 13px; display: grid; align-content: start; gap: 11px; max-height: 620px; overflow: auto; }
+.world-inspector-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 11px; border-bottom: 1px solid rgba(148,163,184,.1); }
+.world-inspector-head span,.world-inspector-group>span,.world-object-list>span { display: block; color: #64748b; font: 8px 'IBM Plex Mono',monospace; letter-spacing: .09em; }
+.world-inspector-head strong { display: block; margin-top: 3px; color: #e2e8f0; font-size: 12px; }
+.world-inspector-head button,.world-inspector-actions button { border: 1px solid rgba(148,163,184,.13); border-radius: 7px; background: rgba(15,23,42,.55); color: #cbd5e1; padding: 7px 8px; cursor: pointer; font: 8px 'IBM Plex Mono',monospace; }
+.world-inspector-head button:hover,.world-inspector-actions button:hover { border-color: rgba(103,232,249,.28); color: #ecfeff; }
+.world-inspector>label,.world-inspector-group label { display: grid; gap: 5px; color: #64748b; font: 8px 'IBM Plex Mono',monospace; text-transform: uppercase; }
+.world-inspector select,.world-inspector input[type=number] { width: 100%; box-sizing: border-box; height: 32px; border: 1px solid rgba(148,163,184,.13); border-radius: 7px; background: #080d13; color: #e2e8f0; padding: 0 8px; outline: 0; font: 10px 'IBM Plex Mono',monospace; }
+.world-inspector-group { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
+.world-inspector-group>span { grid-column: 1/-1; margin-bottom: -1px; }
+.world-inspector-group.materials { grid-template-columns: 1fr 1fr; }
+.world-inspector input[type=color] { width: 100%; height: 34px; padding: 2px; border: 1px solid rgba(148,163,184,.13); border-radius: 7px; background: #080d13; cursor: pointer; }
+.world-inspector-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.world-inspector-actions .danger { color: #fca5a5; border-color: rgba(248,113,113,.18); }
+.world-inspector-empty { color: #64748b; font: 10px/1.55 'IBM Plex Sans',sans-serif; }
+.world-object-list { display: grid; gap: 4px; padding-top: 8px; border-top: 1px solid rgba(148,163,184,.09); }
+.world-object-list>span { margin-bottom: 4px; }
+.world-object-list button { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 6px; width: 100%; border: 1px solid transparent; border-radius: 7px; background: transparent; color: #94a3b8; padding: 7px; text-align: left; cursor: pointer; font: 9px 'IBM Plex Mono',monospace; }
+.world-object-list button:hover,.world-object-list button.active { background: rgba(34,211,238,.055); border-color: rgba(103,232,249,.14); color: #dbeafe; }
+.world-object-list b { color: #67e8f9; font-weight: 700; }.world-object-list small { color: #475569; white-space: nowrap; }
 .world-json { padding: 22px; display: grid; grid-template-columns: .7fr 1.3fr; gap: 20px; }
 .world-json h2 { margin: 0; font-size: 22px; }
 .world-json p:not(.app-kicker) { color: var(--muted-foreground); line-height: 1.6; }
@@ -33,5 +55,6 @@
 .world-capabilities span { color: #67e8f9; font: 8px 'IBM Plex Mono', monospace; letter-spacing: .1em; }
 .world-capabilities strong { display: block; margin-top: 14px; font-size: 14px; }
 .world-capabilities p { color: #94a3b8; font-size: 11px; line-height: 1.55; }
+@media (max-width: 1060px) { .world-editor-shell { grid-template-columns: 1fr; }.world-inspector { max-height: none; }.world-object-list { grid-template-columns: repeat(2,minmax(0,1fr)); }.world-object-list>span { grid-column:1/-1; } }
 @media (max-width: 900px) { .world-builder-command { grid-template-columns: 1fr; } .world-capabilities { grid-template-columns: repeat(2,1fr); } .world-json { grid-template-columns: 1fr; } .world-marble-link { grid-template-columns: 1fr 1fr; } .world-marble-link input { grid-column: 1 / -1; } }
-@media (max-width: 620px) { .world-builder { padding-top: 18px; } .world-builder-command { padding: 18px; } .world-stage { min-height: 470px; } .world-stage iframe { height: 410px; } .world-stage-head { align-items: flex-start; flex-direction: column; } .world-capabilities { grid-template-columns: 1fr; } .world-marble-link { grid-template-columns: 1fr; } .world-marble-link input { grid-column: auto; } }
+@media (max-width: 620px) { .world-builder { padding-top: 18px; } .world-builder-command { padding: 18px; } .world-stage { min-height: 470px; } .world-stage iframe { height: 430px; } .world-stage-head { align-items: flex-start; flex-direction: column; } .world-capabilities { grid-template-columns: 1fr; } .world-marble-link { grid-template-columns: 1fr; } .world-marble-link input { grid-column: auto; } .world-inspector-group { grid-template-columns: 1fr; }.world-inspector-group>span { grid-column:auto; }.world-object-list { grid-template-columns:1fr; }.world-object-list>span{grid-column:auto;} }
