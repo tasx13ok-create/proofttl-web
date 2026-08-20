@@ -31,7 +31,6 @@ export default function ProductNav() {
       <div className="product-nav-inner">
         <a href="/" className="product-brand" aria-label="ProofTTL home">
           <img src="/proofttl-logo-lockup.png" alt="ProofTTL" className="product-brand-logo" />
-          <span className="product-brand-wordmark">ProofTTL</span>
         </a>
         <nav className="product-nav-primary" aria-label="Product">{PRIMARY.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}</nav>
         <div className="product-nav-actions">
