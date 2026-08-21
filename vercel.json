@@ -2,6 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "routes": [
     { "src": "^/api/auth/(?<authpath>.*)$", "dest": "/api/auth-proxy.js?path=$authpath" },
+    { "src": "^/api/runtime/(?<runtimepath>.*)$", "dest": "/api/runtime-proxy.js?path=$runtimepath" },
     { "src": "^/trust\\.html$", "status": 308, "headers": { "Location": "/trust/" } },
     { "src": "^/lease-ops\\.html$", "status": 308, "headers": { "Location": "/lease-ops/" } },
     { "src": "^/status\\.html$", "status": 308, "headers": { "Location": "/status/" } },
