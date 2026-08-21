@@ -1,8 +1,15 @@
 import AuditIntakeForm from '../../components/AuditIntakeForm'
 
 export const metadata = {
-  title: 'Claim Stress Test & Verification Audit — ProofTTL',
-  description: 'Pressure-test high-stakes claims against primary sources before you publish, sell, raise, or defend them.',
+  title: 'Claim Stress Test & Verification Audit',
+  description: 'Pressure-test 3–5 high-stakes claims for $129, or run a full $500 verification audit. ProofTTL checks claims against primary sources before you publish, sell, raise, or defend them.',
+  alternates: { canonical: '/audit/' },
+  openGraph: {
+    title: 'ProofTTL Claim Stress Test & Verification Audit',
+    description: 'Source-backed claim verification starting at $129. Scope is confirmed before payment.',
+    url: '/audit/',
+    type: 'website',
+  },
 }
 
 const sharedDeliverables = [
