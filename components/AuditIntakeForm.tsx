@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useEffect, useMemo, useState } from 'react'
+import { FormEvent, useEffect, useMemo, useState, type PointerEvent } from 'react'
 import { authClient, PROOFTTL_API_URL, rememberAuthReturn, signInHref } from '../lib/proofttl-auth'
 
 const AUDIT_STORAGE_KEY = 'proofttl:last-audit-request'
@@ -157,7 +157,7 @@ export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { init
     return false
   }
 
-  function gatePointer(event: React.PointerEvent<HTMLFormElement>) {
+  function gatePointer(event: PointerEvent<HTMLFormElement>) {
     if (authState !== 'signed_out') return
     event.preventDefault()
     redirectToSignIn()
