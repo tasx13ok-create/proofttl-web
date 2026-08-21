@@ -30,6 +30,7 @@ main > nav.nav.shell {
   display: none !important;
 }
 
+/* Old local page brand bars are retained only for legacy pages that have not moved to the global shell yet. */
 .app-topbar .brand {
   display: inline-flex;
   align-items: center;
@@ -53,6 +54,34 @@ main > nav.nav.shell {
   letter-spacing: -.04em;
 }
 
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  width: min(190px, 38vw);
+  min-width: 130px;
+}
+
+.footer-brand img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 48px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+/* Never fall back to a letter placeholder in the L.O.V.E. dock. */
+.pttl-chat-orb {
+  background: #050914 url('/proofttl-mark.svg') center / cover no-repeat !important;
+  border-color: rgba(73, 176, 255, .38) !important;
+  box-shadow: 0 8px 26px -12px rgba(60, 126, 255, .9), inset 0 1px 0 rgba(255,255,255,.14) !important;
+}
+
+.pttl-chat-orb::after,
+.pttl-chat-orb span {
+  display: none !important;
+}
+
 @media (max-width: 920px) {
   .product-brand-lockup { min-width: 126px; max-width: 146px; }
   .product-brand-lockup-image { max-width: 138px; height: 30px; }
@@ -61,4 +90,5 @@ main > nav.nav.shell {
 @media (max-width: 680px) {
   .product-brand-lockup { min-width: 110px; max-width: 128px; }
   .product-brand-lockup-image { max-width: 120px; height: 28px; }
+  .footer-brand { min-width: 110px; width: 150px; }
 }
