@@ -1,6 +1,13 @@
 export const metadata = {
-  title: 'Sample Verification Audit - ProofTTL',
-  description: 'A public ProofTTL demonstration showing source-backed verification and documentation drift using Perplexity AI public product documentation.',
+  title: 'Sample Verification Audit',
+  description: 'Inspect a public ProofTTL verification sample showing source-backed verdicts, documentation drift, uncertainty handling, and the evidence behind each claim.',
+  alternates: { canonical: '/audit/sample/' },
+  openGraph: {
+    title: 'ProofTTL Sample Verification Audit',
+    description: 'See how ProofTTL pressure-tests time-sensitive claims against public primary sources before you buy.',
+    url: '/audit/sample/',
+    type: 'article',
+  },
 }
 
 const claims = [
@@ -86,9 +93,13 @@ export default function SampleAuditPage() {
             </div>
           </div>
 
-          <div className="hero-actions">
-            <a className="button button-primary" href="/audit/">START A $500 AUDIT →</a>
-            <a className="button button-secondary" href="/docs/">HOW PROOFTTL WORKS</a>
+          <div className="onboarding-card" style={{ marginTop: 24 }}>
+            <p className="app-kicker">WANT YOUR OWN CLAIMS CHECKED?</p>
+            <p className="app-copy">Start with the $129 Claim Stress Test. Send 3–5 claims, get the scope confirmed before payment, and upgrade to the $500 Full Audit later for $371 more if the first pass proves useful.</p>
+            <div className="hero-actions">
+              <a className="button button-primary" href="/audit/#audit-intake">START THE $129 STRESS TEST →</a>
+              <a className="button button-secondary" href="/audit/">COMPARE BOTH OPTIONS</a>
+            </div>
           </div>
 
           <p className="app-note">
