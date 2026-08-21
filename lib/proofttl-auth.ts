@@ -12,6 +12,8 @@ const PROOFTTL_WEB_ORIGIN = (
   'https://proofttl-web.vercel.app'
 ).replace(/\/$/, '')
 
+const AUTH_RETURN_KEY = 'proofttl:auth-return-v1'
+
 export const PROOFTTL_API_URL = typeof window !== 'undefined'
   ? `${window.location.origin}/api/runtime`
   : PROOFTTL_UPSTREAM_API_URL
@@ -51,7 +53,11 @@ export const authClient = createAuthClient({
   plugins: [
     twoFactorClient({
       onTwoFactorRedirect() {
-        if (typeof window !== 'undefined') window.location.assign('/two-factor/')
+        if (typeof window !== 'undefined') {
+          const returnTo = currentReturnTo('/workspace/')
+          rememberAuthReturn(returnTo)
+          window.location.assign(`/two-factor/?returnTo=${encodeURIComponent(returnTo)}`)
+        }
       },
     }),
     passkeyClient(),
@@ -80,10 +86,59 @@ export async function fetchAuthDiscovery(signal?: AbortSignal): Promise<ProofTTL
 
 export type SocialProvider = 'github' | 'google' | 'discord'
 
-export async function signInWithProvider(provider: SocialProvider) {
+function safeLocalReturn(value: string | null | undefined, fallback = '/workspace/') {
+  const raw = String(value || '').trim()
+  if (!raw) return fallback
+  try {
+    const base = typeof window !== 'undefined' ? window.location.origin : PROOFTTL_WEB_ORIGIN
+    const url = new URL(raw, base)
+    if (url.origin !== base) return fallback
+    const result = `${url.pathname}${url.search}${url.hash}`
+    if (!result.startsWith('/') || result.startsWith('//') || result.startsWith('/login')) return fallback
+    return result
+  } catch {
+    return fallback
+  }
+}
+
+export function currentReturnTo(fallback = '/workspace/') {
+  if (typeof window === 'undefined') return fallback
+  return safeLocalReturn(`${window.location.pathname}${window.location.search}${window.location.hash}`, fallback)
+}
+
+export function rememberAuthReturn(returnTo?: string) {
+  const target = safeLocalReturn(returnTo || currentReturnTo('/workspace/'), '/workspace/')
+  if (typeof window !== 'undefined') {
+    try { window.localStorage.setItem(AUTH_RETURN_KEY, target) } catch {}
+  }
+  return target
+}
+
+export function resolveAuthReturn(fallback = '/workspace/') {
+  if (typeof window === 'undefined') return fallback
+  let candidate = ''
+  try {
+    candidate = new URLSearchParams(window.location.search).get('returnTo') || ''
+    if (!candidate) candidate = window.localStorage.getItem(AUTH_RETURN_KEY) || ''
+  } catch {}
+  return safeLocalReturn(candidate, fallback)
+}
+
+export function clearAuthReturn() {
+  if (typeof window === 'undefined') return
+  try { window.localStorage.removeItem(AUTH_RETURN_KEY) } catch {}
+}
+
+export function signInHref(returnTo?: string) {
+  const target = safeLocalReturn(returnTo || currentReturnTo('/workspace/'), '/workspace/')
+  return `/login/?returnTo=${encodeURIComponent(target)}`
+}
+
+export async function signInWithProvider(provider: SocialProvider, returnTo?: string) {
+  const target = rememberAuthReturn(returnTo || resolveAuthReturn('/workspace/'))
   const callbackURL = typeof window !== 'undefined'
-    ? `${window.location.origin}/console/`
-    : '/console/'
+    ? `${window.location.origin}${target}`
+    : `${PROOFTTL_WEB_ORIGIN}${target}`
 
   return authClient.signIn.social({ provider, callbackURL })
 }
