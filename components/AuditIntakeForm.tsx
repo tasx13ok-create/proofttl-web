@@ -24,12 +24,10 @@ type IntakeResponse = {
 
 const offerCopy = {
   stress_test: {
-    label: 'CLAIM STRESS TEST', price: '$129', claims: '3–5 claims', turnaround: '48-hour turnaround', monitoring: 'No ongoing monitoring',
-    description: 'Lower-friction first pass using the same source-backed methodology and signed Fact Leases.',
+    label: 'Claim Stress Test', price: '$129', claims: '3–5 claims', turnaround: '48 hours',
   },
   full_audit: {
-    label: 'FULL VERIFICATION AUDIT', price: '$500', claims: '10–25 claims', turnaround: '3–5 business days', monitoring: '7-day source monitoring',
-    description: 'The flagship review for a launch, raise, sales cycle, client deliverable, or other high-stakes claim set.',
+    label: 'Full Verification Audit', price: '$500', claims: '10–25 claims', turnaround: '3–5 business days',
   },
 } satisfies Record<OfferType, Record<string, string>>
 
@@ -87,46 +85,43 @@ export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { init
   }
 
   return (
-    <div className="onboarding-card" style={{ marginTop: 24 }} id="audit-intake">
-      <p className="app-kicker">START WITH THE RIGHT SCOPE</p>
-      <h2 style={{ marginTop: 8 }}>Pick the size. Send the claims. No payment yet.</h2>
-      <p className="app-copy">We review the exact scope first. You get a reference number immediately, then a scope confirmation within 24 hours before payment is requested.</p>
-
-      <div className="pricing-cards" style={{ marginTop: 18 }} aria-label="Choose verification offer">
-        {(Object.keys(offerCopy) as OfferType[]).map((type) => {
-          const item = offerCopy[type]
-          const selected = offerType === type
-          return (
-            <button key={type} type="button" className={selected ? 'featured-plan' : ''} aria-pressed={selected}
-              onClick={() => { setOfferType(type); setResult(null) }} style={{ textAlign: 'left', cursor: 'pointer' }}>
-              <span className="plan-label">{item.label}</span>
-              <div className="price">{item.price}<span> one-time</span></div>
-              <p>{item.claims} · {item.turnaround}</p><p>{item.monitoring}</p><small>{item.description}</small>
-            </button>
-          )
-        })}
+    <section className="audit-intake-clean" id="audit-intake" aria-labelledby="audit-intake-heading">
+      <div className="audit-intake-heading-row">
+        <div>
+          <p className="app-kicker">SUBMIT YOUR CLAIMS</p>
+          <h2 id="audit-intake-heading">No card. No commitment. Scope first.</h2>
+        </div>
+        <div className="audit-offer-switch" aria-label="Choose verification offer">
+          <button type="button" className={offerType === 'stress_test' ? 'active' : ''} aria-pressed={offerType === 'stress_test'} onClick={() => { setOfferType('stress_test'); setResult(null) }}>$129 · 3–5 claims</button>
+          <button type="button" className={offerType === 'full_audit' ? 'active' : ''} aria-pressed={offerType === 'full_audit'} onClick={() => { setOfferType('full_audit'); setResult(null) }}>$500 · 10–25 claims</button>
+        </div>
       </div>
 
-      {offerType === 'stress_test' && <p className="app-note" style={{ marginTop: 14 }}>If the Stress Test proves useful, upgrade to the $500 Full Audit for <strong>$371 more</strong>. Your first $129 is credited in full.</p>}
+      <p className="audit-selected-offer"><strong>{offer.label}</strong> · {offer.claims} · {offer.turnaround}. We review the scope before sending any payment link.</p>
+      {offerType === 'stress_test' && <p className="audit-credit-note">Upgrade later for <strong>$371 more</strong>; the first $129 is credited in full.</p>}
 
-      <form onSubmit={submit} style={{ display: 'grid', gap: 14, marginTop: 18 }}>
+      <form className="audit-clean-form" onSubmit={submit}>
         <input type="hidden" name="offer_type" value={offerType} />
-        <label className="app-copy" style={{ display: 'grid', gap: 6 }}>EMAIL<input name="email" type="email" required maxLength={254} placeholder="you@company.com" /></label>
-        <label className="app-copy" style={{ display: 'grid', gap: 6 }}>COMPANY OR PROJECT<input name="company_or_project" required maxLength={160} placeholder="Acme AI" /></label>
-        <label className="app-copy" style={{ display: 'grid', gap: 6 }}>WEBSITE / DOCS URL <span className="app-meta">OPTIONAL</span><input name="website_url" type="url" maxLength={600} placeholder="https://example.com/docs" /></label>
-        <label className="app-copy" style={{ display: 'grid', gap: 6 }}>WHAT SHOULD WE VERIFY?<textarea name="claim_scope" required maxLength={4000} rows={5} placeholder={offerType === 'stress_test' ? 'Paste or describe the 3–5 claims that would hurt if they were wrong.' : 'Paste or describe the 10–25 claims that matter before launch, fundraising, sales, client delivery, or review.'} /></label>
+        <div className="audit-form-grid two">
+          <label>EMAIL<input name="email" type="email" required maxLength={254} placeholder="you@company.com" /></label>
+          <label>COMPANY OR PROJECT<input name="company_or_project" required maxLength={160} placeholder="Acme AI" /></label>
+        </div>
+        <label>WEBSITE / DOCS URL <span>OPTIONAL</span><input name="website_url" type="url" maxLength={600} placeholder="https://example.com/docs" /></label>
+        <label>CLAIMS TO VERIFY<textarea name="claim_scope" required maxLength={4000} rows={5} placeholder={offerType === 'stress_test' ? 'Paste the 3–5 claims that would hurt if they were wrong.' : 'Paste or describe the 10–25 claims that matter before launch, fundraising, sales, client delivery, or review.'} /></label>
         {offerType === 'full_audit' ? (
-          <label className="app-copy" style={{ display: 'grid', gap: 6 }}>APPROXIMATE CLAIM COUNT<select name="approximate_claims" defaultValue="10-15" required><option value="10-15">10–15 claims</option><option value="16-25">16–25 claims</option><option value="25+">More than 25 — scope separately</option></select></label>
+          <label>APPROXIMATE CLAIM COUNT<select name="approximate_claims" defaultValue="10-15" required><option value="10-15">10–15 claims</option><option value="16-25">16–25 claims</option><option value="25+">More than 25 — scope separately</option></select></label>
         ) : <input type="hidden" name="approximate_claims" value="3-5" />}
-        <label className="app-copy" style={{ display: 'grid', gap: 6 }}>WHY DO THESE CLAIMS MATTER?<textarea name="why_it_matters" required maxLength={2500} rows={4} placeholder="Launch risk, investor diligence, customer-facing claims, sales material, client delivery, regulatory scrutiny..." /></label>
-        <label className="app-copy" style={{ display: 'grid', gap: 6 }}>DEADLINE <span className="app-meta">OPTIONAL</span><input name="deadline" maxLength={120} placeholder="Friday / before launch / no rush" /></label>
+        <div className="audit-form-grid two">
+          <label>WHY IT MATTERS<textarea name="why_it_matters" required maxLength={2500} rows={3} placeholder="Launch risk, investor diligence, customer-facing claims..." /></label>
+          <label>DEADLINE <span>OPTIONAL</span><textarea name="deadline" maxLength={120} rows={3} placeholder="Friday / before launch / no rush" /></label>
+        </div>
         <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}><label>Company site<input name="company_site" tabIndex={-1} autoComplete="off" /></label></div>
-        <button className="button button-primary" type="submit" disabled={submitting}>{submitting ? 'SUBMITTING…' : `SUBMIT ${offer.label} FOR SCOPE REVIEW →`}</button>
-        <p className="app-note">Selected: <strong>{offer.price}</strong> · {offer.claims} · {offer.turnaround}. Scope confirmation comes before payment.</p>
+        <button className="button button-primary audit-submit-button" type="submit" disabled={submitting}>{submitting ? 'SUBMITTING…' : `SUBMIT ${offer.label.toUpperCase()} FOR SCOPE REVIEW →`}</button>
+        <p className="audit-form-footnote">SCOPE REVIEW BEFORE PAYMENT · REFERENCE NUMBER RETURNED IMMEDIATELY</p>
       </form>
 
       {result?.audit_intake_id && (
-        <div className="app-note" role="status" style={{ marginTop: 18 }}>
+        <div className="app-note audit-result" role="status">
           <strong>{result.duplicate ? 'REQUEST ALREADY RECEIVED.' : 'REQUEST RECEIVED.'}</strong><br />
           Reference: <code>{result.audit_intake_id}</code><br />
           Offer: {result.offer?.name || offer.label} · ${result.offer?.price_usd || offer.price.replace('$', '')}<br />
@@ -135,7 +130,7 @@ export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { init
         </div>
       )}
 
-      {result?.error && <div className="app-note" role="alert" style={{ marginTop: 18 }}><strong>INTAKE NOT SUBMITTED:</strong> {result.error}</div>}
-    </div>
+      {result?.error && <div className="app-note audit-result" role="alert"><strong>INTAKE NOT SUBMITTED:</strong> {result.error}</div>}
+    </section>
   )
 }
