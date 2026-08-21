@@ -2,11 +2,24 @@
 
 import { usePathname } from 'next/navigation'
 
-const COMMERCIAL_ROUTES = ['/', '/audit/', '/audit/sample/', '/audit/status/', '/services/', '/faq/']
+const NON_PROTOCOL_ROUTES = [
+  '/',
+  '/audit/',
+  '/audit/sample/',
+  '/audit/status/',
+  '/services/',
+  '/faq/',
+  '/about/',
+  '/machine-definition/',
+  '/glossary/',
+  '/how-proofttl-works/',
+  '/privacy/',
+  '/terms/',
+]
 
 export default function ProtocolNetworkStrip() {
   const pathname = usePathname()
-  if (COMMERCIAL_ROUTES.some((route) => pathname === route || (route !== '/' && pathname.startsWith(route)))) return null
+  if (NON_PROTOCOL_ROUTES.some((route) => pathname === route || (route !== '/' && pathname.startsWith(route)))) return null
 
   return (
     <div className="product-network-strip" data-proofttl-network-banner="testnet">
