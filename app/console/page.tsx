@@ -1,9 +1,10 @@
 import SecurityCenter from '../../components/SecurityCenter'
 import AccountWorkspacePanel from '../../components/AccountWorkspacePanel'
+import ConsoleAccountActions from '../../components/ConsoleAccountActions'
 import { AccountEntitlementTelemetry, AssistantUsageTelemetry, LeaseTrustTelemetry, ReadinessTelemetry } from '../../components/ConsoleTelemetry'
 
 export const metadata = {
-  title: 'Console — ProofTTL',
+  title: 'Console',
   robots: { index: false, follow: false },
 }
 
@@ -13,7 +14,10 @@ export default function ConsolePage() {
   return (
     <main className="app-page">
       <div className="app-shell app-topbar">
-        <a className="brand" href="/"><span className="brand-mark">P</span> PROOF<span className="brand-muted">TTL</span></a>
+        <a className="brand" href="/" aria-label="ProofTTL home">
+          <img src="/proofttl-logo.png" width="32" height="32" alt="" aria-hidden="true" />
+          <span>PROOF<span className="brand-muted">TTL</span></span>
+        </a>
         <div className="app-meta">CUSTOMER CONSOLE · TESTNET</div>
       </div>
 
@@ -25,7 +29,7 @@ export default function ConsolePage() {
           <a href="/studio/">Studio · Code / Models / Terminal</a>
           <a href="/verify-lease.html">Verify Lease</a>
           <a href="/lease-ops.html">Lease Ops</a>
-          <a href="/login/">Sign in / switch account</a>
+          <ConsoleAccountActions />
         </aside>
 
         <section className="console-main">
@@ -39,28 +43,11 @@ export default function ConsolePage() {
           </header>
 
           <div className="console-grid">
-            <article className="console-panel wide">
-              <h2>DEPLOYMENT READINESS</h2>
-              <ReadinessTelemetry />
-            </article>
-
-            <article className="console-panel wide">
-              <h2>LEASE TRUST LAYER</h2>
-              <LeaseTrustTelemetry />
-            </article>
-
-            <article className="console-panel">
-              <h2>ACTIVE FACT LEASES</h2>
-              <div className="console-number">—<small>Account-scoped lease attribution pending</small></div>
-            </article>
-            <article className="console-panel">
-              <h2>REVOKED</h2>
-              <div className="console-number">—<small>No fabricated customer metrics</small></div>
-            </article>
-            <article className="console-panel">
-              <h2>EXPIRED</h2>
-              <div className="console-number">—<small>No fabricated customer metrics</small></div>
-            </article>
+            <article className="console-panel wide"><h2>DEPLOYMENT READINESS</h2><ReadinessTelemetry /></article>
+            <article className="console-panel wide"><h2>LEASE TRUST LAYER</h2><LeaseTrustTelemetry /></article>
+            <article className="console-panel"><h2>ACTIVE FACT LEASES</h2><div className="console-number">—<small>Account-scoped lease attribution pending</small></div></article>
+            <article className="console-panel"><h2>REVOKED</h2><div className="console-number">—<small>No fabricated customer metrics</small></div></article>
+            <article className="console-panel"><h2>EXPIRED</h2><div className="console-number">—<small>No fabricated customer metrics</small></div></article>
 
             <article className="console-panel wide" id="fact-leases">
               <h2>FACT LEASE OPERATIONS</h2>
