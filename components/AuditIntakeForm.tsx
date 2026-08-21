@@ -1,9 +1,10 @@
 'use client'
 
-import { FormEvent, useMemo, useState } from 'react'
+import { FormEvent, useEffect, useMemo, useState } from 'react'
+import { authClient, PROOFTTL_API_URL, rememberAuthReturn, signInHref } from '../lib/proofttl-auth'
 
-const API_URL = process.env.NEXT_PUBLIC_PROOFTTL_API_URL || 'https://proofttl.tasx13ok.workers.dev'
 const AUDIT_STORAGE_KEY = 'proofttl:last-audit-request'
+const AUDIT_DRAFT_KEY = 'proofttl:audit-draft-v1'
 
 type OfferType = 'stress_test' | 'full_audit'
 type IntakeResponse = {
@@ -22,6 +23,17 @@ type IntakeResponse = {
   }
 }
 
+type AuditDraft = {
+  offer_type: OfferType
+  email: string
+  company_or_project: string
+  website_url: string
+  claim_scope: string
+  approximate_claims: string
+  why_it_matters: string
+  deadline: string
+}
+
 const offerCopy = {
   stress_test: {
     label: 'Claim Stress Test', price: '$129', claims: '3–5 claims', turnaround: '48 hours',
@@ -31,36 +43,106 @@ const offerCopy = {
   },
 } satisfies Record<OfferType, Record<string, string>>
 
+function blankDraft(initialOffer: OfferType): AuditDraft {
+  return {
+    offer_type: initialOffer,
+    email: '',
+    company_or_project: '',
+    website_url: '',
+    claim_scope: '',
+    approximate_claims: initialOffer === 'stress_test' ? '3-5' : '10-15',
+    why_it_matters: '',
+    deadline: '',
+  }
+}
+
 export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { initialOffer?: OfferType }) {
-  const [offerType, setOfferType] = useState<OfferType>(initialOffer)
+  const [draft, setDraft] = useState<AuditDraft>(() => blankDraft(initialOffer))
+  const [draftReady, setDraftReady] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<IntakeResponse | null>(null)
+  const offerType = draft.offer_type
   const offer = useMemo(() => offerCopy[offerType], [offerType])
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(AUDIT_DRAFT_KEY)
+      if (raw) {
+        const saved = JSON.parse(raw) as Partial<AuditDraft>
+        const savedOffer: OfferType = saved.offer_type === 'full_audit' ? 'full_audit' : saved.offer_type === 'stress_test' ? 'stress_test' : initialOffer
+        setDraft({ ...blankDraft(savedOffer), ...saved, offer_type: savedOffer })
+      }
+    } catch {}
+    setDraftReady(true)
+  }, [initialOffer])
+
+  useEffect(() => {
+    if (!draftReady) return
+    try { localStorage.setItem(AUDIT_DRAFT_KEY, JSON.stringify(draft)) } catch {}
+  }, [draft, draftReady])
+
+  function update<K extends keyof AuditDraft>(key: K, value: AuditDraft[K]) {
+    setDraft((current) => ({ ...current, [key]: value }))
+    setResult(null)
+  }
+
+  function chooseOffer(next: OfferType) {
+    setDraft((current) => ({
+      ...current,
+      offer_type: next,
+      approximate_claims: next === 'stress_test' ? '3-5' : current.approximate_claims === '3-5' ? '10-15' : current.approximate_claims,
+    }))
+    setResult(null)
+  }
+
+  async function requireSession() {
+    try {
+      const session = await authClient.getSession()
+      if (session?.data?.user) return true
+    } catch {}
+    const returnTo = typeof window !== 'undefined'
+      ? `${window.location.pathname}${window.location.search}#audit-intake`
+      : '/audit/#audit-intake'
+    rememberAuthReturn(returnTo)
+    if (typeof window !== 'undefined') window.location.assign(signInHref(returnTo))
+    return false
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setSubmitting(true)
+    if (submitting) return
     setResult(null)
 
-    const formElement = event.currentTarget
-    const form = new FormData(formElement)
+    const signedIn = await requireSession()
+    if (!signedIn) return
+
+    setSubmitting(true)
+    const form = new FormData(event.currentTarget)
     const payload = {
       offer_type: offerType,
-      email: String(form.get('email') || '').trim(),
-      company_or_project: String(form.get('company_or_project') || ''),
-      website_url: String(form.get('website_url') || ''),
-      claim_scope: String(form.get('claim_scope') || ''),
-      approximate_claims: offerType === 'stress_test' ? '3-5' : String(form.get('approximate_claims') || ''),
-      why_it_matters: String(form.get('why_it_matters') || ''),
-      deadline: String(form.get('deadline') || ''),
+      email: draft.email.trim(),
+      company_or_project: draft.company_or_project,
+      website_url: draft.website_url,
+      claim_scope: draft.claim_scope,
+      approximate_claims: offerType === 'stress_test' ? '3-5' : draft.approximate_claims,
+      why_it_matters: draft.why_it_matters,
+      deadline: draft.deadline,
       company_site: String(form.get('company_site') || ''),
     }
 
     try {
-      const response = await fetch(`${API_URL.replace(/\/$/, '')}/audit/intake`, {
-        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload),
+      const response = await fetch(`${PROOFTTL_API_URL}/audit/intake`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
       })
       const body = await response.json().catch(() => ({})) as IntakeResponse
+      if (response.status === 401) {
+        rememberAuthReturn(`${window.location.pathname}${window.location.search}#audit-intake`)
+        window.location.assign(signInHref(`${window.location.pathname}${window.location.search}#audit-intake`))
+        return
+      }
       if (!response.ok) {
         setResult({ error: body.error || `HTTP ${response.status}` })
       } else {
@@ -73,8 +155,9 @@ export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { init
               offer_type: offerType,
               saved_at_ms: Date.now(),
             }))
+            localStorage.removeItem(AUDIT_DRAFT_KEY)
           } catch {}
-          formElement.reset()
+          setDraft(blankDraft(offerType))
         }
       }
     } catch {
@@ -89,35 +172,35 @@ export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { init
       <div className="audit-intake-heading-row">
         <div>
           <p className="app-kicker">SUBMIT YOUR CLAIMS</p>
-          <h2 id="audit-intake-heading">No card. No commitment. Scope first.</h2>
+          <h2 id="audit-intake-heading">Scope first. Sign in before submission.</h2>
         </div>
         <div className="audit-offer-switch" aria-label="Choose verification offer">
-          <button type="button" className={offerType === 'stress_test' ? 'active' : ''} aria-pressed={offerType === 'stress_test'} onClick={() => { setOfferType('stress_test'); setResult(null) }}>$129 · 3–5 claims</button>
-          <button type="button" className={offerType === 'full_audit' ? 'active' : ''} aria-pressed={offerType === 'full_audit'} onClick={() => { setOfferType('full_audit'); setResult(null) }}>$500 · 10–25 claims</button>
+          <button type="button" className={offerType === 'stress_test' ? 'active' : ''} aria-pressed={offerType === 'stress_test'} onClick={() => chooseOffer('stress_test')}>$129 · 3–5 claims</button>
+          <button type="button" className={offerType === 'full_audit' ? 'active' : ''} aria-pressed={offerType === 'full_audit'} onClick={() => chooseOffer('full_audit')}>$500 · 10–25 claims</button>
         </div>
       </div>
 
-      <p className="audit-selected-offer"><strong>{offer.label}</strong> · {offer.claims} · {offer.turnaround}. We review the scope before sending any payment link.</p>
+      <p className="audit-selected-offer"><strong>{offer.label}</strong> · {offer.claims} · {offer.turnaround}. Your draft is saved in this browser. If you are not signed in when you submit, ProofTTL sends you to sign in and returns you here with the draft restored.</p>
       {offerType === 'stress_test' && <p className="audit-credit-note">Upgrade later for <strong>$371 more</strong>; the first $129 is credited in full.</p>}
 
       <form className="audit-clean-form" onSubmit={submit}>
         <input type="hidden" name="offer_type" value={offerType} />
         <div className="audit-form-grid two">
-          <label>EMAIL<input name="email" type="email" required maxLength={254} placeholder="you@company.com" /></label>
-          <label>COMPANY OR PROJECT<input name="company_or_project" required maxLength={160} placeholder="Acme AI" /></label>
+          <label>EMAIL<input name="email" type="email" required maxLength={254} placeholder="you@company.com" value={draft.email} onChange={(e) => update('email', e.target.value)} /></label>
+          <label>COMPANY OR PROJECT<input name="company_or_project" required maxLength={160} placeholder="Acme AI" value={draft.company_or_project} onChange={(e) => update('company_or_project', e.target.value)} /></label>
         </div>
-        <label>WEBSITE / DOCS URL <span>OPTIONAL</span><input name="website_url" type="url" maxLength={600} placeholder="https://example.com/docs" /></label>
-        <label>CLAIMS TO VERIFY<textarea name="claim_scope" required maxLength={4000} rows={5} placeholder={offerType === 'stress_test' ? 'Paste the 3–5 claims that would hurt if they were wrong.' : 'Paste or describe the 10–25 claims that matter before launch, fundraising, sales, client delivery, or review.'} /></label>
+        <label>WEBSITE / DOCS URL <span>OPTIONAL</span><input name="website_url" type="url" maxLength={600} placeholder="https://example.com/docs" value={draft.website_url} onChange={(e) => update('website_url', e.target.value)} /></label>
+        <label>CLAIMS TO VERIFY<textarea name="claim_scope" required maxLength={4000} rows={5} value={draft.claim_scope} onChange={(e) => update('claim_scope', e.target.value)} placeholder={offerType === 'stress_test' ? 'Paste the 3–5 claims that would hurt if they were wrong.' : 'Paste or describe the 10–25 claims that matter before launch, fundraising, sales, client delivery, or review.'} /></label>
         {offerType === 'full_audit' ? (
-          <label>APPROXIMATE CLAIM COUNT<select name="approximate_claims" defaultValue="10-15" required><option value="10-15">10–15 claims</option><option value="16-25">16–25 claims</option><option value="25+">More than 25 — scope separately</option></select></label>
+          <label>APPROXIMATE CLAIM COUNT<select name="approximate_claims" value={draft.approximate_claims} onChange={(e) => update('approximate_claims', e.target.value)} required><option value="10-15">10–15 claims</option><option value="16-25">16–25 claims</option><option value="25+">More than 25 — scope separately</option></select></label>
         ) : <input type="hidden" name="approximate_claims" value="3-5" />}
         <div className="audit-form-grid two">
-          <label>WHY IT MATTERS<textarea name="why_it_matters" required maxLength={2500} rows={3} placeholder="Launch risk, investor diligence, customer-facing claims..." /></label>
-          <label>DEADLINE <span>OPTIONAL</span><textarea name="deadline" maxLength={120} rows={3} placeholder="Friday / before launch / no rush" /></label>
+          <label>WHY IT MATTERS<textarea name="why_it_matters" required maxLength={2500} rows={3} value={draft.why_it_matters} onChange={(e) => update('why_it_matters', e.target.value)} placeholder="Launch risk, investor diligence, customer-facing claims..." /></label>
+          <label>DEADLINE <span>OPTIONAL</span><textarea name="deadline" maxLength={120} rows={3} value={draft.deadline} onChange={(e) => update('deadline', e.target.value)} placeholder="Friday / before launch / no rush" /></label>
         </div>
         <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}><label>Company site<input name="company_site" tabIndex={-1} autoComplete="off" /></label></div>
         <button className="button button-primary audit-submit-button" type="submit" disabled={submitting}>{submitting ? 'SUBMITTING…' : `SUBMIT ${offer.label.toUpperCase()} FOR SCOPE REVIEW →`}</button>
-        <p className="audit-form-footnote">SCOPE REVIEW BEFORE PAYMENT · REFERENCE NUMBER RETURNED IMMEDIATELY</p>
+        <p className="audit-form-footnote">SIGN-IN REQUIRED TO SUBMIT · DRAFT SAVED LOCALLY · SCOPE REVIEW BEFORE PAYMENT</p>
       </form>
 
       {result?.audit_intake_id && (
