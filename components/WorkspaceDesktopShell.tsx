@@ -17,8 +17,6 @@ type TerminalLine = { kind: 'input' | 'output' | 'error'; text: string }
 
 const TREE = [
   ['studio', 'Studio', '/studio/'],
-  ['worlds', 'Worlds', '/worlds/'],
-  ['cinematics', 'Cinematics', '/cinematics/'],
   ['work', 'Work', '/work/'],
   ['files', 'Files', '/files/'],
   ['automations', 'Automations', '/automations/'],
@@ -155,10 +153,10 @@ export default function WorkspaceDesktopShell() {
           <button className="os-open-file" type="button" onClick={() => setActiveTab('quick')}>⌘ quick.actions</button>
         </>}
         {area === 'search' && <div className="os-side-tool"><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search Workspace" aria-label="Search Workspace" /><small>{search ? `${searchResults.length} matching surface${searchResults.length === 1 ? '' : 's'}.` : 'Search routes and project surfaces.'}</small><div className="os-tree">{searchResults.map(([key, label, href]) => <a href={href} key={key}><span>›</span><b>{label}</b></a>)}</div></div>}
-        {area === 'love' && <div className="os-side-tool"><strong>L.O.V.E.</strong><small>Use the global chat dock below. Ask naturally or give platform commands.</small><code>“open Cinematics”</code><code>“help me code this”</code><code>“show me an alternator”</code></div>}
+        {area === 'love' && <div className="os-side-tool"><strong>L.O.V.E.</strong><small>Use the global chat dock below. Ask naturally or give platform commands.</small><code>“verify this claim”</code><code>“help me code this”</code><code>“open files”</code></div>}
         {area === 'source' && <div className="os-side-tool"><strong>Source control</strong><small>GitHub project operations stay permissioned through Connections.</small><a href="/connections/">Connect GitHub →</a></div>}
         {area === 'run' && <div className="os-side-tool"><strong>Run & debug</strong><small>Approved code runs go through isolated cloud sandboxes.</small><a href="/studio/">Open Studio →</a></div>}
-        {area === 'connections' && <div className="os-side-tool"><strong>Providers</strong><small>Identity, models, GitHub, Vercel, Marble and future render rails.</small><a href="/connections/">Open Connections →</a></div>}
+        {area === 'connections' && <div className="os-side-tool"><strong>Providers</strong><small>Identity, models, GitHub, Vercel and future provider rails.</small><a href="/connections/">Open Connections →</a></div>}
       </aside>
 
       <main className="os-workbench">
@@ -166,9 +164,9 @@ export default function WorkspaceDesktopShell() {
         <div className="os-editor">
           {activeTab === 'workspace' ? <div className="os-welcome">
             <div className="os-welcome-mark">P</div><h1>Workspace</h1><p>Ask L.O.V.E. or open a tool.</p>
-            <div className="os-quick-grid"><a href="/studio/"><span>⌘</span><strong>Code</strong><small>Studio</small></a><a href="/worlds/"><span>◫</span><strong>Build a world</strong><small>Worlds</small></a><a href="/cinematics/"><span>▶</span><strong>Direct a scene</strong><small>Cinematics</small></a><a href="/files/"><span>▤</span><strong>Open files</strong><small>Files</small></a><a href="/work/"><span>✓</span><strong>Get work done</strong><small>Work</small></a><a href="/connections/"><span>◇</span><strong>Connect tools</strong><small>Connections</small></a></div>
-            <div className="os-recent"><span>CONTINUE</span><a href="/studio/">Studio <small>Code projects</small></a><a href="/cinematics/">Cinematics <small>Scenes & renders</small></a><a href="/worlds/">Worlds <small>3D projects</small></a></div>
-          </div> : <div className="os-command-sheet"><span>QUICK ACTIONS</span><a href="/studio/">New code project</a><a href="/worlds/">New 3D world</a><a href="/cinematics/">New cinematic</a><a href="/automations/">New automation</a><a href="/audit/">New verification audit</a></div>}
+            <div className="os-quick-grid"><a href="/studio/"><span>⌘</span><strong>Code</strong><small>Studio</small></a><a href="/audit/"><span>◈</span><strong>Verify claims</strong><small>Verification</small></a><a href="/files/"><span>▤</span><strong>Open files</strong><small>Files</small></a><a href="/work/"><span>✓</span><strong>Get work done</strong><small>Work</small></a><a href="/automations/"><span>↻</span><strong>Automate</strong><small>Automations</small></a><a href="/connections/"><span>◇</span><strong>Connect tools</strong><small>Connections</small></a></div>
+            <div className="os-recent"><span>CONTINUE</span><a href="/studio/">Studio <small>Code projects</small></a><a href="/audit/">Verification <small>Claim audits</small></a><a href="/files/">Files <small>Project artifacts</small></a></div>
+          </div> : <div className="os-command-sheet"><span>QUICK ACTIONS</span><a href="/studio/">New code project</a><a href="/audit/">New verification audit</a><a href="/files/">Open files</a><a href="/work/">Open work</a><a href="/automations/">New automation</a></div>}
         </div>
 
         <section className={`os-panel ${terminalOpen ? 'open' : ''}`}>
