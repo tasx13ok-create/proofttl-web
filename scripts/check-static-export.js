@@ -1,7 +1,7 @@
 import { access, readFile } from 'node:fs/promises'
 
 const requiredFiles = [
-  'package.json','out/index.html','out/login/index.html','out/two-factor/index.html','out/onboarding/index.html','out/get-started/index.html','out/console/index.html','out/support/index.html','out/docs/index.html','out/audit/index.html','out/audit/sample/index.html','out/solutions/index.html','out/solutions/ai-agent-verification/index.html','out/trust/index.html','out/workspace/index.html','out/worlds/index.html','out/cinematics/index.html','out/verify-lease.html','out/lease-ops.html','out/methodology.html','out/status.html','out/robots.txt','out/_headers','public/proofttl-logo.png','public/proofttl-logo-lockup.png','components/ProductNav.tsx','components/WorkspaceDesktopShell.tsx','components/WorldBuilder.tsx','components/CinematicsStudio.tsx','components/LocalCinematicPreview.tsx','cinematics/core/Types.ts','cinematics/prompt/PromptParser.ts','cinematics/ai/Types.ts','lib/proofttl-cinematics.ts','components/AssistantRichText.tsx','components/ProofTTLAds.tsx','components/ProofTTLAssistant.tsx','components/ProofTTLChatBar.tsx','components/LoveEntity.module.css','lib/proofttl-assistant.ts','app/product-nav.css','app/workspace-shell.css','app/worlds.css','app/cinematics.css','app/cinematics-v3.css','app/chat-bar.css','app/chat-fullscreen.css','app/glass-polish.css','ADSENSE-SETUP.md'
+  'package.json','out/index.html','out/login/index.html','out/two-factor/index.html','out/onboarding/index.html','out/get-started/index.html','out/console/index.html','out/support/index.html','out/docs/index.html','out/audit/index.html','out/audit/sample/index.html','out/solutions/index.html','out/solutions/ai-agent-verification/index.html','out/trust/index.html','out/workspace/index.html','out/worlds/index.html','out/cinematics/index.html','out/verify-lease.html','out/lease-ops.html','out/methodology.html','out/status.html','out/robots.txt','out/_headers','public/proofttl-logo.png','public/proofttl-logo-lockup.png','components/ProductNav.tsx','components/WorkspaceDesktopShell.tsx','components/WorldBuilder.tsx','components/CinematicsStudio.tsx','components/LocalCinematicPreview.tsx','cinematics/core/Types.ts','cinematics/prompt/PromptParser.ts','cinematics/ai/Types.ts','lib/proofttl-cinematics.ts','components/AssistantRichText.tsx','components/ProofTTLAds.tsx','components/ProofTTLAssistant.tsx','components/ProofTTLChatBar.tsx','components/LoveEntity.module.css','lib/proofttl-assistant.ts','app/product-nav.css','app/brand-polish.css','app/workspace-shell.css','app/worlds.css','app/cinematics.css','app/cinematics-v3.css','app/chat-bar.css','app/chat-fullscreen.css','app/glass-polish.css','ADSENSE-SETUP.md'
 ]
 
 async function expect(file, values, label = file) {
@@ -43,12 +43,16 @@ async function main() {
   await expect('components/LoveEntity.module.css', ['.stage','.eyes','.smoke','.voiceWave','prefers-reduced-motion'], 'Reactive L.O.V.E. entity')
 
   const layout = await readFile('app/layout.tsx', 'utf8')
-  for (const expected of ['<ProofTTLChatBar />','<ProductNav />',"'./workspace-shell.css'","'./cinematics.css'",'TESTNET PREVIEW','Mainnet disabled',"'/proofttl-logo.png'"]) if (!layout.includes(expected)) throw new Error(`Global shell is missing: ${expected}`)
+  for (const expected of ['<ProofTTLChatBar />','<ProductNav />',"'./brand-polish.css'","'./workspace-shell.css'","'./cinematics.css'",'TESTNET PREVIEW','Mainnet disabled',"'/proofttl-logo.png'"]) if (!layout.includes(expected)) throw new Error(`Global shell is missing: ${expected}`)
   if (layout.includes('<ProofTTLAssistant />')) throw new Error('Legacy separate voice assistant is mounted')
 
   const nav = await readFile('components/ProductNav.tsx', 'utf8')
-  for (const expected of ['/workspace/','/studio/','/work/','/files/','/automations/','/money/','/connections/','/trust/','product-brand-mark','product-brand-wordmark','ProofTTL']) if (!nav.includes(expected)) throw new Error(`Global navigation is missing: ${expected}`)
+  for (const expected of ['/workspace/','/studio/','/work/','/files/','/automations/','/money/','/connections/','/trust/','product-brand-lockup','product-brand-lockup-image','/proofttl-logo-lockup.png','ProofTTL']) if (!nav.includes(expected)) throw new Error(`Global navigation is missing: ${expected}`)
+  for (const legacyBrand of ['product-brand-mark','product-brand-wordmark']) if (nav.includes(legacyBrand)) throw new Error(`Legacy placeholder branding leaked into global navigation: ${legacyBrand}`)
   for (const hidden of ["{ href: '/worlds/', label: 'Worlds' }","{ href: '/cinematics/', label: 'Cinematics' }"]) if (nav.includes(hidden)) throw new Error(`Hidden render surface leaked into global navigation: ${hidden}`)
+
+  const brandPolish = await readFile('app/brand-polish.css', 'utf8')
+  for (const expected of ['product-brand-lockup-image','main > nav.nav.shell','app-topbar .brand > img']) if (!brandPolish.includes(expected)) throw new Error(`Brand polish is missing: ${expected}`)
 
   const workspaceShell = await readFile('components/WorkspaceDesktopShell.tsx', 'utf8')
   for (const hidden of ['href="/worlds/"','href="/cinematics/"','Build a world','Direct a scene','New 3D world','New cinematic']) if (workspaceShell.includes(hidden)) throw new Error(`Hidden render surface leaked into Workspace controls: ${hidden}`)
@@ -66,7 +70,7 @@ async function main() {
   for (const expected of ['X-Content-Type-Options: nosniff','X-Frame-Options: DENY','Permissions-Policy: camera=(), microphone=(self), geolocation=()']) if (!headers.includes(expected)) throw new Error(`Static headers missing: ${expected}`)
   if (headers.includes('microphone=()')) throw new Error('Static headers disable L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export passed with revenue-focused navigation while preserving hidden Worlds and Cinematics code for later reactivation.')
+  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export passed with canonical branding, revenue-focused navigation, and hidden render code preserved for later reactivation.')
 }
 
 main().catch((error) => { console.error('\nSTATIC EXPORT CHECK FAILED:', error.message || error); process.exitCode = 1 })
