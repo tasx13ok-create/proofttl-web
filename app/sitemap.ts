@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/services/',
     '/faq/',
     '/machine-definition/',
+    '/glossary/',
     '/solutions/',
     '/trust/',
     '/how-proofttl-works/',
@@ -36,7 +37,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return routes.map((route) => {
     const isHome = route === '/'
     const isCommercial = route === '/audit/' || route === '/services/' || route.startsWith('/services/')
-    const isTrust = route === '/faq/' || route === '/machine-definition/' || route === '/trust/' || route === '/how-proofttl-works/'
+    const isTrust = route === '/faq/' || route === '/machine-definition/' || route === '/glossary/' || route === '/trust/' || route === '/how-proofttl-works/'
     return {
       url: `${SITE_URL}${route}`,
       lastModified: new Date(),
