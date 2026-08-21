@@ -14,9 +14,10 @@ const PRIMARY = [
 ] as const
 
 const SECONDARY = [
-  { href: '/connections/', label: 'Connections' },
-  { href: '/trust/', label: 'Trust' },
   { href: '/audit/', label: 'Verification' },
+  { href: '/services/', label: 'Services' },
+  { href: '/trust/', label: 'Trust' },
+  { href: '/connections/', label: 'Connections' },
 ] as const
 
 type SessionUser = { name?: string | null; email?: string | null; image?: string | null }
@@ -107,7 +108,7 @@ export default function ProductNav() {
         </nav>
 
         <div className="product-nav-actions">
-          <div className="product-nav-more"><button type="button" aria-haspopup="true">More</button><div className="product-nav-menu">{SECONDARY.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}<a href="/how-proofttl-works/">How it works</a><a href="/status/">Status</a></div></div>
+          <div className="product-nav-more"><button type="button" aria-haspopup="true">More</button><div className="product-nav-menu">{SECONDARY.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}<a href="/how-proofttl-works/">How it works</a><a href="/faq/">FAQ</a><a href="/status/">Status</a></div></div>
 
           {!accountLoading && user ? (
             <div className="product-account" ref={accountRef}>
