@@ -83,8 +83,8 @@ function upstreamCookies(headers) {
 
 function browserCookie(cookie) {
   return String(cookie)
-    .replace(/;\s*Domain=proofttl\.tasx13ok\.workers\.dev/ig, '')
-    .replace(/;\s*Domain=\.tasx13ok\.workers\.dev/ig, '')
+    .replace(/;\s*Domain=[^;]+/ig, '')
+    .replace(/;\s*Path=\/api\/auth(?:\/)?/ig, '; Path=/')
 }
 
 function browserLocation(location, webOrigin) {
