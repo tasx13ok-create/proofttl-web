@@ -104,25 +104,26 @@ export default function AuditPage() {
             </div>
           </section>
 
-          <section style={{ marginTop: 28 }} aria-labelledby="audit-faq-heading">
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'end', flexWrap: 'wrap' }}>
+          <section style={{ margin: '28px 34px 0' }} aria-labelledby="audit-faq-heading">
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'end', flexWrap: 'wrap', paddingBottom: 14 }}>
               <div>
-                <p className="app-kicker">COMMON QUESTIONS</p>
-                <h2 id="audit-faq-heading" style={{ margin: 0 }}>Before you send the claims.</h2>
+                <p className="app-kicker" style={{ marginBottom: 8 }}>COMMON QUESTIONS</p>
+                <h2 id="audit-faq-heading" style={{ margin: 0, fontSize: 'clamp(24px,3vw,32px)', letterSpacing: '-.03em' }}>Before you send the claims.</h2>
               </div>
               <a className="text-link" href="/faq/">FULL FAQ →</a>
             </div>
-            <div style={{ display: 'grid', gap: 0, marginTop: 12 }}>
-              {AUDIT_FAQ.map((item) => (
-                <article key={item.question} style={{ padding: '18px 0', borderTop: '1px solid rgba(148,163,184,.14)' }}>
-                  <h3 style={{ margin: '0 0 8px' }}>{item.question}</h3>
-                  <p className="app-copy" style={{ margin: 0 }}>{item.answer}</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 10 }}>
+              {AUDIT_FAQ.map((item, index) => (
+                <article key={item.question} style={{ minHeight: 154, padding: 18, border: '1px solid rgba(148,163,184,.11)', borderRadius: 12, background: index === 0 ? 'linear-gradient(180deg,rgba(34,211,238,.045),rgba(255,255,255,.012))' : 'rgba(255,255,255,.014)' }}>
+                  <span style={{ display: 'block', marginBottom: 12, color: '#5f7187', font: "700 8px 'IBM Plex Mono',monospace", letterSpacing: '.1em' }}>0{index + 1}</span>
+                  <h3 style={{ margin: '0 0 8px', fontSize: 16, lineHeight: 1.25 }}>{item.question}</h3>
+                  <p className="app-copy" style={{ margin: 0, fontSize: 12, lineHeight: 1.6 }}>{item.answer}</p>
                 </article>
               ))}
             </div>
           </section>
 
-          <div className="hero-actions" style={{ marginTop: 18 }}>
+          <div className="hero-actions" style={{ margin: '20px 34px 0' }}>
             <a className="text-link" href="/services/">SEE VERIFICATION USE CASES →</a>
             <a className="text-link" href="/trust/">READ TRUST BOUNDARIES →</a>
           </div>
