@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 180" role="img" aria-labelledby="title desc">
+  <title id="title">ProofTTL</title>
+  <desc id="desc">ProofTTL verification brand lockup</desc>
+  <defs>
+    <linearGradient id="edge" x1="30" y1="24" x2="160" y2="158" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ECFCFF"/>
+      <stop offset="0.2" stop-color="#4FD7FF"/>
+      <stop offset="0.62" stop-color="#1677FF"/>
+      <stop offset="1" stop-color="#743CFF"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="60" y1="40" x2="140" y2="145" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="0.42" stop-color="#DCE7F3"/>
+      <stop offset="0.76" stop-color="#87A7C7"/>
+      <stop offset="1" stop-color="#F7FBFF"/>
+    </linearGradient>
+    <linearGradient id="ttl" x1="430" y1="55" x2="637" y2="115" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#44D8FF"/>
+      <stop offset="0.48" stop-color="#1677FF"/>
+      <stop offset="1" stop-color="#743CFF"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(12 10)">
+    <rect x="0" y="0" width="160" height="160" rx="38" fill="#070B13" stroke="#29415C" stroke-width="2"/>
+    <path d="M80 20 132 50v60l-52 30-52-30V50l52-30Z" fill="none" stroke="url(#edge)" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M47 51h41c22 0 35 11 35 28 0 17-13 27-34 27H76v27l-23 12V75h36c7 0 11-4 11-9s-4-8-11-8H47v-7Z" fill="url(#metal)"/>
+    <path d="M76 78h18c9 0 14 4 14 10s-5 10-14 10H76V78Z" fill="#07101D"/>
+    <path d="M15 113c30 18 72 22 113 3 11-5 18-11 23-18" fill="none" stroke="url(#edge)" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="147" cy="101" r="4" fill="#E8FCFF"/>
+  </g>
+  <g font-family="Inter,Segoe UI,Arial,sans-serif" font-weight="800">
+    <text x="205" y="101" font-size="66" letter-spacing="-3.5" fill="#F7FAFF">Proof</text>
+    <text x="395" y="101" font-size="66" letter-spacing="-3.5" fill="url(#ttl)">TTL</text>
+  </g>
+  <text x="209" y="136" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15" font-weight="600" letter-spacing="8" fill="#9DB1C7">VERIFY · SOURCE · TRUST</text>
+</svg>
