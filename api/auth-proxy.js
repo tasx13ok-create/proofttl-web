@@ -51,12 +51,13 @@ export const config = {
 export default async function handler(request, response) {
   try {
     const path = authPathFromRequest(request)
-    if (!path || path.includes('..')) {
+    if (!path || path.includes('..') || path.startsWith('$')) {
       response.statusCode = 422
       response.setHeader('content-type', 'application/json; charset=utf-8')
       response.setHeader('cache-control', 'no-store')
       response.end(JSON.stringify({
         error: 'auth_proxy_path_missing',
+        resolvedPath: path || null,
         url: request.url || null,
         query: request.query || null,
         routing: {
