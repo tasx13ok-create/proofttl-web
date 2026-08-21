@@ -4,8 +4,5 @@
     { "source": "/lease-ops.html", "destination": "/lease-ops/", "permanent": true },
     { "source": "/status.html", "destination": "/status/", "permanent": true },
     { "source": "/methodology.html", "destination": "/how-proofttl-works/", "permanent": true }
-  ],
-  "rewrites": [
-    { "source": "/api/auth/:path*", "destination": "https://proofttl.tasx13ok.workers.dev/api/auth/:path*" }
   ]
 }
