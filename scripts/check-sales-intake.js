@@ -14,6 +14,9 @@ for (const expected of [
   if (!home.includes(expected)) throw new Error(`Homepage missing required conversion behavior: ${expected}`)
 }
 
+if (home.includes('<nav className="nav shell"')) throw new Error('Homepage regressed to duplicate local navigation')
+if (home.includes('brand-mark">P')) throw new Error('Homepage regressed to legacy P branding')
+
 for (const expected of [
   'AuditIntakeForm',
   'Claim Stress Test',
@@ -24,7 +27,7 @@ for (const expected of [
   '#audit-intake',
   'SCOPE BEFORE PAYMENT',
   '48-hour turnaround',
-  '3–5 business-day turnaround',
+  '3–5 business days',
 ]) {
   if (!auditPage.includes(expected)) throw new Error(`Audit sales page missing required sellability behavior: ${expected}`)
 }
@@ -44,8 +47,9 @@ for (const expected of [
   'audit_intake_id',
   'company_site',
   '$371 more',
+  'No card. No commitment. Scope first.',
 ]) {
   if (!intake.includes(expected)) throw new Error(`Audit intake component missing required field/behavior: ${expected}`)
 }
 
-console.log('SUCCESS: ProofTTL two-tier paid verification funnel passed release checks.')
+console.log('SUCCESS: ProofTTL clean two-tier paid verification funnel passed release checks.')
