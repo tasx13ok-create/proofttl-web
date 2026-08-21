@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-
-const API_URL = (process.env.NEXT_PUBLIC_PROOFTTL_API_URL || 'https://proofttl.tasx13ok.workers.dev').replace(/\/$/, '')
+import { PROOFTTL_API_URL } from '../lib/proofttl-auth'
 
 type Preferences = {
   love_voice_enabled?: boolean
@@ -23,7 +22,7 @@ export default function AccountPreferenceBridge() {
 
     async function load() {
       try {
-        const response = await fetch(`${API_URL}/account/preferences`, {
+        const response = await fetch(`${PROOFTTL_API_URL}/account/preferences`, {
           credentials: 'include',
           cache: 'no-store',
           signal: controller.signal,
