@@ -87,6 +87,7 @@ export default async function handler(request, response) {
     })
 
     response.statusCode = upstream.status
+    response.setHeader('x-proofttl-auth-path', path)
 
     for (const [key, value] of upstream.headers.entries()) {
       const lower = key.toLowerCase()
