@@ -2,7 +2,7 @@ import { createAuthClient } from 'better-auth/react'
 import { twoFactorClient } from 'better-auth/client/plugins'
 import { passkeyClient } from '@better-auth/passkey/client'
 
-export const PROOFTTL_API_URL = (
+export const PROOFTTL_UPSTREAM_API_URL = (
   process.env.NEXT_PUBLIC_PROOFTTL_API_URL ||
   'https://proofttl.tasx13ok.workers.dev'
 ).replace(/\/$/, '')
@@ -11,6 +11,10 @@ const PROOFTTL_WEB_ORIGIN = (
   process.env.NEXT_PUBLIC_PROOFTTL_WEB_ORIGIN ||
   'https://proofttl-web.vercel.app'
 ).replace(/\/$/, '')
+
+export const PROOFTTL_API_URL = typeof window !== 'undefined'
+  ? `${window.location.origin}/api/runtime`
+  : PROOFTTL_UPSTREAM_API_URL
 
 export const PROOFTTL_AUTH_URL = typeof window !== 'undefined'
   ? window.location.origin
@@ -57,6 +61,7 @@ export const authClient = createAuthClient({
 export async function fetchAuthDiscovery(signal?: AbortSignal): Promise<ProofTTLAuthDiscovery> {
   const response = await fetch(`${PROOFTTL_API_URL}/.well-known/proofttl-auth.json`, {
     method: 'GET',
+    credentials: 'include',
     cache: 'no-store',
     signal,
   })
