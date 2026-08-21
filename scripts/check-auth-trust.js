@@ -4,6 +4,7 @@ const login = await readFile('components/AuthLoginPanel.tsx', 'utf8')
 const trust = await readFile('components/TrustCenter.tsx', 'utf8')
 const auth = await readFile('lib/proofttl-auth.ts', 'utf8')
 const vercel = await readFile('vercel.json', 'utf8')
+const proxy = await readFile('api/auth/[...path].js', 'utf8')
 
 for (const expected of [
   "id: 'github'",
@@ -45,12 +46,16 @@ for (const expected of [
 }
 
 for (const expected of [
-  '/api/auth/:path*',
-  'https://proofttl.tasx13ok.workers.dev/api/auth/:path*',
+  "const AUTH_UPSTREAM = 'https://proofttl.tasx13ok.workers.dev'",
+  '/api/auth/',
+  'bodyParser: false',
+  "redirect: 'manual'",
+  "response.setHeader('set-cookie'",
 ]) {
-  if (!vercel.includes(expected)) throw new Error(`First-party auth proxy missing: ${expected}`)
+  if (!proxy.includes(expected)) throw new Error(`First-party auth function missing: ${expected}`)
 }
 
+if (vercel.includes('https://proofttl.tasx13ok.workers.dev/api/auth/:path*')) throw new Error('Legacy external auth rewrite must not shadow the first-party auth function')
 if (login.includes('type="password"')) throw new Error('Password field must not appear in ProofTTL login')
 if (auth.includes('baseURL: PROOFTTL_API_URL')) throw new Error('Browser auth regressed to cross-site Worker origin')
 
