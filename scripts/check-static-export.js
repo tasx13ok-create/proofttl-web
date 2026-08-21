@@ -23,16 +23,16 @@ async function main() {
   await expect('out/docs/index.html', ['ProofTTL API Docs','HTTP 402','PAYMENT-REQUIRED','Fact Lease'], 'Docs')
   await expect('out/audit/index.html', ['ProofTTL','Verification Audit','$500','/audit/sample/'], 'Audit')
   await expect('out/audit/sample/index.html', ['Sample Verification Audit','PX-006','CONTRADICTED','PUBLIC DEMONSTRATION'], 'Sample audit')
-  await expect('out/workspace/index.html', ['Workspace','Code','Build a world','Direct a scene','Open files'], 'Workspace')
-  await expect('out/worlds/index.html', ['WORLDS / 3D STUDIO','LIVE WEBGL PREVIEW','GENERATE LOCALLY','EXPORT JSON'], 'Worlds')
-  await expect('out/cinematics/index.html', ['CINEMATICS','DIRECT · STORYBOARD · RENDER · CUT','AI FILM','LOCAL PREVIS','DIRECT SCENE WITH AI','TIMELINE','RENDER SCENE'], 'Cinematics')
+  await expect('out/workspace/index.html', ['Workspace','Code','Verify claims','Open files'], 'Workspace')
+  await expect('out/worlds/index.html', ['WORLDS / 3D STUDIO','LIVE WEBGL PREVIEW','GENERATE LOCALLY','EXPORT JSON'], 'Worlds preserved code')
+  await expect('out/cinematics/index.html', ['CINEMATICS','DIRECT · STORYBOARD · RENDER · CUT','AI FILM','LOCAL PREVIS','DIRECT SCENE WITH AI','TIMELINE','RENDER SCENE'], 'Cinematics preserved code')
   await expect('out/trust/index.html', ['TRUST CENTER','API HEALTH','CUSTOMER AUTHENTICATION','AUTOMATIC MONITORING','CRYPTOGRAPHIC SIGNING','VOICE PIPELINE','RELEASE READINESS','TRUST BOUNDARY'], 'Trust Center')
   await expect('out/verify-lease.html', ['Verify a signed','Ed25519','proofttl-issuance-v1','/.well-known/proofttl-keys.json','Export signed Lease JSON'], 'Lease verifier')
   await expect('out/lease-ops.html', ['Lease Operations','Share verification link','Prepare renewal'], 'Lease operations')
   await expect('out/methodology.html', ['SUPPORTED','CONTRADICTED','UNKNOWN','ACTIVE','REVOKED','EXPIRED'], 'Methodology')
   await expect('out/status.html', ['System status','/health','/monitor/status','Base Sepolia testnet'], 'Status')
 
-  await expect('components/CinematicsStudio.tsx', ['data-ai-render-mode="true"','DIRECT SCENE WITH AI','STORYBOARD ALL','RENDER SCENE','PLAY REEL','CONTINUITY BIBLE','EXPORT V3 PROJECT','LocalCinematicPreview'], 'AI Cinematics v3')
+  await expect('components/CinematicsStudio.tsx', ['data-ai-render-mode="true"','DIRECT SCENE WITH AI','STORYBOARD ALL','RENDER SCENE','PLAY REEL','CONTINUITY BIBLE','EXPORT V3 PROJECT','LocalCinematicPreview'], 'AI Cinematics v3 preserved')
   await expect('cinematics/ai/Types.ts', ['proofttl-cinematic-v3','CinematicShotV3','ShotGenerationState'], 'Cinematic v3 AI schema')
   await expect('lib/proofttl-cinematics.ts', ['/cinematics/plan','/cinematics/storyboard','/cinematics/render',"credentials: 'include'"], 'Cinematics AI client')
   await expect('components/LocalCinematicPreview.tsx', ['data-local-cinematic','proofttl-cinematic-v2','RECORD WEBM','captureStream','MediaRecorder','REGENERATE TAKE','TIMELINE IS SCRUBBABLE'], 'Local cinematic previs')
@@ -47,7 +47,11 @@ async function main() {
   if (layout.includes('<ProofTTLAssistant />')) throw new Error('Legacy separate voice assistant is mounted')
 
   const nav = await readFile('components/ProductNav.tsx', 'utf8')
-  for (const expected of ['/workspace/','/studio/','/worlds/','/cinematics/','/work/','/files/','/automations/','/money/','/connections/','/trust/','product-brand-mark','product-brand-wordmark','ProofTTL']) if (!nav.includes(expected)) throw new Error(`Global navigation is missing: ${expected}`)
+  for (const expected of ['/workspace/','/studio/','/work/','/files/','/automations/','/money/','/connections/','/trust/','product-brand-mark','product-brand-wordmark','ProofTTL']) if (!nav.includes(expected)) throw new Error(`Global navigation is missing: ${expected}`)
+  for (const hidden of ["{ href: '/worlds/', label: 'Worlds' }","{ href: '/cinematics/', label: 'Cinematics' }"]) if (nav.includes(hidden)) throw new Error(`Hidden render surface leaked into global navigation: ${hidden}`)
+
+  const workspaceShell = await readFile('components/WorkspaceDesktopShell.tsx', 'utf8')
+  for (const hidden of ['href="/worlds/"','href="/cinematics/"','Build a world','Direct a scene','New 3D world','New cinematic']) if (workspaceShell.includes(hidden)) throw new Error(`Hidden render surface leaked into Workspace controls: ${hidden}`)
 
   const assistantClient = await readFile('lib/proofttl-assistant.ts', 'utf8')
   for (const expected of ['/assistant/text','/assistant/voice','/assistant/speech','/assistant/usage',"credentials: 'include'",'requestFinalLoveSpeech','final_response_tts']) if (!assistantClient.includes(expected)) throw new Error(`Assistant client is missing: ${expected}`)
@@ -62,7 +66,7 @@ async function main() {
   for (const expected of ['X-Content-Type-Options: nosniff','X-Frame-Options: DENY','Permissions-Policy: camera=(), microphone=(self), geolocation=()']) if (!headers.includes(expected)) throw new Error(`Static headers missing: ${expected}`)
   if (headers.includes('microphone=()')) throw new Error('Static headers disable L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export, canonical branding, sparse VS Code-style Workspace, AI-first Cinematics v3 with local previs fallback, Worlds, rich L.O.V.E. code/visual/voice rendering, canonical navigation, Trust, auth, verification, security and export policy passed release checks.')
+  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export passed with revenue-focused navigation while preserving hidden Worlds and Cinematics code for later reactivation.')
 }
 
 main().catch((error) => { console.error('\nSTATIC EXPORT CHECK FAILED:', error.message || error); process.exitCode = 1 })
