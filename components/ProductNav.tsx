@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { authClient, PROOFTTL_API_URL } from '../lib/proofttl-auth'
+import { authClient, PROOFTTL_API_URL, signInHref } from '../lib/proofttl-auth'
 
 const PRIMARY = [
   { href: '/workspace/', label: 'Workspace' },
@@ -40,8 +40,10 @@ export default function ProductNav() {
   const [quota, setQuota] = useState<Quota | null>(null)
   const [accountOpen, setAccountOpen] = useState(false)
   const [accountLoading, setAccountLoading] = useState(true)
+  const [signInTarget, setSignInTarget] = useState(pathname || '/')
 
   useEffect(() => {
+    setSignInTarget(`${window.location.pathname}${window.location.search}${window.location.hash}`)
     let cancelled = false
     async function loadAccount() {
       try {
@@ -135,7 +137,7 @@ export default function ProductNav() {
                 </div>
               </div>
             </div>
-          ) : !accountLoading ? <a className="product-nav-signin" href="/login/">Sign in</a> : <span className="product-account-loading" aria-hidden="true" />}
+          ) : !accountLoading ? <a className="product-nav-signin" href={signInHref(signInTarget)}>Sign in</a> : <span className="product-account-loading" aria-hidden="true" />}
 
           <a className="product-nav-workspace" href="/workspace/">Open Workspace <span>→</span></a>
         </div>
