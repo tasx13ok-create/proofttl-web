@@ -52,18 +52,22 @@ export default async function handler(request, response) {
   try {
     const path = authPathFromRequest(request)
     if (!path || path.includes('..')) {
-      console.warn('ProofTTL auth proxy missing path', {
-        url: request.url,
-        query: request.query,
-        originalPath: request.headers?.['x-vercel-original-path'],
-        originalUri: request.headers?.['x-original-uri'],
-        rewriteUrl: request.headers?.['x-rewrite-url'],
-        invokePath: request.headers?.['x-invoke-path'],
-        matchedPath: request.headers?.['x-matched-path'],
-      })
-      response.statusCode = 404
+      response.statusCode = 422
+      response.setHeader('content-type', 'application/json; charset=utf-8')
       response.setHeader('cache-control', 'no-store')
-      response.end('Not found')
+      response.end(JSON.stringify({
+        error: 'auth_proxy_path_missing',
+        url: request.url || null,
+        query: request.query || null,
+        routing: {
+          originalPath: request.headers?.['x-vercel-original-path'] || null,
+          originalUri: request.headers?.['x-original-uri'] || null,
+          rewriteUrl: request.headers?.['x-rewrite-url'] || null,
+          invokePath: request.headers?.['x-invoke-path'] || null,
+          matchedPath: request.headers?.['x-matched-path'] || null,
+          routeMatches: request.headers?.['x-now-route-matches'] || null,
+        },
+      }))
       return
     }
 
