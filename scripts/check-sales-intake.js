@@ -46,9 +46,17 @@ for (const expected of [
   'audit_intake_id',
   'company_site',
   '$371 more',
-  'No card. No commitment. Scope first.',
+  'AUDIT_DRAFT_KEY',
+  'localStorage.setItem(AUDIT_DRAFT_KEY',
+  'requireSession',
+  'rememberAuthReturn',
+  'signInHref',
+  "credentials: 'include'",
+  'SIGN-IN REQUIRED TO SUBMIT',
+  'DRAFT SAVED LOCALLY',
+  'SCOPE REVIEW BEFORE PAYMENT',
 ]) {
   if (!intake.includes(expected)) throw new Error(`Audit intake component missing required field/behavior: ${expected}`)
 }
 
-console.log('SUCCESS: ProofTTL clean two-tier paid verification funnel passed release checks.')
+console.log('SUCCESS: ProofTTL authenticated two-tier paid verification funnel with saved drafts and scope-before-payment passed release checks.')
