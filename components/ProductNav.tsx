@@ -141,7 +141,9 @@ export default function ProductNav() {
     <header className="product-nav" data-product-nav>
       <div className="product-nav-inner">
         <a href="/" className="product-brand" aria-label="ProofTTL home">
-          <span className="product-brand-mark" aria-hidden="true"><span>P</span></span>
+          <span className="product-brand-mark" aria-hidden="true">
+            <img src="/proofttl-logo.png" alt="" width="34" height="34" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+          </span>
           <span className="product-brand-wordmark">ProofTTL</span>
         </a>
 
