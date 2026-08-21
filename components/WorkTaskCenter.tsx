@@ -51,12 +51,15 @@ export default function WorkTaskCenter(){
   const open=tasks.filter(t=>t.status==='open'),done=tasks.filter(t=>t.status==='done')
   return <div style={{display:'grid',gap:18}}>
     <div className="security-summary"><div><span>OPEN</span><strong>{open.length}</strong></div><div><span>DONE</span><strong>{done.length}</strong></div><div><span>SOURCE</span><strong>PROOFTTL NATIVE</strong></div></div>
-    <form onSubmit={create} className="onboarding-card" style={{display:'grid',gap:8}}>
+    <form onSubmit={create} className="onboarding-card app-form native-control-form">
       <p className="app-kicker">NEW TASK</p>
-      <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="What needs to get done?" maxLength={220}/>
-      <textarea value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Notes (optional)" rows={2}/>
-      <div style={{display:'grid',gridTemplateColumns:'160px 1fr',gap:8}}><select value={priority} onChange={e=>setPriority(e.target.value)}><option value="low">Low</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select><input type="datetime-local" value={due} onChange={e=>setDue(e.target.value)}/></div>
-      <button className="button button-primary" disabled={busy||!title.trim()}>ADD TASK →</button>
+      <label className="app-input-label">TASK<input value={title} onChange={e=>setTitle(e.target.value)} placeholder="What needs to get done?" maxLength={220}/></label>
+      <label className="app-input-label">NOTES<textarea value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Notes (optional)" rows={3}/></label>
+      <div className="native-control-row">
+        <label className="app-input-label">PRIORITY<select value={priority} onChange={e=>setPriority(e.target.value)}><option value="low">Low</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select></label>
+        <label className="app-input-label">DUE DATE<input type="datetime-local" value={due} onChange={e=>setDue(e.target.value)}/></label>
+      </div>
+      <button className="button button-primary native-control-submit" disabled={busy||!title.trim()}>{busy?'ADDING…':'ADD TASK →'}</button>
     </form>
     <div className="app-table"><div className="app-table-head"><span>TASK</span><span>PRIORITY / DUE</span><span>ACTIONS</span></div>{tasks.map(t=><div className="app-table-head" key={t.task_id} style={{textTransform:'none',opacity:t.status==='done'?.6:1}}><span><strong>{t.title}</strong>{t.notes&&<small style={{display:'block'}}>{t.notes}</small>}</span><span>{t.priority}<small style={{display:'block'}}>{t.due_at?new Date(t.due_at).toLocaleString():'No due date'}</small></span><span style={{display:'flex',gap:8,flexWrap:'wrap'}}><button type="button" className="text-link" onClick={()=>void patch(t,{status:t.status==='done'?'open':'done'})}>{t.status==='done'?'REOPEN':'DONE'}</button><button type="button" className="text-link" onClick={()=>void remove(t)}>DELETE</button></span></div>)}</div>
     {message&&<p className="app-note">{message}</p>}
