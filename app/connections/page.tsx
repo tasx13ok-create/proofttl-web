@@ -1,6 +1,6 @@
 import ConnectionsCenter from '../../components/ConnectionsCenter'
 
-export const metadata = { title: 'Connections — ProofTTL' }
+export const metadata = { title: 'Connections' }
 
 export default function ConnectionsPage() {
   return (
