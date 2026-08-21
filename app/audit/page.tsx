@@ -23,8 +23,8 @@ export default function AuditPage() {
             <p className="app-copy">Send the factual claims you are about to publish, sell, raise on, launch, or defend. ProofTTL checks them against public primary sources and returns explicit verdicts with evidence.</p>
             <div className="audit-sales-trustline">
               <span>NO CARD TO SUBMIT</span>
-              <span>SCOPE REVIEW WITHIN 24H</span>
-              <span>PAY ONLY AFTER APPROVAL</span>
+              <span>SCOPE BEFORE PAYMENT</span>
+              <span>REVIEW WITHIN 24H</span>
             </div>
           </div>
 
@@ -40,7 +40,7 @@ export default function AuditPage() {
               <span className="plan-label">LARGER REVIEW</span>
               <div className="price">$500<span> one-time</span></div>
               <h2>Full Verification Audit</h2>
-              <p>10–25 claims · full report · contradictions prioritized · 7-day monitoring · 3–5 business days.</p>
+              <p>10–25 claims · full report · contradictions prioritized · 7-day monitoring · 3–5 business-day turnaround.</p>
               <a className="button button-secondary" href="#audit-intake">START FULL AUDIT →</a>
             </article>
           </div>
