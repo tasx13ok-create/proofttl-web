@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react'
 import {
   authClient,
+  clearAuthReturn,
   fetchAuthDiscovery,
+  resolveAuthReturn,
   signInWithProvider,
   type ProofTTLAuthDiscovery,
   type SocialProvider,
@@ -22,8 +24,19 @@ export default function AuthLoginPanel() {
   const [loadState, setLoadState] = useState<LoadState>('loading')
   const [busy, setBusy] = useState<string | null>(null)
   const [message, setMessage] = useState('')
+  const [returnTo, setReturnTo] = useState('/workspace/')
 
   useEffect(() => {
+    const target = resolveAuthReturn('/workspace/')
+    setReturnTo(target)
+    let cancelled = false
+
+    void authClient.getSession().then((result) => {
+      if (cancelled || !result?.data?.user) return
+      clearAuthReturn()
+      window.location.replace(target)
+    }).catch(() => {})
+
     const controller = new AbortController()
     fetchAuthDiscovery(controller.signal)
       .then((data) => {
@@ -35,7 +48,7 @@ export default function AuthLoginPanel() {
         setLoadState('error')
         setMessage(error instanceof Error ? error.message : 'Authentication discovery is unavailable.')
       })
-    return () => controller.abort()
+    return () => { cancelled = true; controller.abort() }
   }, [])
 
   async function social(provider: SocialProvider) {
@@ -43,7 +56,7 @@ export default function AuthLoginPanel() {
     setBusy(provider)
     setMessage('')
     try {
-      const result = await signInWithProvider(provider)
+      const result = await signInWithProvider(provider, returnTo)
       if (result?.error) setMessage(result.error.message || `Could not start ${provider} sign in.`)
     } catch (error) {
       setMessage(error instanceof Error ? error.message : `Could not start ${provider} sign in.`)
@@ -62,7 +75,8 @@ export default function AuthLoginPanel() {
         setMessage(result.error.message || 'Passkey sign in failed.')
         return
       }
-      window.location.assign('/console/')
+      clearAuthReturn()
+      window.location.replace(returnTo)
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Passkey sign in failed.')
     } finally {
@@ -80,9 +94,9 @@ export default function AuthLoginPanel() {
   return (
     <div className="auth-card">
       <p className="app-kicker">SECURE CUSTOMER ACCESS</p>
-      <h1 className="app-title">Sign in without handing ProofTTL a password.</h1>
+      <h1 className="app-title">Sign in, then keep going.</h1>
       <p className="app-copy">
-        Customer access supports GitHub, Google, Discord, and passkeys. ProofTTL keeps password/email sign-in disabled so we do not create another reusable password database or pretend an email-delivery channel exists before it does.
+        ProofTTL returns you to the page and section you were using after authentication. Draft audit information stays in this browser while you sign in.
       </p>
 
       <div className="provider-grid" aria-label="ProofTTL sign-in providers">
@@ -118,6 +132,8 @@ export default function AuthLoginPanel() {
               : 'CONTINUE WITH PASSKEY · HOSTNAME PENDING'}
         </button>
       </div>
+
+      <p className="app-note"><strong>AFTER SIGN-IN:</strong> {returnTo}</p>
 
       <div className="auth-divider">TRUST STATUS</div>
 
