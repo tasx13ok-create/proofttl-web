@@ -41,6 +41,9 @@ for (const expected of [
   'window.location.origin',
   "provider, callbackURL",
   "credentials: 'include'",
+  'AUTH_RETURN_KEY',
+  'rememberAuthReturn',
+  'resolveAuthReturn',
 ]) {
   if (!auth.includes(expected)) throw new Error(`Auth client behavior missing: ${expected}`)
 }
@@ -51,6 +54,11 @@ for (const expected of [
   '/api/auth/',
   'bodyParser: false',
   "redirect: 'manual'",
+  'upstreamCookies',
+  'browserCookie',
+  'browserLocation',
+  ".replace(/;\\s*Domain=[^;]+/ig, '')",
+  ".replace(/;\\s*Path=\\/api\\/auth(?:\\/)?/ig, '; Path=/')",
   "response.setHeader('set-cookie'",
   "response.setHeader('cache-control', 'no-store')",
 ]) {
@@ -60,13 +68,16 @@ for (const expected of [
 for (const expected of [
   '^/api/auth/(?<authpath>.*)$',
   '/api/auth-proxy.js?path=$authpath',
+  '^/api/runtime/(?<runtimepath>.*)$',
+  '/api/runtime-proxy.js?path=$runtimepath',
 ]) {
-  if (!vercel.includes(expected)) throw new Error(`Vercel first-party auth route missing: ${expected}`)
+  if (!vercel.includes(expected)) throw new Error(`Vercel first-party auth/runtime route missing: ${expected}`)
 }
 
 if (vercel.includes('https://proofttl.tasx13ok.workers.dev/api/auth/:path*')) throw new Error('Legacy external auth rewrite must not shadow the first-party auth function')
 if (login.includes('type="password"')) throw new Error('Password field must not appear in ProofTTL login')
 if (auth.includes('baseURL: PROOFTTL_API_URL')) throw new Error('Browser auth regressed to cross-site Worker origin')
 if (proxy.includes('x-proofttl-auth-path') || proxy.includes('auth_proxy_path_missing')) throw new Error('Auth proxy diagnostic output must not ship')
+if (/Domain=proofttl\.tasx13ok\.workers\.dev/i.test(proxy) && !proxy.includes('replace')) throw new Error('Auth proxy contains a hard-coded upstream cookie domain without normalization')
 
-console.log('SUCCESS: first-party GitHub, Google, Discord, passkey, and canonical Trust auth surfaces passed release checks.')
+console.log('SUCCESS: first-party GitHub, Google, Discord, passkey, cookie normalization, return-to-page, and canonical Trust auth surfaces passed release checks.')
