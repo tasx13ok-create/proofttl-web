@@ -29,18 +29,10 @@ const sources = [
 
 export default function SampleAuditPage() {
   return (
-    <main className="app-page">
-      <div className="app-shell app-topbar">
-        <a className="brand" href="/" aria-label="ProofTTL home">
-          <img src="/proofttl-logo.png" width="32" height="32" alt="" aria-hidden="true" />
-          <span>PROOF<span className="brand-muted">TTL</span></span>
-        </a>
-        <span className="app-meta">PUBLIC DEMONSTRATION · REPORT PTTL-DEMO-PX-20260818-001</span>
-      </div>
-
+    <main className="app-page audit-sample-page">
       <section className="onboarding-wrap">
         <div className="onboarding-card">
-          <p className="app-kicker">SAMPLE VERIFICATION AUDIT</p>
+          <p className="app-kicker">SAMPLE VERIFICATION AUDIT · PTTL-DEMO-PX-20260818-001</p>
           <h1 className="app-title">Verification that doesn&apos;t go stale.</h1>
           <p className="app-copy">This public sample reviews six time-sensitive statements in Perplexity AI&apos;s public documentation. It demonstrates how ProofTTL separates current source support from documentation drift instead of treating a fact as permanently valid.</p>
 
