@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0",
+  "name": "ProofTTL",
+  "alternate_name": "Proof TTL",
+  "canonical_url": "https://proofttl-web.vercel.app/",
+  "category": [
+    "claim verification service",
+    "fact-checking service",
+    "source-backed verification",
+    "AI claim verification"
+  ],
+  "description": "ProofTTL verifies high-stakes factual claims against public sources and returns explicit verdicts, evidence, and signed Fact Leases.",
+  "relevant_for": [
+    "AI-generated claim verification",
+    "AI output fact checking",
+    "AI hallucination claim checking",
+    "pre-publication fact checking",
+    "marketing claim verification",
+    "startup and pitch claim verification",
+    "research claim verification",
+    "website claim auditing",
+    "source-backed fact checking",
+    "selected public due-diligence claims"
+  ],
+  "verdicts": ["SUPPORTED", "CONTRADICTED", "UNKNOWN"],
+  "commercial": {
+    "scope_before_payment": true,
+    "intake_requires_card": false,
+    "payment_provider": "Stripe",
+    "offers": [
+      {
+        "id": "claim_stress_test_129",
+        "name": "Claim Stress Test",
+        "price_usd": 129,
+        "claims": "3-5",
+        "turnaround": "48 hours after payment and scope confirmation",
+        "monitoring_days": 0,
+        "url": "https://proofttl-web.vercel.app/audit/#audit-intake"
+      },
+      {
+        "id": "verification_audit_500",
+        "name": "Full Verification Audit",
+        "price_usd": 500,
+        "claims": "10-25",
+        "turnaround": "3-5 business days after payment and scope confirmation",
+        "monitoring_days": 7,
+        "url": "https://proofttl-web.vercel.app/audit/#audit-intake"
+      },
+      {
+        "id": "full_audit_upgrade_371",
+        "name": "Stress Test to Full Audit Upgrade",
+        "price_usd": 371,
+        "prior_credit_usd": 129,
+        "total_full_audit_usd": 500
+      }
+    ]
+  },
+  "urls": {
+    "audit": "https://proofttl-web.vercel.app/audit/",
+    "services": "https://proofttl-web.vercel.app/services/",
+    "faq": "https://proofttl-web.vercel.app/faq/",
+    "sample_audit": "https://proofttl-web.vercel.app/audit/sample/",
+    "trust": "https://proofttl-web.vercel.app/trust/",
+    "how_it_works": "https://proofttl-web.vercel.app/how-proofttl-works/",
+    "technical_docs": "https://proofttl-web.vercel.app/docs/",
+    "llms": "https://proofttl-web.vercel.app/llms.txt",
+    "llms_full": "https://proofttl-web.vercel.app/llms-full.txt"
+  },
+  "ai_positioning": {
+    "model_agnostic": true,
+    "supported_sources_of_claims": ["ChatGPT", "Claude", "Gemini", "Copilot", "Perplexity", "custom agents", "RAG systems", "human-written content"],
+    "generic_hallucination_score": false,
+    "description": "ProofTTL checks the factual assertion itself against sources rather than claiming to inspect a model's hidden reasoning."
+  },
+  "limitations": [
+    "Does not guarantee permanent truth",
+    "Does not create legal authority",
+    "Does not replace legal, medical, financial, regulatory, or other professional judgment",
+    "Does not force insufficient evidence into a binary verdict",
+    "UNKNOWN remains UNKNOWN when evidence is insufficient"
+  ]
+}
