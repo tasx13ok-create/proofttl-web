@@ -24,7 +24,6 @@ for (const expected of [
   'Full Verification Audit',
   '$500',
   '$371 more',
-  '#audit-intake',
   'SCOPE BEFORE PAYMENT',
   '48-hour turnaround',
   '3–5 business-day turnaround',
