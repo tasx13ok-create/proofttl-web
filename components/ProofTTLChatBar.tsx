@@ -283,7 +283,7 @@ export default function ProofTTLChatBar() {
         </div>
       </div>}
       <form className="pttl-chat-bar" onSubmit={submit} style={fullscreen ? { position: 'relative', zIndex: 3 } : undefined}>
-        <div className="pttl-chat-orb" aria-hidden="true"><span>{fullscreen ? 'L' : 'P'}</span></div>
+        <div className="pttl-chat-orb" aria-hidden="true"><span /></div>
         <input value={value} onChange={(event) => setValue(event.target.value)} onFocus={() => setExpanded(true)} placeholder={remaining === 0 ? 'AI limit reached' : voicePhase === 'recording' ? 'L.O.V.E. is listening…' : 'Message L.O.V.E.…'} maxLength={1200} aria-label="Message L.O.V.E." disabled={remaining === 0 || voicePhase === 'processing' || voicePhase === 'speaking'} />
         <button type="button" className={`pttl-chat-voice ${voicePhase === 'recording' ? 'recording' : ''} ${voicePhase === 'speaking' ? 'speaking' : ''}`} onClick={() => void startVoice()} disabled={remaining === 0 || loading || voicePhase === 'processing' || voicePhase === 'speaking'} aria-label={voicePhase === 'recording' ? 'Stop recording' : 'Talk to L.O.V.E.'}><MicIcon /></button>
         <button type="submit" className="pttl-chat-send" disabled={!value.trim() || loading || remaining === 0 || voicePhase === 'processing'} aria-label="Send to L.O.V.E."><SendIcon /></button>
