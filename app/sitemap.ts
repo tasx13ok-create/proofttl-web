@@ -20,6 +20,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/trust/',
     '/how-proofttl-works/',
     '/docs/',
+    '/privacy/',
+    '/terms/',
     '/verify-lease.html',
   ]
 
@@ -33,7 +35,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const isHome = route === '/'
     const isIdentity = route === '/about/' || route === '/machine-definition/'
     const isCommercial = route === '/audit/' || route === '/services/' || route.startsWith('/services/')
-    const isTrust = route === '/faq/' || route === '/glossary/' || route === '/trust/' || route === '/how-proofttl-works/'
+    const isTrust = route === '/faq/' || route === '/glossary/' || route === '/trust/' || route === '/how-proofttl-works/' || route === '/privacy/' || route === '/terms/'
     return {
       url: `${SITE_URL}${route}`,
       changeFrequency: isHome || isCommercial ? 'daily' : 'weekly',
