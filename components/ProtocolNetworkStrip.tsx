@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 
-const COMMERCIAL_ROUTES = ['/', '/audit/', '/audit/sample/', '/audit/status/']
+const COMMERCIAL_ROUTES = ['/', '/audit/', '/audit/sample/', '/audit/status/', '/services/', '/faq/']
 
 export default function ProtocolNetworkStrip() {
   const pathname = usePathname()
