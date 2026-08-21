@@ -16,6 +16,7 @@ import './glass-polish.css'
 import './sales-cta.css'
 import './account-preferences.css'
 import './product-nav.css'
+import './brand-polish.css'
 import './workspace-polish.css'
 import './workspace-shell.css'
 import './worlds.css'
@@ -27,22 +28,21 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   applicationName: 'ProofTTL',
   title: {
-    default: 'ProofTTL — AI Workspace, Fact Leases, Coding, 3D Worlds & Cinematics',
+    default: 'ProofTTL — Source-Backed Claim Verification & AI Workspace',
     template: '%s | ProofTTL',
   },
-  description: 'ProofTTL is an AI workspace built around L.O.V.E., source-backed Fact Leases, verification, coding, 3D world generation, cinematics, files, tasks, automations, and connected tools.',
+  description: 'ProofTTL pressure-tests high-stakes factual claims against public primary sources and returns source-backed verdicts, signed Fact Leases, and verification reports.',
   keywords: [
     'ProofTTL',
     'Proof TTL',
-    'Fact Lease',
-    'Fact Leases',
-    'L.O.V.E. AI',
-    'AI workspace',
     'claim verification',
     'source-backed verification',
-    '3D world generation',
-    'AI coding workspace',
-    'AI cinematics',
+    'Fact Lease',
+    'Fact Leases',
+    'verification audit',
+    'claim stress test',
+    'AI workspace',
+    'L.O.V.E. AI',
   ],
   authors: [{ name: 'ProofTTL' }],
   creator: 'ProofTTL',
@@ -63,18 +63,18 @@ export const metadata: Metadata = {
   },
   icons: { icon: '/proofttl-logo.png', apple: '/proofttl-logo.png' },
   openGraph: {
-    title: 'ProofTTL — AI Workspace, Fact Leases, Coding, 3D Worlds & Cinematics',
-    description: 'ProofTTL combines L.O.V.E., source-backed Fact Leases, coding, 3D worlds, cinematics, and connected workspace tools.',
+    title: 'ProofTTL — Source-Backed Claim Verification',
+    description: 'Pressure-test high-stakes claims before they cost you money, corrections, or trust.',
     url: '/',
     siteName: 'ProofTTL',
     type: 'website',
-    images: [{ url: '/proofttl-logo.png', alt: 'ProofTTL logo' }],
+    images: [{ url: '/proofttl-logo-lockup.png', alt: 'ProofTTL' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ProofTTL — AI Workspace & Source-Backed Fact Leases',
-    description: 'L.O.V.E., verification, coding, 3D worlds, cinematics, and connected workspace tools.',
-    images: ['/proofttl-logo.png'],
+    title: 'ProofTTL — Source-Backed Claim Verification',
+    description: 'Claim stress tests, verification audits, signed Fact Leases, and source-backed evidence.',
+    images: ['/proofttl-logo-lockup.png'],
   },
 }
 
@@ -90,7 +90,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         name: 'ProofTTL',
         url: SITE_URL,
         logo: `${SITE_URL}/proofttl-logo.png`,
-        description: 'ProofTTL builds source-backed verification and AI workspace tools.',
+        description: 'ProofTTL provides source-backed claim verification and signed Fact Leases.',
       },
       {
         '@type': 'WebSite',
@@ -101,13 +101,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         publisher: { '@id': `${SITE_URL}/#organization` },
       },
       {
-        '@type': 'SoftwareApplication',
-        name: 'ProofTTL',
-        applicationCategory: 'BusinessApplication',
-        operatingSystem: 'Web',
-        url: SITE_URL,
-        description: 'AI workspace with L.O.V.E., source-backed Fact Leases, coding, 3D worlds, cinematics, and connected tools.',
-        creator: { '@id': `${SITE_URL}/#organization` },
+        '@type': 'ProfessionalService',
+        name: 'ProofTTL Verification Services',
+        url: `${SITE_URL}/audit/`,
+        description: 'Claim stress tests and verification audits using public primary sources, explicit verdicts, evidence, and signed Fact Leases.',
+        provider: { '@id': `${SITE_URL}/#organization` },
       },
     ],
   }
