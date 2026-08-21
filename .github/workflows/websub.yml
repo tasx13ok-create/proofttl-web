@@ -9,6 +9,8 @@ on:
       - 'components/ProductNav.tsx'
       - 'scripts/websub-publish.js'
       - '.github/workflows/websub.yml'
+  schedule:
+    - cron: '43 12 * * *'
   workflow_dispatch:
 
 permissions:
