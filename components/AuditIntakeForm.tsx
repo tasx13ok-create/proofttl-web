@@ -7,6 +7,7 @@ const AUDIT_STORAGE_KEY = 'proofttl:last-audit-request'
 const AUDIT_DRAFT_KEY = 'proofttl:audit-draft-v1'
 
 type OfferType = 'stress_test' | 'full_audit'
+type AuthState = 'checking' | 'signed_in' | 'signed_out' | 'error'
 type IntakeResponse = {
   ok?: boolean
   duplicate?: boolean
@@ -56,9 +57,15 @@ function blankDraft(initialOffer: OfferType): AuditDraft {
   }
 }
 
+function auditReturnTo() {
+  if (typeof window === 'undefined') return '/audit/#audit-intake'
+  return `${window.location.pathname}${window.location.search}#audit-intake`
+}
+
 export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { initialOffer?: OfferType }) {
   const [draft, setDraft] = useState<AuditDraft>(() => blankDraft(initialOffer))
   const [draftReady, setDraftReady] = useState(false)
+  const [authState, setAuthState] = useState<AuthState>('checking')
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<IntakeResponse | null>(null)
   const offerType = draft.offer_type
@@ -81,37 +88,90 @@ export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { init
     try { localStorage.setItem(AUDIT_DRAFT_KEY, JSON.stringify(draft)) } catch {}
   }, [draft, draftReady])
 
+  useEffect(() => {
+    let cancelled = false
+    void authClient.getSession().then((session) => {
+      if (cancelled) return
+      const user = session?.data?.user
+      if (user) {
+        setAuthState('signed_in')
+        const sessionEmail = typeof user.email === 'string' ? user.email.trim() : ''
+        if (sessionEmail) setDraft((current) => current.email ? current : { ...current, email: sessionEmail })
+        return
+      }
+      setAuthState('signed_out')
+      if (window.location.hash === '#audit-intake') redirectToSignIn()
+    }).catch(() => {
+      if (!cancelled) setAuthState('error')
+    })
+
+    const onHashChange = () => {
+      if (window.location.hash === '#audit-intake' && authState === 'signed_out') redirectToSignIn()
+    }
+    window.addEventListener('hashchange', onHashChange)
+    return () => { cancelled = true; window.removeEventListener('hashchange', onHashChange) }
+    // authState is intentionally not a dependency: the initial session check owns the redirect decision.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function persistDraft(next = draft) {
+    try { localStorage.setItem(AUDIT_DRAFT_KEY, JSON.stringify(next)) } catch {}
+  }
+
+  function redirectToSignIn() {
+    persistDraft()
+    const returnTo = auditReturnTo()
+    rememberAuthReturn(returnTo)
+    window.location.assign(signInHref(returnTo))
+  }
+
   function update<K extends keyof AuditDraft>(key: K, value: AuditDraft[K]) {
     setDraft((current) => ({ ...current, [key]: value }))
     setResult(null)
   }
 
   function chooseOffer(next: OfferType) {
-    setDraft((current) => ({
-      ...current,
+    const nextDraft: AuditDraft = {
+      ...draft,
       offer_type: next,
-      approximate_claims: next === 'stress_test' ? '3-5' : current.approximate_claims === '3-5' ? '10-15' : current.approximate_claims,
-    }))
+      approximate_claims: next === 'stress_test' ? '3-5' : draft.approximate_claims === '3-5' ? '10-15' : draft.approximate_claims,
+    }
+    setDraft(nextDraft)
+    persistDraft(nextDraft)
     setResult(null)
+    if (authState === 'signed_out') redirectToSignIn()
   }
 
   async function requireSession() {
     try {
       const session = await authClient.getSession()
-      if (session?.data?.user) return true
-    } catch {}
-    const returnTo = typeof window !== 'undefined'
-      ? `${window.location.pathname}${window.location.search}#audit-intake`
-      : '/audit/#audit-intake'
-    rememberAuthReturn(returnTo)
-    if (typeof window !== 'undefined') window.location.assign(signInHref(returnTo))
+      if (session?.data?.user) {
+        setAuthState('signed_in')
+        return true
+      }
+    } catch {
+      setAuthState('error')
+    }
+    setAuthState('signed_out')
+    redirectToSignIn()
     return false
+  }
+
+  function gatePointer(event: React.PointerEvent<HTMLFormElement>) {
+    if (authState !== 'signed_out') return
+    event.preventDefault()
+    redirectToSignIn()
+  }
+
+  function gateFocus() {
+    if (authState === 'signed_out') redirectToSignIn()
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (submitting) return
     setResult(null)
+    persistDraft()
 
     const signedIn = await requireSession()
     if (!signedIn) return
@@ -139,8 +199,8 @@ export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { init
       })
       const body = await response.json().catch(() => ({})) as IntakeResponse
       if (response.status === 401) {
-        rememberAuthReturn(`${window.location.pathname}${window.location.search}#audit-intake`)
-        window.location.assign(signInHref(`${window.location.pathname}${window.location.search}#audit-intake`))
+        setAuthState('signed_out')
+        redirectToSignIn()
         return
       }
       if (!response.ok) {
@@ -180,10 +240,13 @@ export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { init
         </div>
       </div>
 
-      <p className="audit-selected-offer"><strong>{offer.label}</strong> · {offer.claims} · {offer.turnaround}. Your draft is saved in this browser. If you are not signed in when you submit, ProofTTL sends you to sign in and returns you here with the draft restored.</p>
+      <p className="audit-selected-offer"><strong>{offer.label}</strong> · {offer.claims} · {offer.turnaround}. Your draft is saved in this browser. If you are not signed in when you start the form, ProofTTL sends you to sign in and returns you here with the draft restored.</p>
       {offerType === 'stress_test' && <p className="audit-credit-note">Upgrade later for <strong>$371 more</strong>; the first $129 is credited in full.</p>}
+      {authState === 'checking' && <p className="audit-form-footnote">CHECKING PROOFTTL SESSION…</p>}
+      {authState === 'signed_out' && <button className="button button-primary audit-submit-button" type="button" onClick={redirectToSignIn}>SIGN IN TO START VERIFICATION →</button>}
+      {authState === 'error' && <p className="app-note" role="alert"><strong>SESSION CHECK FAILED.</strong> Sign in again before submitting an audit.</p>}
 
-      <form className="audit-clean-form" onSubmit={submit}>
+      <form className="audit-clean-form" onSubmit={submit} onPointerDownCapture={gatePointer} onFocusCapture={gateFocus}>
         <input type="hidden" name="offer_type" value={offerType} />
         <div className="audit-form-grid two">
           <label>EMAIL<input name="email" type="email" required maxLength={254} placeholder="you@company.com" value={draft.email} onChange={(e) => update('email', e.target.value)} /></label>
@@ -200,7 +263,7 @@ export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { init
         </div>
         <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}><label>Company site<input name="company_site" tabIndex={-1} autoComplete="off" /></label></div>
         <button className="button button-primary audit-submit-button" type="submit" disabled={submitting}>{submitting ? 'SUBMITTING…' : `SUBMIT ${offer.label.toUpperCase()} FOR SCOPE REVIEW →`}</button>
-        <p className="audit-form-footnote">SIGN-IN REQUIRED TO SUBMIT · DRAFT SAVED LOCALLY · SCOPE REVIEW BEFORE PAYMENT</p>
+        <p className="audit-form-footnote">SIGN-IN REQUIRED TO USE AUDIT INTAKE · DRAFT SAVED LOCALLY · SCOPE REVIEW BEFORE PAYMENT</p>
       </form>
 
       {result?.audit_intake_id && (
