@@ -96,6 +96,32 @@ function browserLocation(location, webOrigin) {
   return location
 }
 
+function browserOAuthUrl(value, webOrigin) {
+  if (!value) return value
+  try {
+    const target = new URL(String(value))
+    const redirect = target.searchParams.get('redirect_uri')
+    if (!redirect) return value
+    const callback = new URL(redirect)
+    if (callback.origin !== AUTH_UPSTREAM || !callback.pathname.startsWith('/api/auth/callback/')) return value
+    target.searchParams.set('redirect_uri', `${webOrigin}${callback.pathname}${callback.search}${callback.hash}`)
+    return target.toString()
+  } catch {
+    return value
+  }
+}
+
+function browserResponseBody(buffer, contentType, path, webOrigin) {
+  if (path !== 'sign-in/social' || !String(contentType || '').toLowerCase().includes('application/json')) return buffer
+  try {
+    const payload = JSON.parse(buffer.toString('utf8'))
+    if (payload && typeof payload.url === 'string') payload.url = browserOAuthUrl(payload.url, webOrigin)
+    return Buffer.from(JSON.stringify(payload))
+  } catch {
+    return buffer
+  }
+}
+
 export const config = {
   api: { bodyParser: false },
 }
@@ -139,8 +165,11 @@ export default async function handler(request, response) {
     const location = browserLocation(upstream.headers.get('location'), webOrigin)
     if (location) response.setHeader('location', location)
 
+    const upstreamBody = Buffer.from(await upstream.arrayBuffer())
+    const outboundBody = browserResponseBody(upstreamBody, upstream.headers.get('content-type'), path, webOrigin)
+
     response.setHeader('cache-control', 'no-store')
-    response.end(Buffer.from(await upstream.arrayBuffer()))
+    response.end(outboundBody)
   } catch (error) {
     console.error('ProofTTL auth proxy failed', error)
     response.statusCode = 502
