@@ -20,16 +20,49 @@ function rawBody(request) {
   })
 }
 
+function authPathFromRequest(request) {
+  const value = request.query?.path
+  const fromQuery = Array.isArray(value) ? value.join('/') : String(value || '')
+  if (fromQuery) return fromQuery
+
+  const candidates = [
+    request.headers?.['x-vercel-original-path'],
+    request.headers?.['x-original-uri'],
+    request.headers?.['x-rewrite-url'],
+    request.headers?.['x-invoke-path'],
+    request.url,
+  ]
+  for (const candidate of candidates) {
+    if (!candidate) continue
+    try {
+      const pathname = new URL(String(candidate), 'https://proofttl-web.vercel.app').pathname
+      const marker = '/api/auth/'
+      const index = pathname.indexOf(marker)
+      if (index >= 0) return pathname.slice(index + marker.length)
+    } catch {}
+  }
+  return ''
+}
+
 export const config = {
   api: { bodyParser: false },
 }
 
 export default async function handler(request, response) {
   try {
-    const pathValue = request.query?.path
-    const path = Array.isArray(pathValue) ? pathValue.join('/') : String(pathValue || '')
+    const path = authPathFromRequest(request)
     if (!path || path.includes('..')) {
+      console.warn('ProofTTL auth proxy missing path', {
+        url: request.url,
+        query: request.query,
+        originalPath: request.headers?.['x-vercel-original-path'],
+        originalUri: request.headers?.['x-original-uri'],
+        rewriteUrl: request.headers?.['x-rewrite-url'],
+        invokePath: request.headers?.['x-invoke-path'],
+        matchedPath: request.headers?.['x-matched-path'],
+      })
       response.statusCode = 404
+      response.setHeader('cache-control', 'no-store')
       response.end('Not found')
       return
     }
