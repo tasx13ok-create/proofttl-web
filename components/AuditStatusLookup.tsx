@@ -1,8 +1,8 @@
 'use client'
 
 import { FormEvent, useEffect, useState } from 'react'
+import { authClient, PROOFTTL_API_URL, rememberAuthReturn, signInHref } from '../lib/proofttl-auth'
 
-const API_URL = process.env.NEXT_PUBLIC_PROOFTTL_API_URL || 'https://proofttl.tasx13ok.workers.dev'
 const AUDIT_STORAGE_KEY = 'proofttl:last-audit-request'
 
 type StatusResponse = {
@@ -23,6 +23,7 @@ const labels: Record<string, string> = {
 }
 
 export default function AuditStatusLookup() {
+  const [authReady, setAuthReady] = useState(false)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<StatusResponse | null>(null)
   const [requestId, setRequestId] = useState('')
@@ -39,17 +40,35 @@ export default function AuditStatusLookup() {
       if (params.get('paid') === '1') setReturnMessage('Payment submitted. Stripe confirmation can take a few seconds; check status below.')
       else if (params.get('cancelled') === '1') setReturnMessage('Checkout was cancelled. Your approved scope is still stored and can be paid later while the checkout remains valid.')
     } catch {}
+
+    let cancelled = false
+    void authClient.getSession().then((session) => {
+      if (cancelled) return
+      if (session?.data?.user) { setAuthReady(true); return }
+      const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`
+      rememberAuthReturn(returnTo)
+      window.location.replace(signInHref(returnTo))
+    }).catch(() => {
+      if (!cancelled) setAuthReady(true)
+    })
+    return () => { cancelled = true }
   }, [])
 
   async function lookup(id: string, mail: string) {
     setLoading(true)
     setResult(null)
     try {
-      const response = await fetch(`${API_URL.replace(/\/$/, '')}/audit/intake/status`, {
-        method: 'POST', headers: { 'content-type': 'application/json' },
+      const response = await fetch(`${PROOFTTL_API_URL}/audit/intake/status`, {
+        method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ audit_intake_id: id.trim(), email: mail.trim() }),
       })
       const body = await response.json().catch(() => ({})) as StatusResponse
+      if (response.status === 401) {
+        const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`
+        rememberAuthReturn(returnTo)
+        window.location.assign(signInHref(returnTo))
+        return
+      }
       setResult(response.ok ? body : { error: body.error || `HTTP ${response.status}` })
     } catch {
       setResult({ error: 'Could not reach ProofTTL status service. Try again shortly.' })
@@ -61,16 +80,18 @@ export default function AuditStatusLookup() {
     await lookup(requestId, email)
   }
 
+  if (!authReady) return <div className="onboarding-card"><p className="app-kicker">SECURE AUDIT ACCESS</p><h1 className="app-title">Checking your session…</h1><p className="app-copy">Audit requests and payment status require a signed-in ProofTTL account.</p></div>
+
   return (
     <div className="onboarding-card">
       <p className="app-kicker">CHECK YOUR REQUEST</p>
       <h1 className="app-title">Audit status</h1>
-      <p className="app-copy">Use the reference returned when you submitted your scope plus the same email address. ProofTTL does not expose the request from the reference alone.</p>
+      <p className="app-copy">Use the reference returned when you submitted your scope plus the same email address. ProofTTL also requires your signed-in session before returning audit or payment state.</p>
       {returnMessage && <p className="app-note" role="status">{returnMessage}</p>}
 
-      <form onSubmit={submit} style={{ display: 'grid', gap: 14, marginTop: 20 }}>
-        <label className="app-copy" style={{ display: 'grid', gap: 6 }}>REQUEST REFERENCE<input name="audit_intake_id" required pattern="ati_[a-f0-9]{32}" placeholder="ati_..." value={requestId} onChange={(e) => setRequestId(e.target.value)} /></label>
-        <label className="app-copy" style={{ display: 'grid', gap: 6 }}>EMAIL<input name="email" type="email" required placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} /></label>
+      <form className="app-form" onSubmit={submit} style={{ marginTop: 20 }}>
+        <label className="app-input-label">REQUEST REFERENCE<input name="audit_intake_id" required pattern="ati_[a-f0-9]{32}" placeholder="ati_..." value={requestId} onChange={(e) => setRequestId(e.target.value)} /></label>
+        <label className="app-input-label">EMAIL<input name="email" type="email" required placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} /></label>
         <button className="button button-primary" disabled={loading}>{loading ? 'CHECKING…' : 'CHECK STATUS →'}</button>
       </form>
 
