@@ -36,7 +36,7 @@ export default function AuditPage() {
             </div>
             <div>
               <span>FULL REVIEW</span>
-              <strong>$500 Verification Audit</strong>
+              <strong>$500 Full Verification Audit</strong>
               <small>10–25 claims · 3–5 business-day turnaround</small>
             </div>
             <p>Start at $129 and upgrade later for <strong>$371 more</strong>. Your first payment is credited in full.</p>
