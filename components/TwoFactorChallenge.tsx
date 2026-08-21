@@ -1,7 +1,7 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
-import { authClient } from '../lib/proofttl-auth'
+import { FormEvent, useEffect, useState } from 'react'
+import { authClient, clearAuthReturn, resolveAuthReturn } from '../lib/proofttl-auth'
 
 type Mode = 'totp' | 'backup'
 
@@ -11,6 +11,9 @@ export default function TwoFactorChallenge() {
   const [trustDevice, setTrustDevice] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [returnTo, setReturnTo] = useState('/console/#security')
+
+  useEffect(() => setReturnTo(resolveAuthReturn('/console/#security')), [])
 
   async function submit(event: FormEvent) {
     event.preventDefault()
@@ -28,7 +31,8 @@ export default function TwoFactorChallenge() {
         setError(result.error.message || 'Verification failed.')
         return
       }
-      window.location.assign('/console/#security')
+      clearAuthReturn()
+      window.location.replace(returnTo)
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Verification failed.')
     } finally {
