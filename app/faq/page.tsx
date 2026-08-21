@@ -54,7 +54,7 @@ const FAQ = [
 ]
 
 export const metadata: Metadata = {
-  title: 'ProofTTL FAQ — Claim Verification, AI Fact-Checking & Pricing',
+  title: 'FAQ — Claim Verification, AI Fact-Checking & Pricing',
   description: 'Answers about ProofTTL claim verification, AI output fact-checking, Claim Stress Tests, Full Verification Audits, Fact Leases, pricing, scope, and limitations.',
   alternates: { canonical: '/faq/' },
   keywords: ['ProofTTL FAQ', 'claim verification FAQ', 'AI fact checking', 'fact checking service', 'Fact Lease', 'Claim Stress Test', 'Verification Audit'],
