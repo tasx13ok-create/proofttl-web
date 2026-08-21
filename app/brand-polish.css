@@ -1,0 +1,64 @@
+.product-brand-lockup {
+  min-width: 152px;
+  max-width: 180px;
+  height: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-decoration: none;
+}
+
+.product-brand-lockup-image {
+  display: block;
+  width: auto;
+  max-width: 168px;
+  height: 34px;
+  object-fit: contain;
+  object-position: left center;
+  filter: drop-shadow(0 6px 18px rgba(34, 211, 238, .12));
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.product-brand-lockup:hover .product-brand-lockup-image {
+  transform: translateY(-1px);
+  filter: drop-shadow(0 8px 22px rgba(34, 211, 238, .2));
+}
+
+/* The global product header is canonical. Do not stack a second homepage nav underneath it. */
+main > nav.nav.shell {
+  display: none !important;
+}
+
+.app-topbar .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  text-decoration: none;
+}
+
+.app-topbar .brand > img {
+  display: block;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 14px rgba(34, 211, 238, .12));
+}
+
+.app-topbar .brand > span {
+  display: inline-flex;
+  align-items: baseline;
+  font-weight: 800;
+  letter-spacing: -.04em;
+}
+
+@media (max-width: 920px) {
+  .product-brand-lockup { min-width: 126px; max-width: 146px; }
+  .product-brand-lockup-image { max-width: 138px; height: 30px; }
+}
+
+@media (max-width: 680px) {
+  .product-brand-lockup { min-width: 110px; max-width: 128px; }
+  .product-brand-lockup-image { max-width: 120px; height: 28px; }
+}
