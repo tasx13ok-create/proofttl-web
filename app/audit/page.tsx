@@ -27,7 +27,7 @@ export default function AuditPage() {
           <img src="/proofttl-logo.png" width="32" height="32" alt="" aria-hidden="true" style={{ objectFit: 'contain' }} />
           <span>PROOF<span className="brand-muted">TTL</span></span>
         </a>
-        <span className="app-meta">SCOPE REVIEW WITHIN 24H · PAYMENT AFTER APPROVAL</span>
+        <span className="app-meta">SCOPE BEFORE PAYMENT · REVIEW WITHIN 24H</span>
       </div>
 
       <section className="onboarding-wrap">
