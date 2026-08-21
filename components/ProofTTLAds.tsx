@@ -6,7 +6,6 @@ const ADSENSE_SCRIPT_ID = 'proofttl-adsense'
 const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT?.trim() || ''
 
 const AD_ELIGIBLE_PREFIXES = ['/docs/', '/solutions/']
-const AD_ELIGIBLE_EXACT = new Set(['/'])
 
 function normalizePath(pathname: string) {
   if (!pathname) return '/'
@@ -15,7 +14,7 @@ function normalizePath(pathname: string) {
 
 function isAdEligiblePath(pathname: string) {
   const normalized = normalizePath(pathname)
-  return AD_ELIGIBLE_EXACT.has(normalized) || AD_ELIGIBLE_PREFIXES.some((prefix) => normalized.startsWith(prefix))
+  return AD_ELIGIBLE_PREFIXES.some((prefix) => normalized.startsWith(prefix))
 }
 
 function hasValidPublisherId(value: string) {
