@@ -1,0 +1,40 @@
+name: ProofTTL discovery indexing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'public/**'
+      - 'scripts/indexnow-submit.js'
+      - '.github/workflows/indexnow.yml'
+  schedule:
+    - cron: '17 12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: proofttl-indexnow
+  cancel-in-progress: true
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Wait briefly for production deployment
+        if: github.event_name == 'push'
+        run: sleep 60
+
+      - name: Submit ProofTTL discovery URLs to IndexNow
+        run: node scripts/indexnow-submit.js
