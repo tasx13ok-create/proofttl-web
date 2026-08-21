@@ -1,8 +1,7 @@
 'use client'
 
 import { FormEvent, useEffect, useState } from 'react'
-
-const API_URL = (process.env.NEXT_PUBLIC_PROOFTTL_API_URL || 'https://proofttl.tasx13ok.workers.dev').replace(/\/$/, '')
+import { PROOFTTL_API_URL } from '../lib/proofttl-auth'
 
 type Preferences = {
   preferred_ai_provider: string | null
@@ -53,9 +52,9 @@ export default function AccountWorkspacePanel() {
     setMessage('')
     try {
       const [prefsResponse, auditsResponse, modelsResponse] = await Promise.all([
-        fetch(`${API_URL}/account/preferences`, { credentials: 'include', cache: 'no-store' }),
-        fetch(`${API_URL}/account/audits`, { credentials: 'include', cache: 'no-store' }),
-        fetch(`${API_URL}/assistant/models`, { credentials: 'include', cache: 'no-store' }),
+        fetch(`${PROOFTTL_API_URL}/account/preferences`, { credentials: 'include', cache: 'no-store' }),
+        fetch(`${PROOFTTL_API_URL}/account/audits`, { credentials: 'include', cache: 'no-store' }),
+        fetch(`${PROOFTTL_API_URL}/assistant/models`, { credentials: 'include', cache: 'no-store' }),
       ])
       if (prefsResponse.status === 401 || auditsResponse.status === 401) { setState('signed-out'); return }
       if (!prefsResponse.ok || !auditsResponse.ok) throw new Error('Account workspace is not available on this deployment yet.')
@@ -85,7 +84,7 @@ export default function AccountWorkspacePanel() {
     setSaving(true)
     setMessage('')
     try {
-      const response = await fetch(`${API_URL}/account/preferences`, { method: 'PATCH', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify(patch) })
+      const response = await fetch(`${PROOFTTL_API_URL}/account/preferences`, { method: 'PATCH', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify(patch) })
       const body = await response.json().catch(() => ({})) as { preferences?: Preferences; message?: string; error?: string }
       if (!response.ok) throw new Error(body.message || body.error || `HTTP ${response.status}`)
       const applied = body.preferences || optimistic
@@ -113,7 +112,7 @@ export default function AccountWorkspacePanel() {
     setSaving(true)
     setMessage('')
     try {
-      const response = await fetch(`${API_URL}/account/audits`, { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ intake_id: id }) })
+      const response = await fetch(`${PROOFTTL_API_URL}/account/audits`, { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ intake_id: id }) })
       const body = await response.json().catch(() => ({})) as { message?: string; error?: string }
       if (!response.ok) throw new Error(body.message || body.error || `HTTP ${response.status}`)
       setIntakeId('')
@@ -126,7 +125,7 @@ export default function AccountWorkspacePanel() {
 
   if (state === 'loading') return <div className="app-empty">Loading account-owned data…</div>
   if (state === 'signed-out') return <div className="app-empty"><div className="app-empty-meta">SIGN IN REQUIRED</div><strong>Your preferences, Studio projects, and audit ownership are designed to follow your ProofTTL account.</strong><a className="text-link" href="/login/">SIGN IN →</a></div>
-  if (state === 'error') return <div className="app-empty"><strong>Account workspace is not live yet.</strong>{message}</div>
+  if (state === 'error') return <div className="app-empty"><strong>Account workspace is not available right now.</strong>{message}</div>
 
   const selectedModel = preferences.preferred_ai_provider && preferences.preferred_ai_model ? `${preferences.preferred_ai_provider}::${preferences.preferred_ai_model}` : ''
 
