@@ -108,19 +108,19 @@ export default function AutomationCenter() {
       <div><span>SENSITIVE PRE-AUTH</span><strong>BLOCKED</strong></div>
     </div>
 
-    <form onSubmit={create} className="onboarding-card" style={{ display: 'grid', gap: 10 }}>
+    <form onSubmit={create} className="onboarding-card app-form native-control-form">
       <p className="app-kicker">NEW AUTOMATION DEFINITION</p>
-      <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Daily truth check" maxLength={120} />
-      <select value={actionId} onChange={(e) => setActionId(e.target.value)}>
+      <label className="app-input-label">NAME<input value={name} onChange={(e) => setName(e.target.value)} placeholder="Daily truth check" maxLength={120} /></label>
+      <label className="app-input-label">ACTION<select value={actionId} onChange={(e) => setActionId(e.target.value)}>
         {capabilities.map((item) => <option key={item.id} value={item.id}>{item.area} · {item.label} · {item.risk}</option>)}
-      </select>
-      <select value={trigger} onChange={(e) => setTrigger(e.target.value as typeof trigger)}>
+      </select></label>
+      <label className="app-input-label">TRIGGER<select value={trigger} onChange={(e) => setTrigger(e.target.value as typeof trigger)}>
         <option value="schedule">Schedule</option><option value="condition">Condition</option><option value="manual">Manual</option>
-      </select>
-      {trigger === 'schedule' && <input value={schedule} onChange={(e) => setSchedule(e.target.value)} placeholder="Every weekday at 8 AM" />}
-      {trigger === 'condition' && <textarea value={condition} onChange={(e) => setCondition(e.target.value)} placeholder="When a connected capability reports…" rows={3} />}
-      {selected && <p className="app-note"><strong>{selected.risk.toUpperCase()} POLICY.</strong> {selected.risk === 'sensitive' ? 'This capability cannot be enabled for unattended execution.' : 'This definition may be enabled later, but no executor is connected today.'}</p>}
-      <button className="button button-primary" disabled={!name.trim() || busy}>SAVE DEFINITION →</button>
+      </select></label>
+      {trigger === 'schedule' && <label className="app-input-label">SCHEDULE<input value={schedule} onChange={(e) => setSchedule(e.target.value)} placeholder="Every weekday at 8 AM" /></label>}
+      {trigger === 'condition' && <label className="app-input-label">CONDITION<textarea value={condition} onChange={(e) => setCondition(e.target.value)} placeholder="When a connected capability reports…" rows={3} /></label>}
+      {selected && <p className="app-note native-policy-note"><strong>{selected.risk.toUpperCase()} POLICY.</strong> {selected.risk === 'sensitive' ? 'This capability cannot be enabled for unattended execution.' : 'This definition may be enabled later, but no executor is connected today.'}</p>}
+      <button className="button button-primary native-control-submit" disabled={!name.trim() || busy}>{busy ? 'SAVING…' : 'SAVE DEFINITION →'}</button>
     </form>
 
     <div className="app-table">
