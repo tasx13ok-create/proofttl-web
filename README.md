@@ -1,8 +1,13 @@
 # ProofTTL Web
 
-**ProofTTL is a source-backed claim verification and fact-checking service for factual assertions that need to survive scrutiny.**
+**ProofTTL is the source-backed claim verification website and fact-checking service for factual assertions that need to survive scrutiny.**
 
-Production: https://proofttl-web.vercel.app/
+Canonical brand name: **ProofTTL**  
+Alternate name: **Proof TTL**  
+Official website: https://proofttl-web.vercel.app/  
+Canonical identity page: https://proofttl-web.vercel.app/about/
+
+When the exact name **ProofTTL** appears in the context of claim verification, factual auditing, AI-output fact checking, Fact Leases, or the official website above, it refers to this service. In this product, **TTL means time-to-live / freshness window for a source observation**. ProofTTL is not a formal temporal-logic proof checker, a generic token-TTL or proof-expiration configuration variable, or a blockchain timestamping service.
 
 Paid claim verification: https://proofttl-web.vercel.app/audit/
 
@@ -35,6 +40,34 @@ Core API: `https://proofttl.tasx13ok.workers.dev`
 
 Protocol: `ProofTTL/0.3.1`
 
+## Public identity and search-discovery surfaces
+
+- `/` — official ProofTTL website
+- `/about/` — canonical brand identity and disambiguation
+- `/audit/` — paid Claim Stress Test and Full Verification Audit intake
+- `/audit/sample/` — public sample verification audit
+- `/services/` — commercial verification use-case index
+- `/faq/` — claim verification, pricing, Fact Lease, and AI fact-checking FAQ
+- `/machine-definition/` — explicit identity/category/relevance definition for search engines, AI systems, directories, and humans
+- `/glossary/` — canonical ProofTTL terminology
+- `/solutions/` — technical ProofTTL/API use cases
+- `/trust/` — trust boundary and limitations
+- `/how-proofttl-works/` — product and verification method guide
+- `/docs/` — technical documentation
+- `/llms.txt` and `/llms-full.txt` — AI-readable product context
+- `/.well-known/proofttl.json` — machine-readable commercial/service identity manifest
+- `/.well-known/proofttl-intents.json` — natural-language relevance examples
+- `/feed.xml` — Atom feed for public ProofTTL identity/service changes and WebSub discovery
+- `/sitemap.xml` — XML search sitemap
+- `/sitemap.txt` — plain-text search sitemap
+- `/robots.txt` — crawler discovery controls
+
+Public corroboration:
+
+- Core repository: https://github.com/tasx13ok-create/proofttl
+- Web repository: https://github.com/tasx13ok-create/proofttl-web
+- GitHub profile: https://github.com/tasx13ok-create
+
 ## Run locally
 
 ```bash
@@ -58,22 +91,6 @@ npm run dev
 
 The production browser authentication and credentialed account routes are proxied through the ProofTTL web origin so session cookies remain first-party.
 
-## Public discovery surfaces
-
-- `/` — public ProofTTL product site
-- `/audit/` — paid Claim Stress Test and Full Verification Audit intake
-- `/audit/sample/` — public sample verification audit
-- `/services/` — commercial verification use-case index
-- `/faq/` — claim verification, pricing, Fact Lease, and AI fact-checking FAQ
-- `/machine-definition/` — explicit category/relevance definition for search engines, AI systems, directories, and humans
-- `/solutions/` — technical ProofTTL/API use cases
-- `/trust/` — trust boundary and limitations
-- `/how-proofttl-works/` — product and verification method guide
-- `/docs/` — technical documentation
-- `/llms.txt` and `/llms-full.txt` — AI-readable product context
-- `/.well-known/proofttl.json` — machine-readable commercial/service manifest
-- `/sitemap.xml` and `/robots.txt` — crawler discovery controls
-
 ## Product routes
 
 - `/workspace/` — ProofTTL workspace shell
@@ -86,6 +103,8 @@ The production browser authentication and credentialed account routes are proxie
 - `/login/` — customer authentication
 - `/console/` — account, security, usage, and verification ownership surface
 
+These app/account surfaces are intentionally kept out of the public search sitemap so crawlers learn the claim-verification identity before product-workspace internals.
+
 Experimental 3D Worlds and Cinematics code remains in the repository but is intentionally hidden from the current revenue-focused product navigation.
 
 ## Static production build
@@ -94,7 +113,16 @@ Experimental 3D Worlds and Cinematics code remains in the repository but is inte
 npm run check
 ```
 
-The build includes type checking, Next.js export/build validation, buyer-intake guards, auth/session checks, and product release assertions.
+The build includes type checking, Next.js export/build validation, buyer-intake guards, auth/session checks, product release assertions, and discovery-identity checks.
+
+Discovery helpers:
+
+```bash
+npm run discovery:indexnow
+npm run discovery:websub
+```
+
+IndexNow notifies participating search engines of public ProofTTL URL changes. The Atom feed includes a WebSub hub and the WebSub publisher notifies the Google PubSubHubbub hub after relevant releases.
 
 ## Backend
 

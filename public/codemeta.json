@@ -1,0 +1,30 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "ProofTTL Web",
+  "alternateName": "ProofTTL",
+  "description": "Official ProofTTL website for source-backed claim verification, AI fact checking, verification audits, and signed Fact Leases.",
+  "url": "https://proofttl-web.vercel.app/",
+  "codeRepository": "https://github.com/tasx13ok-create/proofttl-web",
+  "version": "1.0.0",
+  "programmingLanguage": ["TypeScript", "JavaScript", "CSS"],
+  "keywords": [
+    "ProofTTL",
+    "claim verification",
+    "fact checking",
+    "AI claim verification",
+    "source-backed verification",
+    "Fact Leases"
+  ],
+  "applicationCategory": "Claim verification and fact checking",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "ProofTTL",
+    "url": "https://proofttl-web.vercel.app/"
+  },
+  "sameAs": [
+    "https://github.com/tasx13ok-create/proofttl",
+    "https://proofttl-web.vercel.app/about/",
+    "https://proofttl-web.vercel.app/machine-definition/"
+  ]
+}

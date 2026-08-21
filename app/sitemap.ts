@@ -9,6 +9,7 @@ export const dynamic = 'force-static'
 export default function sitemap(): MetadataRoute.Sitemap {
   const coreRoutes = [
     '/',
+    '/about/',
     '/audit/',
     '/audit/sample/',
     '/services/',
@@ -19,12 +20,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/trust/',
     '/how-proofttl-works/',
     '/docs/',
-    '/get-started/',
-    '/support/',
-    '/workspace/',
-    '/studio/',
-    '/status.html',
-    '/methodology.html',
     '/verify-lease.html',
   ]
 
@@ -36,13 +31,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return routes.map((route) => {
     const isHome = route === '/'
+    const isIdentity = route === '/about/' || route === '/machine-definition/'
     const isCommercial = route === '/audit/' || route === '/services/' || route.startsWith('/services/')
-    const isTrust = route === '/faq/' || route === '/machine-definition/' || route === '/glossary/' || route === '/trust/' || route === '/how-proofttl-works/'
+    const isTrust = route === '/faq/' || route === '/glossary/' || route === '/trust/' || route === '/how-proofttl-works/'
     return {
       url: `${SITE_URL}${route}`,
-      lastModified: new Date(),
       changeFrequency: isHome || isCommercial ? 'daily' : 'weekly',
-      priority: isHome ? 1 : isCommercial ? 0.95 : isTrust ? 0.85 : 0.7,
+      priority: isHome ? 1 : isIdentity || isCommercial ? 0.95 : isTrust ? 0.85 : 0.7,
     }
   })
 }

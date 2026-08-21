@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>https://proofttl-web.vercel.app/feed.xml</id>
+  <title>ProofTTL — Claim Verification Updates</title>
+  <subtitle>Canonical public pages for ProofTTL source-backed claim verification, fact checking, AI claim verification, and Fact Leases.</subtitle>
+  <link rel="self" href="https://proofttl-web.vercel.app/feed.xml" />
+  <link rel="alternate" href="https://proofttl-web.vercel.app/" />
+  <link rel="hub" href="https://pubsubhubbub.appspot.com/" />
+  <updated>2026-08-21T20:15:00Z</updated>
+  <author><name>ProofTTL</name><uri>https://proofttl-web.vercel.app/</uri></author>
+
+  <entry>
+    <id>https://proofttl-web.vercel.app/about/</id>
+    <title>About ProofTTL — Canonical Identity</title>
+    <link href="https://proofttl-web.vercel.app/about/" />
+    <updated>2026-08-21T20:15:00Z</updated>
+    <summary>ProofTTL is the source-backed claim verification website and service at proofttl-web.vercel.app. This page defines the brand, category, and meaning of TTL.</summary>
+  </entry>
+  <entry>
+    <id>https://proofttl-web.vercel.app/</id>
+    <title>ProofTTL — Source-Backed Claim Verification</title>
+    <link href="https://proofttl-web.vercel.app/" />
+    <updated>2026-08-21T20:15:00Z</updated>
+    <summary>Official ProofTTL website for source-backed claim verification and fact checking. Paid verification starts at $129 for 3–5 high-stakes claims.</summary>
+  </entry>
+  <entry>
+    <id>https://proofttl-web.vercel.app/audit/</id>
+    <title>ProofTTL Claim Stress Test and Full Verification Audit</title>
+    <link href="https://proofttl-web.vercel.app/audit/" />
+    <updated>2026-08-21T20:15:00Z</updated>
+    <summary>Submit factual claims for a $129 Claim Stress Test or $500 Full Verification Audit. Scope is confirmed before payment.</summary>
+  </entry>
+  <entry>
+    <id>https://proofttl-web.vercel.app/services/</id>
+    <title>ProofTTL Verification Services</title>
+    <link href="https://proofttl-web.vercel.app/services/" />
+    <updated>2026-08-21T20:15:00Z</updated>
+    <summary>Source-backed verification for AI-generated claims, pre-publication fact checking, marketing claims, research, websites, startups, and selected due-diligence claims.</summary>
+  </entry>
+  <entry>
+    <id>https://proofttl-web.vercel.app/services/ai-claim-verification/</id>
+    <title>AI Claim Verification Service — ProofTTL</title>
+    <link href="https://proofttl-web.vercel.app/services/ai-claim-verification/" />
+    <updated>2026-08-21T20:15:00Z</updated>
+    <summary>Verify factual claims produced by ChatGPT, Claude, Gemini, Copilot, Perplexity, custom agents, RAG systems, or other AI against public sources.</summary>
+  </entry>
+  <entry>
+    <id>https://proofttl-web.vercel.app/machine-definition/</id>
+    <title>ProofTTL Machine Definition</title>
+    <link href="https://proofttl-web.vercel.app/machine-definition/" />
+    <updated>2026-08-21T20:15:00Z</updated>
+    <summary>Canonical machine-readable classification, relevance, brand disambiguation, verdict semantics, and commercial boundaries for ProofTTL.</summary>
+  </entry>
+  <entry>
+    <id>https://proofttl-web.vercel.app/faq/</id>
+    <title>ProofTTL Claim Verification FAQ</title>
+    <link href="https://proofttl-web.vercel.app/faq/" />
+    <updated>2026-08-21T20:15:00Z</updated>
+    <summary>Frequently asked questions about ProofTTL claim verification, AI fact checking, pricing, scope, verdicts, and Fact Leases.</summary>
+  </entry>
+  <entry>
+    <id>https://proofttl-web.vercel.app/audit/sample/</id>
+    <title>ProofTTL Sample Verification Audit</title>
+    <link href="https://proofttl-web.vercel.app/audit/sample/" />
+    <updated>2026-08-21T20:15:00Z</updated>
+    <summary>Public demonstration of ProofTTL claim-level source checking, explicit verdicts, and evidence presentation.</summary>
+  </entry>
+  <entry>
+    <id>https://proofttl-web.vercel.app/trust/</id>
+    <title>ProofTTL Trust Center</title>
+    <link href="https://proofttl-web.vercel.app/trust/" />
+    <updated>2026-08-21T20:15:00Z</updated>
+    <summary>ProofTTL trust boundaries, authentication, monitoring, cryptographic signing, system readiness, and limitations.</summary>
+  </entry>
+  <entry>
+    <id>https://proofttl-web.vercel.app/how-proofttl-works/</id>
+    <title>How ProofTTL Works</title>
+    <link href="https://proofttl-web.vercel.app/how-proofttl-works/" />
+    <updated>2026-08-21T20:15:00Z</updated>
+    <summary>How ProofTTL scopes claims, examines public evidence, assigns SUPPORTED, CONTRADICTED, or UNKNOWN verdicts, and issues Fact Leases.</summary>
+  </entry>
+</feed>

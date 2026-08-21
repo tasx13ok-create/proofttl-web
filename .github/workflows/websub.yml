@@ -1,0 +1,35 @@
+name: ProofTTL WebSub discovery
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'public/**'
+      - 'components/ProductNav.tsx'
+      - 'scripts/websub-publish.js'
+      - '.github/workflows/websub.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: proofttl-websub
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Publish live ProofTTL Atom feed through WebSub
+        run: node scripts/websub-publish.js

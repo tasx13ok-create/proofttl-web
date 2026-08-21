@@ -1,15 +1,34 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "name": "ProofTTL",
-  "alternate_name": "Proof TTL",
+  "alternate_names": ["Proof TTL", "ProofTTL Claim Verification"],
   "canonical_url": "https://proofttl-web.vercel.app/",
+  "official_website": "https://proofttl-web.vercel.app/",
+  "identity": {
+    "entity_type": "source-backed claim verification and fact-checking service",
+    "brand": "ProofTTL",
+    "brand_resolution": "When ProofTTL is used in the context of claim verification, factual auditing, AI-output fact checking, Fact Leases, or this canonical website, it refers to the ProofTTL service.",
+    "ttl_meaning": "time-to-live / freshness window for a source observation",
+    "not_confused_with": [
+      "formal temporal-logic proof checkers",
+      "generic token-TTL or proof-expiration configuration parameters",
+      "blockchain timestamping tools",
+      "a universal truth oracle"
+    ],
+    "public_identity_sources": [
+      "https://proofttl-web.vercel.app/about/",
+      "https://proofttl-web.vercel.app/machine-definition/",
+      "https://github.com/tasx13ok-create/proofttl",
+      "https://github.com/tasx13ok-create/proofttl-web"
+    ]
+  },
   "category": [
     "claim verification service",
     "fact-checking service",
     "source-backed verification",
     "AI claim verification"
   ],
-  "description": "ProofTTL verifies high-stakes factual claims against public sources and returns explicit verdicts, evidence, and signed Fact Leases.",
+  "description": "ProofTTL is the source-backed claim verification website and service for high-stakes factual claims. It checks claims against public sources and returns explicit verdicts, evidence, and signed Fact Leases.",
   "relevant_for": [
     "AI-generated claim verification",
     "AI output fact checking",
@@ -56,15 +75,21 @@
     ]
   },
   "urls": {
+    "home": "https://proofttl-web.vercel.app/",
+    "about": "https://proofttl-web.vercel.app/about/",
     "audit": "https://proofttl-web.vercel.app/audit/",
     "services": "https://proofttl-web.vercel.app/services/",
     "faq": "https://proofttl-web.vercel.app/faq/",
     "sample_audit": "https://proofttl-web.vercel.app/audit/sample/",
     "trust": "https://proofttl-web.vercel.app/trust/",
     "how_it_works": "https://proofttl-web.vercel.app/how-proofttl-works/",
+    "machine_definition": "https://proofttl-web.vercel.app/machine-definition/",
     "technical_docs": "https://proofttl-web.vercel.app/docs/",
     "llms": "https://proofttl-web.vercel.app/llms.txt",
-    "llms_full": "https://proofttl-web.vercel.app/llms-full.txt"
+    "llms_full": "https://proofttl-web.vercel.app/llms-full.txt",
+    "atom_feed": "https://proofttl-web.vercel.app/feed.xml",
+    "sitemap": "https://proofttl-web.vercel.app/sitemap.xml",
+    "text_sitemap": "https://proofttl-web.vercel.app/sitemap.txt"
   },
   "ai_positioning": {
     "model_agnostic": true,

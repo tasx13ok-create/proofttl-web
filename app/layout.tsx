@@ -26,6 +26,9 @@ import './worlds.css'
 import './cinematics.css'
 
 const SITE_URL = 'https://proofttl-web.vercel.app'
+const GITHUB_PROFILE = 'https://github.com/tasx13ok-create'
+const GITHUB_CORE = 'https://github.com/tasx13ok-create/proofttl'
+const GITHUB_WEB = 'https://github.com/tasx13ok-create/proofttl-web'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -34,10 +37,12 @@ export const metadata: Metadata = {
     default: 'ProofTTL — Source-Backed Claim Verification & Fact-Checking Service',
     template: '%s | ProofTTL',
   },
-  description: 'ProofTTL verifies high-stakes factual claims — including AI-generated claims — against public sources and returns explicit verdicts, evidence, and signed Fact Leases. Paid verification starts at $129.',
+  description: 'ProofTTL is the source-backed claim verification website and service for high-stakes factual claims, including AI-generated claims. It returns explicit verdicts, evidence, and signed Fact Leases. Paid verification starts at $129.',
   keywords: [
     'ProofTTL',
     'Proof TTL',
+    'ProofTTL website',
+    'ProofTTL claim verification',
     'claim verification',
     'claim verification service',
     'fact checking service',
@@ -60,7 +65,7 @@ export const metadata: Metadata = {
     'verification audit',
     'claim stress test',
   ],
-  authors: [{ name: 'ProofTTL' }],
+  authors: [{ name: 'ProofTTL', url: SITE_URL }],
   creator: 'ProofTTL',
   publisher: 'ProofTTL',
   category: 'claim verification and fact checking',
@@ -79,7 +84,7 @@ export const metadata: Metadata = {
   icons: { icon: '/proofttl-mark.svg', shortcut: '/proofttl-mark.svg', apple: '/proofttl-mark.svg' },
   openGraph: {
     title: 'ProofTTL — Source-Backed Claim Verification & Fact Checking',
-    description: 'Verify AI-generated and human-written factual claims against sources before you publish, sell, raise, launch, or rely on them.',
+    description: 'ProofTTL verifies AI-generated and human-written factual claims against sources before you publish, sell, raise, launch, or rely on them.',
     url: '/',
     siteName: 'ProofTTL',
     type: 'website',
@@ -100,14 +105,28 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     '@context': 'https://schema.org',
     '@graph': [
       {
+        '@type': 'Brand',
+        '@id': `${SITE_URL}/#brand`,
+        name: 'ProofTTL',
+        alternateName: ['Proof TTL', 'ProofTTL Claim Verification'],
+        url: SITE_URL,
+        logo: `${SITE_URL}/proofttl-mark.svg`,
+        description: 'ProofTTL is the brand for a source-backed claim verification and fact-checking service.',
+      },
+      {
         '@type': 'Organization',
         '@id': `${SITE_URL}/#organization`,
         name: 'ProofTTL',
-        alternateName: 'Proof TTL',
+        alternateName: ['Proof TTL', 'ProofTTL Claim Verification'],
         url: SITE_URL,
         logo: `${SITE_URL}/proofttl-mark.svg`,
-        sameAs: ['https://github.com/tasx13ok-create/proofttl'],
-        description: 'ProofTTL is a source-backed claim verification and fact-checking service for high-stakes factual claims, including AI-generated claims.',
+        brand: { '@id': `${SITE_URL}/#brand` },
+        sameAs: [GITHUB_PROFILE, GITHUB_CORE, GITHUB_WEB],
+        subjectOf: [
+          { '@type': 'WebPage', url: `${SITE_URL}/about/`, name: 'About ProofTTL' },
+          { '@type': 'WebPage', url: `${SITE_URL}/machine-definition/`, name: 'ProofTTL Machine Definition' },
+        ],
+        description: 'ProofTTL is the source-backed claim verification website and service at proofttl-web.vercel.app. It checks high-stakes factual claims, including AI-generated claims, against public sources.',
         knowsAbout: [
           'claim verification',
           'fact checking',
@@ -130,9 +149,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         '@id': `${SITE_URL}/#website`,
         url: SITE_URL,
         name: 'ProofTTL',
-        alternateName: 'Proof TTL',
-        description: 'Source-backed claim verification, AI fact checking, verification audits, and Fact Lease infrastructure.',
+        alternateName: ['Proof TTL', 'ProofTTL Claim Verification'],
+        description: 'Official ProofTTL website for source-backed claim verification, AI fact checking, verification audits, and Fact Lease infrastructure.',
         publisher: { '@id': `${SITE_URL}/#organization` },
+        about: { '@id': `${SITE_URL}/#brand` },
       },
       {
         '@type': 'Service',
@@ -176,6 +196,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className="dark">
       <head>
+        <link rel="me" href={GITHUB_PROFILE} />
+        <link rel="alternate" type="application/json" href="/.well-known/proofttl.json" title="ProofTTL service manifest" />
+        <link rel="alternate" type="application/atom+xml" href="/feed.xml" title="ProofTTL updates" />
         <link rel="alternate" type="text/plain" href="/llms.txt" title="ProofTTL AI context" />
         <link rel="help" href="/faq/" />
       </head>

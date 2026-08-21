@@ -16,6 +16,7 @@ const PRIMARY = [
 const SECONDARY = [
   { href: '/audit/', label: 'Verification' },
   { href: '/services/', label: 'Services' },
+  { href: '/about/', label: 'About' },
   { href: '/trust/', label: 'Trust' },
   { href: '/connections/', label: 'Connections' },
 ] as const

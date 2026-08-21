@@ -5,6 +5,7 @@ const keyLocation = `${origin}/${key}.txt`
 
 const paths = [
   '/',
+  '/about/',
   '/audit/',
   '/audit/sample/',
   '/services/',
@@ -30,6 +31,9 @@ const paths = [
   '/solutions/stale-data-detection/',
   '/solutions/evidence-verification-api/',
   '/solutions/fact-leases/',
+  '/feed.xml',
+  '/sitemap.xml',
+  '/sitemap.txt',
   '/llms.txt',
   '/llms-full.txt',
   '/.well-known/proofttl.json',

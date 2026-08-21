@@ -2,17 +2,34 @@
   "name": "proofttl-web",
   "version": "1.0.0",
   "private": true,
-  "description": "ProofTTL marketing and developer frontend.",
+  "description": "Official ProofTTL website for source-backed claim verification, AI fact checking, verification audits, and signed Fact Leases.",
+  "homepage": "https://proofttl-web.vercel.app/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tasx13ok-create/proofttl-web.git"
+  },
+  "keywords": [
+    "ProofTTL",
+    "claim-verification",
+    "fact-checking",
+    "ai-claim-verification",
+    "source-backed-verification",
+    "fact-leases",
+    "verification-audit"
+  ],
   "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "node scripts/check-static-export.js && node scripts/check-assistant-session.js && node scripts/check-sales-intake.js && node scripts/check-auth-trust.js && node scripts/check-product-1000.js",
+    "postbuild": "node scripts/check-static-export.js && node scripts/check-discovery-identity.js && node scripts/check-assistant-session.js && node scripts/check-sales-intake.js && node scripts/check-auth-trust.js && node scripts/check-product-1000.js",
     "start": "npx serve out",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run build",
     "check:export": "npm run check",
-    "check:product": "node scripts/check-product-1000.js"
+    "check:product": "node scripts/check-product-1000.js",
+    "check:discovery": "node scripts/check-discovery-identity.js",
+    "discovery:indexnow": "node scripts/indexnow-submit.js",
+    "discovery:websub": "node scripts/websub-publish.js"
   },
   "dependencies": {
     "@better-auth/core": "1.6.25",

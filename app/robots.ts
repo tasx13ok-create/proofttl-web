@@ -31,7 +31,11 @@ export default function robots(): MetadataRoute.Robots {
         disallow: PRIVATE_PATHS,
       })),
     ],
-    sitemap: `${SITE_URL}/sitemap.xml`,
+    sitemap: [
+      `${SITE_URL}/sitemap.xml`,
+      `${SITE_URL}/feed.xml`,
+      `${SITE_URL}/sitemap.txt`,
+    ],
     host: SITE_URL,
   }
 }
