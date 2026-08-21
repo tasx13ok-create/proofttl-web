@@ -1,8 +1,9 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 
 const API_URL = process.env.NEXT_PUBLIC_PROOFTTL_API_URL || 'https://proofttl.tasx13ok.workers.dev'
+const AUDIT_STORAGE_KEY = 'proofttl:last-audit-request'
 
 type StatusResponse = {
   ok?: boolean
@@ -16,39 +17,48 @@ type StatusResponse = {
 }
 
 const labels: Record<string, string> = {
-  received: 'RECEIVED — WAITING FOR SCOPE REVIEW',
-  scoped: 'SCOPED — CHECKOUT NOT YET CREATED',
-  payment_ready: 'SCOPE APPROVED — SECURE CHECKOUT READY',
-  paid: 'PAID — FULFILLMENT IN PROGRESS',
-  fulfilled: 'FULFILLED',
-  cancelled: 'CANCELLED',
+  received: 'RECEIVED — WAITING FOR SCOPE REVIEW', scoped: 'SCOPED — CHECKOUT NOT YET CREATED',
+  payment_ready: 'SCOPE APPROVED — SECURE CHECKOUT READY', paid: 'PAID — FULFILLMENT IN PROGRESS',
+  fulfilled: 'FULFILLED', cancelled: 'CANCELLED',
 }
 
 export default function AuditStatusLookup() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<StatusResponse | null>(null)
+  const [requestId, setRequestId] = useState('')
+  const [email, setEmail] = useState('')
+  const [returnMessage, setReturnMessage] = useState('')
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const queryRequest = params.get('request') || ''
+      const saved = JSON.parse(localStorage.getItem(AUDIT_STORAGE_KEY) || '{}') as { audit_intake_id?: string; email?: string }
+      setRequestId(queryRequest || saved.audit_intake_id || '')
+      setEmail(saved.email || '')
+      if (params.get('paid') === '1') setReturnMessage('Payment submitted. Stripe confirmation can take a few seconds; check status below.')
+      else if (params.get('cancelled') === '1') setReturnMessage('Checkout was cancelled. Your approved scope is still stored and can be paid later while the checkout remains valid.')
+    } catch {}
+  }, [])
+
+  async function lookup(id: string, mail: string) {
     setLoading(true)
     setResult(null)
-    const form = new FormData(event.currentTarget)
     try {
       const response = await fetch(`${API_URL.replace(/\/$/, '')}/audit/intake/status`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          audit_intake_id: String(form.get('audit_intake_id') || '').trim(),
-          email: String(form.get('email') || '').trim(),
-        }),
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ audit_intake_id: id.trim(), email: mail.trim() }),
       })
       const body = await response.json().catch(() => ({})) as StatusResponse
       setResult(response.ok ? body : { error: body.error || `HTTP ${response.status}` })
     } catch {
       setResult({ error: 'Could not reach ProofTTL status service. Try again shortly.' })
-    } finally {
-      setLoading(false)
-    }
+    } finally { setLoading(false) }
+  }
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    await lookup(requestId, email)
   }
 
   return (
@@ -56,21 +66,15 @@ export default function AuditStatusLookup() {
       <p className="app-kicker">CHECK YOUR REQUEST</p>
       <h1 className="app-title">Audit status</h1>
       <p className="app-copy">Use the reference returned when you submitted your scope plus the same email address. ProofTTL does not expose the request from the reference alone.</p>
+      {returnMessage && <p className="app-note" role="status">{returnMessage}</p>}
 
       <form onSubmit={submit} style={{ display: 'grid', gap: 14, marginTop: 20 }}>
-        <label className="app-copy" style={{ display: 'grid', gap: 6 }}>
-          REQUEST REFERENCE
-          <input name="audit_intake_id" required pattern="ati_[a-f0-9]{32}" placeholder="ati_..." />
-        </label>
-        <label className="app-copy" style={{ display: 'grid', gap: 6 }}>
-          EMAIL
-          <input name="email" type="email" required placeholder="you@company.com" />
-        </label>
+        <label className="app-copy" style={{ display: 'grid', gap: 6 }}>REQUEST REFERENCE<input name="audit_intake_id" required pattern="ati_[a-f0-9]{32}" placeholder="ati_..." value={requestId} onChange={(e) => setRequestId(e.target.value)} /></label>
+        <label className="app-copy" style={{ display: 'grid', gap: 6 }}>EMAIL<input name="email" type="email" required placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} /></label>
         <button className="button button-primary" disabled={loading}>{loading ? 'CHECKING…' : 'CHECK STATUS →'}</button>
       </form>
 
       {result?.error && <p className="app-note" role="alert" style={{ marginTop: 18 }}><strong>STATUS UNAVAILABLE:</strong> {result.error}</p>}
-
       {result?.ok && (
         <div style={{ marginTop: 22 }}>
           <p className="app-kicker">{labels[result.status || ''] || String(result.status || '').toUpperCase()}</p>
@@ -82,11 +86,7 @@ export default function AuditStatusLookup() {
             {result.scope?.turnaround && <div className="app-table-row"><span>Turnaround</span><span>{result.scope.turnaround}</span><span>SET</span></div>}
             <div className="app-table-row"><span>Payment</span><span>{result.payment?.provider === 'stripe' ? 'Secure Stripe Checkout' : String(result.payment?.state || 'not_requested').replaceAll('_', ' ')}</span><span>{result.payment?.state === 'paid' ? '✓' : result.payment?.amount_due_usd ? `$${result.payment.amount_due_usd}` : '—'}</span></div>
           </div>
-          {result.payment?.state === 'ready' && result.payment.url && (
-            <div className="hero-actions" style={{ marginTop: 18 }}>
-              <a className="button button-primary" href={result.payment.url} rel="noreferrer">PAY ${result.payment.amount_due_usd || result.scope?.amount_due_usd || ''} SECURELY →</a>
-            </div>
-          )}
+          {result.payment?.state === 'ready' && result.payment.url && <div className="hero-actions" style={{ marginTop: 18 }}><a className="button button-primary" href={result.payment.url} rel="noreferrer">PAY ${result.payment.amount_due_usd || result.scope?.amount_due_usd || ''} SECURELY →</a></div>}
           {result.status === 'received' && <p className="app-note">Your request is stored. The next checkpoint is scope review; payment is not due yet.</p>}
           {result.status === 'scoped' && <p className="app-note">Your scope is approved. ProofTTL has not created checkout yet, so no payment is currently due.</p>}
           {result.status === 'paid' && <p className="app-note">Stripe payment is recorded. Fulfillment is now the active step.</p>}
