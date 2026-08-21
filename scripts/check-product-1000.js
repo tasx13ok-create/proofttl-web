@@ -44,7 +44,7 @@ const checks = [
   [layout.includes('TESTNET PREVIEW') && layout.includes('Mainnet disabled'), 'network truth banner'],
   [layout.includes('<ProductNav />') && nav.includes('/workspace/') && nav.includes('/studio/') && nav.includes('/trust/') && !nav.includes("{ href: '/worlds/', label: 'Worlds' }") && !nav.includes("{ href: '/cinematics/', label: 'Cinematics' }"), 'revenue-focused canonical product navigation'],
   [nav.includes('/work/') && nav.includes('/files/') && nav.includes('/automations/') && nav.includes('/money/') && nav.includes('/connections/'), 'global work/product areas'],
-  [nav.includes('/proofttl-logo.png'), 'canonical logo in product navigation'],
+  [nav.includes('/proofttl-logo-lockup.png') && nav.includes('product-brand-lockup-image') && !nav.includes('product-brand-mark') && !nav.includes('product-brand-wordmark'), 'canonical full logo lockup in product navigation'],
   [/claim stress test/i.test(home) && home.includes('$129') && home.includes('$500'), 'two-tier commercial offer'],
   [/claim stress test/i.test(audit) && /verification audit/i.test(audit), 'audit offer ladder'],
   [/GitHub/i.test(login) && /Google/i.test(login) && /Discord/i.test(login) && /Passkey/i.test(login), 'GitHub + Google + Discord + passkey login'],
