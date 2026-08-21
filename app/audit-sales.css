@@ -1,0 +1,302 @@
+.audit-sales-page .onboarding-wrap {
+  width: min(980px, calc(100% - 40px));
+  padding: 56px 0 96px;
+}
+
+.audit-sales-card {
+  padding: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(13,19,30,.98), rgba(8,13,22,.98));
+}
+
+.audit-sales-hero,
+.audit-sales-pricing,
+.audit-upgrade-note,
+.audit-sales-proof,
+.audit-sales-steps,
+.audit-limit-note,
+.audit-intake-clean {
+  margin-left: 32px;
+  margin-right: 32px;
+}
+
+.audit-sales-hero {
+  padding: 38px 0 24px;
+  border-bottom: 1px solid rgba(148,163,184,.12);
+}
+
+.audit-sales-hero .app-title {
+  max-width: 760px;
+  font-size: clamp(38px, 6vw, 64px);
+  line-height: .98;
+}
+
+.audit-sales-hero .app-copy {
+  max-width: 760px;
+  margin-bottom: 18px;
+  font-size: 15px;
+}
+
+.audit-sales-trustline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.audit-sales-trustline span {
+  padding: 7px 9px;
+  border: 1px solid rgba(103,232,249,.14);
+  border-radius: 999px;
+  background: rgba(34,211,238,.035);
+  color: #9bdde7;
+  font: 8px 'IBM Plex Mono', monospace;
+  letter-spacing: .08em;
+}
+
+.audit-sales-pricing {
+  margin-top: 28px;
+}
+
+.audit-upgrade-note {
+  margin-top: 12px;
+  margin-bottom: 0;
+}
+
+.audit-intake-clean {
+  margin-top: 28px;
+  padding: 28px;
+  border: 1px solid rgba(103,232,249,.16);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(34,211,238,.025), transparent 30%),
+    rgba(8,14,23,.9);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+.audit-intake-heading-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.audit-intake-heading-row h2 {
+  margin: 0;
+  font-size: clamp(24px, 4vw, 34px);
+  letter-spacing: -.03em;
+}
+
+.audit-offer-switch {
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(148,163,184,.13);
+  border-radius: 10px;
+  background: rgba(4,8,14,.72);
+}
+
+.audit-offer-switch button {
+  border: 0;
+  border-radius: 7px;
+  padding: 9px 11px;
+  background: transparent;
+  color: #728197;
+  cursor: pointer;
+  font: 700 9px 'IBM Plex Mono', monospace;
+  white-space: nowrap;
+}
+
+.audit-offer-switch button.active {
+  background: rgba(34,211,238,.1);
+  color: #d8fbff;
+  box-shadow: inset 0 0 0 1px rgba(103,232,249,.18);
+}
+
+.audit-selected-offer,
+.audit-credit-note,
+.audit-form-footnote {
+  color: #758399;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.audit-selected-offer { margin: 14px 0 0; }
+.audit-credit-note { margin: 5px 0 0; }
+.audit-credit-note strong,
+.audit-selected-offer strong { color: #dce7f2; }
+
+.audit-clean-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.audit-clean-form label {
+  display: grid;
+  gap: 7px;
+  color: #8190a5;
+  font: 700 9px 'IBM Plex Mono', monospace;
+  letter-spacing: .06em;
+}
+
+.audit-clean-form label > span {
+  color: #526176;
+  font-weight: 500;
+}
+
+.audit-clean-form input,
+.audit-clean-form textarea,
+.audit-clean-form select {
+  width: 100%;
+  border: 1px solid rgba(148,163,184,.17);
+  border-radius: 9px;
+  background: rgba(5,10,17,.9);
+  color: #e5edf6;
+  padding: 12px 13px;
+  outline: none;
+  font: 13px 'IBM Plex Sans', sans-serif;
+}
+
+.audit-clean-form input:focus,
+.audit-clean-form textarea:focus,
+.audit-clean-form select:focus {
+  border-color: rgba(103,232,249,.45);
+  box-shadow: 0 0 0 3px rgba(34,211,238,.055);
+}
+
+.audit-clean-form textarea { resize: vertical; }
+
+.audit-form-grid.two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.audit-submit-button {
+  min-height: 48px;
+  justify-content: center;
+}
+
+.audit-form-footnote {
+  margin: -2px 0 0;
+  text-align: center;
+  font: 8px 'IBM Plex Mono', monospace;
+  letter-spacing: .075em;
+}
+
+.audit-result {
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid rgba(103,232,249,.12);
+  border-radius: 10px;
+  background: rgba(34,211,238,.035);
+}
+
+.audit-sales-proof {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 24px;
+  margin-top: 34px;
+  padding: 28px 0;
+  border-top: 1px solid rgba(148,163,184,.11);
+  border-bottom: 1px solid rgba(148,163,184,.11);
+}
+
+.audit-clean-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.audit-clean-list li {
+  position: relative;
+  padding-left: 20px;
+  color: #aab7c7;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.audit-clean-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #67e8f9;
+}
+
+.audit-sample-card {
+  padding: 20px;
+  border: 1px solid rgba(148,163,184,.12);
+  border-radius: 12px;
+  background: rgba(255,255,255,.018);
+}
+
+.audit-sample-card .app-copy { margin: 8px 0 16px; }
+
+.audit-sales-steps {
+  padding: 28px 0 8px;
+}
+
+.audit-step-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.audit-step-grid > div {
+  padding: 16px;
+  border: 1px solid rgba(148,163,184,.11);
+  border-radius: 10px;
+  background: rgba(255,255,255,.015);
+}
+
+.audit-step-grid strong {
+  display: block;
+  margin-bottom: 16px;
+  color: #67e8f9;
+  font: 800 12px 'IBM Plex Mono', monospace;
+}
+
+.audit-step-grid span {
+  display: block;
+  color: #e6edf5;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.audit-step-grid small {
+  display: block;
+  margin-top: 5px;
+  color: #66758a;
+  font-size: 10px;
+}
+
+.audit-limit-note {
+  margin-top: 24px;
+  margin-bottom: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(148,163,184,.1);
+}
+
+@media (max-width: 760px) {
+  .audit-sales-hero,
+  .audit-sales-pricing,
+  .audit-upgrade-note,
+  .audit-sales-proof,
+  .audit-sales-steps,
+  .audit-limit-note,
+  .audit-intake-clean { margin-left: 18px; margin-right: 18px; }
+  .audit-intake-clean { padding: 20px; }
+  .audit-intake-heading-row { align-items: stretch; flex-direction: column; }
+  .audit-offer-switch { width: 100%; }
+  .audit-form-grid.two,
+  .audit-sales-proof { grid-template-columns: 1fr; }
+  .audit-step-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .audit-step-grid { grid-template-columns: 1fr; }
+  .audit-offer-switch { grid-template-columns: 1fr; }
+}
