@@ -31,7 +31,10 @@ export default function SampleAuditPage() {
   return (
     <main className="app-page">
       <div className="app-shell app-topbar">
-        <a className="brand" href="/"><span className="brand-mark">P</span> PROOF<span className="brand-muted">TTL</span></a>
+        <a className="brand" href="/" aria-label="ProofTTL home">
+          <img src="/proofttl-logo.png" width="32" height="32" alt="" aria-hidden="true" />
+          <span>PROOF<span className="brand-muted">TTL</span></span>
+        </a>
         <span className="app-meta">PUBLIC DEMONSTRATION · REPORT PTTL-DEMO-PX-20260818-001</span>
       </div>
 
@@ -39,9 +42,7 @@ export default function SampleAuditPage() {
         <div className="onboarding-card">
           <p className="app-kicker">SAMPLE VERIFICATION AUDIT</p>
           <h1 className="app-title">Verification that doesn&apos;t go stale.</h1>
-          <p className="app-copy">
-            This public sample reviews six time-sensitive statements in Perplexity AI&apos;s public documentation. It demonstrates how ProofTTL separates current source support from documentation drift instead of treating a fact as permanently valid.
-          </p>
+          <p className="app-copy">This public sample reviews six time-sensitive statements in Perplexity AI&apos;s public documentation. It demonstrates how ProofTTL separates current source support from documentation drift instead of treating a fact as permanently valid.</p>
 
           <div className="price-preview">
             <div><p className="app-kicker">RESULTS</p><strong>5 / 1</strong><span>5 supported · 1 contradicted · 5 high-drift claims</span></div>
@@ -51,9 +52,7 @@ export default function SampleAuditPage() {
           <div className="onboarding-card" style={{ marginTop: 24 }}>
             <p className="app-kicker">HEADLINE FINDING</p>
             <h2 className="app-title" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)' }}>A once-correct product fact can become unsafe to reuse.</h2>
-            <p className="app-copy">
-              Perplexity&apos;s current advanced-model page says model availability changes over time and lists GPT-5.6 Sol and Claude Opus 5 for Max. Another current Pro help article still references o3-Pro and Claude 4.5 Opus for Max users. The problem is not that a historical statement had to be false when written. The problem is that rapidly changing product facts need an explicit validity window.
-            </p>
+            <p className="app-copy">Perplexity&apos;s current advanced-model page says model availability changes over time and lists GPT-5.6 Sol and Claude Opus 5 for Max. Another current Pro help article still references o3-Pro and Claude 4.5 Opus for Max users. The problem is not that a historical statement had to be false when written. The problem is that rapidly changing product facts need an explicit validity window.</p>
           </div>
 
           <div className="app-table" aria-label="Sample audit claim results" style={{ marginTop: 24 }}>
@@ -68,16 +67,12 @@ export default function SampleAuditPage() {
 
           <div className="onboarding-card" style={{ marginTop: 24 }}>
             <p className="app-kicker">WHY THIS MATTERS</p>
-            <p className="app-copy">
-              Pricing, model availability, connector counts, policies, limits, and product capabilities are copied into RAG systems, support answers, sales material, internal research, and automated workflows. ProofTTL is designed to bind those claims to their evidence and a defined lifetime so stale information can be rechecked before it quietly becomes operational truth.
-            </p>
+            <p className="app-copy">Pricing, model availability, connector counts, policies, limits, and product capabilities are copied into RAG systems, support answers, sales material, internal research, and automated workflows. ProofTTL is designed to bind those claims to their evidence and a defined lifetime so stale information can be rechecked before it quietly becomes operational truth.</p>
           </div>
 
           <div className="onboarding-card" style={{ marginTop: 24 }}>
             <p className="app-kicker">METHODOLOGY</p>
-            <p className="app-copy">
-              Claims are written precisely before review. Primary sources are preferred. A company page supporting its own statement is recorded as source support, not independent proof of broad real-world performance. CONTRADICTED is reserved for evidence that directly negates the precise claim. This sample is intentionally narrow and does not claim exhaustive product accuracy.
-            </p>
+            <p className="app-copy">Claims are written precisely before review. Primary sources are preferred. A company page supporting its own statement is recorded as source support, not independent proof of broad real-world performance. CONTRADICTED is reserved for evidence that directly negates the precise claim. This sample is intentionally narrow and does not claim exhaustive product accuracy.</p>
           </div>
 
           <div className="onboarding-card" style={{ marginTop: 24 }}>
@@ -85,9 +80,7 @@ export default function SampleAuditPage() {
             <div className="app-table">
               {sources.map(([id, title, href]) => (
                 <div className="app-table-row" key={id}>
-                  <span>{id}</span>
-                  <span>{title}</span>
-                  <span><a href={href} target="_blank" rel="noreferrer">SOURCE ↗</a></span>
+                  <span>{id}</span><span>{title}</span><span><a href={href} target="_blank" rel="noreferrer">SOURCE ↗</a></span>
                 </div>
               ))}
             </div>
@@ -102,9 +95,7 @@ export default function SampleAuditPage() {
             </div>
           </div>
 
-          <p className="app-note">
-            Public demonstration only. This is not a commissioned audit of Perplexity, an endorsement, an accusation, or legal, financial, medical, regulatory, certification, or compliance advice. No Fact Lease IDs or cryptographic signatures are displayed until those records are actually issued by the live verifier.
-          </p>
+          <p className="app-note">Public demonstration only. This is not a commissioned audit of Perplexity, an endorsement, an accusation, or legal, financial, medical, regulatory, certification, or compliance advice. No Fact Lease IDs or cryptographic signatures are displayed until those records are actually issued by the live verifier.</p>
         </div>
       </section>
     </main>
