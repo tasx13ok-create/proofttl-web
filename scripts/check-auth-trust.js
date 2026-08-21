@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises'
 const login = await readFile('components/AuthLoginPanel.tsx', 'utf8')
 const trust = await readFile('components/TrustCenter.tsx', 'utf8')
 const auth = await readFile('lib/proofttl-auth.ts', 'utf8')
+const vercel = await readFile('vercel.json', 'utf8')
 
 for (const expected of [
   "id: 'github'",
@@ -35,12 +36,22 @@ for (const expected of [
   'twoFactorClient',
   'passkeyClient',
   "export type SocialProvider = 'github' | 'google' | 'discord'",
+  'PROOFTTL_AUTH_URL',
+  'window.location.origin',
   "provider, callbackURL",
   "credentials: 'include'",
 ]) {
   if (!auth.includes(expected)) throw new Error(`Auth client behavior missing: ${expected}`)
 }
 
-if (login.includes('type="password"')) throw new Error('Password field must not appear in ProofTTL login')
+for (const expected of [
+  '/api/auth/:path*',
+  'https://proofttl.tasx13ok.workers.dev/api/auth/:path*',
+]) {
+  if (!vercel.includes(expected)) throw new Error(`First-party auth proxy missing: ${expected}`)
+}
 
-console.log('SUCCESS: GitHub, Google, Discord, passkey, and canonical Trust security surfaces passed release checks.')
+if (login.includes('type="password"')) throw new Error('Password field must not appear in ProofTTL login')
+if (auth.includes('baseURL: PROOFTTL_API_URL')) throw new Error('Browser auth regressed to cross-site Worker origin')
+
+console.log('SUCCESS: first-party GitHub, Google, Discord, passkey, and canonical Trust auth surfaces passed release checks.')
