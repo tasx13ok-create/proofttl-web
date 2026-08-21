@@ -20,10 +20,21 @@ function rawBody(request) {
   })
 }
 
+function cleanAuthPath(value) {
+  return String(value || '').trim().replace(/^\/+|\/+$/g, '')
+}
+
 function authPathFromRequest(request) {
   const value = request.query?.path
-  const fromQuery = Array.isArray(value) ? value.join('/') : String(value || '')
-  if (fromQuery) return fromQuery
+  const fromQuery = cleanAuthPath(Array.isArray(value) ? value.join('/') : value)
+  if (fromQuery && !fromQuery.startsWith('$')) return fromQuery
+
+  const routeMatches = request.headers?.['x-now-route-matches']
+  if (routeMatches) {
+    const matches = new URLSearchParams(String(routeMatches))
+    const fromRoute = cleanAuthPath(matches.get('authpath') || matches.get('path'))
+    if (fromRoute) return fromRoute
+  }
 
   const candidates = [
     request.headers?.['x-vercel-original-path'],
@@ -38,7 +49,7 @@ function authPathFromRequest(request) {
       const pathname = new URL(String(candidate), 'https://proofttl-web.vercel.app').pathname
       const marker = '/api/auth/'
       const index = pathname.indexOf(marker)
-      if (index >= 0) return pathname.slice(index + marker.length)
+      if (index >= 0) return cleanAuthPath(pathname.slice(index + marker.length))
     } catch {}
   }
   return ''
@@ -51,24 +62,10 @@ export const config = {
 export default async function handler(request, response) {
   try {
     const path = authPathFromRequest(request)
-    if (!path || path.includes('..') || path.startsWith('$')) {
-      response.statusCode = 422
-      response.setHeader('content-type', 'application/json; charset=utf-8')
+    if (!path || path.includes('..')) {
+      response.statusCode = 404
       response.setHeader('cache-control', 'no-store')
-      response.end(JSON.stringify({
-        error: 'auth_proxy_path_missing',
-        resolvedPath: path || null,
-        url: request.url || null,
-        query: request.query || null,
-        routing: {
-          originalPath: request.headers?.['x-vercel-original-path'] || null,
-          originalUri: request.headers?.['x-original-uri'] || null,
-          rewriteUrl: request.headers?.['x-rewrite-url'] || null,
-          invokePath: request.headers?.['x-invoke-path'] || null,
-          matchedPath: request.headers?.['x-matched-path'] || null,
-          routeMatches: request.headers?.['x-now-route-matches'] || null,
-        },
-      }))
+      response.end('Not found')
       return
     }
 
@@ -87,7 +84,6 @@ export default async function handler(request, response) {
     })
 
     response.statusCode = upstream.status
-    response.setHeader('x-proofttl-auth-path', path)
 
     for (const [key, value] of upstream.headers.entries()) {
       const lower = key.toLowerCase()
