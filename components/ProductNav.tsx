@@ -99,7 +99,7 @@ export default function ProductNav() {
     <header className="product-nav" data-product-nav>
       <div className="product-nav-inner">
         <a href="/" className="product-brand product-brand-lockup" aria-label="ProofTTL home">
-          <img className="product-brand-lockup-image" src="/proofttl-logo-lockup.png" alt="ProofTTL" />
+          <img className="product-brand-lockup-image" src="/proofttl-lockup.svg" alt="ProofTTL" />
         </a>
 
         <nav className="product-nav-primary" aria-label="Product">
