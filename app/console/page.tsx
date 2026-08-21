@@ -12,15 +12,7 @@ const nav = ['Overview', 'Fact Leases', 'Usage', 'Payments', 'API', 'Security', 
 
 export default function ConsolePage() {
   return (
-    <main className="app-page">
-      <div className="app-shell app-topbar">
-        <a className="brand" href="/" aria-label="ProofTTL home">
-          <img src="/proofttl-logo.png" width="32" height="32" alt="" aria-hidden="true" />
-          <span>PROOF<span className="brand-muted">TTL</span></span>
-        </a>
-        <div className="app-meta">CUSTOMER CONSOLE · TESTNET</div>
-      </div>
-
+    <main className="app-page console-page">
       <div className="app-shell console-layout">
         <aside className="app-sidebar" aria-label="Console navigation">
           {nav.map((item, index) => (
@@ -35,11 +27,11 @@ export default function ConsolePage() {
         <section className="console-main">
           <header className="console-heading" id="overview">
             <div>
-              <p className="app-kicker">PROOFTTL CONSOLE</p>
+              <p className="app-kicker">PROOFTTL CUSTOMER CONSOLE</p>
               <h1>Overview</h1>
-              <p className="app-copy">Public verification remains independently inspectable. Signed-in customer data is now designed around explicit server-side ownership: account preferences, owned audits, and Studio projects are keyed to the Better Auth user ID rather than inferred from a browser or reference alone.</p>
+              <p className="app-copy">Public verification remains independently inspectable. Signed-in customer data is keyed to authenticated account ownership rather than inferred from a browser or reference alone.</p>
             </div>
-            <span className="app-status">TESTNET</span>
+            <span className="app-status">PROTOCOL TESTNET</span>
           </header>
 
           <div className="console-grid">
@@ -63,16 +55,16 @@ export default function ConsolePage() {
             <article className="console-panel wide" id="usage">
               <h2>AI USAGE</h2>
               <AssistantUsageTelemetry />
-              <p className="app-note">The free allowance is shared between typed and voice assistant requests and resets daily in UTC. Account entitlements are server-controlled; paid billing is not enabled yet.</p>
+              <p className="app-note">The free allowance is shared between typed and voice assistant requests and resets daily in UTC. Account subscription billing is not enabled; commercial verification audits use a separate live Stripe checkout after scope approval.</p>
             </article>
 
             <article className="console-panel wide" id="payments">
-              <h2>X402 PAYMENT HISTORY</h2>
+              <h2>PROTOCOL PAYMENT HISTORY</h2>
               <div className="app-table"><div className="app-table-head"><span>TRANSACTION</span><span>NETWORK</span><span>AMOUNT</span></div></div>
               <div className="app-empty">
-                <div className="app-empty-meta">PAYMENT ATTRIBUTION PENDING</div>
+                <div className="app-empty-meta">X402 ATTRIBUTION PENDING</div>
                 <strong>No wallet is silently assigned to your account.</strong>
-                Payment history will appear only after ProofTTL can cryptographically verify that a payer wallet belongs to the signed-in customer.
+                Protocol payment history will appear only after ProofTTL can cryptographically verify that a payer wallet belongs to the signed-in customer. Commercial audit payments are tracked separately through Stripe.
               </div>
             </article>
 
@@ -90,7 +82,7 @@ export default function ConsolePage() {
 
             <article className="console-panel" id="support">
               <h2>SUPPORT</h2>
-              <div className="app-empty"><div className="app-empty-meta">TESTNET</div><strong>Support currently routes to GitHub issues.</strong><a className="text-link" href="https://github.com/tasx13ok-create/proofttl/issues" target="_blank" rel="noreferrer">OPEN ISSUES ↗</a></div>
+              <div className="app-empty"><div className="app-empty-meta">SUPPORT</div><strong>Technical support currently routes to GitHub issues.</strong><a className="text-link" href="https://github.com/tasx13ok-create/proofttl/issues" target="_blank" rel="noreferrer">OPEN ISSUES ↗</a></div>
             </article>
 
             <article className="console-panel wide" id="account">
