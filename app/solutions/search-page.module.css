@@ -120,6 +120,10 @@
   letter-spacing: -0.025em;
 }
 
+.panel h3 {
+  color: #f8fafc;
+}
+
 .panel p,
 .panel li {
   color: #aeb9c8;
@@ -147,6 +151,11 @@
   align-items: center;
 }
 
+.indexHero + .cta {
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+
 .cta h2 {
   margin: 0 0 9px;
 }
@@ -154,6 +163,7 @@
 .cta p {
   margin: 0;
   color: #94a3b8;
+  line-height: 1.65;
 }
 
 .actions {
@@ -183,6 +193,11 @@
 .secondary {
   border: 1px solid rgba(148, 163, 184, 0.24);
   color: #e2e8f0;
+}
+
+.primary:hover,
+.secondary:hover {
+  transform: translateY(-1px);
 }
 
 .indexHero {
@@ -232,16 +247,48 @@
   letter-spacing: 0.12em;
 }
 
-.intentCard h2 {
+.intentCard h2,
+.intentCard h3 {
   color: #f8fafc;
   margin: 12px 0 9px;
   font-size: 23px;
+  line-height: 1.15;
 }
 
 .intentCard p {
   color: #94a3b8;
   margin: 0;
   line-height: 1.65;
+}
+
+.related {
+  padding-top: 16px;
+}
+
+.relatedHeading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 18px;
+}
+
+.relatedHeading h2 {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 38px);
+  letter-spacing: -0.035em;
+}
+
+.relatedHeading a {
+  color: #67e8f9;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.relatedGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .footer {
@@ -269,7 +316,8 @@
 
   .hero,
   .mainGrid,
-  .intentGrid {
+  .intentGrid,
+  .relatedGrid {
     grid-template-columns: 1fr;
   }
 
@@ -277,7 +325,8 @@
     padding-top: 58px;
   }
 
-  .cta {
+  .cta,
+  .relatedHeading {
     align-items: flex-start;
     flex-direction: column;
   }
