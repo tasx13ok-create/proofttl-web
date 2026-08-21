@@ -1,12 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "redirects": [
-    { "source": "/trust.html", "destination": "/trust/", "permanent": true },
-    { "source": "/lease-ops.html", "destination": "/lease-ops/", "permanent": true },
-    { "source": "/status.html", "destination": "/status/", "permanent": true },
-    { "source": "/methodology.html", "destination": "/how-proofttl-works/", "permanent": true }
-  ],
-  "rewrites": [
-    { "source": "/api/auth/:path*", "destination": "/api/auth-proxy?path=:path*" }
+  "routes": [
+    { "src": "^/api/auth/(.*)$", "dest": "/api/auth-proxy?path=$1" },
+    { "src": "^/trust\\.html$", "status": 308, "headers": { "Location": "/trust/" } },
+    { "src": "^/lease-ops\\.html$", "status": 308, "headers": { "Location": "/lease-ops/" } },
+    { "src": "^/status\\.html$", "status": 308, "headers": { "Location": "/status/" } },
+    { "src": "^/methodology\\.html$", "status": 308, "headers": { "Location": "/how-proofttl-works/" } }
   ]
 }
