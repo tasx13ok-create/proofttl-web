@@ -17,16 +17,17 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
   const intent = getServiceIntent(slug)
-  if (!intent) return { title: 'ProofTTL Verification Services' }
+  if (!intent) return { title: 'Verification Services' }
+  const pageTitle = intent.title.replace(/\s*\|\s*ProofTTL\s*$/i, '')
 
   return {
-    title: intent.title,
+    title: pageTitle,
     description: intent.description,
     alternates: { canonical: `/services/${intent.slug}/` },
     keywords: [intent.eyebrow.toLowerCase(), 'claim verification service', 'fact checking service', 'source-backed verification', 'ProofTTL', 'factual claim audit'],
     robots: { index: true, follow: true },
     openGraph: {
-      title: intent.title,
+      title: `${pageTitle} | ProofTTL`,
       description: intent.description,
       url: `/services/${intent.slug}/`,
       type: 'website',
@@ -50,7 +51,7 @@ export default async function ServiceIntentPage({ params }: PageProps) {
         '@type': 'Service',
         '@id': `${pageUrl}#service`,
         name: intent.title.replace(' | ProofTTL', ''),
-        serviceType: intent.eyebrow.replaceAll('_', ' '),
+        serviceType: intent.eyebrow,
         description: intent.description,
         url: pageUrl,
         provider: { '@id': `${SITE_URL}/#organization` },
