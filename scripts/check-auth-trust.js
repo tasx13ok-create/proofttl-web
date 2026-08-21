@@ -4,7 +4,7 @@ const login = await readFile('components/AuthLoginPanel.tsx', 'utf8')
 const trust = await readFile('components/TrustCenter.tsx', 'utf8')
 const auth = await readFile('lib/proofttl-auth.ts', 'utf8')
 const vercel = await readFile('vercel.json', 'utf8')
-const proxy = await readFile('api/auth/[...path].js', 'utf8')
+const proxy = await readFile('api/auth-proxy.js', 'utf8')
 
 for (const expected of [
   "id: 'github'",
@@ -47,16 +47,26 @@ for (const expected of [
 
 for (const expected of [
   "const AUTH_UPSTREAM = 'https://proofttl.tasx13ok.workers.dev'",
+  'cleanAuthPath',
   '/api/auth/',
   'bodyParser: false',
   "redirect: 'manual'",
   "response.setHeader('set-cookie'",
+  "response.setHeader('cache-control', 'no-store')",
 ]) {
-  if (!proxy.includes(expected)) throw new Error(`First-party auth function missing: ${expected}`)
+  if (!proxy.includes(expected)) throw new Error(`First-party auth proxy missing: ${expected}`)
+}
+
+for (const expected of [
+  '^/api/auth/(?<authpath>.*)$',
+  '/api/auth-proxy.js?path=$authpath',
+]) {
+  if (!vercel.includes(expected)) throw new Error(`Vercel first-party auth route missing: ${expected}`)
 }
 
 if (vercel.includes('https://proofttl.tasx13ok.workers.dev/api/auth/:path*')) throw new Error('Legacy external auth rewrite must not shadow the first-party auth function')
 if (login.includes('type="password"')) throw new Error('Password field must not appear in ProofTTL login')
 if (auth.includes('baseURL: PROOFTTL_API_URL')) throw new Error('Browser auth regressed to cross-site Worker origin')
+if (proxy.includes('x-proofttl-auth-path') || proxy.includes('auth_proxy_path_missing')) throw new Error('Auth proxy diagnostic output must not ship')
 
 console.log('SUCCESS: first-party GitHub, Google, Discord, passkey, and canonical Trust auth surfaces passed release checks.')
