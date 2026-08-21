@@ -3,7 +3,8 @@ import path from 'node:path'
 const root = process.cwd()
 const requiredFiles = [
   'app/page.tsx','app/audit/page.tsx','app/login/page.tsx','components/AuthLoginPanel.tsx','app/console/page.tsx',
-  'components/ProductNav.tsx','app/how-proofttl-works/page.tsx','app/workspace/page.tsx','components/WorkspaceDesktopShell.tsx',
+  'components/ProductNav.tsx','components/ProtocolNetworkStrip.tsx','app/how-proofttl-works/page.tsx','app/workspace/page.tsx','components/WorkspaceDesktopShell.tsx',
+  'public/proofttl-mark.svg','public/proofttl-lockup.svg',
   'app/worlds/page.tsx','components/WorldBuilder.tsx','app/cinematics/page.tsx','app/cinematics-v3.css','components/CinematicsStudio.tsx','components/LocalCinematicPreview.tsx','cinematics/core/Types.ts','cinematics/prompt/PromptParser.ts','cinematics/ai/Types.ts','lib/proofttl-cinematics.ts',
   'components/AssistantRichText.tsx','components/ProofTTLChatBar.tsx','app/trust/page.tsx','components/TrustCenter.tsx',
   'lib/proofttl-capabilities.ts','lib/proofttl-command.ts','lib/proofttl-visuals.ts','app/money/page.tsx','app/work/page.tsx',
@@ -13,6 +14,7 @@ const requiredFiles = [
 for (const relative of requiredFiles) if (!fs.existsSync(path.join(root, relative))) throw new Error(`1000% guard: missing required product surface ${relative}`)
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8')
 const layout = read('app/layout.tsx')
+const networkStrip = read('components/ProtocolNetworkStrip.tsx')
 const nav = read('components/ProductNav.tsx')
 const home = read('app/page.tsx')
 const login = read('components/AuthLoginPanel.tsx')
@@ -41,10 +43,11 @@ const assistant = read('lib/proofttl-assistant.ts')
 const audit = read('app/audit/page.tsx')
 
 const checks = [
-  [layout.includes('TESTNET PREVIEW') && layout.includes('Mainnet disabled'), 'network truth banner'],
+  [layout.includes('<ProtocolNetworkStrip />') && networkStrip.includes('TESTNET PREVIEW') && networkStrip.includes('Mainnet disabled') && networkStrip.includes("'/'") && networkStrip.includes("'/audit/'"), 'technical network truth preserved while commercial routes stay clean'],
   [layout.includes('<ProductNav />') && nav.includes('/workspace/') && nav.includes('/studio/') && nav.includes('/trust/') && !nav.includes("{ href: '/worlds/', label: 'Worlds' }") && !nav.includes("{ href: '/cinematics/', label: 'Cinematics' }"), 'revenue-focused canonical product navigation'],
   [nav.includes('/work/') && nav.includes('/files/') && nav.includes('/automations/') && nav.includes('/money/') && nav.includes('/connections/'), 'global work/product areas'],
-  [nav.includes('/proofttl-logo-lockup.png') && nav.includes('product-brand-lockup-image') && !nav.includes('product-brand-mark') && !nav.includes('product-brand-wordmark'), 'canonical full logo lockup in product navigation'],
+  [nav.includes('/proofttl-lockup.svg') && nav.includes('product-brand-lockup-image') && !nav.includes('product-brand-mark') && !nav.includes('product-brand-wordmark'), 'canonical full vector logo lockup in product navigation'],
+  [!home.includes('<nav className="nav shell"') && !home.includes('brand-mark">P') && home.includes('/proofttl-lockup.svg'), 'homepage has one canonical nav and no legacy P branding'],
   [/claim stress test/i.test(home) && home.includes('$129') && home.includes('$500'), 'two-tier commercial offer'],
   [/claim stress test/i.test(audit) && /verification audit/i.test(audit), 'audit offer ladder'],
   [/GitHub/i.test(login) && /Google/i.test(login) && /Discord/i.test(login) && /Passkey/i.test(login), 'GitHub + Google + Discord + passkey login'],
