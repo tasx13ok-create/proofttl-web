@@ -71,11 +71,8 @@ export default function AuditStatusLookup() {
 
       if (queryRequest && !autoCheckedRef.current) {
         autoCheckedRef.current = true
-        if (paidReturn) {
-          await pollAfterPayment(queryRequest, lookupEmail)
-        } else {
-          await lookup(queryRequest, lookupEmail)
-        }
+        if (paidReturn) await pollAfterPayment(queryRequest, lookupEmail)
+        else await lookup(queryRequest, lookupEmail)
       }
     }).catch(() => {
       if (!cancelled) setAuthState('error')
@@ -91,7 +88,7 @@ export default function AuditStatusLookup() {
     window.location.assign(signInHref(returnTo))
   }
 
-  async function lookup(id: string, mail: string, quiet = false) {
+  async function lookup(id: string, mail: string, quiet = false): Promise<StatusResponse | null> {
     if (!quiet) setLoading(true)
     if (!quiet) setResult(null)
     try {
@@ -106,14 +103,14 @@ export default function AuditStatusLookup() {
         return null
       }
       if (!response.ok) {
-        const failed = { error: body.error || `HTTP ${response.status}` }
+        const failed: StatusResponse = { error: body.error || `HTTP ${response.status}` }
         if (!quiet) setResult(failed)
         return failed
       }
       setResult(body)
       return body
     } catch {
-      const failed = { error: 'Could not reach ProofTTL status service. Try again shortly.' }
+      const failed: StatusResponse = { error: 'Could not reach ProofTTL status service. Try again shortly.' }
       if (!quiet) setResult(failed)
       return failed
     } finally {
@@ -137,7 +134,7 @@ export default function AuditStatusLookup() {
           return
         }
         setResult(body)
-        if (attempt < 3) await new Promise((resolve) => window.setTimeout(resolve, 1500))
+        if (attempt < 3) await new Promise<void>((resolve) => window.setTimeout(resolve, 1500))
       }
       setReturnMessage('Stripe checkout returned successfully. Payment confirmation is still processing; ProofTTL will keep the approved request stored.')
     } finally {
@@ -155,9 +152,7 @@ export default function AuditStatusLookup() {
   }
 
   if (authState === 'checking') return <div className="onboarding-card"><p className="app-kicker">SECURE AUDIT ACCESS</p><h1 className="app-title">Checking your session…</h1><p className="app-copy">Audit requests and payment status require a signed-in ProofTTL account.</p></div>
-
   if (authState === 'signed_out') return <div className="onboarding-card"><p className="app-kicker">SECURE AUDIT ACCESS</p><h1 className="app-title">Sign in to continue.</h1><p className="app-copy">ProofTTL will return you to this exact request after authentication.</p><button className="button button-primary" type="button" onClick={redirectToSignIn}>SIGN IN →</button></div>
-
   if (authState === 'error') return <div className="onboarding-card"><p className="app-kicker">SECURE AUDIT ACCESS</p><h1 className="app-title">Session check unavailable.</h1><p className="app-copy">ProofTTL will not expose audit or payment status unless it can verify your session. Sign in again to retry securely.</p><button className="button button-primary" type="button" onClick={redirectToSignIn}>SIGN IN AGAIN →</button></div>
 
   return (
