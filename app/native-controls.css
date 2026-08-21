@@ -1,0 +1,85 @@
+.native-control-form {
+  gap: 16px !important;
+  background:
+    radial-gradient(circle at 0 0, rgba(34, 211, 238, .055), transparent 34%),
+    linear-gradient(180deg, rgba(19, 28, 42, .96), rgba(13, 20, 31, .98));
+}
+
+.native-control-form .app-kicker {
+  margin-bottom: 2px;
+}
+
+.native-control-form input,
+.native-control-form select,
+.native-control-form textarea {
+  min-height: 44px;
+  border: 1px solid rgba(148, 163, 184, .22);
+  background: rgba(4, 10, 17, .72);
+  color: #e8eef6;
+  border-radius: 10px;
+  padding: 11px 13px;
+  font: 13px/1.4 'IBM Plex Sans', sans-serif;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+  color-scheme: dark;
+}
+
+.native-control-form textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.native-control-form input::placeholder,
+.native-control-form textarea::placeholder {
+  color: #64748b;
+}
+
+.native-control-form input:hover,
+.native-control-form select:hover,
+.native-control-form textarea:hover {
+  border-color: rgba(148, 163, 184, .38);
+  background: rgba(7, 14, 23, .86);
+}
+
+.native-control-form input:focus,
+.native-control-form select:focus,
+.native-control-form textarea:focus {
+  border-color: rgba(34, 211, 238, .72);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, .09), 0 12px 28px rgba(0, 0, 0, .18);
+  background: rgba(7, 14, 23, .96);
+}
+
+.native-control-form select {
+  cursor: pointer;
+}
+
+.native-control-row {
+  display: grid;
+  grid-template-columns: minmax(150px, .42fr) minmax(240px, 1fr);
+  gap: 12px;
+}
+
+.native-control-submit {
+  min-height: 46px;
+  margin-top: 2px;
+  border-radius: 10px;
+  letter-spacing: .08em;
+}
+
+.native-control-submit:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.native-policy-note {
+  margin: 0;
+  padding: 13px 14px;
+  border: 1px solid rgba(148, 163, 184, .14);
+  border-radius: 9px;
+  background: rgba(3, 9, 16, .35);
+}
+
+@media (max-width: 680px) {
+  .native-control-row {
+    grid-template-columns: 1fr;
+  }
+}
