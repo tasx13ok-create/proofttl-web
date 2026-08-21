@@ -18,17 +18,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params
   const intent = getSearchIntent(slug)
 
-  if (!intent) {
-    return { title: 'ProofTTL Solutions' }
-  }
+  if (!intent) return { title: 'Solutions' }
+  const pageTitle = intent.title.replace(/\s*\|\s*ProofTTL\s*$/i, '')
 
   return {
-    title: intent.title,
+    title: pageTitle,
     description: intent.description,
+    alternates: { canonical: `/solutions/${intent.slug}/` },
     robots: { index: true, follow: true },
     openGraph: {
-      title: intent.title,
+      title: `${pageTitle} | ProofTTL`,
       description: intent.description,
+      url: `/solutions/${intent.slug}/`,
       type: 'website',
     },
   }
