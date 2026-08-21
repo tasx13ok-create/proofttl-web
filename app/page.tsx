@@ -55,12 +55,6 @@ export default function Home() {
   }
 
   return <main>
-    <nav className="nav shell" aria-label="Primary navigation">
-      <a className="brand" href="#top"><span className="brand-mark">P</span> PROOF<span className="brand-muted">TTL</span></a>
-      <div className="nav-links"><a href="/audit/">Verification services</a><a href="/audit/sample/">Sample audit</a><a href="#how">How it works</a><a href="/trust.html">Trust</a><a href="#api">API</a><a href="/login">Sign in</a></div>
-      <a className="nav-cta" href="/audit/#audit-intake">Start at $129 <span>↗</span></a>
-    </nav>
-
     <section className="hero shell" id="top">
       <div className="hero-copy">
         <div className="status-line"><span className="pulse" /> CLAIM RISK BEFORE PUBLIC EXPOSURE <span className="status-rule" /> SCOPE BEFORE PAYMENT</div>
@@ -115,7 +109,7 @@ export default function Home() {
       <form className="verify-card" onSubmit={verify} noValidate><label>CLAIM<textarea value={claim} onChange={e => setClaim(e.target.value)} rows={3} maxLength={1000} required /></label><label>SOURCE URL<input value={source} onChange={e => setSource(e.target.value)} inputMode="url" required /></label><label>TRUST WINDOW / SECONDS<input value={ttl} onChange={e => setTtl(e.target.value)} inputMode="numeric" min="60" max={String(MAX_TTL_SECONDS)} required /></label><button className="button button-primary full-button" disabled={loading}>{loading ? 'VERIFYING...' : 'RUN TESTNET VERIFICATION →'}</button>{result && <div className={`result ${result.kind}`} role="status" aria-live="polite"><div><span className="result-dot" />{result.title}</div><pre>{result.body}</pre></div>}</form>
     </section>
 
-    <section className="section shell x402-section"><div className="x402-copy"><p className="eyebrow">TECHNICAL PREVIEW</p><h2>Machine verification stays available.<br /><em>The business offer comes first.</em></h2><p>The current API payment rail remains Base Sepolia testnet USDC via x402. Mainnet remains disabled while paid human-facing services are being productized separately.</p><a className="text-link" href="#api">See API surface <span>↗</span></a></div><div className="payment-grid"><div><span>NETWORK</span><strong>BASE SEPOLIA</strong></div><div><span>UNIT PRICE</span><strong>$0.001</strong></div><div><span>SETTLEMENT ASSET</span><strong>TEST USDC</strong></div><div><span>MAINNET</span><strong>DISABLED</strong></div></div></section>
+    <section className="section shell x402-section"><div className="x402-copy"><p className="eyebrow">TECHNICAL PREVIEW</p><h2>Machine verification stays available.<br /><em>The business offer comes first.</em></h2><p>The current API payment rail remains Base Sepolia testnet USDC via x402. Mainnet remains disabled while paid human-facing services run independently through live Stripe checkout.</p><a className="text-link" href="#api">See API surface <span>↗</span></a></div><div className="payment-grid"><div><span>NETWORK</span><strong>BASE SEPOLIA</strong></div><div><span>UNIT PRICE</span><strong>$0.001</strong></div><div><span>SETTLEMENT ASSET</span><strong>TEST USDC</strong></div><div><span>MAINNET</span><strong>DISABLED</strong></div></div></section>
 
     <section className="section shell architecture" id="api">
       <SectionTitle eyebrow="06 / API" title="The verification machinery is still inspectable.">Developers and technical buyers can verify how the underlying Fact Lease system behaves without making the homepage depend on protocol terminology.</SectionTitle>
@@ -129,6 +123,6 @@ export default function Home() {
 
     <section className="section shell final-cta"><p className="eyebrow">BEFORE YOU PUT THE CLAIM IN FRONT OF THE MARKET</p><h2>Find out what holds up.<br /><em>Start with 3–5 claims.</em></h2><div className="hero-actions"><a className="button button-primary" href="/audit/#audit-intake">Start the $129 Stress Test <span>→</span></a><a className="button button-secondary" href="/audit/">See the $500 Full Audit</a><a className="text-link" href="/audit/sample/">View sample <span>↗</span></a></div></section>
 
-    <footer className="footer shell"><a className="brand" href="#top"><span className="brand-mark">P</span> PROOF<span className="brand-muted">TTL</span></a><span>SOURCE-BACKED CLAIM VERIFICATION BEFORE PUBLIC EXPOSURE.</span><div><a href="/audit/">Services</a><a href="/audit/sample/">Sample</a><a href="/trust.html">Trust</a><a href="#api">API</a><a href="/support">Support</a><a href={GITHUB_URL} target="_blank" rel="noreferrer">GitHub</a></div></footer>
+    <footer className="footer shell"><a className="footer-brand" href="#top" aria-label="ProofTTL home"><img src="/proofttl-lockup.svg" alt="ProofTTL" /></a><span>SOURCE-BACKED CLAIM VERIFICATION BEFORE PUBLIC EXPOSURE.</span><div><a href="/audit/">Services</a><a href="/audit/sample/">Sample</a><a href="/trust.html">Trust</a><a href="#api">API</a><a href="/support">Support</a><a href={GITHUB_URL} target="_blank" rel="noreferrer">GitHub</a></div></footer>
   </main>
 }
