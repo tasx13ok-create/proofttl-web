@@ -7,6 +7,15 @@ export const PROOFTTL_API_URL = (
   'https://proofttl.tasx13ok.workers.dev'
 ).replace(/\/$/, '')
 
+const PROOFTTL_WEB_ORIGIN = (
+  process.env.NEXT_PUBLIC_PROOFTTL_WEB_ORIGIN ||
+  'https://proofttl-web.vercel.app'
+).replace(/\/$/, '')
+
+export const PROOFTTL_AUTH_URL = typeof window !== 'undefined'
+  ? window.location.origin
+  : PROOFTTL_WEB_ORIGIN
+
 export type ProofTTLAuthDiscovery = {
   service: string
   backend: string
@@ -31,7 +40,7 @@ export type ProofTTLAuthDiscovery = {
 }
 
 export const authClient = createAuthClient({
-  baseURL: PROOFTTL_API_URL,
+  baseURL: PROOFTTL_AUTH_URL,
   fetchOptions: {
     credentials: 'include',
   },
