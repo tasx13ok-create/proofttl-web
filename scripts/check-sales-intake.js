@@ -3,6 +3,8 @@ import { readFile } from 'node:fs/promises'
 const home = await readFile('app/page.tsx', 'utf8')
 const auditPage = await readFile('app/audit/page.tsx', 'utf8')
 const intake = await readFile('components/AuditIntakeForm.tsx', 'utf8')
+const status = await readFile('components/AuditStatusLookup.tsx', 'utf8')
+const nav = await readFile('components/ProductNav.tsx', 'utf8')
 
 for (const expected of [
   'Find the claim that breaks',
@@ -52,11 +54,33 @@ for (const expected of [
   'rememberAuthReturn',
   'signInHref',
   "credentials: 'include'",
-  'SIGN-IN REQUIRED TO SUBMIT',
+  "window.location.hash === '#audit-intake'",
+  'onPointerDownCapture={gatePointer}',
+  'onFocusCapture={gateFocus}',
+  'SIGN IN TO START VERIFICATION',
+  'SIGN-IN REQUIRED TO USE AUDIT INTAKE',
   'DRAFT SAVED LOCALLY',
   'SCOPE REVIEW BEFORE PAYMENT',
 ]) {
   if (!intake.includes(expected)) throw new Error(`Audit intake component missing required field/behavior: ${expected}`)
 }
 
-console.log('SUCCESS: ProofTTL authenticated two-tier paid verification funnel with saved drafts and scope-before-payment passed release checks.')
+for (const expected of [
+  'authClient.getSession',
+  "type AuthState = 'checking' | 'signed_in' | 'signed_out' | 'error'",
+  'rememberAuthReturn',
+  'signInHref',
+  "credentials: 'include'",
+  'Session check unavailable.',
+  'pollAfterPayment',
+  'Payment confirmed by Stripe',
+  'Older requests can be claimed automatically',
+]) {
+  if (!status.includes(expected)) throw new Error(`Audit status component missing secure return behavior: ${expected}`)
+}
+if (status.includes(".catch(() => {\n      if (!cancelled) setAuthReady(true)")) throw new Error('Audit status must never fail open when session lookup fails')
+
+if (!nav.includes('Log out / Switch account')) throw new Error('Signed-in navigation must expose Log out / Switch account')
+if (!nav.includes('signInHref(returnTo)')) throw new Error('Account switching must preserve the current return location')
+
+console.log('SUCCESS: ProofTTL authenticated two-tier paid verification funnel passed saved-draft, sign-in-gate, return-to-page, secure-status, and scope-before-payment checks.')

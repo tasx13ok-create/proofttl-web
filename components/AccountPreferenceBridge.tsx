@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { PROOFTTL_API_URL } from '../lib/proofttl-auth'
+import { authClient, PROOFTTL_API_URL } from '../lib/proofttl-auth'
 
 type Preferences = {
   love_voice_enabled?: boolean
@@ -18,21 +18,35 @@ function apply(preferences: Preferences | null) {
 
 export default function AccountPreferenceBridge() {
   useEffect(() => {
-    const controller = new AbortController()
+    let cancelled = false
+    let controller: AbortController | null = null
 
     async function load() {
+      controller?.abort()
+      controller = new AbortController()
       try {
+        const session = await authClient.getSession()
+        if (cancelled || controller.signal.aborted) return
+        if (!session?.data?.user) {
+          apply(null)
+          return
+        }
+
         const response = await fetch(`${PROOFTTL_API_URL}/account/preferences`, {
           credentials: 'include',
           cache: 'no-store',
           signal: controller.signal,
         })
-        if (response.status === 401) { apply(null); return }
+        if (cancelled || controller.signal.aborted) return
+        if (response.status === 401) {
+          apply(null)
+          return
+        }
         if (!response.ok) return
         const body = await response.json().catch(() => ({})) as { preferences?: Preferences }
         apply(body.preferences || null)
       } catch {
-        if (!controller.signal.aborted) apply(null)
+        if (!cancelled && !controller?.signal.aborted) apply(null)
       }
     }
 
@@ -43,9 +57,12 @@ export default function AccountPreferenceBridge() {
     }
 
     void load()
+    window.addEventListener('focus', load)
     window.addEventListener('proofttl-preferences-changed', onChange)
     return () => {
-      controller.abort()
+      cancelled = true
+      controller?.abort()
+      window.removeEventListener('focus', load)
       window.removeEventListener('proofttl-preferences-changed', onChange)
       document.body.classList.remove('pttl-pref-love-voice-off', 'pttl-pref-love-compact')
       delete document.body.dataset.proofttlStudioAutosave

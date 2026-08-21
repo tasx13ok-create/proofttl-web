@@ -95,8 +95,13 @@ export default function ProductNav() {
     return Math.max(0, Math.min(100, Math.round((used / limit) * 100)))
   }, [quota])
 
-  async function signOut() {
-    await authClient.signOut(); setUser(null); setQuota(null); setAccountOpen(false); window.location.assign('/')
+  async function logOutOrSwitchAccount() {
+    const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`
+    try { await authClient.signOut() } catch {}
+    setUser(null)
+    setQuota(null)
+    setAccountOpen(false)
+    window.location.assign(signInHref(returnTo))
   }
 
   return (
@@ -134,7 +139,7 @@ export default function ProductNav() {
                 <div className="product-account-links">
                   <a href="/console/" role="menuitem"><span>Account & security</span><b>↗</b></a>
                   <a href="/connections/" role="menuitem"><span>Connections</span><b>↗</b></a>
-                  <button type="button" role="menuitem" onClick={() => void signOut()}><span>Sign out</span><b>→</b></button>
+                  <button type="button" role="menuitem" onClick={() => void logOutOrSwitchAccount()}><span>Log out / Switch account</span><b>→</b></button>
                 </div>
               </div>
             </div>
