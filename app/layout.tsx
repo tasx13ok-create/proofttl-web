@@ -4,6 +4,7 @@ import ProofTTLChatBar from '../components/ProofTTLChatBar'
 import AccountPreferenceBridge from '../components/AccountPreferenceBridge'
 import ProductNav from '../components/ProductNav'
 import ProtocolNetworkStrip from '../components/ProtocolNetworkStrip'
+import SmoothPageMotion from '../components/SmoothPageMotion'
 import './globals.css'
 import './nav-glass.css'
 import './app-ui.css'
@@ -113,6 +114,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" className="dark">
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+        <SmoothPageMotion />
         <AccountPreferenceBridge />
         <ProtocolNetworkStrip />
         <ProductNav />
