@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import ProofTTLAds from '../components/ProofTTLAds'
 import ProofTTLChatBar from '../components/ProofTTLChatBar'
-import ProofTTLSalesCTA from '../components/ProofTTLSalesCTA'
 import AccountPreferenceBridge from '../components/AccountPreferenceBridge'
 import ProductNav from '../components/ProductNav'
 import ProtocolNetworkStrip from '../components/ProtocolNetworkStrip'
@@ -15,7 +14,6 @@ import './assistant.css'
 import './chat-bar.css'
 import './chat-fullscreen.css'
 import './glass-polish.css'
-import './sales-cta.css'
 import './account-preferences.css'
 import './product-nav.css'
 import './brand-polish.css'
@@ -120,7 +118,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <ProductNav />
         {children}
         <ProofTTLAds />
-        <ProofTTLSalesCTA />
         <ProofTTLChatBar />
       </body>
     </html>
