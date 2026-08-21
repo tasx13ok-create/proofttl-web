@@ -4,6 +4,7 @@ import ProofTTLChatBar from '../components/ProofTTLChatBar'
 import ProofTTLSalesCTA from '../components/ProofTTLSalesCTA'
 import AccountPreferenceBridge from '../components/AccountPreferenceBridge'
 import ProductNav from '../components/ProductNav'
+import ProtocolNetworkStrip from '../components/ProtocolNetworkStrip'
 import './globals.css'
 import './nav-glass.css'
 import './app-ui.css'
@@ -50,7 +51,6 @@ export const metadata: Metadata = {
   publisher: 'ProofTTL',
   category: 'technology',
   generator: 'ProofTTL v1.0.0',
-  alternates: { canonical: '/' },
   robots: {
     index: true,
     follow: true,
@@ -62,24 +62,24 @@ export const metadata: Metadata = {
       'max-video-preview': -1,
     },
   },
-  icons: { icon: '/proofttl-logo.png', apple: '/proofttl-logo.png' },
+  icons: { icon: '/proofttl-mark.svg', shortcut: '/proofttl-mark.svg', apple: '/proofttl-mark.svg' },
   openGraph: {
     title: 'ProofTTL — Source-Backed Claim Verification',
     description: 'Pressure-test high-stakes claims before they cost you money, corrections, or trust.',
     url: '/',
     siteName: 'ProofTTL',
     type: 'website',
-    images: [{ url: '/proofttl-logo-lockup.png', alt: 'ProofTTL' }],
+    images: [{ url: '/proofttl-lockup.svg', alt: 'ProofTTL' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'ProofTTL — Source-Backed Claim Verification',
     description: 'Claim stress tests, verification audits, signed Fact Leases, and source-backed evidence.',
-    images: ['/proofttl-logo-lockup.png'],
+    images: ['/proofttl-lockup.svg'],
   },
 }
 
-export const viewport: Viewport = { colorScheme: 'dark', themeColor: '#0b0f14' }
+export const viewport: Viewport = { colorScheme: 'dark', themeColor: '#070b13' }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const structuredData = {
@@ -90,7 +90,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         '@id': `${SITE_URL}/#organization`,
         name: 'ProofTTL',
         url: SITE_URL,
-        logo: `${SITE_URL}/proofttl-logo.png`,
+        logo: `${SITE_URL}/proofttl-mark.svg`,
         description: 'ProofTTL provides source-backed claim verification and signed Fact Leases.',
       },
       {
@@ -116,12 +116,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <AccountPreferenceBridge />
-        <div className="product-network-strip" data-proofttl-network-banner="testnet">
-          <strong>PROOFTTL v1.0.0 · TESTNET PREVIEW</strong>
-          <span>Protocol settlement: Base Sepolia · Mainnet disabled</span>
-          <span aria-hidden="true">·</span>
-          <a href="/trust/">Trust boundary</a>
-        </div>
+        <ProtocolNetworkStrip />
         <ProductNav />
         {children}
         <ProofTTLAds />
