@@ -72,7 +72,7 @@ export default function AboutProofTTLPage() {
             <article>
               <p className="app-kicker">WHAT THE NAME MEANS</p>
               <h2>TTL means time-to-live for evidence freshness.</h2>
-              <p className="app-copy">In ProofTTL, TTL is the freshness or trust window attached to a source observation. The ProofTTL product name does not refer to formal temporal-logic proof checking, generic token-expiration settings, or a claim that time-to-live itself proves truth.</p>
+              <p className="app-copy">In ProofTTL, TTL is the freshness or trust window attached to a source observation. The ProofTTL product name does not refer to formal temporal-logic proof checking, generic token-TTL or proof-expiration settings, blockchain timestamping services, or a claim that time-to-live itself proves truth.</p>
             </article>
           </section>
 
