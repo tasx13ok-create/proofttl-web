@@ -4,6 +4,7 @@ const root = process.cwd()
 const requiredFiles = [
   'app/page.tsx','app/audit/page.tsx','app/login/page.tsx','components/AuthLoginPanel.tsx','app/console/page.tsx',
   'components/ProductNav.tsx','components/ProtocolNetworkStrip.tsx','app/how-proofttl-works/page.tsx','app/workspace/page.tsx','components/WorkspaceDesktopShell.tsx',
+  'app/foundry/page.tsx','components/FoundryAccessGate.tsx','components/FoundryWorkbench.tsx','lib/foundry-access.ts',
   'public/proofttl-mark.svg','public/proofttl-lockup.svg',
   'app/worlds/page.tsx','components/WorldBuilder.tsx','app/cinematics/page.tsx','app/cinematics-v3.css','components/CinematicsStudio.tsx','components/LocalCinematicPreview.tsx','cinematics/core/Types.ts','cinematics/prompt/PromptParser.ts','cinematics/ai/Types.ts','lib/proofttl-cinematics.ts',
   'components/AssistantRichText.tsx','components/ProofTTLChatBar.tsx','app/trust/page.tsx','components/TrustCenter.tsx',
@@ -21,6 +22,9 @@ const login = read('components/AuthLoginPanel.tsx')
 const guide = read('app/how-proofttl-works/page.tsx')
 const workspacePage = read('app/workspace/page.tsx')
 const workspace = read('components/WorkspaceDesktopShell.tsx')
+const foundryPage = read('app/foundry/page.tsx')
+const foundryGate = read('components/FoundryAccessGate.tsx')
+const foundryAccess = read('lib/foundry-access.ts')
 const worlds = read('components/WorldBuilder.tsx')
 const cinematics = read('components/CinematicsStudio.tsx')
 const cinematicsCss = read('app/cinematics-v3.css')
@@ -43,10 +47,15 @@ const assistant = read('lib/proofttl-assistant.ts')
 const audit = read('app/audit/page.tsx')
 
 const checks = [
-  [layout.includes('<ProtocolNetworkStrip />') && networkStrip.includes('TESTNET PREVIEW') && networkStrip.includes('Mainnet disabled') && networkStrip.includes("'/'") && networkStrip.includes("'/audit/'"), 'technical network truth preserved while commercial routes stay clean'],
+  [layout.includes('<ProtocolNetworkStrip />') && layout.includes("generator: 'ProofTTL v1.0.1'") && networkStrip.includes('PROOFTTL v1.0.1 · TESTNET PREVIEW') && networkStrip.includes('Mainnet disabled') && networkStrip.includes("'/'") && networkStrip.includes("'/audit/'"), 'v1.0.1 metadata and technical network truth stay synchronized while commercial routes stay clean'],
   [layout.includes('<ProductNav />') && nav.includes('/workspace/') && nav.includes('/studio/') && nav.includes('/trust/') && !nav.includes("{ href: '/worlds/', label: 'Worlds' }") && !nav.includes("{ href: '/cinematics/', label: 'Cinematics' }"), 'revenue-focused canonical product navigation'],
   [nav.includes('/work/') && nav.includes('/files/') && nav.includes('/automations/') && nav.includes('/money/') && nav.includes('/connections/'), 'global work/product areas'],
+  [nav.includes("{ href: '/foundry/', label: 'Foundry', ownerOnly: true }") && nav.includes('isFoundryOwnerEmail') && nav.includes('visiblePrimary'), 'Foundry navigation is owner-gated instead of publicly visible'],
+  [foundryPage.includes('FoundryAccessGate') && /Private workspace/i.test(foundryPage) && foundryPage.includes('index: false') && foundryPage.includes('follow: false'), 'Foundry static page exposes only generic private metadata'],
+  [foundryGate.includes("if (access !== 'allowed') return null") && foundryGate.includes('isFoundryOwnerEmail') && foundryGate.includes('window.location.replace'), 'Foundry UI renders nothing before owner session verification and redirects unauthorized visitors'],
+  [foundryAccess.includes('tasx13ok@gmail.com') && foundryAccess.includes('g0f0rth3kil1@gmail.com'), 'Foundry frontend allowlist contains both intended owner accounts'],
   [nav.includes('/proofttl-lockup.svg') && nav.includes('product-brand-lockup-image') && !nav.includes('product-brand-mark') && !nav.includes('product-brand-wordmark'), 'canonical full vector logo lockup in product navigation'],
+  [nav.includes('unlimited?: boolean') && nav.includes("unlimited ? 'Unlimited'"), 'owner unlimited quota state is rendered truthfully'],
   [!home.includes('<nav className="nav shell"') && !home.includes('brand-mark">P') && home.includes('/proofttl-lockup.svg'), 'homepage has one canonical nav and no legacy P branding'],
   [/claim stress test/i.test(home) && home.includes('$129') && home.includes('$500'), 'two-tier commercial offer'],
   [/claim stress test/i.test(audit) && /verification audit/i.test(audit), 'audit offer ladder'],
@@ -69,7 +78,7 @@ const checks = [
   [chat.includes('askProofTTLByVoice') && chat.includes('loveSpeechDataUrl') && chat.includes("type LoveState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'awake'"), 'voice and reactive L.O.V.E. preserved'],
   [trust.includes('/readiness') && /TRUST BOUNDARY/i.test(trust), 'Trust Center remains canonical'],
   [visuals.includes('/assistant/visuals') && visuals.includes('provider_returned_only'), 'grounded visual retrieval'],
-  [tasks.includes('/account/tasks'), 'native account tasks'],
+  [tasks.includes('/account/tasks') && tasks.includes('No tasks yet.') && tasks.includes('RETRY →') && tasks.includes('aria-live'), 'native account tasks have working empty, retry, and status-feedback states'],
   [files.includes('/account/files'), 'native account files'],
   [automations.includes('/account/automations'), 'account automations'],
   [connections.includes('/capabilities') && connections.includes('/readiness') && /SERVER SIDE ONLY/i.test(connections), 'live Connections control plane'],
