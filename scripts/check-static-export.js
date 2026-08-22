@@ -13,7 +13,7 @@ async function expect(file, values, label = file) {
 async function main() {
   for (const file of requiredFiles) { await access(file); console.log(`PASS static export: ${file}`) }
   const packageJson = JSON.parse(await readFile('package.json', 'utf8'))
-  if (packageJson.version !== '1.0.0') throw new Error(`ProofTTL web release version must be 1.0.0, got ${packageJson.version}`)
+  if (packageJson.version !== '1.0.1') throw new Error(`ProofTTL web release version must be 1.0.1, got ${packageJson.version}`)
   if (packageJson.type !== 'module') throw new Error('ProofTTL web package must declare type=module')
 
   const homepage = await expect('out/index.html', ['ProofTTL','Find the claim','Open Workspace','Message L.O.V.E.','Stress-test 3–5 claims'], 'Homepage')
@@ -54,11 +54,11 @@ async function main() {
   await expect('api/auth-proxy.js', ['upstreamCookies','browserCookie','browserLocation','getSetCookie','redirect: \'manual\''], 'OAuth cookie + redirect proxy')
 
   const layout = await readFile('app/layout.tsx', 'utf8')
-  for (const expected of ['<ProofTTLChatBar />','<ProductNav />','<ProtocolNetworkStrip />',"'./brand-polish.css'","'./audit-sales.css'","'./workspace-shell.css'","'./cinematics.css'","'/proofttl-mark.svg'","'/proofttl-lockup.svg'"]) if (!layout.includes(expected)) throw new Error(`Global shell is missing: ${expected}`)
+  for (const expected of ['<ProofTTLChatBar />','<ProductNav />','<ProtocolNetworkStrip />',"'./brand-polish.css'","'./audit-sales.css'","'./workspace-shell.css'","'./cinematics.css'","'/proofttl-mark.svg'","'/proofttl-lockup.svg'","generator: 'ProofTTL v1.0.1'"]) if (!layout.includes(expected)) throw new Error(`Global shell is missing: ${expected}`)
   if (layout.includes('<ProofTTLAssistant />')) throw new Error('Legacy separate voice assistant is mounted')
 
   const networkStrip = await readFile('components/ProtocolNetworkStrip.tsx', 'utf8')
-  for (const expected of ['TESTNET PREVIEW','Mainnet disabled',"'/'","'/audit/'","'/audit/sample/'","'/audit/status/'"]) if (!networkStrip.includes(expected)) throw new Error(`Protocol network strip is missing launch boundary: ${expected}`)
+  for (const expected of ['PROOFTTL v1.0.1 · TESTNET PREVIEW','Mainnet disabled',"'/'","'/audit/'","'/audit/sample/'","'/audit/status/'"]) if (!networkStrip.includes(expected)) throw new Error(`Protocol network strip is missing launch boundary: ${expected}`)
 
   const nav = await readFile('components/ProductNav.tsx', 'utf8')
   for (const expected of ['/workspace/','/studio/','/work/','/files/','/automations/','/money/','/connections/','/trust/','product-brand-lockup','product-brand-lockup-image','/proofttl-lockup.svg','ProofTTL','signInHref']) if (!nav.includes(expected)) throw new Error(`Global navigation is missing: ${expected}`)
@@ -85,7 +85,7 @@ async function main() {
   for (const expected of ['X-Content-Type-Options: nosniff','X-Frame-Options: DENY','Permissions-Policy: camera=(), microphone=(self), geolocation=()']) if (!headers.includes(expected)) throw new Error(`Static headers missing: ${expected}`)
   if (headers.includes('microphone=()')) throw new Error('Static headers disable L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL web v1.0.0 static export passed with first-party auth return flow, protected audit access, launch branding, commercial funnel protection, and hidden render code preserved for later reactivation.')
+  console.log('\nSUCCESS: ProofTTL web v1.0.1 static export passed with first-party auth return flow, protected audit access, launch branding, commercial funnel protection, private Foundry gating, and hidden render code preserved for later reactivation.')
 }
 
 main().catch((error) => { console.error('\nSTATIC EXPORT CHECK FAILED:', error.message || error); process.exitCode = 1 })
