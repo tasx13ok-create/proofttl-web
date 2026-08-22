@@ -1,11 +1,10 @@
 'use client'
 
 import { FormEvent, useEffect, useRef, useState } from 'react'
-import { authClient, PROOFTTL_API_URL, rememberAuthReturn, signInHref } from '../lib/proofttl-auth'
+import { PROOFTTL_API_URL } from '../lib/proofttl-auth'
 
 const AUDIT_STORAGE_KEY = 'proofttl:last-audit-request'
 
-type AuthState = 'checking' | 'signed_in' | 'signed_out' | 'error'
 type StatusResponse = {
   ok?: boolean
   audit_intake_id?: string
@@ -18,17 +17,15 @@ type StatusResponse = {
 }
 
 const labels: Record<string, string> = {
-  received: 'RECEIVED — WAITING FOR SCOPE REVIEW', scoped: 'SCOPED — CHECKOUT NOT YET CREATED',
-  payment_ready: 'SCOPE APPROVED — SECURE CHECKOUT READY', paid: 'PAID — FULFILLMENT IN PROGRESS',
-  fulfilled: 'FULFILLED', cancelled: 'CANCELLED',
-}
-
-function currentReturnTo() {
-  return `${window.location.pathname}${window.location.search}${window.location.hash}`
+  received: 'RECEIVED — WAITING FOR SCOPE REVIEW',
+  scoped: 'SCOPED — CHECKOUT NOT YET CREATED',
+  payment_ready: 'SCOPE APPROVED — SECURE CHECKOUT READY',
+  paid: 'PAID — FULFILLMENT IN PROGRESS',
+  fulfilled: 'FULFILLED',
+  cancelled: 'CANCELLED',
 }
 
 export default function AuditStatusLookup() {
-  const [authState, setAuthState] = useState<AuthState>('checking')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<StatusResponse | null>(null)
   const [requestId, setRequestId] = useState('')
@@ -52,56 +49,26 @@ export default function AuditStatusLookup() {
       else if (params.get('cancelled') === '1') setReturnMessage('Checkout was cancelled. Your approved scope remains stored and can be paid later while checkout is valid.')
     } catch {}
 
-    let cancelled = false
-    void authClient.getSession().then(async (session) => {
-      if (cancelled) return
-      const user = session?.data?.user
-      if (!user) {
-        setAuthState('signed_out')
-        const returnTo = currentReturnTo()
-        rememberAuthReturn(returnTo)
-        window.location.replace(signInHref(returnTo))
-        return
-      }
-
-      const providerEmail = typeof user.email === 'string' ? user.email.trim() : ''
-      const lookupEmail = savedEmail || providerEmail
-      if (providerEmail && !savedEmail) setEmail(providerEmail)
-      setAuthState('signed_in')
-
-      if (queryRequest && !autoCheckedRef.current) {
-        autoCheckedRef.current = true
-        if (paidReturn) await pollAfterPayment(queryRequest, lookupEmail)
-        else await lookup(queryRequest, lookupEmail)
-      }
-    }).catch(() => {
-      if (!cancelled) setAuthState('error')
-    })
-    return () => { cancelled = true }
+    if (queryRequest && savedEmail && !autoCheckedRef.current) {
+      autoCheckedRef.current = true
+      if (paidReturn) void pollAfterPayment(queryRequest, savedEmail)
+      else void lookup(queryRequest, savedEmail)
+    }
     // lookup functions are stable for the lifetime of this mounted page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  function redirectToSignIn() {
-    const returnTo = currentReturnTo()
-    rememberAuthReturn(returnTo)
-    window.location.assign(signInHref(returnTo))
-  }
 
   async function lookup(id: string, mail: string, quiet = false): Promise<StatusResponse | null> {
     if (!quiet) setLoading(true)
     if (!quiet) setResult(null)
     try {
       const response = await fetch(`${PROOFTTL_API_URL}/audit/intake/status`, {
-        method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ audit_intake_id: id.trim(), email: mail.trim() }),
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ audit_intake_id: id.trim(), email: mail.trim().toLowerCase() }),
       })
       const body = await response.json().catch(() => ({})) as StatusResponse
-      if (response.status === 401) {
-        setAuthState('signed_out')
-        redirectToSignIn()
-        return null
-      }
       if (!response.ok) {
         const failed: StatusResponse = { error: body.error || `HTTP ${response.status}` }
         if (!quiet) setResult(failed)
@@ -144,27 +111,19 @@ export default function AuditStatusLookup() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (authState !== 'signed_in') {
-      redirectToSignIn()
-      return
-    }
     await lookup(requestId, email)
   }
-
-  if (authState === 'checking') return <div className="onboarding-card"><p className="app-kicker">SECURE AUDIT ACCESS</p><h1 className="app-title">Checking your session…</h1><p className="app-copy">Audit requests and payment status require a signed-in ProofTTL account.</p></div>
-  if (authState === 'signed_out') return <div className="onboarding-card"><p className="app-kicker">SECURE AUDIT ACCESS</p><h1 className="app-title">Sign in to continue.</h1><p className="app-copy">ProofTTL will return you to this exact request after authentication.</p><button className="button button-primary" type="button" onClick={redirectToSignIn}>SIGN IN →</button></div>
-  if (authState === 'error') return <div className="onboarding-card"><p className="app-kicker">SECURE AUDIT ACCESS</p><h1 className="app-title">Session check unavailable.</h1><p className="app-copy">ProofTTL will not expose audit or payment status unless it can verify your session. Sign in again to retry securely.</p><button className="button button-primary" type="button" onClick={redirectToSignIn}>SIGN IN AGAIN →</button></div>
 
   return (
     <div className="onboarding-card">
       <p className="app-kicker">CHECK YOUR REQUEST</p>
       <h1 className="app-title">Audit status</h1>
-      <p className="app-copy">Your signed-in ProofTTL account controls access to linked audit and payment state. Older requests can be claimed automatically when the sign-in provider email matches the original intake email.</p>
+      <p className="app-copy">No account required. Enter the private request reference and the same contact email used on submission.</p>
       {returnMessage && <p className="app-note" role="status">{returnMessage}</p>}
 
       <form className="app-form" onSubmit={submit} style={{ marginTop: 20 }}>
         <label className="app-input-label">REQUEST REFERENCE<input name="audit_intake_id" required pattern="ati_[a-f0-9]{32}" placeholder="ati_..." value={requestId} onChange={(e) => setRequestId(e.target.value)} /></label>
-        <label className="app-input-label">CONTACT EMAIL <span>USED FOR OLDER UNLINKED REQUESTS</span><input name="email" type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} /></label>
+        <label className="app-input-label">CONTACT EMAIL<input name="email" type="email" required placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} /></label>
         <button className="button button-primary" disabled={loading}>{loading ? 'CHECKING…' : 'CHECK STATUS →'}</button>
       </form>
 
