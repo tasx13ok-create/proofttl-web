@@ -1,5 +1,6 @@
 const AREAS = [
   { href: '/studio/', icon: '⌘', label: 'Studio', state: 'LIVE CORE', description: 'Code, models, projects, terminal-style execution and isolated runner jobs.' },
+  { href: '/foundry/', icon: '◆', label: 'Foundry', state: 'LIVE', description: 'Run persistent business-opportunity tournaments with adversarial scoring, red teams and challenger rounds.' },
   { href: '/work/', icon: '✓', label: 'Work', state: 'NATIVE TASKS', description: 'Tasks now; connected mail, calendar and docs plug into the same surface later.' },
   { href: '/files/', icon: '▤', label: 'Files', state: 'NATIVE', description: 'Account-owned text, code, JSON and project artifacts with connected storage later.' },
   { href: '/automations/', icon: '↻', label: 'Automations', state: 'DEFINITIONS LIVE', description: 'Own recurring rules now. Execution remains locked until real provider adapters exist.' },
@@ -11,6 +12,7 @@ const AREAS = [
 
 const PROMPTS = [
   'Open Studio and help me build a website',
+  'Open Foundry and search for a $1M business',
   'Show my tasks and tell me what matters today',
   'Find the file I was working on',
   'Verify this claim before I publish it',
