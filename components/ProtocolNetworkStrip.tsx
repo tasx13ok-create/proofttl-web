@@ -23,7 +23,7 @@ export default function ProtocolNetworkStrip() {
 
   return (
     <div className="product-network-strip" data-proofttl-network-banner="testnet">
-      <strong>PROOFTTL v1.0.0 · TESTNET PREVIEW</strong>
+      <strong>PROOFTTL v1.0.1 · TESTNET PREVIEW</strong>
       <span>Protocol settlement: Base Sepolia · Mainnet disabled</span>
       <span aria-hidden="true">·</span>
       <a href="/trust/">Trust boundary</a>
