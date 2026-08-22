@@ -1,13 +1,12 @@
 'use client'
 
-import { FormEvent, useEffect, useMemo, useState, type PointerEvent } from 'react'
-import { authClient, PROOFTTL_API_URL, rememberAuthReturn, signInHref } from '../lib/proofttl-auth'
+import { FormEvent, useEffect, useMemo, useState } from 'react'
+import { PROOFTTL_API_URL } from '../lib/proofttl-auth'
 
 const AUDIT_STORAGE_KEY = 'proofttl:last-audit-request'
 const AUDIT_DRAFT_KEY = 'proofttl:audit-draft-v1'
 
 type OfferType = 'stress_test' | 'full_audit'
-type AuthState = 'checking' | 'signed_in' | 'signed_out' | 'error'
 type IntakeResponse = {
   ok?: boolean
   duplicate?: boolean
@@ -16,13 +15,7 @@ type IntakeResponse = {
   next_step?: string
   error?: string
   message?: string
-  offer?: {
-    type?: OfferType
-    name?: string
-    price_usd?: number
-    turnaround?: string
-    upgrade?: { additional_usd?: number; total_usd?: number } | null
-  }
+  offer?: { name?: string; price_usd?: number }
 }
 
 type AuditDraft = {
@@ -54,16 +47,9 @@ function blankDraft(initialOffer: OfferType): AuditDraft {
   }
 }
 
-function auditReturnTo() {
-  if (typeof window === 'undefined') return '/audit/#audit-intake'
-  return `${window.location.pathname}${window.location.search}#audit-intake`
-}
-
 export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { initialOffer?: OfferType }) {
   const [draft, setDraft] = useState<AuditDraft>(() => blankDraft(initialOffer))
   const [draftReady, setDraftReady] = useState(false)
-  const [authState, setAuthState] = useState<AuthState>('checking')
-  const [accountEmail, setAccountEmail] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<IntakeResponse | null>(null)
   const offerType = draft.offer_type
@@ -86,118 +72,32 @@ export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { init
     try { localStorage.setItem(AUDIT_DRAFT_KEY, JSON.stringify(draft)) } catch {}
   }, [draft, draftReady])
 
-  useEffect(() => {
-    let cancelled = false
-    void authClient.getSession().then((session) => {
-      if (cancelled) return
-      const user = session?.data?.user
-      if (!user) {
-        setAuthState('signed_out')
-        return
-      }
-      const sessionEmail = typeof user.email === 'string' ? user.email.trim().toLowerCase() : ''
-      if (!sessionEmail) {
-        setAuthState('error')
-        return
-      }
-      setAccountEmail(sessionEmail)
-      setDraft((current) => ({ ...current, email: sessionEmail }))
-      setAuthState('signed_in')
-    }).catch(() => {
-      if (!cancelled) setAuthState('error')
-    })
-    return () => { cancelled = true }
-  }, [])
-
-  useEffect(() => {
-    if (authState !== 'signed_out') return
-    const redirectIfAuditHash = () => {
-      if (window.location.hash === '#audit-intake') redirectToSignIn()
-    }
-    redirectIfAuditHash()
-    window.addEventListener('hashchange', redirectIfAuditHash)
-    return () => window.removeEventListener('hashchange', redirectIfAuditHash)
-    // redirectToSignIn intentionally captures the current draft on the redirecting render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authState])
-
-  function persistDraft(next = draft) {
-    try { localStorage.setItem(AUDIT_DRAFT_KEY, JSON.stringify(next)) } catch {}
-  }
-
-  function redirectToSignIn() {
-    persistDraft()
-    const returnTo = auditReturnTo()
-    rememberAuthReturn(returnTo)
-    window.location.assign(signInHref(returnTo))
-  }
-
   function update<K extends keyof AuditDraft>(key: K, value: AuditDraft[K]) {
-    if (key === 'email' && authState === 'signed_in') return
     setDraft((current) => ({ ...current, [key]: value }))
     setResult(null)
   }
 
   function chooseOffer(next: OfferType) {
-    const nextDraft: AuditDraft = {
-      ...draft,
+    setDraft((current) => ({
+      ...current,
       offer_type: next,
-      approximate_claims: next === 'stress_test' ? '3-5' : draft.approximate_claims === '3-5' ? '10-15' : draft.approximate_claims,
-    }
-    setDraft(nextDraft)
-    persistDraft(nextDraft)
+      approximate_claims: next === 'stress_test' ? '3-5' : current.approximate_claims === '3-5' ? '10-15' : current.approximate_claims,
+    }))
     setResult(null)
-    if (authState === 'signed_out' || authState === 'error') redirectToSignIn()
-  }
-
-  async function requireSession(): Promise<string | null> {
-    try {
-      const session = await authClient.getSession()
-      const sessionEmail = typeof session?.data?.user?.email === 'string' ? session.data.user.email.trim().toLowerCase() : ''
-      if (session?.data?.user && sessionEmail) {
-        setAuthState('signed_in')
-        setAccountEmail(sessionEmail)
-        setDraft((current) => ({ ...current, email: sessionEmail }))
-        return sessionEmail
-      }
-    } catch {
-      setAuthState('error')
-    }
-    setAuthState('signed_out')
-    redirectToSignIn()
-    return null
-  }
-
-  function gatePointer(event: PointerEvent<HTMLFormElement>) {
-    if (authState !== 'signed_out' && authState !== 'error') return
-    event.preventDefault()
-    redirectToSignIn()
-  }
-
-  function gateFocus() {
-    if (authState === 'signed_out' || authState === 'error') redirectToSignIn()
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (submitting) return
-    setResult(null)
-    persistDraft()
-
-    const verifiedEmail = await requireSession()
-    if (!verifiedEmail) return
-
     setSubmitting(true)
+    setResult(null)
+
     const form = new FormData(event.currentTarget)
+    const email = draft.email.trim().toLowerCase()
     const payload = {
-      offer_type: offerType,
-      email: verifiedEmail,
-      company_or_project: draft.company_or_project,
-      website_url: draft.website_url,
-      claim_scope: draft.claim_scope,
+      ...draft,
+      email,
       approximate_claims: offerType === 'stress_test' ? '3-5' : draft.approximate_claims,
-      why_it_matters: draft.why_it_matters,
-      deadline: draft.deadline,
       company_site: String(form.get('company_site') || ''),
     }
 
@@ -209,11 +109,6 @@ export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { init
         body: JSON.stringify(payload),
       })
       const body = await response.json().catch(() => ({})) as IntakeResponse
-      if (response.status === 401) {
-        setAuthState('signed_out')
-        redirectToSignIn()
-        return
-      }
       if (!response.ok) {
         setResult({ error: body.error || `HTTP ${response.status}`, message: body.message })
       } else {
@@ -222,13 +117,13 @@ export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { init
           try {
             localStorage.setItem(AUDIT_STORAGE_KEY, JSON.stringify({
               audit_intake_id: body.audit_intake_id,
-              email: verifiedEmail,
+              email,
               offer_type: offerType,
               saved_at_ms: Date.now(),
             }))
             localStorage.removeItem(AUDIT_DRAFT_KEY)
           } catch {}
-          setDraft({ ...blankDraft(offerType), email: verifiedEmail })
+          setDraft(blankDraft(offerType))
         }
       }
     } catch {
@@ -243,7 +138,7 @@ export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { init
       <div className="audit-intake-heading-row">
         <div>
           <p className="app-kicker">SUBMIT YOUR CLAIMS</p>
-          <h2 id="audit-intake-heading">Scope first. Sign in before submission.</h2>
+          <h2 id="audit-intake-heading">Scope first. No account required.</h2>
         </div>
         <div className="audit-offer-switch" aria-label="Choose verification offer">
           <button type="button" className={offerType === 'stress_test' ? 'active' : ''} aria-pressed={offerType === 'stress_test'} onClick={() => chooseOffer('stress_test')}>$129 · 3–5 claims</button>
@@ -251,16 +146,13 @@ export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { init
         </div>
       </div>
 
-      <p className="audit-selected-offer"><strong>{offer.label}</strong> · {offer.claims} · {offer.turnaround}. Your draft is saved in this browser. If you are not signed in when you start the form, ProofTTL sends you to sign in and returns you here with the draft restored.</p>
+      <p className="audit-selected-offer"><strong>{offer.label}</strong> · {offer.claims} · {offer.turnaround}. Submit with your email, keep the request reference, and check status without creating an account.</p>
       {offerType === 'stress_test' && <p className="audit-credit-note">Upgrade later for <strong>$371 more</strong>; the first $129 is credited in full.</p>}
-      {authState === 'checking' && <p className="audit-form-footnote">CHECKING PROOFTTL SESSION…</p>}
-      {authState === 'signed_out' && <button className="button button-primary audit-submit-button" type="button" onClick={redirectToSignIn}>SIGN IN TO START VERIFICATION →</button>}
-      {authState === 'error' && <p className="app-note" role="alert"><strong>SESSION CHECK FAILED.</strong> ProofTTL will not accept an audit until your signed-in account and email can be verified. <button type="button" className="text-link" onClick={redirectToSignIn}>SIGN IN AGAIN →</button></p>}
 
-      <form className="audit-clean-form" onSubmit={submit} onPointerDownCapture={gatePointer} onFocusCapture={gateFocus}>
+      <form className="audit-clean-form" onSubmit={submit}>
         <input type="hidden" name="offer_type" value={offerType} />
         <div className="audit-form-grid two">
-          <label>ACCOUNT EMAIL<input name="email" type="email" required maxLength={254} placeholder="Sign in to lock your account email" value={authState === 'signed_in' ? accountEmail : draft.email} onChange={(e) => update('email', e.target.value)} readOnly={authState === 'signed_in'} /></label>
+          <label>CONTACT EMAIL<input name="email" type="email" required maxLength={254} placeholder="you@company.com" value={draft.email} onChange={(e) => update('email', e.target.value)} /></label>
           <label>COMPANY OR PROJECT<input name="company_or_project" required maxLength={160} placeholder="Acme AI" value={draft.company_or_project} onChange={(e) => update('company_or_project', e.target.value)} /></label>
         </div>
         <label>WEBSITE / DOCS URL <span>OPTIONAL</span><input name="website_url" type="url" maxLength={600} placeholder="https://example.com/docs" value={draft.website_url} onChange={(e) => update('website_url', e.target.value)} /></label>
@@ -273,8 +165,8 @@ export default function AuditIntakeForm({ initialOffer = 'stress_test' }: { init
           <label>DEADLINE <span>OPTIONAL</span><textarea name="deadline" maxLength={120} rows={3} value={draft.deadline} onChange={(e) => update('deadline', e.target.value)} placeholder="Friday / before launch / no rush" /></label>
         </div>
         <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}><label>Company site<input name="company_site" tabIndex={-1} autoComplete="off" /></label></div>
-        <button className="button button-primary audit-submit-button" type="submit" disabled={submitting || authState === 'checking'}>{submitting ? 'SUBMITTING…' : `SUBMIT ${offer.label.toUpperCase()} FOR SCOPE REVIEW →`}</button>
-        <p className="audit-form-footnote">SIGN-IN REQUIRED TO USE AUDIT INTAKE · ACCOUNT EMAIL LOCKED TO SIGN-IN · DRAFT SAVED LOCALLY · SCOPE REVIEW BEFORE PAYMENT</p>
+        <button className="button button-primary audit-submit-button" type="submit" disabled={submitting}>{submitting ? 'SUBMITTING…' : `SUBMIT ${offer.label.toUpperCase()} FOR SCOPE REVIEW →`}</button>
+        <p className="audit-form-footnote">NO ACCOUNT REQUIRED · REQUEST REFERENCE + EMAIL PROTECT STATUS LOOKUP · SCOPE REVIEW BEFORE PAYMENT</p>
       </form>
 
       {result?.audit_intake_id && (
