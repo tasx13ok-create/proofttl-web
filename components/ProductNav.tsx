@@ -7,6 +7,7 @@ import { authClient, PROOFTTL_API_URL, signInHref } from '../lib/proofttl-auth'
 const PRIMARY = [
   { href: '/workspace/', label: 'Workspace' },
   { href: '/studio/', label: 'Studio' },
+  { href: '/foundry/', label: 'Foundry' },
   { href: '/work/', label: 'Work' },
   { href: '/files/', label: 'Files' },
   { href: '/automations/', label: 'Automations' },
