@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { authClient, PROOFTTL_API_URL, signInHref } from '../lib/proofttl-auth'
-import { isFoundryOwnerEmail } from '../lib/foundry-access'
 
 const PRIMARY = [
   { href: '/workspace/', label: 'Workspace' },
@@ -41,6 +40,7 @@ export default function ProductNav() {
   const accountRef = useRef<HTMLDivElement | null>(null)
   const [user, setUser] = useState<SessionUser | null>(null)
   const [quota, setQuota] = useState<Quota | null>(null)
+  const [foundryAllowed, setFoundryAllowed] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
   const [accountLoading, setAccountLoading] = useState(true)
   const [signInTarget, setSignInTarget] = useState(pathname || '/')
@@ -54,13 +54,20 @@ export default function ProductNav() {
         const nextUser = (result?.data?.user || null) as SessionUser | null
         if (cancelled) return
         setUser(nextUser)
-        if (!nextUser) { setQuota(null); return }
-        const response = await fetch(`${PROOFTTL_API_URL}/assistant/usage`, { method: 'GET', cache: 'no-store', credentials: 'include' })
-        if (!response.ok) return
-        const data = await response.json() as { quota?: Quota }
-        if (!cancelled) setQuota(data.quota || null)
+        if (!nextUser) { setQuota(null); setFoundryAllowed(false); return }
+
+        const [usageResponse, foundryResponse] = await Promise.all([
+          fetch(`${PROOFTTL_API_URL}/assistant/usage`, { method: 'GET', cache: 'no-store', credentials: 'include' }),
+          fetch(`${PROOFTTL_API_URL}/foundry/runs`, { method: 'GET', cache: 'no-store', credentials: 'include' }),
+        ])
+        if (cancelled) return
+        setFoundryAllowed(foundryResponse.ok)
+        if (usageResponse.ok) {
+          const data = await usageResponse.json() as { quota?: Quota }
+          if (!cancelled) setQuota(data.quota || null)
+        }
       } catch {
-        if (!cancelled) { setUser(null); setQuota(null) }
+        if (!cancelled) { setUser(null); setQuota(null); setFoundryAllowed(false) }
       } finally {
         if (!cancelled) setAccountLoading(false)
       }
@@ -90,8 +97,7 @@ export default function ProductNav() {
     return email ? email.split('@')[0] : 'Account'
   }, [user])
 
-  const owner = useMemo(() => isFoundryOwnerEmail(user?.email), [user])
-  const visiblePrimary = useMemo(() => PRIMARY.filter((item) => !('ownerOnly' in item) || !item.ownerOnly || owner), [owner])
+  const visiblePrimary = useMemo(() => PRIMARY.filter((item) => !('ownerOnly' in item) || !item.ownerOnly || foundryAllowed), [foundryAllowed])
   const initial = useMemo(() => username.trim().charAt(0).toUpperCase() || 'A', [username])
   const unlimited = Boolean(quota?.unlimited)
   const usedPercent = useMemo(() => {
@@ -106,6 +112,7 @@ export default function ProductNav() {
     try { await authClient.signOut() } catch {}
     setUser(null)
     setQuota(null)
+    setFoundryAllowed(false)
     setAccountOpen(false)
     window.location.assign(signInHref(returnTo))
   }
