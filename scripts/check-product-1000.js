@@ -4,7 +4,7 @@ const root = process.cwd()
 const requiredFiles = [
   'app/page.tsx','app/audit/page.tsx','app/login/page.tsx','components/AuthLoginPanel.tsx','app/console/page.tsx',
   'components/ProductNav.tsx','components/ProtocolNetworkStrip.tsx','app/how-proofttl-works/page.tsx','app/workspace/page.tsx','components/WorkspaceDesktopShell.tsx',
-  'app/foundry/page.tsx','components/FoundryAccessGate.tsx','components/FoundryWorkbench.tsx','lib/foundry-access.ts',
+  'app/foundry/page.tsx','components/FoundryAccessGate.tsx','components/FoundryWorkbench.tsx',
   'public/proofttl-mark.svg','public/proofttl-lockup.svg',
   'app/worlds/page.tsx','components/WorldBuilder.tsx','app/cinematics/page.tsx','app/cinematics-v3.css','components/CinematicsStudio.tsx','components/LocalCinematicPreview.tsx','cinematics/core/Types.ts','cinematics/prompt/PromptParser.ts','cinematics/ai/Types.ts','lib/proofttl-cinematics.ts',
   'components/AssistantRichText.tsx','components/ProofTTLChatBar.tsx','app/trust/page.tsx','components/TrustCenter.tsx',
@@ -24,7 +24,6 @@ const workspacePage = read('app/workspace/page.tsx')
 const workspace = read('components/WorkspaceDesktopShell.tsx')
 const foundryPage = read('app/foundry/page.tsx')
 const foundryGate = read('components/FoundryAccessGate.tsx')
-const foundryAccess = read('lib/foundry-access.ts')
 const worlds = read('components/WorldBuilder.tsx')
 const cinematics = read('components/CinematicsStudio.tsx')
 const cinematicsCss = read('app/cinematics-v3.css')
@@ -46,14 +45,16 @@ const runner = read('components/StudioRunnerPanel.tsx')
 const assistant = read('lib/proofttl-assistant.ts')
 const audit = read('app/audit/page.tsx')
 
+const clientPrivacyCorpus = [nav, foundryGate, foundryPage].join('\n')
+
 const checks = [
   [layout.includes('<ProtocolNetworkStrip />') && layout.includes("generator: 'ProofTTL v1.0.1'") && networkStrip.includes('PROOFTTL v1.0.1 · TESTNET PREVIEW') && networkStrip.includes('Mainnet disabled') && networkStrip.includes("'/'") && networkStrip.includes("'/audit/'"), 'v1.0.1 metadata and technical network truth stay synchronized while commercial routes stay clean'],
   [layout.includes('<ProductNav />') && nav.includes('/workspace/') && nav.includes('/studio/') && nav.includes('/trust/') && !nav.includes("{ href: '/worlds/', label: 'Worlds' }") && !nav.includes("{ href: '/cinematics/', label: 'Cinematics' }"), 'revenue-focused canonical product navigation'],
   [nav.includes('/work/') && nav.includes('/files/') && nav.includes('/automations/') && nav.includes('/money/') && nav.includes('/connections/'), 'global work/product areas'],
-  [nav.includes("{ href: '/foundry/', label: 'Foundry', ownerOnly: true }") && nav.includes('isFoundryOwnerEmail') && nav.includes('visiblePrimary'), 'Foundry navigation is owner-gated instead of publicly visible'],
+  [nav.includes("{ href: '/foundry/', label: 'Foundry', ownerOnly: true }") && nav.includes('foundryAllowed') && nav.includes('/foundry/runs') && nav.includes('visiblePrimary'), 'Foundry navigation is authorized by the server instead of a public client allowlist'],
   [foundryPage.includes('FoundryAccessGate') && /Private workspace/i.test(foundryPage) && foundryPage.includes('index: false') && foundryPage.includes('follow: false'), 'Foundry static page exposes only generic private metadata'],
-  [foundryGate.includes("if (access !== 'allowed') return null") && foundryGate.includes('isFoundryOwnerEmail') && foundryGate.includes('window.location.replace'), 'Foundry UI renders nothing before owner session verification and redirects unauthorized visitors'],
-  [foundryAccess.includes('tasx13ok@gmail.com') && foundryAccess.includes('g0f0rth3kil1@gmail.com'), 'Foundry frontend allowlist contains both intended owner accounts'],
+  [foundryGate.includes("if (access !== 'allowed') return null") && foundryGate.includes('/foundry/runs') && foundryGate.includes('response.ok') && foundryGate.includes('window.location.replace'), 'Foundry UI renders nothing before server authorization and redirects unauthorized visitors'],
+  [!clientPrivacyCorpus.includes('tasx13ok@gmail.com') && !clientPrivacyCorpus.includes('g0f0rth3kil1@gmail.com') && !clientPrivacyCorpus.includes('isFoundryOwnerEmail'), 'Foundry owner email addresses are absent from shipped access/navigation source'],
   [nav.includes('/proofttl-lockup.svg') && nav.includes('product-brand-lockup-image') && !nav.includes('product-brand-mark') && !nav.includes('product-brand-wordmark'), 'canonical full vector logo lockup in product navigation'],
   [nav.includes('unlimited?: boolean') && nav.includes("unlimited ? 'Unlimited'"), 'owner unlimited quota state is rendered truthfully'],
   [!home.includes('<nav className="nav shell"') && !home.includes('brand-mark">P') && home.includes('/proofttl-lockup.svg'), 'homepage has one canonical nav and no legacy P branding'],
