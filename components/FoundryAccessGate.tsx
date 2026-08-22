@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { authClient, signInHref } from '../lib/proofttl-auth'
-import { isFoundryOwnerEmail } from '../lib/foundry-access'
+import { PROOFTTL_API_URL, signInHref } from '../lib/proofttl-auth'
 import FoundryWorkbench from './FoundryWorkbench'
 
 type AccessState = 'checking' | 'allowed'
@@ -15,16 +14,17 @@ export default function FoundryAccessGate() {
 
     async function verifyOwner() {
       try {
-        const result = await authClient.getSession()
-        const email = result?.data?.user?.email || null
+        const response = await fetch(`${PROOFTTL_API_URL}/foundry/runs`, {
+          method: 'GET',
+          credentials: 'include',
+          cache: 'no-store',
+        })
         if (cancelled) return
-        if (isFoundryOwnerEmail(email)) {
+        if (response.ok) {
           setAccess('allowed')
           return
         }
-
-        const signedIn = Boolean(result?.data?.user)
-        window.location.replace(signedIn ? '/workspace/' : signInHref('/workspace/'))
+        window.location.replace(response.status === 401 ? signInHref('/workspace/') : '/workspace/')
       } catch {
         if (!cancelled) window.location.replace('/workspace/')
       }
