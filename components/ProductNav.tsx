@@ -3,11 +3,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { authClient, PROOFTTL_API_URL, signInHref } from '../lib/proofttl-auth'
+import { isFoundryOwnerEmail } from '../lib/foundry-access'
 
 const PRIMARY = [
   { href: '/workspace/', label: 'Workspace' },
   { href: '/studio/', label: 'Studio' },
-  { href: '/foundry/', label: 'Foundry' },
+  { href: '/foundry/', label: 'Foundry', ownerOnly: true },
   { href: '/work/', label: 'Work' },
   { href: '/files/', label: 'Files' },
   { href: '/automations/', label: 'Automations' },
@@ -89,6 +90,8 @@ export default function ProductNav() {
     return email ? email.split('@')[0] : 'Account'
   }, [user])
 
+  const owner = useMemo(() => isFoundryOwnerEmail(user?.email), [user])
+  const visiblePrimary = useMemo(() => PRIMARY.filter((item) => !('ownerOnly' in item) || !item.ownerOnly || owner), [owner])
   const initial = useMemo(() => username.trim().charAt(0).toUpperCase() || 'A', [username])
   const usedPercent = useMemo(() => {
     const used = Number(quota?.used); const limit = Number(quota?.limit)
@@ -113,7 +116,7 @@ export default function ProductNav() {
         </a>
 
         <nav className="product-nav-primary" aria-label="Product">
-          {PRIMARY.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}
+          {visiblePrimary.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}
         </nav>
 
         <div className="product-nav-actions">
