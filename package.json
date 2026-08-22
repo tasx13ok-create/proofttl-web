@@ -1,6 +1,6 @@
 {
   "name": "proofttl-web",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Official ProofTTL website for source-backed claim verification, AI fact checking, verification audits, and signed Fact Leases.",
   "homepage": "https://proofttl-web.vercel.app/",
