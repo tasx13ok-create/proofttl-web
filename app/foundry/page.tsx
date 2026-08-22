@@ -1,12 +1,12 @@
-import FoundryWorkbench from '../../components/FoundryWorkbench'
+import FoundryAccessGate from '../../components/FoundryAccessGate'
 import './foundry.css'
 
 export const metadata = {
-  title: 'Foundry — ProofTTL',
-  description: 'Adversarial business opportunity discovery workspace.',
+  title: 'ProofTTL',
+  description: 'Private workspace.',
   robots: { index: false, follow: false },
 }
 
 export default function FoundryPage() {
-  return <FoundryWorkbench />
+  return <FoundryAccessGate />
 }
