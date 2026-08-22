@@ -24,7 +24,7 @@ const SECONDARY = [
 ] as const
 
 type SessionUser = { name?: string | null; email?: string | null; image?: string | null }
-type Quota = { plan?: string; membership_status?: string; limit?: number | null; used?: number | null; remaining?: number | null; reset?: string }
+type Quota = { plan?: string; membership_status?: string; limit?: number | null; used?: number | null; remaining?: number | null; reset?: string; unlimited?: boolean }
 
 function active(pathname: string, href: string) {
   if (href === '/') return pathname === '/'
@@ -93,7 +93,9 @@ export default function ProductNav() {
   const owner = useMemo(() => isFoundryOwnerEmail(user?.email), [user])
   const visiblePrimary = useMemo(() => PRIMARY.filter((item) => !('ownerOnly' in item) || !item.ownerOnly || owner), [owner])
   const initial = useMemo(() => username.trim().charAt(0).toUpperCase() || 'A', [username])
+  const unlimited = Boolean(quota?.unlimited)
   const usedPercent = useMemo(() => {
+    if (quota?.unlimited) return 0
     const used = Number(quota?.used); const limit = Number(quota?.limit)
     if (!Number.isFinite(used) || !Number.isFinite(limit) || limit <= 0) return 0
     return Math.max(0, Math.min(100, Math.round((used / limit) * 100)))
@@ -135,11 +137,11 @@ export default function ProductNav() {
                   <span className="product-account-plan-pill">{prettyPlan(quota?.plan)}</span>
                 </div>
                 <div className="product-account-usage">
-                  <div className="product-account-usage-top"><span>Daily L.O.V.E. usage</span><strong>{usedPercent}%</strong></div>
-                  <div className="product-account-meter" aria-label={`${usedPercent}% of daily limit used`}><span style={{ width: `${usedPercent}%` }} /></div>
-                  <div className="product-account-usage-bottom"><span>{quota?.used ?? 0} used</span><span>{quota?.limit ?? '—'} daily limit</span></div>
+                  <div className="product-account-usage-top"><span>Daily L.O.V.E. usage</span><strong>{unlimited ? 'Unlimited' : `${usedPercent}%`}</strong></div>
+                  <div className="product-account-meter" aria-label={unlimited ? 'Unlimited daily L.O.V.E. usage' : `${usedPercent}% of daily limit used`}><span style={{ width: `${usedPercent}%` }} /></div>
+                  <div className="product-account-usage-bottom"><span>{quota?.used ?? 0} used</span><span>{unlimited ? 'Unlimited' : `${quota?.limit ?? '—'} daily limit`}</span></div>
                 </div>
-                <div className="product-account-grid"><div><span>Remaining</span><strong>{quota?.remaining ?? '—'}</strong></div><div><span>Status</span><strong>{quota?.membership_status || 'active'}</strong></div></div>
+                <div className="product-account-grid"><div><span>Remaining</span><strong>{unlimited ? 'Unlimited' : (quota?.remaining ?? '—')}</strong></div><div><span>Status</span><strong>{quota?.membership_status || 'active'}</strong></div></div>
                 <div className="product-account-links">
                   <a href="/console/" role="menuitem"><span>Account & security</span><b>↗</b></a>
                   <a href="/connections/" role="menuitem"><span>Connections</span><b>↗</b></a>
