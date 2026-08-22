@@ -69,7 +69,7 @@ export const metadata: Metadata = {
   creator: 'ProofTTL',
   publisher: 'ProofTTL',
   category: 'claim verification and fact checking',
-  generator: 'ProofTTL v1.0.0',
+  generator: 'ProofTTL v1.0.1',
   robots: {
     index: true,
     follow: true,
