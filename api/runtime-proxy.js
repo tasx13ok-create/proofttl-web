@@ -8,6 +8,7 @@ const ALLOWED_PATHS = [
   /^capabilities$/,
   /^assistant\/(?:text|voice|speech|usage|models|visuals)$/,
   /^studio\/(?:chat|run|runner|projects(?:\/[a-z0-9_-]+)?)$/i,
+  /^foundry\/runs(?:\/fdr_[a-f0-9]{32}(?:\/step)?)?$/i,
   /^lease\/ftl_[a-f0-9]{16,64}$/i,
   /^audit\/intake(?:\/status)?$/,
 ]
