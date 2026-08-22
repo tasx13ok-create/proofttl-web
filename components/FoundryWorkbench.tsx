@@ -57,6 +57,12 @@ type RunDetail = { run: RunSummary; candidates: Candidate[]; evidence?: Evidence
 
 const DEFAULT_OBJECTIVE = 'Find the strongest legal, realistically bootstrap-able business opportunity available in 2026 with a credible path to $1M+ annual revenue. Search broadly. Favor painful recurring problems, existing spend, strong distribution, high margins, automation potential, and a structural asymmetry that exists now. Do not assume ProofTTL is the answer.'
 
+function accessError(status: number, fallback?: string) {
+  if (status === 401) return 'Sign in with an authorized ProofTTL owner account to use Foundry.'
+  if (status === 403) return 'Foundry is restricted to authorized owner accounts.'
+  return fallback || `HTTP ${status}`
+}
+
 export default function FoundryWorkbench() {
   const [objective, setObjective] = useState(DEFAULT_OBJECTIVE)
   const [maxRounds, setMaxRounds] = useState(5)
@@ -68,9 +74,8 @@ export default function FoundryWorkbench() {
 
   const loadRuns = useCallback(async () => {
     const response = await fetch(`${API_URL}/foundry/runs`, { credentials: 'include', cache: 'no-store' })
-    if (response.status === 401) { setMessage('Sign in to ProofTTL to use Foundry.'); return }
-    const body = await response.json().catch(() => ({})) as { runs?: RunSummary[]; error?: string }
-    if (!response.ok) throw new Error(body.error || `HTTP ${response.status}`)
+    const body = await response.json().catch(() => ({})) as { runs?: RunSummary[]; error?: string; message?: string }
+    if (!response.ok) { setRuns([]); setDetail(null); throw new Error(accessError(response.status, body.message || body.error)) }
     const next = Array.isArray(body.runs) ? body.runs : []
     setRuns(next)
     if (!selectedId && next[0]?.run_id) setSelectedId(next[0].run_id)
@@ -78,13 +83,13 @@ export default function FoundryWorkbench() {
 
   const loadDetail = useCallback(async (runId: string) => {
     const response = await fetch(`${API_URL}/foundry/runs/${runId}`, { credentials: 'include', cache: 'no-store' })
-    const body = await response.json().catch(() => ({})) as RunDetail & { error?: string }
-    if (!response.ok) throw new Error(body.error || `HTTP ${response.status}`)
+    const body = await response.json().catch(() => ({})) as RunDetail & { error?: string; message?: string }
+    if (!response.ok) throw new Error(accessError(response.status, body.message || body.error))
     setDetail(body)
   }, [])
 
   useEffect(() => { void loadRuns().catch((error) => setMessage(error instanceof Error ? error.message : 'Could not load Foundry.')) }, [loadRuns])
-  useEffect(() => { if (selectedId) void loadDetail(selectedId).catch(() => {}) }, [selectedId, loadDetail])
+  useEffect(() => { if (selectedId) void loadDetail(selectedId).catch((error) => setMessage(error instanceof Error ? error.message : 'Could not load Foundry run.')) }, [selectedId, loadDetail])
   useEffect(() => {
     if (!selectedId) return
     const timer = window.setInterval(() => {
@@ -104,10 +109,9 @@ export default function FoundryWorkbench() {
         body: JSON.stringify({ objective: objective.trim(), max_rounds: maxRounds })
       })
       const body = await response.json().catch(() => ({})) as { run?: RunSummary; error?: string; message?: string }
-      if (response.status === 401) { window.location.assign('/login/'); return }
-      if (!response.ok || !body.run) throw new Error(body.message || body.error || `HTTP ${response.status}`)
+      if (!response.ok || !body.run) throw new Error(accessError(response.status, body.message || body.error))
       setSelectedId(body.run.run_id)
-      setMessage('Run created. Live signal research runs first; the backend scheduler keeps advancing it automatically.')
+      setMessage('Run created. Foundry must clear its live-evidence floor before candidate generation; the backend scheduler advances it automatically.')
       await loadRuns(); await loadDetail(body.run.run_id)
     } catch (error) { setMessage(error instanceof Error ? error.message : 'Could not create run.') }
     finally { setBusy(false) }
@@ -118,8 +122,8 @@ export default function FoundryWorkbench() {
     setBusy(true); setMessage('Running one Foundry stage…')
     try {
       const response = await fetch(`${API_URL}/foundry/runs/${selectedId}/step`, { method: 'POST', credentials: 'include' })
-      const body = await response.json().catch(() => ({})) as RunDetail & { error?: string }
-      if (!response.ok) throw new Error(body.error || `HTTP ${response.status}`)
+      const body = await response.json().catch(() => ({})) as RunDetail & { error?: string; detail?: string; message?: string }
+      if (!response.ok) throw new Error(accessError(response.status, body.detail || body.message || body.error))
       setDetail(body); setMessage('Stage completed and persisted.'); await loadRuns()
     } catch (error) { setMessage(error instanceof Error ? error.message : 'Foundry stage failed.') }
     finally { setBusy(false) }
@@ -139,17 +143,17 @@ export default function FoundryWorkbench() {
     <main className="foundry-shell">
       <header className="foundry-topbar">
         <a className="foundry-brand" href="/workspace/">PROOFTTL</a>
-        <div><span>FOUNDRY</span><small>adversarial opportunity search</small></div>
+        <div><span>FOUNDRY</span><small>owner-only adversarial opportunity search</small></div>
         <a href="/workspace/">Workspace</a>
       </header>
 
       <section className="foundry-hero">
         <div>
-          <p className="foundry-kicker">BUSINESS DISCOVERY ENGINE</p>
+          <p className="foundry-kicker">EVIDENCE-GATED BUSINESS DISCOVERY ENGINE</p>
           <h1>Make ideas fight for survival.</h1>
-          <p>Foundry collects live public market signals, generates independent candidates, attacks them, kills weak ones, and continuously spawns challengers. Evidence stays inspectable instead of being hidden behind a confidence score.</p>
+          <p>Foundry researches live public market signals, refuses to invent support when evidence is weak, generates evidence-linked candidates, attacks them, kills weak ones, and refreshes research as challengers enter the tournament.</p>
         </div>
-        <div className="foundry-live"><span className="foundry-dot" /> LIVE SIGNALS · PERSISTENT RUNS</div>
+        <div className="foundry-live"><span className="foundry-dot" /> OWNER ACCESS · PERSISTENT RUNS</div>
       </section>
 
       <section className="foundry-grid">
@@ -168,7 +172,7 @@ export default function FoundryWorkbench() {
           <div className="foundry-card">
             <div className="foundry-label">RUNS</div>
             <div className="foundry-run-list">
-              {runs.length === 0 && <p className="foundry-muted">No runs yet.</p>}
+              {runs.length === 0 && <p className="foundry-muted">No accessible runs yet.</p>}
               {runs.map((run) => <button key={run.run_id} className={selectedId === run.run_id ? 'selected' : ''} onClick={() => setSelectedId(run.run_id)}>
                 <strong>{run.objective.slice(0, 58)}{run.objective.length > 58 ? '…' : ''}</strong>
                 <span>{run.status} · {run.stage} · r{run.rounds_completed}/{run.max_rounds}</span>
@@ -178,7 +182,7 @@ export default function FoundryWorkbench() {
         </aside>
 
         <section className="foundry-main">
-          {!detail && <div className="foundry-card foundry-empty"><h2>Create the first run.</h2><p>The database stays empty until real stages execute and persist their work.</p></div>}
+          {!detail && <div className="foundry-card foundry-empty"><h2>Owner-only research workspace.</h2><p>Runs stay empty until live research and persisted stages actually execute.</p></div>}
           {detail && <>
             <div className="foundry-stats">
               <Stat label="STATUS" value={detail.run.status.toUpperCase()} />
@@ -188,6 +192,8 @@ export default function FoundryWorkbench() {
               <Stat label="ACTIVE" value={String(active.length)} />
               <Stat label="REJECTED" value={String(rejected.length)} />
             </div>
+
+            {detail.run.status === 'blocked' && <div className="foundry-card foundry-attack"><strong>RUN BLOCKED</strong><p>Foundry stopped because a required evidence or integrity condition was not met. It did not manufacture a result to keep the run moving. Start a fresh run after the underlying research/configuration issue is corrected.</p></div>}
 
             <div className="foundry-card foundry-objective">
               <div><span className="foundry-label">OBJECTIVE</span><p>{detail.run.objective}</p></div>
@@ -231,8 +237,8 @@ export default function FoundryWorkbench() {
             </div>
 
             <div className="foundry-card foundry-ledger">
-              <div className="foundry-ledger-head"><div><div className="foundry-label">LIVE SIGNAL LEDGER</div><p>These are inputs, not automatic proof. Open the source before treating a signal as a market fact.</p></div><strong>{evidence.length}</strong></div>
-              {evidence.length === 0 ? <p className="foundry-muted">No live signals have been persisted for this run yet.</p> : <div className="foundry-evidence-grid foundry-evidence-ledger">{evidence.map((item) => <EvidenceCard key={item.evidence_id} item={item} />)}</div>}
+              <div className="foundry-ledger-head"><div><div className="foundry-label">LIVE SIGNAL LEDGER</div><p>These are inspectable inputs, not automatic proof of demand, pricing, or market size. Open the source before treating a signal as a market fact.</p></div><strong>{evidence.length}</strong></div>
+              {evidence.length === 0 ? <p className="foundry-muted">No usable live signals have been persisted for this run. Foundry will not label candidates evidence-backed while this remains empty.</p> : <div className="foundry-evidence-grid foundry-evidence-ledger">{evidence.map((item) => <EvidenceCard key={item.evidence_id} item={item} />)}</div>}
             </div>
           </>}
           {message && <div className="foundry-message">{message}</div>}
