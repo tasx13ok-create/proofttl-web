@@ -60,13 +60,95 @@ $vercelPattern = '(?ms)^Ensure-VercelLogin\r?\nEnsure-VercelProject\r?\n\$webUrl
 if (-not [regex]::IsMatch($patched, $vercelPattern)) {
   throw 'Could not locate the Vercel bootstrap stage. The bootstrap changed unexpectedly; refusing to guess.'
 }
+
 $vercelReplacement = @'
 $previousErrorActionPreference = $ErrorActionPreference
 $ErrorActionPreference = 'Continue'
 try {
   Ensure-VercelLogin
   Ensure-VercelProject
+
+  Write-Step 'Normalizing Vercel project routing/build settings'
+  & npx --yes vercel@latest project update $VercelProject --framework nextjs --auto-detect build-command --auto-detect install-command --auto-detect output-directory --scope $VercelScope
+  Assert-LastExit 'Vercel project settings normalization'
+
   $webUrl = Deploy-Vercel $workerUrl $secrets
+  $stableWebUrl = "https://$VercelProject.vercel.app"
+
+  Write-Step 'Verifying public Vercel routes'
+  $routeOk = $false
+  $lastStatus = $null
+  for ($attempt = 1; $attempt -le 8; $attempt++) {
+    try {
+      $probe = Invoke-WebRequest -Uri "$stableWebUrl/login" -Method Get -UseBasicParsing -MaximumRedirection 5 -TimeoutSec 30
+      $lastStatus = [int]$probe.StatusCode
+      if ($lastStatus -ge 200 -and $lastStatus -lt 400) { $routeOk = $true; break }
+    } catch {
+      try { $lastStatus = [int]$_.Exception.Response.StatusCode.value__ } catch { $lastStatus = $null }
+    }
+    Start-Sleep -Seconds 2
+  }
+
+  if (-not $routeOk) {
+    Write-Host "Stable alias did not answer yet (status: $lastStatus). Re-attaching production alias..." -ForegroundColor Yellow
+    & npx --yes vercel@latest alias set $webUrl "$VercelProject.vercel.app" --scope $VercelScope
+    Assert-LastExit 'Vercel production alias repair'
+    Start-Sleep -Seconds 2
+    try {
+      $probe = Invoke-WebRequest -Uri "$stableWebUrl/login" -Method Get -UseBasicParsing -MaximumRedirection 5 -TimeoutSec 30
+      $lastStatus = [int]$probe.StatusCode
+      $routeOk = $lastStatus -ge 200 -and $lastStatus -lt 400
+    } catch {
+      try { $lastStatus = [int]$_.Exception.Response.StatusCode.value__ } catch { $lastStatus = $null }
+    }
+  }
+
+  if (-not $routeOk) {
+    throw "Vercel deployment exists but the production /login route is not live (HTTP $lastStatus). Refusing to report success."
+  }
+
+  Write-Host "Verified live web route: $stableWebUrl/login" -ForegroundColor Green
+  $webUrl = $stableWebUrl
+
+  Write-Step 'Enabling Git-backed live web updates'
+  try {
+    $liveRoot = Join-Path $RepoRoot 'runtime-live'
+    $liveWeb = Join-Path $liveRoot 'web'
+    if (Test-Path -LiteralPath $liveWeb) { Remove-Item -Recurse -Force $liveWeb }
+    New-Item -ItemType Directory -Force -Path $liveRoot | Out-Null
+    Copy-Item -LiteralPath (Join-Path $SourceDir 'web') -Destination $liveWeb -Recurse -Force
+    $vercelJson = '{"$schema":"https://openapi.vercel.sh/vercel.json","framework":"nextjs"}'
+    [IO.File]::WriteAllText((Join-Path $liveWeb 'vercel.json'), $vercelJson, $Utf8NoBom)
+
+    $git = Get-Command git.exe -ErrorAction SilentlyContinue
+    if ($git) {
+      if (-not (Test-Path -LiteralPath (Join-Path $RepoRoot '.git'))) {
+        & $git.Source -C $RepoRoot init | Out-Null
+      }
+      & $git.Source -C $RepoRoot remote get-url origin *> $null
+      if ($LASTEXITCODE -ne 0) {
+        & $git.Source -C $RepoRoot remote add origin 'https://github.com/tasx13ok-create/Edon.git'
+      } else {
+        & $git.Source -C $RepoRoot remote set-url origin 'https://github.com/tasx13ok-create/Edon.git'
+      }
+
+      Push-Location $liveWeb
+      try {
+        & npx --yes vercel@latest link --yes --project $VercelProject --scope $VercelScope
+        Assert-LastExit 'Vercel live-source link'
+        & npx --yes vercel@latest git connect --yes --scope $VercelScope
+        if ($LASTEXITCODE -eq 0) {
+          Write-Host 'Git-backed Vercel updates enabled: future runtime-live/web commits can deploy automatically.' -ForegroundColor Green
+        } else {
+          Write-Warning 'The web app is live, but Vercel Git auto-deploy could not be connected automatically. The local self-updating launcher will still work.'
+        }
+      } finally { Pop-Location }
+    } else {
+      Write-Warning 'Git is not installed, so Vercel Git auto-deploy was skipped. The local self-updating launcher will still work.'
+    }
+  } catch {
+    Write-Warning "Live Git update setup did not complete: $($_.Exception.Message)"
+  }
 } finally {
   $ErrorActionPreference = $previousErrorActionPreference
 }
@@ -97,7 +179,7 @@ try {
     Write-Warning "Could not start transcript logging at $LogPath"
   }
 
-  Write-Host 'Windows compatibility patch active: XZ extraction is Windows-safe, Cloudflare config formatting is preserved, and Vercel npm warnings cannot abort successful CLI commands.' -ForegroundColor Green
+  Write-Host 'Windows compatibility patch active: XZ extraction is Windows-safe, Cloudflare config formatting is preserved, Vercel npm warnings are tolerated, Vercel routes are verified, and Git live-update setup is attempted.' -ForegroundColor Green
   & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $Runtime
   $code = $LASTEXITCODE
   if ($code -ne 0) { throw "Production bootstrap failed with exit code $code." }
