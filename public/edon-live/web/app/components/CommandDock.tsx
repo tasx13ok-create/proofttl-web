@@ -12,6 +12,7 @@ export default function CommandDock(){
     ['CAMERAS','/cameras'],
     ['MEMORY','/memory'],
     ['TASKS','/tasks'],
+    ['EVOLVE','/evolution'],
     ['SYSTEMS','/systems']
   ];
   return <nav className={styles.dock} aria-label="Unified Entity navigation">{items.map(([label,href])=>{
