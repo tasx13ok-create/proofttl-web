@@ -32,6 +32,40 @@ if (-not $verified.Contains($versionMarker)) { throw 'Cloudflare compatibility p
 if (-not $verified.Contains('"global_fetch_strictly_public"')) { throw 'Cloudflare global_fetch_strictly_public compatibility patch did not apply.' }
 Write-Host 'Cloudflare same-zone fetch compatibility enabled without reformatting wrangler.jsonc.' -ForegroundColor Green
 
+# Cloudflare runtime-provided functions can throw "Illegal invocation" when detached from
+# their owning runtime object. The provider classes intentionally accept injectable fetch
+# functions for tests, but the canonical Worker previously passed globalThis.fetch directly
+# and then stored/called it as an object method. Patch the reconstructed Worker before every
+# release so the injected function is an arrow wrapper that always invokes globalThis.fetch
+# with the correct runtime receiver. This remains narrow and fail-closed.
+$workerPath = Join-Path $projectRoot 'cloud\worker.js'
+if (-not (Test-Path -LiteralPath $workerPath -PathType Leaf)) { throw "Missing Cloudflare Worker entrypoint: $workerPath" }
+$workerText = [IO.File]::ReadAllText($workerPath)
+$runtimeFetchMarker = 'const runtimeFetch=(...args)=>globalThis.fetch(...args);'
+if (-not $workerText.Contains($runtimeFetchMarker)) {
+  $classMarker = 'export class EdonState extends DurableObject {'
+  if (-not $workerText.Contains($classMarker)) { throw 'Could not locate EdonState class marker; refusing broad Worker rewrite.' }
+  $workerText = $workerText.Replace($classMarker, $runtimeFetchMarker + [Environment]::NewLine + [Environment]::NewLine + $classMarker)
+}
+$replacements = @(
+  @('new ProviderMesh(this.config)', 'new ProviderMesh(this.config,runtimeFetch)'),
+  @('new EdonAudioProvider(this.config)', 'new EdonAudioProvider(this.config,runtimeFetch)'),
+  @('createConnectors(this.config)', 'createConnectors(this.config,runtimeFetch)')
+)
+foreach ($pair in $replacements) {
+  $old = [string]$pair[0]
+  $new = [string]$pair[1]
+  if ($workerText.Contains($old)) { $workerText = $workerText.Replace($old, $new) }
+  if (-not $workerText.Contains($new)) { throw "Cloudflare runtime fetch safety rewrite missing expected marker: $new" }
+}
+foreach ($pair in $replacements) {
+  if ($workerText.Contains([string]$pair[0])) { throw "Unsafe detached runtime fetch constructor remains after patch: $($pair[0])" }
+}
+[IO.File]::WriteAllText($workerPath, $workerText, $Utf8NoBom)
+$workerVerified = [IO.File]::ReadAllText($workerPath)
+if (-not $workerVerified.Contains($runtimeFetchMarker)) { throw 'Cloudflare runtime fetch wrapper was not persisted.' }
+Write-Host 'Cloudflare runtime fetch binding hardened against Illegal invocation.' -ForegroundColor Green
+
 $liveOverlay = Join-Path $PSScriptRoot 'APPLY-LIVE-PRODUCT.ps1'
 if (-not (Test-Path -LiteralPath $liveOverlay -PathType Leaf)) { throw 'Missing APPLY-LIVE-PRODUCT.ps1 beside the production launcher.' }
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $liveOverlay -SourceDir $projectRoot -RepoRoot $PSScriptRoot
