@@ -24,7 +24,18 @@ jobs:
       - name: Reconstruct and verify production XR source
         run: |
           set -euo pipefail
-          for f in .xr-patch/page-00.b64 .xr-patch/page-01.b64 .xr-patch/page-02.b64 .xr-patch/page-03.b64 .xr-patch/page-04.b64 .xr-patch/renderer-00.b64 .xr-patch/renderer-01.b64 .xr-patch/renderer-02.b64 .xr-patch/renderer-03.b64; do test -f "$f"; done
+          for f in .xr-patch/page-00.b64 .xr-patch/page-01.b64 .xr-patch/page-02.b64 .xr-patch/page-03.b64 .xr-patch/page-04.b64 .xr-patch/renderer-00.b64 .xr-patch/renderer-01a.b64 .xr-patch/renderer-01b.b64 .xr-patch/renderer-01c.b64 .xr-patch/renderer-02.b64 .xr-patch/renderer-03.b64; do test -f "$f"; done
+          test "$(wc -c < .xr-patch/page-00.b64)" -eq 8000
+          test "$(wc -c < .xr-patch/page-01.b64)" -eq 8000
+          test "$(wc -c < .xr-patch/page-02.b64)" -eq 8000
+          test "$(wc -c < .xr-patch/page-03.b64)" -eq 8000
+          test "$(wc -c < .xr-patch/page-04.b64)" -eq 4104
+          test "$(wc -c < .xr-patch/renderer-00.b64)" -eq 6000
+          test "$(wc -c < .xr-patch/renderer-01a.b64)" -eq 2000
+          test "$(wc -c < .xr-patch/renderer-01b.b64)" -eq 2000
+          test "$(wc -c < .xr-patch/renderer-01c.b64)" -eq 2000
+          test "$(wc -c < .xr-patch/renderer-02.b64)" -eq 6000
+          test "$(wc -c < .xr-patch/renderer-03.b64)" -eq 2936
           cat .xr-patch/page-*.b64 | tr -d '\n\r' | base64 --decode > /tmp/edon-ar-page.tsx
           cat .xr-patch/renderer-*.b64 | tr -d '\n\r' | base64 --decode > /tmp/edon-xr-renderer.ts
           test "$(sha256sum /tmp/edon-ar-page.tsx | cut -d' ' -f1)" = "e1b328debe3ee192f77b0122a209ce15ebbbec38605dc0885196cf14106a657a"
