@@ -16,7 +16,7 @@ New-Item -ItemType Directory -Force -Path $liveWeb | Out-Null
 $headers=@{
   'Accept'='application/vnd.github+json'
   'X-GitHub-Api-Version'='2022-11-28'
-  'User-Agent'='EdonLiveProductOverlay/1.1'
+  'User-Agent'='EdonLiveProductOverlay/1.2'
   'Cache-Control'='no-cache'
 }
 $files=@(
@@ -30,7 +30,9 @@ $files=@(
   'app/tasks/page.tsx',
   'app/tasks/tasks.module.css',
   'app/evolution/page.tsx',
-  'app/evolution/evolution.module.css'
+  'app/evolution/evolution.module.css',
+  'app/ar/page.tsx',
+  'app/ar/ar.module.css'
 )
 
 function Fetch-LiveFile([string]$relative){
@@ -60,7 +62,7 @@ foreach($relative in $files){
 $vercelJson='{"$schema":"https://openapi.vercel.sh/vercel.json","framework":"nextjs"}'
 [IO.File]::WriteAllText((Join-Path $liveWeb 'vercel.json'),$vercelJson,$Utf8NoBom)
 
-foreach($required in @('app\page.tsx','app\login\page.tsx','app\systems\page.tsx','app\memory\page.tsx','app\tasks\page.tsx','app\evolution\page.tsx','app\components\CommandDock.tsx')){
+foreach($required in @('app\page.tsx','app\login\page.tsx','app\systems\page.tsx','app\memory\page.tsx','app\tasks\page.tsx','app\evolution\page.tsx','app\ar\page.tsx','app\components\CommandDock.tsx')){
   if(-not (Test-Path -LiteralPath (Join-Path $sourceWeb $required) -PathType Leaf)){throw "Live product overlay missing required route/source: $required"}
 }
 Write-Host 'Authoritative live product overlay applied to reconstructed and runtime-live web sources.' -ForegroundColor Green
