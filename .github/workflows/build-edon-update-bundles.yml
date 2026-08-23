@@ -1,0 +1,117 @@
+name: Build Edon Update Bundles
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'public/edon-live/web/**'
+      - 'public/edon-bootstrap/UPDATE-EDON-V2.ps1'
+      - 'public/edon-bootstrap/RUN-PRODUCTION-BOOTSTRAP.ps1'
+      - 'public/edon-bootstrap/ENSURE-XZ.ps1'
+      - 'public/edon-bootstrap/PATCH-CLOUDFLARE-COMPAT.ps1'
+      - 'public/edon-bootstrap/APPLY-LIVE-PRODUCT.ps1'
+      - 'public/edon-bootstrap/EDON-PC-AGENT.ps1'
+      - 'public/edon-bootstrap/START-EDON-PC.ps1'
+      - 'public/edon-bootstrap/START-EDON-PC.cmd'
+      - 'public/edon-bootstrap/camera-bridge.mjs'
+      - 'public/edon-bootstrap/START-NIGHTOWL-BRIDGE.ps1'
+      - 'public/edon-bootstrap/START-NIGHTOWL-BRIDGE.cmd'
+      - 'public/edon-bootstrap/START-PRODUCTION-BOOTSTRAP.cmd'
+      - '.github/workflows/build-edon-update-bundles.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-edon-update-bundles
+  cancel-in-progress: true
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Build deterministic base64 + SHA-256 bundles
+        env:
+          SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64, hashlib, json, os
+
+          root = Path('.')
+
+          def pack(paths, out_path, kind):
+              files = {}
+              for path in sorted(paths, key=lambda p: p.as_posix()):
+                  data = path.read_bytes()
+                  files[path.name if kind == 'bootstrap' else path.relative_to(root/'public/edon-live/web').as_posix()] = {
+                      'sha256': hashlib.sha256(data).hexdigest(),
+                      'size': len(data),
+                      'contentBase64': base64.b64encode(data).decode('ascii'),
+                  }
+              payload = {
+                  'schema': 'edon-update-bundle-v1',
+                  'kind': kind,
+                  'sourceCommit': os.environ.get('SOURCE_COMMIT',''),
+                  'files': files,
+              }
+              out_path.write_text(json.dumps(payload, sort_keys=True, separators=(',',':')), encoding='utf-8')
+              print(f'{kind}: {len(files)} files -> {out_path}')
+
+          live_root = root/'public/edon-live/web'
+          live = [p for p in live_root.rglob('*') if p.is_file()]
+          pack(live, root/'public/edon-bootstrap/LIVE-PRODUCT-BUNDLE.json', 'live-product')
+
+          bootstrap_root = root/'public/edon-bootstrap'
+          bootstrap_names = [
+              'UPDATE-EDON-V2.ps1',
+              'RUN-PRODUCTION-BOOTSTRAP.ps1',
+              'ENSURE-XZ.ps1',
+              'PATCH-CLOUDFLARE-COMPAT.ps1',
+              'APPLY-LIVE-PRODUCT.ps1',
+              'EDON-PC-AGENT.ps1',
+              'START-EDON-PC.ps1',
+              'START-EDON-PC.cmd',
+              'camera-bridge.mjs',
+              'START-NIGHTOWL-BRIDGE.ps1',
+              'START-NIGHTOWL-BRIDGE.cmd',
+              'START-PRODUCTION-BOOTSTRAP.cmd',
+          ]
+          bootstrap = [bootstrap_root/name for name in bootstrap_names]
+          missing = [str(p) for p in bootstrap if not p.is_file()]
+          if missing:
+              raise SystemExit('Missing bootstrap source files: ' + ', '.join(missing))
+          pack(bootstrap, bootstrap_root/'EDON-BOOTSTRAP-BUNDLE.json', 'bootstrap')
+          PY
+      - name: Validate bundles
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64, hashlib, json
+          for path in [Path('public/edon-bootstrap/LIVE-PRODUCT-BUNDLE.json'),Path('public/edon-bootstrap/EDON-BOOTSTRAP-BUNDLE.json')]:
+              bundle=json.loads(path.read_text())
+              assert bundle['schema']=='edon-update-bundle-v1'
+              assert bundle['files']
+              for name, item in bundle['files'].items():
+                  data=base64.b64decode(item['contentBase64'],validate=True)
+                  assert len(data)==item['size'], name
+                  assert hashlib.sha256(data).hexdigest()==item['sha256'], name
+              print(path, 'PASS', len(bundle['files']))
+          PY
+      - name: Commit changed bundles
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/edon-bootstrap/LIVE-PRODUCT-BUNDLE.json public/edon-bootstrap/EDON-BOOTSTRAP-BUNDLE.json
+          if git diff --cached --quiet; then
+            echo 'Bundles already current.'
+            exit 0
+          fi
+          git commit -m 'Refresh atomic Edon update bundles'
+          git pull --rebase origin main
+          git push
