@@ -6,7 +6,7 @@
   "description": "Official ProofTTL website for source-backed claim verification, AI fact checking, verification audits, and signed Fact Leases.",
   "url": "https://proofttl-web.vercel.app/",
   "codeRepository": "https://github.com/tasx13ok-create/proofttl-web",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "programmingLanguage": ["TypeScript", "JavaScript", "CSS"],
   "keywords": [
     "ProofTTL",
