@@ -16,15 +16,12 @@ if (-not (Test-Path -LiteralPath $bootstrapMarker -PathType Leaf)) {
   throw "Updater v2 must be launched from the Edon bootstrap folder. Current directory: $Root"
 }
 
-$Repo = 'tasx13ok-create/proofttl-web'
-$BasePath = 'public/edon-bootstrap'
 $Headers = @{
   'Accept' = 'application/vnd.github+json'
   'X-GitHub-Api-Version' = '2022-11-28'
-  'User-Agent' = 'EdonBootstrapUpdater/2.0'
+  'User-Agent' = 'EdonBootstrapUpdater/2.1'
   'Cache-Control' = 'no-cache'
 }
-$Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 $Files = @(
   'RUN-PRODUCTION-BOOTSTRAP.ps1',
@@ -44,10 +41,8 @@ function Download-GitHubContentFile {
     [Parameter(Mandatory = $true)][string]$Destination
   )
 
-  $nonce = [guid]::NewGuid().ToString('N')
-  $escapedPath = ($BasePath + '/' + $Name).Split('/') | ForEach-Object { [uri]::EscapeDataString($_) }
-  $apiPath = $escapedPath -join '/'
-  $uri = "https://api.github.com/repos/$Repo/contents/$apiPath?ref=main&cb=$nonce"
+  $escapedName = [uri]::EscapeDataString($Name)
+  $uri = 'https://api.github.com/repos/tasx13ok-create/proofttl-web/contents/public/edon-bootstrap/{0}?ref=main' -f $escapedName
   $response = Invoke-RestMethod -Method Get -Uri $uri -Headers $Headers -UseBasicParsing
   if (-not $response -or $response.type -ne 'file' -or $response.encoding -ne 'base64' -or [string]::IsNullOrWhiteSpace([string]$response.content)) {
     throw "GitHub update payload was invalid for $Name"
