@@ -1,0 +1,34 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import styles from './evolution.module.css';
+
+const API='/api/edon';
+type Json=Record<string,any>;
+const ORDER=['formality','warmth','wit','assertiveness','tempo','curiosity','confidence','protectiveness','patience','emotionalIntensity'];
+const LABELS:Record<string,string>={formality:'Formality',warmth:'Warmth',wit:'Dry wit',assertiveness:'Assertiveness',tempo:'Conversation tempo',curiosity:'Curiosity',confidence:'Confidence',protectiveness:'Protectiveness',patience:'Patience',emotionalIntensity:'Emotional intensity'};
+async function api(path:string,init?:RequestInit){const r=await fetch(`${API}${path}`,{cache:'no-store',...init});const b=await r.json().catch(()=>({}));if(!r.ok)throw new Error(b?.message||b?.error||`${path} ${r.status}`);return b as Json}
+function when(value?:string|null){if(!value)return '—';const n=Date.parse(value);return Number.isFinite(n)?new Date(n).toLocaleString():String(value)}
+
+export default function EvolutionPage(){
+  const [status,setStatus]=useState<Json>({}),[proposals,setProposals]=useState<any[]>([]),[draft,setDraft]=useState<Record<string,number>>({}),[dirty,setDirty]=useState(false),[working,setWorking]=useState(''),[error,setError]=useState('');
+  async function refresh(){try{const [s,p]=await Promise.all([api('/status?conversationId=default'),api('/proposals')]);setStatus(s);setProposals(Array.isArray(p.proposals)?p.proposals:[]);if(!dirty){const core=s?.personality?.core||{};setDraft(Object.fromEntries(ORDER.map(k=>[k,Number(core[k]??0)])))}setError('')}catch(e){setError(e instanceof Error?e.message:String(e))}}
+  useEffect(()=>{void refresh();const id=window.setInterval(()=>void refresh(),8000);return()=>window.clearInterval(id)},[dirty]);
+  const identity=status?.identity||{},core=status?.personality?.core||{},learned=status?.personality?.learned||{},temporary=status?.personality?.temporary||{};
+  const effective=useMemo(()=>Object.fromEntries(ORDER.map(k=>[k,Math.max(0,Math.min(1,Number(draft[k]??core[k]??0)+Number(learned[k]||0)+Number(temporary[k]||0)))])),[draft,core,learned,temporary]);
+  async function save(){setWorking('save');try{const out=await api('/personality',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({core:draft})});const next=out?.personality?.core||draft;setDraft(Object.fromEntries(ORDER.map(k=>[k,Number(next[k]??0)])));setDirty(false);setError('');await refresh()}catch(e){setError(e instanceof Error?e.message:String(e))}finally{setWorking('')}}
+  async function review(id:string,value:'approved'|'rejected'){setWorking(id);try{await api(`/proposals/${id}`,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({status:value})});await refresh()}catch(e){setError(e instanceof Error?e.message:String(e))}finally{setWorking('')}}
+  const openCuriosities=Array.isArray(identity?.curiosity?.questions)?identity.curiosity.questions.filter((q:any)=>q?.status!=='resolved'):[];
+  return <main className={styles.shell}>
+    <header className={styles.header}><div><p>IDENTITY · PERSONALITY · CHANGE LEDGER</p><h1>Evolution stays visible.</h1><span>The entity can learn and adapt, but core personality and proposed self-changes remain inspectable. Proposal approval records your decision; it does not silently execute code.</span></div><div className={styles.identity}><b>{identity?.identity?.name||'EDON'}</b><span>{identity?.identity?.status||'forming'} · {openCuriosities.length} open curiosities</span></div></header>
+    <section className={styles.grid}>
+      <article className={styles.panel}><div className={styles.panelHead}><b>CORE PERSONALITY</b><span>{dirty?'UNSAVED CHANGES':'PERSISTED'}</span></div><div className={styles.sliders}>{ORDER.map(key=>{const value=Number(draft[key]??core[key]??0),delta=Number(learned[key]||0)+Number(temporary[key]||0);return <label key={key}><div><span>{LABELS[key]}</span><b>{Math.round(value*100)}</b><small>{delta===0?'no adaptive delta':`${delta>0?'+':''}${Math.round(delta*100)} adaptive`}</small></div><input type="range" min="0" max="1" step="0.01" value={value} onChange={e=>{setDraft(cur=>({...cur,[key]:Number(e.target.value)}));setDirty(true)}}/><div className={styles.effective}><i style={{width:`${Number(effective[key]||0)*100}%`}}/><span>effective {Math.round(Number(effective[key]||0)*100)}</span></div></label>})}</div><div className={styles.saveBar}><button onClick={()=>void save()} disabled={!dirty||working==='save'}>{working==='save'?'SAVING…':'SAVE CORE PERSONALITY'}</button><button onClick={()=>{setDraft(Object.fromEntries(ORDER.map(k=>[k,Number(core[k]??0)])));setDirty(false)}} disabled={!dirty}>DISCARD</button></div></article>
+      <aside className={styles.side}>
+        <article className={styles.panel}><div className={styles.panelHead}><b>CURRENT SELF STATE</b></div><div className={styles.state}><div><span>Attention</span><b>{identity?.attention?.primaryFocus||'none reported'}</b></div><div><span>Narrative</span><b>{identity?.narrative?.currentArc||'forming continuity'}</b></div><div><span>Cognitive cycles</span><b>{identity?.cognition?.cycles??0}</b></div><div><span>Prediction error</span><b>{Number(identity?.cognition?.predictive?.predictionError||0).toFixed(2)}</b></div><div><span>Belief revisions</span><b>{identity?.metacognition?.revisionCount??0}</b></div></div></article>
+        <article className={styles.panel}><div className={styles.panelHead}><b>TOP CURIOSITIES</b></div><div className={styles.curiosities}>{openCuriosities.slice(0,8).map((q:any,i:number)=><div key={q?.id||i}><span>{q?.question||'Untitled curiosity'}</span><b>{Math.round(Number(q?.salience||0)*100)}%</b></div>)}{!openCuriosities.length?<p>No unresolved curiosity is currently reported.</p>:null}</div></article>
+      </aside>
+    </section>
+    <section className={styles.panel}><div className={styles.panelHead}><b>SELF-CHANGE PROPOSAL LEDGER</b><span>{proposals.filter(p=>p.status==='proposed').length} AWAITING REVIEW</span></div><div className={styles.proposals}>{proposals.length?proposals.map((p:any)=><article key={p.id}><div className={styles.proposalTop}><span className={styles[p.risk]||styles.medium}>{String(p.risk||'medium').toUpperCase()}</span><b>{p.title}</b><em>{String(p.status||'proposed').toUpperCase()}</em></div><p>{p.rationale}</p><small>{when(p.created_at||p.createdAt)} · patch preview {JSON.stringify(p.patch||{}).slice(0,260)}</small>{p.status==='proposed'?<div className={styles.review}><button onClick={()=>void review(p.id,'approved')} disabled={working===p.id}>APPROVE LEDGER</button><button onClick={()=>void review(p.id,'rejected')} disabled={working===p.id}>REJECT</button></div>:null}</article>):<p className={styles.empty}>No self-change proposals have been recorded.</p>}</div></section>
+    {error?<div className={styles.error}>{error}</div>:null}
+  </main>;
+}
