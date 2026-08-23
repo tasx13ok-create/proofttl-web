@@ -16,50 +16,51 @@ New-Item -ItemType Directory -Force -Path $liveWeb | Out-Null
 $headers=@{
   'Accept'='application/vnd.github+json'
   'X-GitHub-Api-Version'='2022-11-28'
-  'User-Agent'='EdonLiveProductOverlay/1.4'
+  'User-Agent'='EdonLiveProductOverlay/2.0'
   'Cache-Control'='no-cache'
 }
-$files=@(
-  'next.config.ts',
-  'app/layout.tsx',
-  'app/components/CommandDock.tsx',
-  'app/components/CommandDock.module.css',
-  'app/systems/page.tsx',
-  'app/systems/systems.module.css',
-  'app/cognition/page.tsx',
-  'app/cognition/cognition.module.css',
-  'app/memory/page.tsx',
-  'app/memory/memory.module.css',
-  'app/tasks/page.tsx',
-  'app/tasks/tasks.module.css',
-  'app/evolution/page.tsx',
-  'app/evolution/evolution.module.css',
-  'app/ar/page.tsx',
-  'app/ar/ar.module.css'
-)
 
-function Fetch-LiveFile([string]$relative){
-  $segments=$relative -split '/'
-  $escaped=($segments|ForEach-Object{[uri]::EscapeDataString($_)}) -join '/'
-  $uri="https://api.github.com/repos/tasx13ok-create/proofttl-web/contents/public/edon-live/web/$escaped`?ref=main"
-  $response=Invoke-RestMethod -Method Get -Uri $uri -Headers $headers -UseBasicParsing
-  if(-not $response -or $response.type -ne 'file' -or $response.encoding -ne 'base64' -or [string]::IsNullOrWhiteSpace([string]$response.content)){
-    throw "Invalid live product payload for $relative"
-  }
-  $bytes=[Convert]::FromBase64String((([string]$response.content)-replace '\s',''))
-  if($bytes.Length -lt 16){throw "Live product payload is unexpectedly small for $relative"}
-  return @{Bytes=$bytes;Sha=[string]$response.sha}
+function Hex-Sha256([byte[]]$bytes){
+  $sha=[Security.Cryptography.SHA256]::Create()
+  try{return ([BitConverter]::ToString($sha.ComputeHash($bytes))).Replace('-','').ToLowerInvariant()}
+  finally{$sha.Dispose()}
 }
 
-foreach($relative in $files){
-  $payload=Fetch-LiveFile $relative
+function Get-LiveBundle {
+  $nonce=[guid]::NewGuid().ToString('N')
+  $api="https://api.github.com/repos/tasx13ok-create/proofttl-web/contents/public/edon-bootstrap/LIVE-PRODUCT-BUNDLE.json?ref=main&cb=$nonce"
+  try{
+    $response=Invoke-RestMethod -Method Get -Uri $api -Headers $headers -UseBasicParsing
+    if($response.type -ne 'file' -or $response.encoding -ne 'base64' -or [string]::IsNullOrWhiteSpace([string]$response.content)){throw 'GitHub bundle payload metadata is invalid.'}
+    $json=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String((([string]$response.content)-replace '\s','')))
+    return $json | ConvertFrom-Json
+  }catch{
+    Write-Warning "GitHub bundle API was unavailable; using the deployed static update mirror. $($_.Exception.Message)"
+    $mirror="https://proofttl-web.vercel.app/edon-bootstrap/LIVE-PRODUCT-BUNDLE.json?cb=$nonce"
+    return Invoke-RestMethod -Method Get -Uri $mirror -Headers @{'Cache-Control'='no-cache';'User-Agent'='EdonLiveProductOverlay/2.0'} -UseBasicParsing
+  }
+}
+
+$bundle=Get-LiveBundle
+if(-not $bundle -or [string]$bundle.schema -ne 'edon-update-bundle-v1' -or [string]$bundle.kind -ne 'live-product'){throw 'Live product bundle schema/kind is invalid.'}
+$entries=@($bundle.files.PSObject.Properties)
+if($entries.Count -lt 10 -or $entries.Count -gt 100){throw "Live product bundle has an unexpected file count: $($entries.Count)"}
+
+foreach($entry in $entries){
+  $relative=[string]$entry.Name
+  $item=$entry.Value
+  if([string]::IsNullOrWhiteSpace($relative) -or $relative.Contains('..') -or [IO.Path]::IsPathRooted($relative) -or $relative -notmatch '^[A-Za-z0-9._/-]+$'){throw "Unsafe live product path in bundle: $relative"}
+  try{$bytes=[Convert]::FromBase64String([string]$item.contentBase64)}catch{throw "Invalid base64 in live product bundle: $relative"}
+  if($bytes.Length -ne [int]$item.size){throw "Live product bundle size mismatch: $relative"}
+  $actual=Hex-Sha256 $bytes
+  if($actual -ne ([string]$item.sha256).ToLowerInvariant()){throw "Live product bundle SHA-256 mismatch: $relative"}
   foreach($root in @($sourceWeb,$liveWeb)){
     $target=Join-Path $root ($relative -replace '/', [IO.Path]::DirectorySeparatorChar)
     $parent=Split-Path -Parent $target
     if(-not (Test-Path -LiteralPath $parent)){New-Item -ItemType Directory -Force -Path $parent | Out-Null}
-    [IO.File]::WriteAllBytes($target,$payload.Bytes)
+    [IO.File]::WriteAllBytes($target,$bytes)
   }
-  Write-Host "  live overlay $relative ($($payload.Sha.Substring(0,8)))"
+  Write-Host "  live overlay $relative ($($actual.Substring(0,8)))"
 }
 
 $vercelJson='{"$schema":"https://openapi.vercel.sh/vercel.json","framework":"nextjs"}'
@@ -68,4 +69,4 @@ $vercelJson='{"$schema":"https://openapi.vercel.sh/vercel.json","framework":"nex
 foreach($required in @('next.config.ts','app\page.tsx','app\login\page.tsx','app\systems\page.tsx','app\cognition\page.tsx','app\memory\page.tsx','app\tasks\page.tsx','app\evolution\page.tsx','app\ar\page.tsx','app\components\CommandDock.tsx')){
   if(-not (Test-Path -LiteralPath (Join-Path $sourceWeb $required) -PathType Leaf)){throw "Live product overlay missing required route/source: $required"}
 }
-Write-Host 'Authoritative live product overlay applied to reconstructed and runtime-live web sources.' -ForegroundColor Green
+Write-Host "Authoritative live product bundle applied ($($entries.Count) files, source $([string]$bundle.sourceCommit).Substring(0,[Math]::Min(8,([string]$bundle.sourceCommit).Length)))." -ForegroundColor Green
