@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 const SITE_URL = 'https://proofttl-web.vercel.app'
 
 export const metadata: Metadata = {
-  title: 'AI Fact Checker — Verify Claims With Sources | ProofTTL',
+  title: 'AI Fact Checker — Verify Claims With Sources',
   description: 'Use ProofTTL as an AI fact checker for high-stakes claims. Verify AI-generated facts against public sources and get SUPPORTED, CONTRADICTED, or UNKNOWN verdicts with evidence.',
   alternates: { canonical: '/ai-fact-checker/' },
   robots: { index: true, follow: true },
