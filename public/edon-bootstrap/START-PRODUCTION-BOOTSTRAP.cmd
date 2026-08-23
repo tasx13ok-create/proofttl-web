@@ -6,10 +6,11 @@ echo.
 
 set "EDON_UPDATE_URL=https://raw.githubusercontent.com/tasx13ok-create/proofttl-web/main/public/edon-bootstrap/UPDATE-EDON.ps1"
 set "EDON_UPDATE_TMP=%TEMP%\edon-bootstrap-update-%RANDOM%-%RANDOM%.ps1"
+set "EDON_ROOT=%~dp0."
 echo Checking for Edon bootstrap updates...
 powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; Invoke-WebRequest -UseBasicParsing -Uri '%EDON_UPDATE_URL%' -OutFile '%EDON_UPDATE_TMP%'"
 if not errorlevel 1 (
-  powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%EDON_UPDATE_TMP%" -Root "%~dp0"
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%EDON_UPDATE_TMP%" -Root "%EDON_ROOT%"
   set "UPDATE_EXIT=%ERRORLEVEL%"
   del /q "%EDON_UPDATE_TMP%" >nul 2>&1
   if not "%UPDATE_EXIT%"=="0" (
