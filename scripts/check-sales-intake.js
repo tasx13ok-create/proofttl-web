@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 
 const homePage = await readFile('app/page.tsx', 'utf8')
-const home = await readFile('components/HomeClient.tsx', 'utf8')
+const home = await readFile('app/HomeClient.tsx', 'utf8')
 const auditPage = await readFile('app/audit/page.tsx', 'utf8')
 const intake = await readFile('components/AuditIntakeForm.tsx', 'utf8')
 const status = await readFile('components/AuditStatusLookup.tsx', 'utf8')
