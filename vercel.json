@@ -40,7 +40,7 @@
     { "source": "/cinematics/:path*", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] }
   ],
   "routes": [
-    { "src": "^/google057072aa15e009ed\\.html$", "dest": "/api/google-site-verification.js" },
+    { "src": "^/google057072aa15e009ed\\.html$", "dest": "/api/google-site-verification" },
     { "src": "^/(workspace|studio|work|files|automations|money|connections)(?:/.*)?$", "headers": { "X-Robots-Tag": "noindex, nofollow" }, "continue": true },
     { "src": "^/api/auth/(?<authpath>.*)$", "dest": "/api/auth-proxy.js?path=$authpath" },
     { "src": "^/api/runtime/(?<runtimepath>.*)$", "dest": "/api/runtime-proxy.js?path=$runtimepath" },
