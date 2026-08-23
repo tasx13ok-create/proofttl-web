@@ -11,6 +11,7 @@ export default function CommandDock(){
     ['VISION','/vision'],
     ['AR','/ar'],
     ['CAMERAS','/cameras'],
+    ['COGNITION','/cognition'],
     ['MEMORY','/memory'],
     ['TASKS','/tasks'],
     ['EVOLVE','/evolution'],
