@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-  [Parameter(Mandatory = $true)]
+  [Parameter(Mandatory = $false)]
   [string]$Root
 )
 
@@ -13,30 +13,31 @@ $Files = @(
   'PATCH-CLOUDFLARE-COMPAT.ps1'
 )
 
-# cmd.exe can hand PowerShell a trailing quote when a quoted argument ends in a
-# backslash (for example "%~dp0"). Normalize that legacy form before resolving
-# the directory. This keeps existing Edon folders self-updatable without another ZIP.
-$candidate = [string]$Root
-$candidate = $candidate.Trim()
-$candidate = $candidate.Trim('"').Trim("'")
-if ($candidate.Length -gt 3) {
-  $candidate = $candidate.TrimEnd([char[]]'\\/')
-}
-if ([string]::IsNullOrWhiteSpace($candidate)) { throw 'Edon root path is empty.' }
-if ($candidate.IndexOfAny([IO.Path]::GetInvalidPathChars()) -ge 0) {
-  throw "Edon root contains invalid path characters after normalization: $candidate"
+# START-PRODUCTION-BOOTSTRAP.cmd always cd's into its own directory before
+# launching this updater. Use that inherited working directory as the source of
+# truth instead of parsing a quoted Windows path argument. This is intentionally
+# independent of -Root so legacy launchers with a malformed trailing quote still
+# recover themselves.
+$workingRoot = (Get-Location).ProviderPath
+if ([string]::IsNullOrWhiteSpace($workingRoot)) { throw 'Could not resolve the Edon working directory.' }
+if (-not (Test-Path -LiteralPath $workingRoot -PathType Container)) { throw "Edon working directory does not exist: $workingRoot" }
+
+# Fail closed if this was somehow launched from the wrong folder.
+$bootstrapMarker = Join-Path $workingRoot 'BOOTSTRAP-PRODUCTION.ps1'
+$launcherMarker = Join-Path $workingRoot 'START-PRODUCTION-BOOTSTRAP.cmd'
+if (-not (Test-Path -LiteralPath $bootstrapMarker -PathType Leaf) -or
+    -not (Test-Path -LiteralPath $launcherMarker -PathType Leaf)) {
+  throw "Updater was not launched from an Edon bootstrap folder: $workingRoot"
 }
 
-$Root = [IO.Path]::GetFullPath($candidate)
-if (-not (Test-Path -LiteralPath $Root -PathType Container)) { throw "Edon root does not exist: $Root" }
-
+$Root = $workingRoot
 $Temp = Join-Path $env:TEMP "edon-bootstrap-update-$PID"
 try {
   New-Item -ItemType Directory -Force -Path $Temp | Out-Null
   foreach ($name in $Files) {
     $uri = "$Base/$name"
     $download = Join-Path $Temp $name
-    Invoke-WebRequest -Uri $uri -OutFile $download -UseBasicParsing
+    Invoke-WebRequest -Uri $uri -OutFile $download -UseBasicParsing -Headers @{ 'Cache-Control' = 'no-cache' }
     if (-not (Test-Path -LiteralPath $download)) { throw "Update download missing: $name" }
     if ((Get-Item -LiteralPath $download).Length -lt 32) { throw "Update download is unexpectedly small: $name" }
   }
