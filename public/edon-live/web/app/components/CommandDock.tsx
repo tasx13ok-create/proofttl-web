@@ -9,6 +9,7 @@ export default function CommandDock(){
   const items=[
     ['ENTITY','/'],
     ['VISION','/vision'],
+    ['AR','/ar'],
     ['CAMERAS','/cameras'],
     ['MEMORY','/memory'],
     ['TASKS','/tasks'],
