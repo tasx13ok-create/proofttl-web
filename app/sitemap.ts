@@ -7,6 +7,7 @@ const SITE_URL = 'https://proofttl-web.vercel.app'
 export const dynamic = 'force-static'
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const generatedAt = new Date()
   const coreRoutes = [
     '/',
     '/about/',
@@ -38,6 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const isTrust = route === '/faq/' || route === '/glossary/' || route === '/trust/' || route === '/how-proofttl-works/' || route === '/privacy/' || route === '/terms/'
     return {
       url: `${SITE_URL}${route}`,
+      lastModified: generatedAt,
       changeFrequency: isHome || isCommercial ? 'daily' : 'weekly',
       priority: isHome ? 1 : isIdentity || isCommercial ? 0.95 : isTrust ? 0.85 : 0.7,
     }
