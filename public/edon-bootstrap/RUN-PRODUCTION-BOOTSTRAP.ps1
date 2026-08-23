@@ -65,17 +65,59 @@ if (-not [regex]::IsMatch($patched, $vercelPattern)) {
 $vercelReplacement = @'
 $previousErrorActionPreference = $ErrorActionPreference
 $ErrorActionPreference = 'Continue'
+$requiredVercelTeamId = 'team_88qIlLlYtsSmNfvRT0Uoa2AN'
+$VercelScope = $requiredVercelTeamId
 try {
   Ensure-VercelLogin
-  Ensure-VercelProject
 
-  Write-Step 'Normalizing Vercel project routing/build settings'
-  & npx --yes vercel@latest project update $VercelProject --framework nextjs --auto-detect build-command --auto-detect install-command --auto-detect output-directory --scope $VercelScope
-  Assert-LastExit 'Vercel project settings normalization'
+  Write-Step "Ensuring Vercel project '$VercelProject' exists in the required team"
+  & npx --yes vercel@latest project inspect $VercelProject --scope $VercelScope *> $null
+  if ($LASTEXITCODE -ne 0) {
+    Write-Host "Creating $VercelProject in team $requiredVercelTeamId..."
+    & npx --yes vercel@latest project add $VercelProject --scope $VercelScope
+    Assert-LastExit 'Vercel project creation'
+  }
+  & npx --yes vercel@latest project inspect $VercelProject --scope $VercelScope
+  Assert-LastExit 'Vercel project verification'
 
-  $webUrl = Deploy-Vercel $workerUrl $secrets
+  $web = Join-Path $SourceDir 'web'
+  $linkedProjectId = $null
+  Push-Location $web
+  try {
+    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue (Join-Path $web '.vercel')
+    & npx --yes vercel@latest link --yes --project $VercelProject --scope $VercelScope
+    Assert-LastExit 'Vercel project link'
+
+    $linkPath = Join-Path $web '.vercel\project.json'
+    if (-not (Test-Path -LiteralPath $linkPath -PathType Leaf)) {
+      throw 'Vercel link reported success but .vercel/project.json was not created.'
+    }
+    $link = Get-Content -Raw -LiteralPath $linkPath | ConvertFrom-Json
+    if ([string]$link.orgId -ne $requiredVercelTeamId) {
+      throw "Vercel linked the web app to the wrong account/team: $($link.orgId)"
+    }
+    $linkedProjectId = [string]$link.projectId
+    if ([string]::IsNullOrWhiteSpace($linkedProjectId) -or -not $linkedProjectId.StartsWith('prj_')) {
+      throw 'Vercel link did not return a valid project ID.'
+    }
+    Write-Host "Verified Vercel team/project link: $requiredVercelTeamId / $linkedProjectId" -ForegroundColor Green
+  } finally { Pop-Location }
+
+  $previousProjectEnv = $env:VERCEL_PROJECT_ID
+  $previousOrgEnv = $env:VERCEL_ORG_ID
+  $env:VERCEL_PROJECT_ID = $linkedProjectId
+  $env:VERCEL_ORG_ID = $requiredVercelTeamId
+  try {
+    $webUrl = Deploy-Vercel $workerUrl $secrets
+  } finally {
+    if ($null -eq $previousProjectEnv) { Remove-Item Env:VERCEL_PROJECT_ID -ErrorAction SilentlyContinue } else { $env:VERCEL_PROJECT_ID = $previousProjectEnv }
+    if ($null -eq $previousOrgEnv) { Remove-Item Env:VERCEL_ORG_ID -ErrorAction SilentlyContinue } else { $env:VERCEL_ORG_ID = $previousOrgEnv }
+  }
+
+  & npx --yes vercel@latest project inspect $VercelProject --scope $VercelScope *> $null
+  Assert-LastExit 'Post-deploy Vercel project verification'
+
   $stableWebUrl = "https://$VercelProject.vercel.app"
-
   Write-Step 'Verifying public Vercel routes'
   $routeOk = $false
   $lastStatus = $null
@@ -182,7 +224,7 @@ try {
     Write-Warning "Could not start transcript logging at $LogPath"
   }
 
-  Write-Host 'Windows compatibility patch active: XZ extraction is Windows-safe, Cloudflare config formatting is preserved, Vercel npm warnings are tolerated, Vercel routes are verified, and Git live-update setup is attempted.' -ForegroundColor Green
+  Write-Host 'Windows compatibility patch active: XZ extraction is Windows-safe, Cloudflare config formatting is preserved, Vercel native warnings are tolerated, the exact Vercel team/project link is verified, live routes are verified, and Git live-update setup is attempted.' -ForegroundColor Green
   & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $Runtime
   $code = $LASTEXITCODE
   if ($code -ne 0) { throw "Production bootstrap failed with exit code $code." }
