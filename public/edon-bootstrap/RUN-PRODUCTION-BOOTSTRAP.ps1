@@ -54,7 +54,8 @@ $replacement = @'
     }
 '@
 
-$patched = [regex]::Replace($text, $pattern, $replacement, 1)
+$replacementLiteral = $replacement
+$patched = [regex]::Replace($text, $pattern, [System.Text.RegularExpressions.MatchEvaluator]{ param($match) $replacementLiteral }, 1)
 
 $vercelPattern = '(?ms)^Ensure-VercelLogin\r?\nEnsure-VercelProject\r?\n\$webUrl = Deploy-Vercel \$workerUrl \$secrets'
 if (-not [regex]::IsMatch($patched, $vercelPattern)) {
@@ -153,7 +154,9 @@ try {
   $ErrorActionPreference = $previousErrorActionPreference
 }
 '@
-$patched = [regex]::Replace($patched, $vercelPattern, $vercelReplacement, 1)
+
+$vercelReplacementLiteral = $vercelReplacement
+$patched = [regex]::Replace($patched, $vercelPattern, [System.Text.RegularExpressions.MatchEvaluator]{ param($match) $vercelReplacementLiteral }, 1)
 
 [IO.File]::WriteAllText($Runtime, $patched, $Utf8NoBom)
 
