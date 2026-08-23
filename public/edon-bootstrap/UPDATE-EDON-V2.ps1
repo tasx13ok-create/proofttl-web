@@ -19,14 +19,20 @@ if (-not (Test-Path -LiteralPath $bootstrapMarker -PathType Leaf)) {
 $Headers = @{
   'Accept' = 'application/vnd.github+json'
   'X-GitHub-Api-Version' = '2022-11-28'
-  'User-Agent' = 'EdonBootstrapUpdater/2.1'
+  'User-Agent' = 'EdonBootstrapUpdater/2.2'
   'Cache-Control' = 'no-cache'
 }
 
 $Files = @(
   'RUN-PRODUCTION-BOOTSTRAP.ps1',
   'ENSURE-XZ.ps1',
-  'PATCH-CLOUDFLARE-COMPAT.ps1'
+  'PATCH-CLOUDFLARE-COMPAT.ps1',
+  'EDON-PC-AGENT.ps1',
+  'START-EDON-PC.ps1',
+  'START-EDON-PC.cmd',
+  'camera-bridge.mjs',
+  'START-NIGHTOWL-BRIDGE.ps1',
+  'START-NIGHTOWL-BRIDGE.cmd'
 )
 if ($InstallLauncher) {
   $Files += 'START-PRODUCTION-BOOTSTRAP.cmd'
@@ -75,7 +81,7 @@ try {
     Copy-Item -LiteralPath $source -Destination $target -Force
   }
 
-  Write-Host "Edon bootstrap scripts are current via update channel v2: $Root" -ForegroundColor Green
+  Write-Host "Edon bootstrap and device launchers are current via update channel v2: $Root" -ForegroundColor Green
   exit 0
 } finally {
   Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $Temp
