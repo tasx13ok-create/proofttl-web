@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises'
 
-const home = await readFile('app/page.tsx', 'utf8')
+const homePage = await readFile('app/page.tsx', 'utf8')
+const home = await readFile('components/HomeClient.tsx', 'utf8')
 const auditPage = await readFile('app/audit/page.tsx', 'utf8')
 const intake = await readFile('components/AuditIntakeForm.tsx', 'utf8')
 const status = await readFile('components/AuditStatusLookup.tsx', 'utf8')
@@ -14,6 +15,13 @@ for (const expected of [
   'SCOPE CONFIRMED BEFORE PAYMENT',
 ]) {
   if (!home.includes(expected)) throw new Error(`Homepage missing required conversion behavior: ${expected}`)
+}
+
+for (const expected of [
+  "alternates: { canonical: '/' }",
+  'HomeClient',
+]) {
+  if (!homePage.includes(expected)) throw new Error(`Homepage metadata wrapper missing required search behavior: ${expected}`)
 }
 
 if (home.includes('<nav className="nav shell"')) throw new Error('Homepage regressed to duplicate local navigation')
@@ -83,4 +91,4 @@ if (status.includes(".catch(() => {\n      if (!cancelled) setAuthReady(true)"))
 if (!nav.includes('Log out / Switch account')) throw new Error('Signed-in navigation must expose Log out / Switch account')
 if (!nav.includes('signInHref(returnTo)')) throw new Error('Account switching must preserve the current return location')
 
-console.log('SUCCESS: ProofTTL authenticated two-tier paid verification funnel passed saved-draft, sign-in-gate, return-to-page, secure-status, and scope-before-payment checks.')
+console.log('SUCCESS: ProofTTL authenticated two-tier paid verification funnel passed saved-draft, sign-in-gate, return-to-page, secure-status, homepage canonical, and scope-before-payment checks.')
