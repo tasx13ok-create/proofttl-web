@@ -1,0 +1,50 @@
+name: Apply Edon XR Production Renderer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.xr-patch/APPLY'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-edon-xr-production
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Reconstruct production XR sources
+        run: |
+          set -euo pipefail
+          test -f .xr-patch/page-00.b64
+          test -f .xr-patch/page-01.b64
+          test -f .xr-patch/page-02.b64
+          test -f .xr-patch/page-03.b64
+          test -f .xr-patch/page-04.b64
+          test -f .xr-patch/xrRenderer.b64
+          cat .xr-patch/page-*.b64 | tr -d '\n\r' | base64 --decode > public/edon-live/web/app/ar/page.tsx
+          tr -d '\n\r' < .xr-patch/xrRenderer.b64 | base64 --decode > public/edon-live/web/app/ar/xrRenderer.ts
+          grep -F "new EdonXrRenderer(gl)" public/edon-live/web/app/ar/page.tsx
+          grep -F "renderer.render(baseLayer,pose" public/edon-live/web/app/ar/page.tsx
+          grep -F "gl.bindFramebuffer(gl.FRAMEBUFFER,baseLayer.framebuffer)" public/edon-live/web/app/ar/xrRenderer.ts
+          grep -F "for(const view of pose.views)" public/edon-live/web/app/ar/xrRenderer.ts
+          grep -F "gl.drawArrays(gl.TRIANGLES,0,6)" public/edon-live/web/app/ar/xrRenderer.ts
+          grep -F "PHONE → PC → PERCEPTION  //  NOT QUEST CAMERA" public/edon-live/web/app/ar/xrRenderer.ts
+      - name: Commit canonical production source
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          rm -rf .xr-patch
+          git add public/edon-live/web/app/ar/page.tsx public/edon-live/web/app/ar/xrRenderer.ts .xr-patch
+          git commit -m 'Render Edon perception directly in Quest WebXR compositor'
+          git pull --rebase origin main
+          git push
