@@ -24,11 +24,13 @@ jobs:
       - name: Reconstruct and verify production XR source
         run: |
           set -euo pipefail
-          for f in .xr-patch/page-00.b64 .xr-patch/page-01.b64 .xr-patch/page-02.b64 .xr-patch/page-03.b64 .xr-patch/page-04.b64; do test -f "$f"; done
+          for f in .xr-patch/page-00.b64 .xr-patch/page-01.b64 .xr-patch/page-02.b64 .xr-patch/page-03.b64 .xr-patch/page-04.b64 .xr-patch/renderer-00.b64 .xr-patch/renderer-01.b64 .xr-patch/renderer-02.b64 .xr-patch/renderer-03.b64; do test -f "$f"; done
           cat .xr-patch/page-*.b64 | tr -d '\n\r' | base64 --decode > /tmp/edon-ar-page.tsx
-          test "$(sha256sum /tmp/edon-ar-page.tsx | cut -d' ' -f1)" = "b8c6a82f154da88acc66c05c255be7dbf7e43476fb9993ae550c46d964eef295"
-          test "$(sha256sum public/edon-live/web/app/ar/xrRenderer.ts | cut -d' ' -f1)" = "15692a2bbf02f4d1e7d72f08b113910631d96680874d393892e862196f539088"
+          cat .xr-patch/renderer-*.b64 | tr -d '\n\r' | base64 --decode > /tmp/edon-xr-renderer.ts
+          test "$(sha256sum /tmp/edon-ar-page.tsx | cut -d' ' -f1)" = "e1b328debe3ee192f77b0122a209ce15ebbbec38605dc0885196cf14106a657a"
+          test "$(sha256sum /tmp/edon-xr-renderer.ts | cut -d' ' -f1)" = "3ae6617d95db4e496334092c897b760aadd5976e1208cc06d2a48f1e34f7f64e"
           mv /tmp/edon-ar-page.tsx public/edon-live/web/app/ar/page.tsx
+          mv /tmp/edon-xr-renderer.ts public/edon-live/web/app/ar/xrRenderer.ts
           grep -F "new EdonXrRenderer(gl)" public/edon-live/web/app/ar/page.tsx
           grep -F "renderer.render(baseLayer,pose" public/edon-live/web/app/ar/page.tsx
           grep -F "gl.bindFramebuffer(gl.FRAMEBUFFER,baseLayer.framebuffer)" public/edon-live/web/app/ar/xrRenderer.ts
