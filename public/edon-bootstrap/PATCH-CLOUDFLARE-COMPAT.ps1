@@ -47,3 +47,12 @@ if (-not $verified.Contains('"global_fetch_strictly_public"')) {
 }
 
 Write-Host 'Cloudflare same-zone fetch compatibility enabled without reformatting wrangler.jsonc.' -ForegroundColor Green
+
+$liveOverlay = Join-Path $PSScriptRoot 'APPLY-LIVE-PRODUCT.ps1'
+if (-not (Test-Path -LiteralPath $liveOverlay -PathType Leaf)) {
+  throw 'Missing APPLY-LIVE-PRODUCT.ps1 beside the production launcher.'
+}
+& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $liveOverlay -SourceDir $projectRoot -RepoRoot $PSScriptRoot
+if ($LASTEXITCODE -ne 0) {
+  throw "Authoritative live product overlay failed with exit code $LASTEXITCODE."
+}
