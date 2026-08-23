@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /account/
+Disallow: /console/
 
-# Preview account surfaces use page-level noindex metadata so crawlers can
-# actually read the directive. A sitemap will be added once the free public
-# Pages hostname is created.
+Sitemap: https://proofttl-web.vercel.app/sitemap.xml
+Sitemap: https://proofttl-web.vercel.app/sitemap.txt
+Sitemap: https://proofttl-web.vercel.app/feed.xml
