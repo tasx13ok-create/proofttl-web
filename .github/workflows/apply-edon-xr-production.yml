@@ -21,17 +21,14 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Reconstruct production XR sources
+      - name: Reconstruct and verify production XR source
         run: |
           set -euo pipefail
-          test -f .xr-patch/page-00.b64
-          test -f .xr-patch/page-01.b64
-          test -f .xr-patch/page-02.b64
-          test -f .xr-patch/page-03.b64
-          test -f .xr-patch/page-04.b64
-          test -f .xr-patch/xrRenderer.b64
-          cat .xr-patch/page-*.b64 | tr -d '\n\r' | base64 --decode > public/edon-live/web/app/ar/page.tsx
-          tr -d '\n\r' < .xr-patch/xrRenderer.b64 | base64 --decode > public/edon-live/web/app/ar/xrRenderer.ts
+          for f in .xr-patch/page-00.b64 .xr-patch/page-01.b64 .xr-patch/page-02.b64 .xr-patch/page-03.b64 .xr-patch/page-04.b64; do test -f "$f"; done
+          cat .xr-patch/page-*.b64 | tr -d '\n\r' | base64 --decode > /tmp/edon-ar-page.tsx
+          test "$(sha256sum /tmp/edon-ar-page.tsx | cut -d' ' -f1)" = "b8c6a82f154da88acc66c05c255be7dbf7e43476fb9993ae550c46d964eef295"
+          test "$(sha256sum public/edon-live/web/app/ar/xrRenderer.ts | cut -d' ' -f1)" = "15692a2bbf02f4d1e7d72f08b113910631d96680874d393892e862196f539088"
+          mv /tmp/edon-ar-page.tsx public/edon-live/web/app/ar/page.tsx
           grep -F "new EdonXrRenderer(gl)" public/edon-live/web/app/ar/page.tsx
           grep -F "renderer.render(baseLayer,pose" public/edon-live/web/app/ar/page.tsx
           grep -F "gl.bindFramebuffer(gl.FRAMEBUFFER,baseLayer.framebuffer)" public/edon-live/web/app/ar/xrRenderer.ts
@@ -44,7 +41,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           rm -rf .xr-patch
-          git add public/edon-live/web/app/ar/page.tsx public/edon-live/web/app/ar/xrRenderer.ts .xr-patch
+          git add -A .xr-patch public/edon-live/web/app/ar/page.tsx public/edon-live/web/app/ar/xrRenderer.ts
           git commit -m 'Render Edon perception directly in Quest WebXR compositor'
           git pull --rebase origin main
           git push
