@@ -13,8 +13,22 @@ $Files = @(
   'PATCH-CLOUDFLARE-COMPAT.ps1'
 )
 
-$Root = [IO.Path]::GetFullPath($Root)
-if (-not (Test-Path -LiteralPath $Root)) { throw "Edon root does not exist: $Root" }
+# cmd.exe can hand PowerShell a trailing quote when a quoted argument ends in a
+# backslash (for example "%~dp0"). Normalize that legacy form before resolving
+# the directory. This keeps existing Edon folders self-updatable without another ZIP.
+$candidate = [string]$Root
+$candidate = $candidate.Trim()
+$candidate = $candidate.Trim('"').Trim("'")
+if ($candidate.Length -gt 3) {
+  $candidate = $candidate.TrimEnd([char[]]'\\/')
+}
+if ([string]::IsNullOrWhiteSpace($candidate)) { throw 'Edon root path is empty.' }
+if ($candidate.IndexOfAny([IO.Path]::GetInvalidPathChars()) -ge 0) {
+  throw "Edon root contains invalid path characters after normalization: $candidate"
+}
+
+$Root = [IO.Path]::GetFullPath($candidate)
+if (-not (Test-Path -LiteralPath $Root -PathType Container)) { throw "Edon root does not exist: $Root" }
 
 $Temp = Join-Path $env:TEMP "edon-bootstrap-update-$PID"
 try {
@@ -33,7 +47,7 @@ try {
     Copy-Item -LiteralPath $source -Destination $target -Force
   }
 
-  Write-Host 'Edon bootstrap scripts are current.' -ForegroundColor Green
+  Write-Host "Edon bootstrap scripts are current: $Root" -ForegroundColor Green
   exit 0
 } finally {
   Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $Temp
