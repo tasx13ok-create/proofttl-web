@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { authClient, PROOFTTL_API_URL, signInHref } from '../lib/proofttl-auth'
 
-const PRIMARY = [
+const APP_PRIMARY = [
   { href: '/workspace/', label: 'Workspace' },
   { href: '/studio/', label: 'Studio' },
   { href: '/foundry/', label: 'Foundry', ownerOnly: true },
@@ -14,12 +14,49 @@ const PRIMARY = [
   { href: '/money/', label: 'Money' },
 ] as const
 
-const SECONDARY = [
+const APP_SECONDARY = [
   { href: '/audit/', label: 'Verification' },
   { href: '/services/', label: 'Services' },
   { href: '/about/', label: 'About' },
   { href: '/trust/', label: 'Trust' },
   { href: '/connections/', label: 'Connections' },
+] as const
+
+const PUBLIC_PRIMARY = [
+  { href: '/audit/', label: 'Verification' },
+  { href: '/services/', label: 'Services' },
+  { href: '/audit/sample/', label: 'Sample' },
+  { href: '/how-proofttl-works/', label: 'How it works' },
+] as const
+
+const PUBLIC_SECONDARY = [
+  { href: '/ai-fact-checker/', label: 'AI Fact Checker' },
+  { href: '/about/', label: 'About' },
+  { href: '/trust/', label: 'Trust' },
+  { href: '/faq/', label: 'FAQ' },
+  { href: '/privacy/', label: 'Privacy' },
+  { href: '/terms/', label: 'Terms' },
+  { href: '/status/', label: 'Status' },
+] as const
+
+const PUBLIC_PATH_PREFIXES = [
+  '/',
+  '/about/',
+  '/audit/',
+  '/services/',
+  '/solutions/',
+  '/faq/',
+  '/machine-definition/',
+  '/glossary/',
+  '/trust/',
+  '/how-proofttl-works/',
+  '/docs/',
+  '/privacy/',
+  '/terms/',
+  '/status/',
+  '/support/',
+  '/ai-fact-checker/',
+  '/verify-lease.html',
 ] as const
 
 type SessionUser = { name?: string | null; email?: string | null; image?: string | null }
@@ -30,6 +67,11 @@ function active(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(href)
 }
 
+function isPublicPath(pathname: string) {
+  if (pathname === '/') return true
+  return PUBLIC_PATH_PREFIXES.some((prefix) => prefix !== '/' && (pathname === prefix || pathname.startsWith(prefix)))
+}
+
 function prettyPlan(value?: string) {
   if (!value) return 'Free'
   return value.charAt(0).toUpperCase() + value.slice(1)
@@ -37,6 +79,7 @@ function prettyPlan(value?: string) {
 
 export default function ProductNav() {
   const pathname = usePathname()
+  const publicMode = isPublicPath(pathname)
   const accountRef = useRef<HTMLDivElement | null>(null)
   const [user, setUser] = useState<SessionUser | null>(null)
   const [quota, setQuota] = useState<Quota | null>(null)
@@ -97,7 +140,9 @@ export default function ProductNav() {
     return email ? email.split('@')[0] : 'Account'
   }, [user])
 
-  const visiblePrimary = useMemo(() => PRIMARY.filter((item) => !('ownerOnly' in item) || !item.ownerOnly || foundryAllowed), [foundryAllowed])
+  const visibleAppPrimary = useMemo(() => APP_PRIMARY.filter((item) => !('ownerOnly' in item) || !item.ownerOnly || foundryAllowed), [foundryAllowed])
+  const primaryLinks = publicMode ? PUBLIC_PRIMARY : visibleAppPrimary
+  const secondaryLinks = publicMode ? PUBLIC_SECONDARY : APP_SECONDARY
   const initial = useMemo(() => username.trim().charAt(0).toUpperCase() || 'A', [username])
   const unlimited = Boolean(quota?.unlimited)
   const usedPercent = useMemo(() => {
@@ -118,18 +163,18 @@ export default function ProductNav() {
   }
 
   return (
-    <header className="product-nav" data-product-nav>
+    <header className="product-nav" data-product-nav data-nav-mode={publicMode ? 'public' : 'app'}>
       <div className="product-nav-inner">
         <a href="/" className="product-brand product-brand-lockup" aria-label="ProofTTL home">
           <img className="product-brand-lockup-image" src="/proofttl-lockup.svg" alt="ProofTTL" />
         </a>
 
-        <nav className="product-nav-primary" aria-label="Product">
-          {visiblePrimary.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}
+        <nav className="product-nav-primary" aria-label={publicMode ? 'ProofTTL services' : 'Product'}>
+          {primaryLinks.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}
         </nav>
 
         <div className="product-nav-actions">
-          <div className="product-nav-more"><button type="button" aria-haspopup="true">More</button><div className="product-nav-menu">{SECONDARY.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}<a href="/how-proofttl-works/">How it works</a><a href="/faq/">FAQ</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/status/">Status</a></div></div>
+          <div className="product-nav-more"><button type="button" aria-haspopup="true">More</button><div className="product-nav-menu">{secondaryLinks.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}{!publicMode && <><a href="/how-proofttl-works/">How it works</a><a href="/faq/">FAQ</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/status/">Status</a></>}</div></div>
 
           {!accountLoading && user ? (
             <div className="product-account" ref={accountRef}>
@@ -158,7 +203,9 @@ export default function ProductNav() {
             </div>
           ) : !accountLoading ? <a className="product-nav-signin" href={signInHref(signInTarget)}>Sign in</a> : <span className="product-account-loading" aria-hidden="true" />}
 
-          <a className="product-nav-workspace" href="/workspace/">Open Workspace <span>→</span></a>
+          {publicMode
+            ? <a className="product-nav-workspace" href="/audit/#audit-intake">Start verification <span>→</span></a>
+            : <a className="product-nav-workspace" href="/workspace/">Open Workspace <span>→</span></a>}
         </div>
       </div>
     </header>
