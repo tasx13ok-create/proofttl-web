@@ -10,7 +10,7 @@ const nav = await readFile('components/ProductNav.tsx', 'utf8')
 for (const expected of [
   'Find the claim that breaks',
   'Stress-test 3–5 claims — $129',
-  'Full Verification Audit',
+  'FULL VERIFICATION AUDIT',
   '/audit/sample/',
   'SCOPE CONFIRMED BEFORE PAYMENT',
   '/audit/#audit-intake',
