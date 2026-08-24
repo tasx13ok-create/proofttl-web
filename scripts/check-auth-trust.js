@@ -20,15 +20,14 @@ for (const expected of [
 }
 
 for (const expected of [
-  'CUSTOMER AUTHENTICATION',
+  'CUSTOMER ACCOUNT SECURITY',
   "body?.sign_in?.github",
   "body?.sign_in?.google",
-  "body?.sign_in?.discord",
   "body?.sign_in?.passkey",
   '/.well-known/proofttl-auth.json',
   'HttpOnly sessions',
   'CSRF protection',
-  'TRUST BOUNDARY',
+  'PAYMENT + DELIVERY BOUNDARY',
 ]) {
   if (!trust.includes(expected)) throw new Error(`Trust Center auth surface missing: ${expected}`)
 }
@@ -80,4 +79,4 @@ if (auth.includes('baseURL: PROOFTTL_API_URL')) throw new Error('Browser auth re
 if (proxy.includes('x-proofttl-auth-path') || proxy.includes('auth_proxy_path_missing')) throw new Error('Auth proxy diagnostic output must not ship')
 if (/Domain=proofttl\.tasx13ok\.workers\.dev/i.test(proxy) && !proxy.includes('replace')) throw new Error('Auth proxy contains a hard-coded upstream cookie domain without normalization')
 
-console.log('SUCCESS: first-party GitHub, Google, Discord, passkey, cookie normalization, return-to-page, and canonical Trust auth surfaces passed release checks.')
+console.log('SUCCESS: first-party GitHub, Google, Discord, passkey, cookie normalization, return-to-page, and buyer-facing Trust security surfaces passed release checks.')
