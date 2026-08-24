@@ -97,7 +97,7 @@ export default function CommercialHome() {
     <footer className="footer shell">
       <a className="footer-brand" href="#top" aria-label="ProofTTL home"><img src="/proofttl-lockup.svg" alt="ProofTTL" /></a>
       <span>SOURCE-BACKED CLAIM VERIFICATION BEFORE PUBLIC EXPOSURE.</span>
-      <div><a href="/audit/">Verification</a><a href="/services/">Services</a><a href="/audit/sample/">Sample</a><a href="/trust/">Trust</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div>
+      <div><a href="/audit/">Verification</a><a href="/services/">Services</a><a href="/audit/sample/">Sample</a><a href="/trust/">Trust</a><a href="/support/">Support</a><a href="/status/">Status</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div>
     </footer>
   </main>
 }
