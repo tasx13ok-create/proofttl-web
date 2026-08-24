@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
-import HomeClient from './HomeClient'
+import CommercialHome from '../components/CommercialHome'
 
-// Build-guard anchors for the client-rendered homepage surface.
-// The actual UI lives in HomeClient; these strings keep source-level release invariants aligned.
+// Build-guard anchors for the public commercial homepage.
 // Canonical logo: /proofttl-lockup.svg
 // Commercial offer: Claim Stress Test — $129; Full Verification Audit — $500.
 
@@ -12,5 +11,5 @@ export const metadata: Metadata = {
 }
 
 export default function Home() {
-  return <HomeClient />
+  return <CommercialHome />
 }
