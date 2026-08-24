@@ -9,7 +9,7 @@ type Section = { status: Status; rows: Array<[string, string]> }
 function statusText(status: Status) {
   if (status === 'loading') return 'CHECKING…'
   if (status === 'ready') return 'READY'
-  if (status === 'locked') return 'LOCKED / INCOMPLETE'
+  if (status === 'locked') return 'LIMITED'
   return 'UNAVAILABLE'
 }
 
@@ -29,8 +29,6 @@ export default function TrustCenter() {
   const [auth, setAuth] = useState<Section>(empty)
   const [monitoring, setMonitoring] = useState<Section>(empty)
   const [signing, setSigning] = useState<Section>(empty)
-  const [voice, setVoice] = useState<Section>(empty)
-  const [readiness, setReadiness] = useState<Section>(empty)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -44,84 +42,47 @@ export default function TrustCenter() {
     read('/health').then((body) => setHealth({
       status: body?.ok === true ? 'ready' : 'locked',
       rows: [
+        ['Verification service', body?.ok === true ? 'AVAILABLE' : 'LIMITED'],
         ['Service', String(body?.service || 'ProofTTL')],
         ['Version', String(body?.version || '—')],
-        ['Protocol', String(body?.protocol || '—')],
-        ['Storage', body?.storage ? 'BOUND' : 'MISSING'],
-        ['AI', body?.ai ? 'BOUND' : 'MISSING'],
+        ['Evidence storage', body?.storage ? 'BOUND' : 'UNAVAILABLE'],
+        ['Verification AI', body?.ai ? 'BOUND' : 'UNAVAILABLE'],
       ],
-    })).catch((error) => setHealth({ status: 'error', rows: [['Error', error instanceof Error ? error.message : 'Unavailable']] }))
+    })).catch((error) => setHealth({ status: 'error', rows: [['Status', error instanceof Error ? error.message : 'Unavailable']] }))
 
     read('/.well-known/proofttl-auth.json').then((body) => {
-      const ready = Boolean(body?.configured && body?.sign_in?.google && body?.sign_in?.discord && body?.sign_in?.passkey)
+      const ready = Boolean(body?.configured && body?.security?.secure_http_only_sessions && body?.security?.csrf_protection)
       setAuth({ status: ready ? 'ready' : 'locked', rows: [
-        ['Backend', body?.configured ? 'READY' : 'LOCKED'],
-        ['GitHub', body?.sign_in?.github ? 'READY' : 'LOCKED'],
-        ['Google', body?.sign_in?.google ? 'READY' : 'LOCKED'],
-        ['Discord', body?.sign_in?.discord ? 'READY' : 'LOCKED'],
-        ['Passkeys', body?.sign_in?.passkey ? 'READY' : 'LOCKED'],
+        ['Customer accounts', body?.configured ? 'AVAILABLE' : 'LIMITED'],
+        ['Google sign-in', body?.sign_in?.google ? 'AVAILABLE' : 'UNAVAILABLE'],
+        ['GitHub sign-in', body?.sign_in?.github ? 'AVAILABLE' : 'UNAVAILABLE'],
+        ['Passkeys', body?.sign_in?.passkey ? 'AVAILABLE' : 'UNAVAILABLE'],
         ['HttpOnly sessions', body?.security?.secure_http_only_sessions ? 'YES' : 'NO'],
         ['CSRF protection', body?.security?.csrf_protection ? 'YES' : 'NO'],
       ] })
-    }).catch((error) => setAuth({ status: 'error', rows: [['Error', error instanceof Error ? error.message : 'Unavailable']] }))
+    }).catch((error) => setAuth({ status: 'error', rows: [['Status', error instanceof Error ? error.message : 'Unavailable']] }))
 
     read('/monitor/status').then((body) => {
       const last = body?.last_run || {}
       setMonitoring({ status: body?.enabled === true ? 'ready' : 'locked', rows: [
-        ['Automatic monitoring', body?.enabled ? 'ACTIVE' : 'DISABLED'],
+        ['Automatic monitoring', body?.enabled ? 'ACTIVE' : 'LIMITED'],
         ['Schedule', String(body?.schedule || '—')],
-        ['Last run', String(last?.finished_at || last?.started_at || 'NO PERSISTED RUN YET')],
-        ['Checked', String(last?.checked ?? '—')],
+        ['Last completed run', String(last?.finished_at || last?.started_at || 'NO PERSISTED RUN YET')],
+        ['Claims checked', String(last?.checked ?? '—')],
         ['Revoked', String(last?.revoked ?? '—')],
-        ['Expired', String(last?.expired ?? '—')],
         ['Errors', String(last?.errors ?? '—')],
       ] })
-    }).catch((error) => setMonitoring({ status: 'error', rows: [['Error', error instanceof Error ? error.message : 'Unavailable']] }))
+    }).catch((error) => setMonitoring({ status: 'error', rows: [['Status', error instanceof Error ? error.message : 'Unavailable']] }))
 
     read('/.well-known/proofttl-keys.json').then((body) => {
       const key = Array.isArray(body?.keys) ? body.keys[0] : null
       setSigning({ status: body?.signing_enabled === true ? 'ready' : 'locked', rows: [
-        ['Signing', body?.signing_enabled ? 'ENABLED' : 'DISABLED'],
+        ['Signed Fact Leases', body?.signing_enabled ? 'ENABLED' : 'LIMITED'],
         ['Algorithm', String(key?.crv || '—')],
         ['Key ID', String(key?.kid || '—')],
-        ['Signature schema', String(body?.signature_version || '—')],
-        ['Attestation schema', String(body?.attestation_version || '—')],
-        ['Published keys', String(Array.isArray(body?.keys) ? body.keys.length : 0)],
+        ['Published verification keys', String(Array.isArray(body?.keys) ? body.keys.length : 0)],
       ] })
-    }).catch((error) => setSigning({ status: 'error', rows: [['Error', error instanceof Error ? error.message : 'Unavailable']] }))
-
-    read('/.well-known/proofttl-assistant.json').then((body) => {
-      const speechEndpoint = Boolean(body?.endpoints?.speech)
-      const voiceOutput = body?.output?.voice === true
-      const finalTextSource = body?.output?.voice_source === 'final_response_text'
-      const voiceEnabled = body?.output?.voice_capability?.voice_mode === true
-      const configured = body?.configured === true
-      const ready = Boolean(configured && speechEndpoint && voiceOutput && finalTextSource && voiceEnabled)
-      setVoice({ status: ready ? 'ready' : 'locked', rows: [
-        ['Assistant runtime', configured ? 'READY' : 'LOCKED'],
-        ['STT endpoint', body?.endpoints?.voice ? 'READY' : 'LOCKED'],
-        ['Final-response TTS endpoint', speechEndpoint ? 'READY' : 'LOCKED'],
-        ['Voice output', voiceOutput ? 'ENABLED' : 'DISABLED'],
-        ['Speech source', finalTextSource ? 'FINAL RESPONSE TEXT' : 'LEGACY / UNKNOWN'],
-        ['Voice entitlement / preview', voiceEnabled ? 'ENABLED' : 'LOCKED'],
-      ] })
-    }).catch((error) => setVoice({ status: 'error', rows: [['Error', error instanceof Error ? error.message : 'Unavailable']] }))
-
-    read('/readiness').then((body) => {
-      const workspace = body?.workspace || {}
-      const commercial = body?.commercial_services || {}
-      const studio = body?.studio || {}
-      setReadiness({ status: body?.production?.ready ? 'ready' : 'locked', rows: [
-        ['Testnet', body?.testnet?.ready ? 'READY' : `${body?.testnet?.score ?? '—'}%`],
-        ['Customer auth', body?.customer_auth?.account_product_ready ? 'READY' : 'LOCKED'],
-        ['Workspace', workspace?.ready ? 'READY' : 'LOCKED'],
-        ['Commercial audits', commercial?.ready ? 'READY' : 'LOCKED'],
-        ['Studio cloud', studio?.cloud_projects_ready ? 'READY' : 'LOCKED'],
-        ['Isolated runner', studio?.isolated_runner_ready ? 'READY' : 'LOCKED'],
-        ['Production', body?.production?.ready ? 'READY' : 'LOCKED'],
-        ['Blockers', Array.isArray(body?.production?.blockers) ? body.production.blockers.join(', ') || '—' : '—'],
-      ] })
-    }).catch((error) => setReadiness({ status: 'error', rows: [['Error', error instanceof Error ? error.message : 'Unavailable']] }))
+    }).catch((error) => setSigning({ status: 'error', rows: [['Status', error instanceof Error ? error.message : 'Unavailable']] }))
 
     return () => controller.abort()
   }, [])
@@ -129,35 +90,39 @@ export default function TrustCenter() {
   return <div style={{ display: 'grid', gap: 18 }}>
     <section className="onboarding-card" style={{ padding: 26 }}>
       <p className="app-kicker">PROOFTTL / TRUST CENTER</p>
-      <h1 className="app-title">Proof you can inspect.</h1>
-      <p className="app-copy">Live backend health, authentication, automatic monitoring, cryptographic signing, L.O.V.E. voice readiness, Workspace readiness, commercial readiness, and execution boundaries. Nothing here marks an unfinished provider as live.</p>
+      <h1 className="app-title">Know what you are paying for before you pay.</h1>
+      <p className="app-copy">ProofTTL sells scoped source-backed claim verification. The $129 Claim Stress Test covers 3–5 high-stakes claims and the $500 Full Verification Audit covers 10–25 claims. Scope is confirmed before a Stripe payment request is created. Card details are handled by Stripe rather than stored by ProofTTL.</p>
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
-        <a className="button button-primary" href="/workspace/">OPEN WORKSPACE →</a>
-        <a className="button button-secondary" href="/login/">SIGN IN</a>
-        <a className="text-link" href="/verify-lease.html">VERIFY LEASE →</a>
+        <a className="button button-primary" href="/audit/#audit-intake">START VERIFICATION →</a>
+        <a className="button button-secondary" href="/audit/sample/">VIEW SAMPLE</a>
+        <a className="text-link" href="/verify-lease.html">VERIFY A FACT LEASE →</a>
       </div>
     </section>
 
     <div className="pricing-cards">
-      <Card title="API HEALTH" data={health} />
-      <Card title="CUSTOMER AUTHENTICATION" data={auth} />
-      <Card title="AUTOMATIC MONITORING" data={monitoring} />
+      <Card title="VERIFICATION SERVICE" data={health} />
+      <Card title="CUSTOMER ACCOUNT SECURITY" data={auth} />
+      <Card title="FACT LEASE MONITORING" data={monitoring} />
       <Card title="CRYPTOGRAPHIC SIGNING" data={signing} />
-      <Card title="VOICE PIPELINE" data={voice} />
     </div>
-    <Card title="RELEASE READINESS" data={readiness} />
 
     <section className="console-panel wide">
-      <p className="app-kicker">TRUST BOUNDARY</p>
-      <h2>Power is explicit, not implied.</h2>
-      <p className="app-copy">Fact Lease claims remain source-grounded. Private account, banking, email, calendar, file, and provider data must come from an authenticated capability. Money, send, delete, and security actions require explicit confirmation before execution.</p>
+      <p className="app-kicker">PAYMENT + DELIVERY BOUNDARY</p>
+      <h2>No surprise charge and no invented certainty.</h2>
       <div className="app-table" style={{ marginTop: 12 }}>
-        <div className="app-table-row"><span>Fact Lease verdicts</span><span>SUPPORTED / CONTRADICTED / UNKNOWN</span></div>
-        <div className="app-table-row"><span>Lease states</span><span>ACTIVE / REVOKED / EXPIRED</span></div>
-        <div className="app-table-row"><span>Monitoring history</span><span>TAMPER-EVIDENT SIGNED EVENT CHAIN</span></div>
-        <div className="app-table-row"><span>Protocol settlement</span><span>BASE SEPOLIA TESTNET · MAINNET DISABLED</span></div>
-        <div className="app-table-row"><span>Sensitive actions</span><span>EXPLICIT CONFIRMATION REQUIRED</span></div>
+        <div className="app-table-row"><span>Intake</span><span>NO CARD REQUIRED</span></div>
+        <div className="app-table-row"><span>Scope</span><span>CONFIRMED BEFORE PAYMENT REQUEST</span></div>
+        <div className="app-table-row"><span>Payment processing</span><span>STRIPE-HOSTED / TOKENIZED</span></div>
+        <div className="app-table-row"><span>Claim verdicts</span><span>SUPPORTED / CONTRADICTED / UNKNOWN</span></div>
+        <div className="app-table-row"><span>Full-audit monitoring</span><span>7 DAYS FOR THE AGREED CLAIM SET</span></div>
+        <div className="app-table-row"><span>Professional advice</span><span>NOT LEGAL, MEDICAL, FINANCIAL, OR REGULATORY ADVICE</span></div>
       </div>
+    </section>
+
+    <section className="console-panel wide">
+      <p className="app-kicker">TECHNICAL PROTOCOL BOUNDARY</p>
+      <h2>The developer payment rail is separate from the human service.</h2>
+      <p className="app-copy">ProofTTL also has a technical Fact Lease API whose x402 settlement rail remains on Base Sepolia testnet. That testnet protocol does not process the human verification-service payment. Human audit payments use the live Stripe-backed scope-first flow described above.</p>
     </section>
   </div>
 }
