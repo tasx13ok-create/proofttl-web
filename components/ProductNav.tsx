@@ -33,10 +33,11 @@ const PUBLIC_SECONDARY = [
   { href: '/ai-fact-checker/', label: 'AI Fact Checker' },
   { href: '/about/', label: 'About' },
   { href: '/trust/', label: 'Trust' },
+  { href: '/support/', label: 'Support' },
+  { href: '/status/', label: 'Status' },
   { href: '/faq/', label: 'FAQ' },
   { href: '/privacy/', label: 'Privacy' },
   { href: '/terms/', label: 'Terms' },
-  { href: '/status/', label: 'Status' },
 ] as const
 
 const PUBLIC_PATH_PREFIXES = [
@@ -174,7 +175,7 @@ export default function ProductNav() {
         </nav>
 
         <div className="product-nav-actions">
-          <div className="product-nav-more"><button type="button" aria-haspopup="true">More</button><div className="product-nav-menu">{secondaryLinks.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}{!publicMode && <><a href="/how-proofttl-works/">How it works</a><a href="/faq/">FAQ</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/status/">Status</a></>}</div></div>
+          <div className="product-nav-more"><button type="button" aria-haspopup="true">More</button><div className="product-nav-menu">{secondaryLinks.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}{!publicMode && <><a href="/how-proofttl-works/">How it works</a><a href="/faq/">FAQ</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/status/">Status</a><a href="/support/">Support</a></>}</div></div>
 
           {!accountLoading && user ? (
             <div className="product-account" ref={accountRef}>
