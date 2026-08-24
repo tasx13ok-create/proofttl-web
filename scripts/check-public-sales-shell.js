@@ -13,6 +13,7 @@ for (const expected of [
   "{ href: '/services/', label: 'Services' }",
   "{ href: '/audit/sample/', label: 'Sample' }",
   "{ href: '/how-proofttl-works/', label: 'How it works' }",
+  "{ href: '/support/', label: 'Support' }",
   'data-nav-mode={publicMode',
   'Start verification',
   "href=\"/audit/#audit-intake\"",
@@ -24,7 +25,7 @@ for (const internalLabel of ["label: 'Workspace'", "label: 'Studio'", "label: 'F
   if (!nav.includes(internalLabel)) throw new Error(`App navigation unexpectedly lost internal surface: ${internalLabel}`)
 }
 
-for (const route of ['/trust/', '/ai-fact-checker/', '/services/', '/audit/']) {
+for (const route of ['/trust/', '/ai-fact-checker/', '/services/', '/audit/', '/support/', '/status/']) {
   if (!network.includes(`'${route}'`)) throw new Error(`Protocol banner exclusion missing buyer route: ${route}`)
   if (!chat.includes(`'${route}'`)) throw new Error(`App-only chat exclusion missing buyer route: ${route}`)
 }
@@ -57,6 +58,8 @@ const buyerPages = [
   'out/ai-fact-checker/index.html',
   'out/trust/index.html',
   'out/how-proofttl-works/index.html',
+  'out/support/index.html',
+  'out/status/index.html',
   'out/faq/index.html',
   'out/privacy/index.html',
   'out/terms/index.html',
@@ -75,6 +78,9 @@ const forbiddenBuyerFragments = [
   'TESTNET PREVIEW',
   'OPEN WORKSPACE',
   'RUN TESTNET VERIFICATION',
+  'Future support form preview',
+  'not connected yet',
+  'CONSOLE SUPPORT PREVIEW',
 ]
 
 async function exists(file) {
