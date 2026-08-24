@@ -55,7 +55,7 @@ export default function PrivacyPage() {
 
           <section style={{ marginTop: 28 }}>
             <p className="app-kicker">ADVERTISING</p>
-            <p className="app-copy">The commercial homepage and paid audit funnel are not designed around advertising. Certain documentation or solution pages may load third-party advertising only when that feature is enabled; any advertising provider may process data under its own privacy policy.</p>
+            <p className="app-copy">ProofTTL does not currently load third-party advertising on the public product or documentation experience. If that changes, this policy and the product configuration should be updated before advertising is enabled.</p>
           </section>
 
           <section style={{ marginTop: 28 }}>
@@ -63,13 +63,13 @@ export default function PrivacyPage() {
             <ul className="audit-clean-list">
               <li>You can sign out of your ProofTTL account at any time.</li>
               <li>You can clear locally saved browser drafts and site data through your browser.</li>
-              <li>You can contact ProofTTL support to ask about account data, correction, or deletion requests. Some records may need to be retained for security, payment, contractual, or legal reasons.</li>
+              <li>You can use ProofTTL support to ask about account data, correction, or deletion requests. Some records may need to be retained for security, payment, contractual, or legal reasons.</li>
             </ul>
           </section>
 
           <section className="audit-offer-summary" style={{ marginTop: 28 }}>
             <div><span>DO NOT SUBMIT</span><strong>Passwords or secret keys</strong><small>Never place credentials, private keys, authentication secrets, or full payment-card details into claim text or support messages.</small></div>
-            <div><span>SUPPORT</span><strong>Questions about privacy?</strong><small>Use the public ProofTTL support surface so the request can be tracked.</small></div>
+            <div><span>SUPPORT</span><strong>Questions about privacy?</strong><small>Use the ProofTTL support page and keep private account or payment details out of public GitHub issues.</small></div>
             <p><a className="text-link" href="/support/">OPEN SUPPORT →</a> &nbsp; <a className="text-link" href="/terms/">TERMS OF SERVICE →</a></p>
           </section>
         </article>
