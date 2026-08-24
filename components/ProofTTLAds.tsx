@@ -5,7 +5,10 @@ import { useEffect } from 'react'
 const ADSENSE_SCRIPT_ID = 'proofttl-adsense'
 const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT?.trim() || ''
 
-const AD_ELIGIBLE_PREFIXES = ['/docs/', '/solutions/']
+// Paid verification is the launch business model. Keep third-party ads disabled
+// across the public product until they can be reintroduced deliberately without
+// weakening buyer trust or the verification funnel.
+const AD_ELIGIBLE_PREFIXES: string[] = []
 
 function normalizePath(pathname: string) {
   if (!pathname) return '/'
@@ -32,7 +35,7 @@ export default function ProofTTLAds() {
     script.async = true
     script.crossOrigin = 'anonymous'
     script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(ADSENSE_CLIENT)}`
-    script.dataset.proofttlPlacement = 'public-side-rails-only'
+    script.dataset.proofttlPlacement = 'deliberately-enabled-only'
     document.head.appendChild(script)
 
     return () => {
