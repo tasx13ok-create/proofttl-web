@@ -48,7 +48,7 @@ for (const forbidden of ['OPEN WORKSPACE', 'VOICE PIPELINE', 'Studio cloud', 'Is
   if (trust.includes(forbidden)) throw new Error(`Trust Center leaked internal/prototype messaging: ${forbidden}`)
 }
 
-const publicPages = [
+const buyerPages = [
   'out/index.html',
   'out/about/index.html',
   'out/audit/index.html',
@@ -62,7 +62,7 @@ const publicPages = [
   'out/terms/index.html',
 ]
 
-const forbiddenPublicFragments = [
+const forbiddenBuyerFragments = [
   '>Workspace</a>',
   '>Studio</a>',
   '>Foundry</a>',
@@ -91,18 +91,22 @@ function internalHrefCandidates(href) {
   return [`out/${normalized}/index.html`, `out/${normalized}.html`]
 }
 
-for (const file of publicPages) {
-  if (!(await exists(file))) throw new Error(`Buyer-facing export missing: ${file}`)
+function outputFileForPublicUrl(url) {
+  const parsed = new URL(url)
+  const pathname = parsed.pathname
+  if (pathname === '/') return 'out/index.html'
+  const normalized = pathname.startsWith('/') ? pathname.slice(1) : pathname
+  if (normalized.endsWith('/')) return `out/${normalized}index.html`
+  if (/\.[a-z0-9]+$/i.test(normalized)) return `out/${normalized}`
+  return `out/${normalized}/index.html`
+}
+
+async function checkInternalLinks(file) {
   const html = await readFile(file, 'utf8')
-
-  for (const fragment of forbiddenPublicFragments) {
-    if (html.includes(fragment)) throw new Error(`${file} leaked prototype/app-only public UI: ${fragment}`)
-  }
-
   const hrefs = [...html.matchAll(/href=["']([^"']+)["']/gi)].map((match) => match[1])
   for (const href of hrefs) {
     if (!href || href.startsWith('#') || href.startsWith('http://') || href.startsWith('https://') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:') || href.startsWith('data:')) continue
-    if (!href.startsWith('/')) continue
+    if (!href.startsWith('/') || href.startsWith('/api/')) continue
     const candidates = internalHrefCandidates(href)
     let found = false
     for (const candidate of candidates) {
@@ -112,4 +116,22 @@ for (const file of publicPages) {
   }
 }
 
-console.log(`SUCCESS: public ProofTTL sales shell is buyer-focused and ${publicPages.length} exported buyer pages passed internal-link and prototype-leak checks.`)
+for (const file of buyerPages) {
+  if (!(await exists(file))) throw new Error(`Buyer-facing export missing: ${file}`)
+  const html = await readFile(file, 'utf8')
+  for (const fragment of forbiddenBuyerFragments) {
+    if (html.includes(fragment)) throw new Error(`${file} leaked prototype/app-only public UI: ${fragment}`)
+  }
+}
+
+const sitemap = await readFile('out/sitemap.xml', 'utf8')
+const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1])
+if (sitemapUrls.length < 10) throw new Error(`Public sitemap unexpectedly small: ${sitemapUrls.length} URLs`)
+
+const sitemapFiles = [...new Set(sitemapUrls.map(outputFileForPublicUrl))]
+for (const file of sitemapFiles) {
+  if (!(await exists(file))) throw new Error(`Sitemap points to a missing exported page: ${file}`)
+  await checkInternalLinks(file)
+}
+
+console.log(`SUCCESS: public ProofTTL sales shell is buyer-focused; ${buyerPages.length} buyer pages passed prototype-leak checks and ${sitemapFiles.length} sitemap pages passed internal-link validation.`)
