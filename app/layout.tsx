@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import ProofTTLAds from '../components/ProofTTLAds'
-import ProofTTLChatBar from '../components/ProofTTLChatBar'
+import AppOnlyChatBar from '../components/AppOnlyChatBar'
 import AccountPreferenceBridge from '../components/AccountPreferenceBridge'
 import ProductNav from '../components/ProductNav'
 import ProtocolNetworkStrip from '../components/ProtocolNetworkStrip'
@@ -217,7 +217,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <ProductNav />
         {children}
         <ProofTTLAds />
-        <ProofTTLChatBar />
+        <AppOnlyChatBar />
       </body>
     </html>
   )
