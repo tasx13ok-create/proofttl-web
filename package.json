@@ -21,7 +21,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "node scripts/check-static-export.js && node scripts/check-discovery-identity.js && node scripts/check-assistant-session.js && node scripts/check-sales-intake.js && node scripts/check-auth-trust.js && node scripts/check-product-1000.js",
+    "postbuild": "node scripts/check-static-export.js && node scripts/check-discovery-identity.js && node scripts/check-assistant-session.js && node scripts/check-sales-intake.js && node scripts/check-auth-trust.js && node scripts/check-product-1000.js && node scripts/check-public-sales-shell.js",
     "start": "npx serve out",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run build",
