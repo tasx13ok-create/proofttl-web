@@ -80,8 +80,8 @@ async function main() {
   for (const expected of ['/assistant/text','/assistant/voice','/assistant/speech','/assistant/usage',"credentials: 'include'",'requestFinalLoveSpeech','final_response_tts']) if (!assistantClient.includes(expected)) throw new Error(`Assistant client is missing: ${expected}`)
 
   const adsSource = await readFile('components/ProofTTLAds.tsx', 'utf8')
-  for (const expected of ["AD_ELIGIBLE_PREFIXES = ['/docs/', '/solutions/']",'NEXT_PUBLIC_ADSENSE_CLIENT']) if (!adsSource.includes(expected)) throw new Error(`Ad loader is missing: ${expected}`)
-  if (adsSource.includes("new Set(['/'])")) throw new Error('Commercial homepage must not be eligible for ads')
+  for (const expected of ['const AD_ELIGIBLE_PREFIXES: string[] = []','NEXT_PUBLIC_ADSENSE_CLIENT']) if (!adsSource.includes(expected)) throw new Error(`Launch ad policy is missing: ${expected}`)
+  if (adsSource.includes("'/solutions/'") || adsSource.includes("'/docs/'")) throw new Error('Launch product must not inject ads into buyer or documentation routes')
   await expect('ADSENSE-SETUP.md', ['Side rail ads','Disable **Anchor ads**','Disable **Vignette ads**','No popups or pop-unders'], 'Ad policy')
 
   const robots = await readFile('out/robots.txt', 'utf8')
@@ -90,7 +90,7 @@ async function main() {
   for (const expected of ['X-Content-Type-Options: nosniff','X-Frame-Options: DENY','Permissions-Policy: camera=(), microphone=(self), geolocation=()']) if (!headers.includes(expected)) throw new Error(`Static headers missing: ${expected}`)
   if (headers.includes('microphone=()')) throw new Error('Static headers disable L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL web v1.0.1 static export passed with a buyer-focused commercial shell, first-party auth return flow, protected audit access, launch branding, private app surfaces, and hidden render code preserved for later reactivation.')
+  console.log('\nSUCCESS: ProofTTL web v1.0.1 static export passed with a buyer-focused commercial shell, no launch ads, first-party auth return flow, protected audit access, launch branding, private app surfaces, and hidden render code preserved for later reactivation.')
 }
 
 main().catch((error) => { console.error('\nSTATIC EXPORT CHECK FAILED:', error.message || error); process.exitCode = 1 })
