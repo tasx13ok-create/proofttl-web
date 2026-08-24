@@ -1,7 +1,7 @@
 import { access, readFile } from 'node:fs/promises'
 
 const requiredFiles = [
-  'package.json','out/index.html','out/login/index.html','out/two-factor/index.html','out/onboarding/index.html','out/get-started/index.html','out/console/index.html','out/support/index.html','out/docs/index.html','out/audit/index.html','out/audit/sample/index.html','out/audit/status/index.html','out/solutions/index.html','out/solutions/ai-agent-verification/index.html','out/trust/index.html','out/workspace/index.html','out/worlds/index.html','out/cinematics/index.html','out/verify-lease.html','out/lease-ops.html','out/methodology.html','out/status.html','out/robots.txt','out/_headers','public/proofttl-mark.svg','public/proofttl-lockup.svg','components/ProductNav.tsx','components/ProtocolNetworkStrip.tsx','components/WorkspaceDesktopShell.tsx','components/WorldBuilder.tsx','components/CinematicsStudio.tsx','components/LocalCinematicPreview.tsx','cinematics/core/Types.ts','cinematics/prompt/PromptParser.ts','cinematics/ai/Types.ts','lib/proofttl-cinematics.ts','components/AssistantRichText.tsx','components/ProofTTLAds.tsx','components/ProofTTLAssistant.tsx','components/ProofTTLChatBar.tsx','components/AppOnlyChatBar.tsx','components/LoveEntity.module.css','lib/proofttl-assistant.ts','lib/proofttl-auth.ts','components/AuthLoginPanel.tsx','components/AuditIntakeForm.tsx','components/AuditStatusLookup.tsx','api/auth-proxy.js','app/product-nav.css','app/brand-polish.css','app/audit-sales.css','app/workspace-shell.css','app/worlds.css','app/cinematics.css','app/cinematics-v3.css','app/chat-bar.css','app/chat-fullscreen.css','app/glass-polish.css','scripts/check-public-sales-shell.js','ADSENSE-SETUP.md'
+  'package.json','out/index.html','out/login/index.html','out/two-factor/index.html','out/onboarding/index.html','out/get-started/index.html','out/console/index.html','out/support/index.html','out/status/index.html','out/docs/index.html','out/audit/index.html','out/audit/sample/index.html','out/audit/status/index.html','out/solutions/index.html','out/solutions/ai-agent-verification/index.html','out/trust/index.html','out/workspace/index.html','out/worlds/index.html','out/cinematics/index.html','out/verify-lease.html','out/lease-ops.html','out/methodology.html','out/robots.txt','out/_headers','public/proofttl-mark.svg','public/proofttl-lockup.svg','components/ProductNav.tsx','components/ProtocolNetworkStrip.tsx','components/PublicServiceStatus.tsx','components/WorkspaceDesktopShell.tsx','components/WorldBuilder.tsx','components/CinematicsStudio.tsx','components/LocalCinematicPreview.tsx','cinematics/core/Types.ts','cinematics/prompt/PromptParser.ts','cinematics/ai/Types.ts','lib/proofttl-cinematics.ts','components/AssistantRichText.tsx','components/ProofTTLAds.tsx','components/ProofTTLAssistant.tsx','components/ProofTTLChatBar.tsx','components/AppOnlyChatBar.tsx','components/LoveEntity.module.css','lib/proofttl-assistant.ts','lib/proofttl-auth.ts','components/AuthLoginPanel.tsx','components/AuditIntakeForm.tsx','components/AuditStatusLookup.tsx','api/auth-proxy.js','app/product-nav.css','app/brand-polish.css','app/audit-sales.css','app/workspace-shell.css','app/worlds.css','app/cinematics.css','app/cinematics-v3.css','app/chat-bar.css','app/chat-fullscreen.css','app/glass-polish.css','scripts/check-public-sales-shell.js','ADSENSE-SETUP.md'
 ]
 
 async function expect(file, values, label = file) {
@@ -30,6 +30,9 @@ async function main() {
   await expect('out/audit/index.html', ['Claim Stress Test','Verification Audit','$129','$500','SCOPE BEFORE PAYMENT','/audit/sample/'], 'Audit')
   await expect('out/audit/sample/index.html', ['Sample Verification Audit','PX-006','CONTRADICTED','PUBLIC DEMONSTRATION'], 'Sample audit')
   await expect('out/audit/status/index.html', ['SECURE AUDIT ACCESS','Checking your session','signed-in ProofTTL account'], 'Audit status auth gate')
+  await expect('out/support/index.html', ['Get to the right help without posting private details.','CHECK MY AUDIT STATUS','OPEN VERIFICATION INTAKE','NEVER POST PUBLICLY'], 'Customer support')
+  const customerStatus = await expect('out/status/index.html', ['Verification service status.','Claim verification service','Customer account security','Fact Lease monitoring','CHECK MY AUDIT STATUS'], 'Customer status')
+  if (customerStatus.includes('Base Sepolia testnet') || customerStatus.includes('Latest monitoring run') || customerStatus.includes('AI verifier binding')) throw new Error('Customer status regressed to the obsolete protocol diagnostic page')
   await expect('out/workspace/index.html', ['Workspace','Code','Verify claims','Open files'], 'Workspace')
   await expect('out/worlds/index.html', ['WORLDS / 3D STUDIO','LIVE WEBGL PREVIEW','GENERATE LOCALLY','EXPORT JSON'], 'Worlds preserved code')
   await expect('out/cinematics/index.html', ['CINEMATICS','DIRECT · STORYBOARD · RENDER · CUT','AI FILM','LOCAL PREVIS','DIRECT SCENE WITH AI','TIMELINE','RENDER SCENE'], 'Cinematics preserved code')
@@ -38,7 +41,6 @@ async function main() {
   await expect('out/verify-lease.html', ['Verify a signed','Ed25519','proofttl-issuance-v1','/.well-known/proofttl-keys.json','Export signed Lease JSON'], 'Lease verifier')
   await expect('out/lease-ops.html', ['Lease Operations','Share verification link','Prepare renewal'], 'Lease operations')
   await expect('out/methodology.html', ['SUPPORTED','CONTRADICTED','UNKNOWN','ACTIVE','REVOKED','EXPIRED'], 'Methodology')
-  await expect('out/status.html', ['System status','/health','/monitor/status','Base Sepolia testnet'], 'Status')
 
   await expect('components/CinematicsStudio.tsx', ['data-ai-render-mode="true"','DIRECT SCENE WITH AI','STORYBOARD ALL','RENDER SCENE','PLAY REEL','CONTINUITY BIBLE','EXPORT V3 PROJECT','LocalCinematicPreview'], 'AI Cinematics v3 preserved')
   await expect('cinematics/ai/Types.ts', ['proofttl-cinematic-v3','CinematicShotV3','ShotGenerationState'], 'Cinematic v3 AI schema')
@@ -63,10 +65,10 @@ async function main() {
   if (layout.includes('<ProofTTLAssistant />')) throw new Error('Legacy separate voice assistant is mounted')
 
   const networkStrip = await readFile('components/ProtocolNetworkStrip.tsx', 'utf8')
-  for (const expected of ['PROOFTTL v1.0.1 · TESTNET PREVIEW','Mainnet disabled',"'/'","'/audit/'","'/services/'","'/trust/'","'/ai-fact-checker/'"]) if (!networkStrip.includes(expected)) throw new Error(`Protocol network strip is missing launch boundary: ${expected}`)
+  for (const expected of ['PROOFTTL v1.0.1 · TESTNET PREVIEW','Mainnet disabled',"'/'","'/audit/'","'/services/'","'/trust/'","'/ai-fact-checker/'","'/support/'","'/status/'"]) if (!networkStrip.includes(expected)) throw new Error(`Protocol network strip is missing launch boundary: ${expected}`)
 
   const nav = await readFile('components/ProductNav.tsx', 'utf8')
-  for (const expected of ['/workspace/','/studio/','/work/','/files/','/automations/','/money/','/connections/','/trust/','/audit/sample/','Start verification','data-nav-mode','product-brand-lockup','product-brand-lockup-image','/proofttl-lockup.svg','ProofTTL','signInHref']) if (!nav.includes(expected)) throw new Error(`Global navigation is missing: ${expected}`)
+  for (const expected of ['/workspace/','/studio/','/work/','/files/','/automations/','/money/','/connections/','/trust/','/support/','/status/','/audit/sample/','Start verification','data-nav-mode','product-brand-lockup','product-brand-lockup-image','/proofttl-lockup.svg','ProofTTL','signInHref']) if (!nav.includes(expected)) throw new Error(`Global navigation is missing: ${expected}`)
   for (const legacyBrand of ['product-brand-mark','product-brand-wordmark','/proofttl-logo-lockup.png']) if (nav.includes(legacyBrand)) throw new Error(`Legacy placeholder branding leaked into global navigation: ${legacyBrand}`)
   for (const hidden of ["{ href: '/worlds/', label: 'Worlds' }","{ href: '/cinematics/', label: 'Cinematics' }"]) if (nav.includes(hidden)) throw new Error(`Hidden render surface leaked into global navigation: ${hidden}`)
 
@@ -90,7 +92,7 @@ async function main() {
   for (const expected of ['X-Content-Type-Options: nosniff','X-Frame-Options: DENY','Permissions-Policy: camera=(), microphone=(self), geolocation=()']) if (!headers.includes(expected)) throw new Error(`Static headers missing: ${expected}`)
   if (headers.includes('microphone=()')) throw new Error('Static headers disable L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL web v1.0.1 static export passed with a buyer-focused commercial shell, no launch ads, first-party auth return flow, protected audit access, launch branding, private app surfaces, and hidden render code preserved for later reactivation.')
+  console.log('\nSUCCESS: ProofTTL web v1.0.1 static export passed with buyer-safe support/status pages, no launch ads, first-party auth return flow, protected audit access, launch branding, private app surfaces, and hidden render code preserved for later reactivation.')
 }
 
 main().catch((error) => { console.error('\nSTATIC EXPORT CHECK FAILED:', error.message || error); process.exitCode = 1 })
