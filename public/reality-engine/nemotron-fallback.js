@@ -3,11 +3,26 @@
 
   const KEY_STORE = 'reality-engine-openrouter-key-v1'
   const VERIFIER_STORE = 'reality-engine-openrouter-verifier-v1'
+  const RETURN_STORE = 'reality-engine-openrouter-return-v1'
   const MODEL = 'nvidia/nemotron-3-super-120b-a12b:free'
   const OPENROUTER_CHAT = 'https://openrouter.ai/api/v1/chat/completions'
   const OPENROUTER_AUTH = 'https://openrouter.ai/auth'
   const OPENROUTER_EXCHANGE = 'https://openrouter.ai/api/v1/auth/keys'
   const nativeFetch = window.fetch.bind(window)
+
+  // IMPORTANT: capture the OAuth callback synchronously, before app.js boots.
+  // app.js intentionally rewrites the URL to persist the universe seed. The old
+  // implementation waited for DOMContentLoaded and the ?code= value was gone by then.
+  const bootUrl = new URL(location.href)
+  const bootCode = bootUrl.searchParams.get('code') || ''
+  const bootError = bootUrl.searchParams.get('error') || ''
+  const bootErrorDescription = bootUrl.searchParams.get('error_description') || ''
+  if (bootCode || bootError) {
+    bootUrl.searchParams.delete('code')
+    bootUrl.searchParams.delete('error')
+    bootUrl.searchParams.delete('error_description')
+    history.replaceState(null, '', `${bootUrl.pathname}${bootUrl.search}${bootUrl.hash}`)
+  }
 
   const SYSTEM = `You are the meta-scientist inside Reality Engine, a synthetic experimental laboratory.
 You are NOT allowed to assume Earth physics applies. The hidden law genome may describe arbitrary toy physics.
@@ -26,7 +41,7 @@ JSON schema:
 
 Choose exactly one next intervention.`
 
-  function key() {
+  function storedKey() {
     try { return localStorage.getItem(KEY_STORE) || '' } catch { return '' }
   }
 
@@ -65,9 +80,62 @@ Choose exactly one next intervention.`
     }
   }
 
+  let connectionMessage = null
+  function setConnectionState(label, cls, note) {
+    connectionMessage = { label, cls, note }
+    const status = document.querySelector('#nemotron-state')
+    const rationale = document.querySelector('#nemotron-rationale')
+    if (status) {
+      status.textContent = label
+      status.className = cls === 'ok' ? 'status-ok' : cls === 'bad' ? 'status-bad' : 'status-warn'
+    }
+    if (note && rationale) rationale.textContent = note
+  }
+
+  let oauthPromise = null
+  async function exchangeCapturedCode() {
+    if (!bootCode) return storedKey()
+    const verifier = sessionStorage.getItem(VERIFIER_STORE)
+    if (!verifier) throw new Error('The OpenRouter PKCE verifier was lost. Click Connect free Nemotron and authorize again.')
+
+    const response = await nativeFetch(OPENROUTER_EXCHANGE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        code: bootCode,
+        code_verifier: verifier,
+        code_challenge_method: 'S256',
+      }),
+    })
+    const data = await response.json().catch(() => ({}))
+    if (!response.ok || !data.key) {
+      throw new Error(data?.error?.message || data?.message || `Authorization HTTP ${response.status}`)
+    }
+
+    localStorage.setItem(KEY_STORE, data.key)
+    sessionStorage.removeItem(VERIFIER_STORE)
+    sessionStorage.removeItem(RETURN_STORE)
+    return data.key
+  }
+
+  if (bootError) {
+    oauthPromise = Promise.reject(new Error(bootErrorDescription || bootError))
+    oauthPromise.catch(() => {})
+  } else if (bootCode) {
+    oauthPromise = exchangeCapturedCode()
+  }
+
+  async function ensureKey() {
+    const existing = storedKey()
+    if (existing) return existing
+    if (oauthPromise) return oauthPromise
+    return ''
+  }
+
   async function openRouterScientist(init) {
-    const apiKey = key()
+    const apiKey = await ensureKey()
     if (!apiKey) throw new Error('OpenRouter is not connected')
+
     let notebook = null
     try { notebook = typeof init?.body === 'string' ? JSON.parse(init.body) : init?.body } catch {}
     if (!notebook) throw new Error('Reality Engine lab notebook was missing')
@@ -98,6 +166,7 @@ Choose exactly one next intervention.`
       const message = data?.error?.message || data?.message || `OpenRouter HTTP ${response.status}`
       throw new Error(message)
     }
+
     const plan = normalizePlan(cleanModelJson(data?.choices?.[0]?.message?.content))
     return new Response(JSON.stringify({
       ok: true,
@@ -115,11 +184,18 @@ Choose exactly one next intervention.`
     try { pathname = new URL(url, location.href).pathname } catch {}
     if (pathname !== '/api/reality-scientist') return nativeFetch(input, init)
 
-    if (key()) {
+    const apiKey = await ensureKey().catch(error => {
+      setConnectionState('AUTH ERROR', 'bad', `OpenRouter authorization failed: ${String(error?.message || error).slice(0, 180)}`)
+      return ''
+    })
+
+    if (apiKey) {
       try {
-        return await openRouterScientist(init)
+        const result = await openRouterScientist(init)
+        setConnectionState('FREE 120B LIVE', 'ok', 'Nemotron 3 Super 120B is actively planning experiments through the free OpenRouter route.')
+        return result
       } catch (error) {
-        setConnectionState('FREE ROUTE ERROR', 'bad', String(error?.message || error))
+        setConnectionState('FREE ROUTE ERROR', 'bad', `Free Nemotron route failed: ${String(error?.message || error).slice(0, 180)}`)
         return new Response(JSON.stringify({
           error: 'openrouter_nemotron_unavailable',
           detail: `Free Nemotron route failed: ${String(error?.message || error).slice(0, 180)}`,
@@ -142,21 +218,10 @@ Choose exactly one next intervention.`
     return primary
   }
 
-  function setConnectionState(label, cls, note) {
-    const status = document.querySelector('#nemotron-state')
-    const rationale = document.querySelector('#nemotron-rationale')
-    if (status) {
-      status.textContent = label
-      status.className = cls === 'ok' ? 'status-ok' : cls === 'bad' ? 'status-bad' : 'status-warn'
-    }
-    if (note && rationale && /gateway|connect|route|unavailable|awaiting|collecting/i.test(rationale.textContent || '')) {
-      rationale.textContent = note
-    }
-  }
-
   function mountConnectButton() {
     const host = document.querySelector('.nemotron-status')
     if (!host || document.querySelector('#openrouter-connect')) return
+
     const button = document.createElement('button')
     button.id = 'openrouter-connect'
     button.className = 'ghost wide'
@@ -172,30 +237,43 @@ Choose exactly one next intervention.`
     host.appendChild(note)
 
     const refresh = () => {
-      if (key()) {
+      if (storedKey()) {
         button.textContent = 'Disconnect free Nemotron'
-        setConnectionState('FREE 120B READY', 'ok', 'Nemotron 3 Super 120B is connected through the free OpenRouter route. The local learner remains independent.')
+        setConnectionState('FREE 120B READY', 'ok', 'Nemotron 3 Super 120B is connected through OpenRouter. The local learner remains independent.')
+      } else if (bootCode && oauthPromise) {
+        button.disabled = true
+        button.textContent = 'Finishing authorization…'
+        setConnectionState('AUTHORIZING', 'warn', 'OpenRouter approved access. Exchanging the one-time code now…')
       } else {
+        button.disabled = false
         button.textContent = 'Connect free Nemotron'
       }
     }
 
     button.addEventListener('click', async () => {
-      if (key()) {
+      if (storedKey()) {
         localStorage.removeItem(KEY_STORE)
+        button.disabled = false
         refresh()
         setConnectionState('STANDBY', 'warn', 'Free Nemotron disconnected. The local scientist continues autonomously.')
         return
       }
+
       button.disabled = true
       button.textContent = 'Opening secure authorization…'
       try {
         const verifier = b64url(crypto.getRandomValues(new Uint8Array(48)))
         const challenge = await sha256url(verifier)
         sessionStorage.setItem(VERIFIER_STORE, verifier)
+
         const current = new URL(location.href)
         current.searchParams.delete('code')
+        current.searchParams.delete('error')
+        current.searchParams.delete('error_description')
+        // Keep the universe seed in the callback so the same experiment resumes.
         const callback = `${current.origin}${current.pathname}${current.search}`
+        sessionStorage.setItem(RETURN_STORE, callback)
+
         const auth = new URL(OPENROUTER_AUTH)
         auth.searchParams.set('callback_url', callback)
         auth.searchParams.set('code_challenge', challenge)
@@ -207,40 +285,25 @@ Choose exactly one next intervention.`
         setConnectionState('AUTH ERROR', 'bad', String(error?.message || error))
       }
     })
-    refresh()
-  }
 
-  async function finishOAuthIfPresent() {
-    const params = new URLSearchParams(location.search)
-    const code = params.get('code')
-    if (!code) return
-    const verifier = sessionStorage.getItem(VERIFIER_STORE)
-    if (!verifier) {
-      setConnectionState('AUTH ERROR', 'bad', 'The OpenRouter authorization verifier was lost. Click Connect free Nemotron and try again.')
-      return
-    }
-    setConnectionState('AUTHORIZING', 'warn', 'Exchanging the one-time authorization code for a browser-scoped OpenRouter key…')
-    try {
-      const response = await nativeFetch(OPENROUTER_EXCHANGE, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, code_verifier: verifier, code_challenge_method: 'S256' }),
+    refresh()
+
+    if (oauthPromise) {
+      oauthPromise.then(() => {
+        button.disabled = false
+        refresh()
+        setConnectionState('FREE 120B READY', 'ok', 'Authorization complete. Nemotron 3 Super 120B is connected; running a live scientific consultation now.')
+        setTimeout(() => document.querySelector('#consult-nemotron')?.click(), 700)
+      }).catch(error => {
+        button.disabled = false
+        button.textContent = 'Connect free Nemotron'
+        setConnectionState('AUTH ERROR', 'bad', `OpenRouter authorization failed: ${String(error?.message || error).slice(0, 180)}`)
       })
-      const data = await response.json().catch(() => ({}))
-      if (!response.ok || !data.key) throw new Error(data?.error?.message || data?.message || `Authorization HTTP ${response.status}`)
-      localStorage.setItem(KEY_STORE, data.key)
-      sessionStorage.removeItem(VERIFIER_STORE)
-      params.delete('code')
-      history.replaceState(null, '', `${location.pathname}${params.toString() ? `?${params}` : ''}${location.hash}`)
-      setConnectionState('FREE 120B READY', 'ok', 'Nemotron 3 Super 120B is connected. Running a live scientific consultation next.')
-      setTimeout(() => document.querySelector('#consult-nemotron')?.click(), 900)
-    } catch (error) {
-      setConnectionState('AUTH ERROR', 'bad', `OpenRouter authorization failed: ${String(error?.message || error).slice(0, 180)}`)
     }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
     mountConnectButton()
-    finishOAuthIfPresent()
+    if (connectionMessage) setConnectionState(connectionMessage.label, connectionMessage.cls, connectionMessage.note)
   })
 })()
