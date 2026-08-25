@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#05070a" />
+  <title>Reality Engine — Post-Corpus Intelligence</title>
+  <meta name="description" content="A browser-native prototype where a zero-pretrained agent learns by experimenting inside synthetic universes." />
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<main>
+  <nav class="topbar">
+    <a class="brand" href="#top"><span class="brand-mark">RE</span><span>REALITY ENGINE</span></a>
+    <div class="nav-right">
+      <span class="runtime-pill"><i id="runtime-dot"></i> <span id="runtime-state">INITIALIZING</span></span>
+      <a href="#lab">Lab</a><a href="#architecture">Architecture</a><a href="#proof">Proof</a>
+    </div>
+  </nav>
+
+  <section class="hero" id="top">
+    <div class="eyebrow">POST-CORPUS INTELLIGENCE / PROTOTYPE 01</div>
+    <h1>Don’t give the machine<br/><em>our knowledge.</em></h1>
+    <p class="hero-sub">Give it a universe and let it discover.</p>
+    <p class="hero-copy">A browser-native research prototype where a zero-pretrained local learner discovers structure from synthetic experience, while an optional Nemotron 3 Super 120B meta-scientist designs higher-value experiments.</p>
+    <div class="hero-actions"><a class="primary" href="#lab">Enter the live universe ↓</a><button class="ghost" id="hero-bigbang">Create new Big Bang</button></div>
+    <div class="hero-proof">
+      <div><strong>0</strong><span>local learner pretrained weights</span></div>
+      <div><strong>LOCAL</strong><span>online learning</span></div>
+      <div><strong id="compute-mode">CPU</strong><span id="compute-copy">universal fallback</span></div>
+      <div><strong id="peer-count-hero">1</strong><span>active local universes</span></div>
+    </div>
+  </section>
+
+  <section class="lab-shell" id="lab">
+    <div class="section-head">
+      <div><span class="kicker">LIVE EXPERIMENT</span><h2>Universe <span id="seed-title">#--------</span></h2></div>
+      <div class="lab-controls">
+        <button id="toggle-run">Pause</button>
+        <button id="force-experiment">Force experiment</button>
+        <button id="copy-seed">Copy seed link</button>
+        <button class="accent-btn" id="new-bigbang">New Big Bang</button>
+      </div>
+    </div>
+
+    <div class="lab-grid">
+      <div class="universe-card">
+        <canvas id="universe"></canvas>
+        <div class="canvas-hud top-left"><span id="hud-seed">GENESIS --------</span><span id="entity-count">0 entities</span></div>
+        <div class="canvas-hud bottom-left"><span>click / tap the universe to perturb it</span></div>
+        <div class="canvas-hud bottom-right"><span id="sim-state">SIMULATION RUNNING</span></div>
+      </div>
+
+      <aside class="agent-card">
+        <div class="panel-title"><span>BLIND SCIENTIST</span><i class="live-dot"></i></div>
+        <div class="metric-big"><span>Prediction error</span><strong id="prediction-error">0.2000</strong></div>
+        <svg class="spark" viewBox="0 0 280 66" preserveAspectRatio="none" aria-label="Prediction error history">
+          <path class="spark-grid" d="M0 17H280M0 33H280M0 49H280"></path>
+          <path class="spark-line" id="error-path" d=""></path>
+        </svg>
+        <div class="mini-grid">
+          <div><span>Steps</span><strong id="steps">0</strong></div>
+          <div><span>Experiments</span><strong id="experiments">0</strong></div>
+          <div><span>Concepts</span><strong id="concept-count">0</strong></div>
+          <div><span>Discoveries</span><strong id="discovery-count">0</strong></div>
+        </div>
+        <div class="progress-block"><div><span>Learning progress</span><strong id="learning-progress">0.00000</strong></div><div class="bar"><i id="learning-bar" style="width:0%"></i></div></div>
+        <div class="action-row" id="action-row"></div>
+      </aside>
+
+      <div class="telemetry-card">
+        <div class="panel-title"><span>WORLD STATE</span><small>normalized latent observables</small></div>
+        <div class="telemetry-list" id="telemetry"></div>
+      </div>
+
+      <div class="concept-card">
+        <div class="panel-title"><span>CONCEPT GENESIS</span><small>labels invented from recurring states</small></div>
+        <div class="concept-cloud" id="concept-cloud"><p class="muted">The observer has not compressed a recurring state yet.</p></div>
+      </div>
+
+      <div class="log-card">
+        <div class="panel-title"><span>COGNITIVE TRACE</span><small>human-readable instrumentation</small></div>
+        <div class="terminal" id="terminal"></div>
+      </div>
+    </div>
+
+    <div class="nemotron-console" id="nemotron-console">
+      <div class="nemotron-status">
+        <div class="panel-title"><span>NEMOTRON META-SCIENTIST</span></div>
+        <div class="nemotron-model">NEMOTRON 3 SUPER 120B A12B</div>
+        <span class="nemotron-badge"><i id="nemotron-dot" class="live-dot"></i><span id="nemotron-state">CONNECTING</span></span>
+        <p class="muted" style="margin-top:14px">The local learner remains zero-pretrained. Nemotron receives only compact observations and the lab notebook; it never controls the renderer directly.</p>
+      </div>
+      <div class="nemotron-brain">
+        <div class="panel-title"><span>SCIENTIFIC NOTE</span><small id="nemotron-cycle">awaiting first consultation</small></div>
+        <div class="nemotron-hypothesis" id="nemotron-hypothesis">No external hypothesis yet.</div>
+        <div class="nemotron-thought" id="nemotron-rationale">The local scientist is collecting baseline evidence before consulting the meta-scientist.</div>
+      </div>
+      <div class="nemotron-next">
+        <div class="panel-title"><span>NEXT PROPOSED TEST</span></div>
+        <div class="claim"><span>Intervention</span><strong id="nemotron-action">LOCAL CURIOSITY</strong></div>
+        <div class="claim"><span>Target</span><strong id="nemotron-target">UNRESOLVED</strong></div>
+        <div class="nemotron-meta" id="nemotron-meta">Nemotron plans are advisory and are consumed one experiment at a time.</div>
+        <button class="ghost wide" id="consult-nemotron" style="margin-top:14px">Consult Nemotron now</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="discovery-section" id="proof">
+    <div class="section-head"><div><span class="kicker">FALSIFIABLE OUTPUT</span><h2>Discovery ledger</h2></div><p>The runtime only promotes an effect after repeated interventions. Every claim can be replayed against a fresh deterministic copy of its universe.</p></div>
+    <div class="ledger-grid">
+      <div class="ledger" id="ledger"><div class="empty-ledger">No promoted discovery yet. Leave the runtime running or force several experiments.</div></div>
+      <div class="verification-card" id="verification">
+        <span class="kicker">INDEPENDENT REPLAY</span>
+        <h3>Select a claim</h3><p>When a discovery appears, choose it to run an independent replay inside the browser.</p>
+      </div>
+    </div>
+    <div class="network-strip">
+      <div><i class="live-dot"></i><strong>LOCAL GENE POOL</strong><span id="peer-count">0 other tabs detected</span></div>
+      <p>Open this page in another tab. Each tab gets its own runtime; discoveries are exchanged locally through <code>BroadcastChannel</code>.</p>
+      <div class="network-items" id="network-items"></div>
+    </div>
+  </section>
+
+  <section class="architecture" id="architecture">
+    <span class="kicker">WHAT IS ACTUALLY RUNNING</span><h2>Not a video. Not an LLM wrapper.</h2>
+    <div class="arch-flow">
+      <div><b>01</b><strong>Genesis</strong><span>Seeded laws create a deterministic synthetic universe.</span></div><i>→</i>
+      <div><b>02</b><strong>Observe</strong><span>Eight state variables are measured from motion.</span></div><i>→</i>
+      <div><b>03</b><strong>Predict</strong><span>A random-weight neural network predicts the next state.</span></div><i>→</i>
+      <div><b>04</b><strong>Experiment</strong><span>Curiosity scores choose interventions with unresolved outcomes.</span></div><i>→</i>
+      <div><b>05</b><strong>Compress</strong><span>Recurring states become internally invented concept symbols.</span></div>
+    </div>
+    <div class="truth-grid">
+      <div><span>THIS PROTOTYPE DEMONSTRATES</span><p>Online learning from synthetic experience, active experimentation, concept formation, persistent local cognition, replay, cross-tab discovery exchange, and an optional 120B meta-scientist that plans experiments from the evidence produced inside the synthetic universe.</p></div>
+      <div><span>THIS PROTOTYPE DOES NOT CLAIM</span><p>That its toy laws are real subatomic physics, that it is conscious, or that Nemotron itself is data-free. Genesis learning and pretrained scientific reasoning are shown as separate layers so the claim stays falsifiable.</p></div>
+    </div>
+  </section>
+
+  <section class="genome-section">
+    <span class="kicker">LAW GENOME</span><h2>Every Big Bang has different physics.</h2>
+    <div class="genome-code" id="genome-code"></div>
+  </section>
+
+  <footer><div class="brand"><span class="brand-mark">RE</span><span>REALITY ENGINE</span></div><p>Traditional software executes. AI predicts. <strong>Discovery systems experiment.</strong></p><span>Prototype 02 / Nemotron-augmented</span></footer>
+</main>
+<script src="./app.js"></script>
+</body>
+</html>
