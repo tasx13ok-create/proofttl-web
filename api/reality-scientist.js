@@ -1,4 +1,5 @@
 const MODEL = 'nvidia/nemotron-3-super-120b-a12b'
+const GATEWAY = 'https://ai-gateway.vercel.sh/v1/chat/completions'
 const ACTIONS = new Set(['pulse', 'vortex', 'cool', 'heat', 'well'])
 const METRICS = new Set(['speed', 'energy', 'spread', 'angular', 'density', 'entropy', 'coherence', 'drift'])
 const PREVIEW_PROBE = 'reality-engine-probe-8f42a1d7'
@@ -25,7 +26,7 @@ function normalizePlan(value) {
   const action = ACTIONS.has(plan.action) ? plan.action : null
   if (!action) throw new Error('model_returned_invalid_action')
   const targetMetric = METRICS.has(plan.target_metric) ? plan.target_metric : null
-  const expectedDirection = plan.expected_direction === 'raises' || plan.expected_direction === 'lowers' || plan.expected_direction === 'uncertain'
+  const expectedDirection = ['raises', 'lowers', 'uncertain'].includes(plan.expected_direction)
     ? plan.expected_direction : 'uncertain'
   return {
     action,
@@ -64,6 +65,23 @@ function probeNotebook() {
   }
 }
 
+const SYSTEM = `You are the meta-scientist inside Reality Engine, a synthetic experimental laboratory.
+You are NOT allowed to assume Earth physics applies. The hidden law genome may describe arbitrary toy physics.
+A separate local learner starts from random weights and collects observations. Your job is only to design the next high-information intervention from its compact lab notebook.
+
+Scientific rules:
+- Prefer falsification and information gain over confirming an existing belief.
+- Treat contradictory findings as uncertainty to resolve, not as two discoveries.
+- Prefer actions with enough observations to distinguish signal from noise, but periodically explore under-tested actions.
+- Do not call a correlation a law.
+- Do not claim the synthetic result transfers to the real universe.
+- Return ONLY one JSON object. No markdown. No chain-of-thought. Keep rationale concise.
+
+JSON schema:
+{"action":"pulse|vortex|cool|heat|well","target_metric":"speed|energy|spread|angular|density|entropy|coherence|drift|null","expected_direction":"raises|lowers|uncertain","hypothesis":"short falsifiable hypothesis","rationale":"short reason this test has high information value","confidence":0.0,"test_count":1}
+
+Choose exactly one next intervention.`
+
 export default async function handler(request, response) {
   response.setHeader('cache-control', 'no-store')
   response.setHeader('content-type', 'application/json; charset=utf-8')
@@ -93,42 +111,43 @@ export default async function handler(request, response) {
       return
     }
 
-    const system = `You are the meta-scientist inside Reality Engine, a synthetic experimental laboratory.
-You are NOT allowed to assume Earth physics applies. The hidden law genome may describe arbitrary toy physics.
-A separate local learner starts from random weights and collects observations. Your job is only to design the next high-information intervention from its compact lab notebook.
+    const token = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN
+    if (!token) throw new Error('gateway_credentials_missing')
 
-Scientific rules:
-- Prefer falsification and information gain over confirming an existing belief.
-- Treat contradictory findings as uncertainty to resolve, not as two discoveries.
-- Prefer actions with enough observations to distinguish signal from noise, but periodically explore under-tested actions.
-- Do not call a correlation a law.
-- Do not claim the synthetic result transfers to the real universe.
-- Return ONLY one JSON object. No markdown. No chain-of-thought. Keep rationale concise.
-
-JSON schema:
-{"action":"pulse|vortex|cool|heat|well","target_metric":"speed|energy|spread|angular|density|entropy|coherence|drift|null","expected_direction":"raises|lowers|uncertain","hypothesis":"short falsifiable hypothesis","rationale":"short reason this test has high information value","confidence":0.0,"test_count":1}`
-
-Choose exactly one next intervention.`
-
-    const { generateText } = await import('ai')
-    const result = await generateText({
-      model: MODEL,
-      system,
-      prompt: serialized,
-      temperature: 1,
-      topP: 0.95,
-      maxOutputTokens: 900,
+    const upstream = await fetch(GATEWAY, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: 'system', content: SYSTEM },
+          { role: 'user', content: serialized },
+        ],
+        temperature: 1,
+        top_p: 0.95,
+        max_tokens: 900,
+      }),
     })
 
-    const plan = normalizePlan(extractJson(result.text))
+    const data = await upstream.json().catch(() => ({}))
+    if (!upstream.ok) {
+      const message = data?.error?.message || data?.message || `gateway_http_${upstream.status}`
+      throw new Error(message)
+    }
+
+    const text = data?.choices?.[0]?.message?.content
+    const plan = normalizePlan(extractJson(text))
     response.statusCode = 200
     response.end(JSON.stringify({
       ok: true,
       probe: isPreviewProbe,
       model: MODEL,
       plan,
-      usage: result.usage || null,
-      finishReason: result.finishReason || null,
+      usage: data.usage || null,
+      finishReason: data?.choices?.[0]?.finish_reason || null,
     }))
   } catch (error) {
     console.error('Reality Engine Nemotron scientist failed', error)
