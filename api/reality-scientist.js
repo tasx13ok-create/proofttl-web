@@ -111,7 +111,9 @@ export default async function handler(request, response) {
       return
     }
 
-    const token = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN
+    const oidcHeader = request.headers?.['x-vercel-oidc-token']
+    const oidcToken = Array.isArray(oidcHeader) ? oidcHeader[0] : oidcHeader
+    const token = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN || oidcToken
     if (!token) throw new Error('gateway_credentials_missing')
 
     const upstream = await fetch(GATEWAY, {
