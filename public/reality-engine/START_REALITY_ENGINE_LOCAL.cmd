@@ -17,8 +17,15 @@ echo.
 
 where node >nul 2>&1
 if errorlevel 1 (
-  echo [ERROR] Node.js is required for the secure local bridge.
+  echo [ERROR] Node.js 18 or newer is required for the secure local bridge.
   echo Install Node.js LTS from https://nodejs.org/ then run this launcher again.
+  pause
+  exit /b 1
+)
+node -e "if (typeof fetch !== 'function') process.exit(1)" >nul 2>&1
+if errorlevel 1 (
+  echo [ERROR] Your Node.js is too old. Reality Engine needs Node.js 18 or newer.
+  echo Install the current Node.js LTS from https://nodejs.org/ and run this launcher again.
   pause
   exit /b 1
 )
