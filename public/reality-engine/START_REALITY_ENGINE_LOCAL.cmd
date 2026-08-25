@@ -79,7 +79,7 @@ if defined RUNNING_VERSION (
 )
 
 echo [3/4] Starting the same-origin local runtime...
-start "Reality Engine Local Runtime" cmd /k "set REALITY_ENGINE_ASSET_DIR=%ROOT%&& node "%BRIDGE%""
+start "Reality Engine Local Runtime" cmd /k node "%BRIDGE%"
 
 echo [4/4] Waiting for health check...
 powershell -NoProfile -ExecutionPolicy Bypass -Command "$ok=$false; 1..20 | ForEach-Object { try { $h=Invoke-RestMethod -TimeoutSec 1 'http://127.0.0.1:4317/health'; if($h.ok){$ok=$true; break} } catch {}; Start-Sleep -Milliseconds 500 }; if(-not $ok){exit 1}"
