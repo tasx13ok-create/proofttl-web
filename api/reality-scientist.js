@@ -2,7 +2,6 @@ const MODEL = 'nvidia/nemotron-3-super-120b-a12b'
 const GATEWAY = 'https://ai-gateway.vercel.sh/v1/chat/completions'
 const ACTIONS = new Set(['pulse', 'vortex', 'cool', 'heat', 'well'])
 const METRICS = new Set(['speed', 'energy', 'spread', 'angular', 'density', 'entropy', 'coherence', 'drift'])
-const PREVIEW_PROBE = 'reality-engine-probe-8f42a1d7'
 
 function parseBody(request) {
   if (request.body && typeof request.body === 'object') return request.body
@@ -39,30 +38,18 @@ function normalizePlan(value) {
   }
 }
 
-function probeNotebook() {
-  return {
-    universe: {
-      seed: 'PROBE',
-      law_genome: { attraction: 0.37, repulsion: 2.4, radius: 71, drag: 0.993 },
-      current_state: { energy: 0.42, spread: 0.51, centerX: 0.5, centerY: 0.49 },
-    },
-    notebook: {
-      experiments: 24,
-      actions: {
-        pulse: { trials: 8, means: { energy: 0.11, spread: 0.04 } },
-        vortex: { trials: 4, means: { energy: 0.01, spread: -0.01 } },
-        cool: { trials: 4, means: { energy: -0.06, spread: 0.0 } },
-        heat: { trials: 4, means: { energy: 0.05, spread: 0.03 } },
-        well: { trials: 4, means: { energy: 0.13, spread: -0.07 } },
-      },
-      discoveries: [
-        { action: 'pulse', metric: 'energy', direction: 'raises', effect: 0.11, confidence: 0.73, samples: 8 },
-        { action: 'well', metric: 'energy', direction: 'raises', effect: 0.13, confidence: 0.66, samples: 4 },
-      ],
-      falsified: [],
-    },
-    concepts: [],
+function publicFailure(error) {
+  const message = String(error?.message || error)
+  if (/credit card|billing|payment method|unlock your free credits/i.test(message)) {
+    return { code: 'ai_gateway_billing_required', detail: 'Nemotron is wired and authenticated, but Vercel AI Gateway billing is not enabled for this project.' }
   }
+  if (/credential|token|unauthor|forbidden|401|403/i.test(message)) {
+    return { code: 'ai_gateway_auth_failed', detail: 'The server could not authenticate the Nemotron gateway request.' }
+  }
+  if (/model.*not|unknown model|unsupported model/i.test(message)) {
+    return { code: 'nemotron_model_unavailable', detail: 'Nemotron 3 Super 120B is not currently available through the configured gateway.' }
+  }
+  return { code: 'nemotron_unavailable', detail: message.slice(0, 220) }
 }
 
 const SYSTEM = `You are the meta-scientist inside Reality Engine, a synthetic experimental laboratory.
@@ -86,18 +73,14 @@ export default async function handler(request, response) {
   response.setHeader('cache-control', 'no-store')
   response.setHeader('content-type', 'application/json; charset=utf-8')
 
-  const isPreviewProbe = request.method === 'GET'
-    && process.env.VERCEL_ENV === 'preview'
-    && String(request.query?.probe || '') === PREVIEW_PROBE
-
-  if (request.method !== 'POST' && !isPreviewProbe) {
+  if (request.method !== 'POST') {
     response.statusCode = 405
     response.end(JSON.stringify({ error: 'method_not_allowed' }))
     return
   }
 
   try {
-    const body = isPreviewProbe ? probeNotebook() : parseBody(request)
+    const body = parseBody(request)
     if (!body || !body.universe || !body.notebook) {
       response.statusCode = 400
       response.end(JSON.stringify({ error: 'invalid_lab_notebook' }))
@@ -145,18 +128,15 @@ export default async function handler(request, response) {
     response.statusCode = 200
     response.end(JSON.stringify({
       ok: true,
-      probe: isPreviewProbe,
       model: MODEL,
       plan,
       usage: data.usage || null,
       finishReason: data?.choices?.[0]?.finish_reason || null,
     }))
   } catch (error) {
-    console.error('Reality Engine Nemotron scientist failed', error)
+    const failure = publicFailure(error)
+    console.error('Reality Engine Nemotron scientist failed', failure.code)
     response.statusCode = 502
-    response.end(JSON.stringify({
-      error: 'nemotron_unavailable',
-      detail: String(error?.message || error).slice(0, 280),
-    }))
+    response.end(JSON.stringify({ error: failure.code, detail: failure.detail }))
   }
 }
