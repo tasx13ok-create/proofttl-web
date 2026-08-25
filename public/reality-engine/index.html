@@ -22,7 +22,7 @@
     <div class="eyebrow">POST-CORPUS INTELLIGENCE / PROTOTYPE 02</div>
     <h1>Don’t give the machine<br/><em>our knowledge.</em></h1>
     <p class="hero-sub">Give it a universe and let it discover.</p>
-    <p class="hero-copy">A browser-native research prototype where a zero-pretrained local learner discovers structure from synthetic experience, while an optional Nemotron 3 Super 120B meta-scientist designs higher-value experiments.</p>
+    <p class="hero-copy">A browser-native research prototype where a zero-pretrained local learner discovers structure from synthetic experience, while a local or cloud meta-scientist designs higher-value experiments.</p>
     <div class="hero-actions"><a class="primary" href="#lab">Enter the live universe ↓</a><button class="ghost" id="hero-bigbang">Create new Big Bang</button></div>
     <div class="hero-proof">
       <div><strong>0</strong><span>local learner pretrained weights</span></div>
@@ -86,10 +86,10 @@
 
     <div class="nemotron-console" id="nemotron-console">
       <div class="nemotron-status">
-        <div class="panel-title"><span>NEMOTRON META-SCIENTIST</span></div>
-        <div class="nemotron-model">NEMOTRON 3 SUPER 120B A12B</div>
+        <div class="panel-title"><span>META-SCIENTIST</span></div>
+        <div class="nemotron-model">NEMOTRON 3 SUPER 120B A12B · CLOUD BACKUP</div>
         <span class="nemotron-badge"><i id="nemotron-dot" class="live-dot"></i><span id="nemotron-state">CONNECTING</span></span>
-        <p class="muted" style="margin-top:14px">The local learner remains zero-pretrained. Nemotron receives only compact observations and the lab notebook; it never controls the renderer directly.</p>
+        <p class="muted" style="margin-top:14px">The zero-pretrained learner remains independent. Local Qwen3 is preferred when Ollama is available; Nemotron remains an optional cloud backup.</p>
       </div>
       <div class="nemotron-brain">
         <div class="panel-title"><span>SCIENTIFIC NOTE</span><small id="nemotron-cycle">awaiting first consultation</small></div>
@@ -100,8 +100,8 @@
         <div class="panel-title"><span>NEXT PROPOSED TEST</span></div>
         <div class="claim"><span>Intervention</span><strong id="nemotron-action">LOCAL CURIOSITY</strong></div>
         <div class="claim"><span>Target</span><strong id="nemotron-target">UNRESOLVED</strong></div>
-        <div class="nemotron-meta" id="nemotron-meta">Nemotron plans are advisory and are consumed one experiment at a time.</div>
-        <button class="ghost wide" id="consult-nemotron" style="margin-top:14px">Consult Nemotron now</button>
+        <div class="nemotron-meta" id="nemotron-meta">Meta-scientist plans are advisory and are consumed one experiment at a time.</div>
+        <button class="ghost wide" id="consult-nemotron" style="margin-top:14px">Consult meta-scientist now</button>
       </div>
     </div>
   </section>
@@ -126,14 +126,14 @@
     <span class="kicker">WHAT IS ACTUALLY RUNNING</span><h2>Not a video. Not an LLM wrapper.</h2>
     <div class="arch-flow">
       <div><b>01</b><strong>Genesis</strong><span>Seeded laws create a deterministic synthetic universe.</span></div><i>→</i>
-      <div><b>02</b><strong>Observe</strong><span>Eight state variables are measured from motion.</span></div><i>→</i>
+      <div><b>02</b><strong>Observe</strong><span>Four state variables are measured from motion.</span></div><i>→</i>
       <div><b>03</b><strong>Predict</strong><span>A random-weight neural network predicts the next state.</span></div><i>→</i>
       <div><b>04</b><strong>Experiment</strong><span>Curiosity scores choose interventions with unresolved outcomes.</span></div><i>→</i>
-      <div><b>05</b><strong>Compress</strong><span>Recurring states become internally invented concept symbols.</span></div>
+      <div><b>05</b><strong>Critique</strong><span>Local Qwen3 or cloud Nemotron proposes falsification tests.</span></div>
     </div>
     <div class="truth-grid">
-      <div><span>THIS PROTOTYPE DEMONSTRATES</span><p>Online learning from synthetic experience, active experimentation, concept formation, persistent local cognition, replay, cross-tab discovery exchange, and an optional 120B meta-scientist that plans experiments from the evidence produced inside the synthetic universe.</p></div>
-      <div><span>THIS PROTOTYPE DOES NOT CLAIM</span><p>That its toy laws are real subatomic physics, that it is conscious, or that Nemotron itself is data-free. Genesis learning and pretrained scientific reasoning are shown as separate layers so the claim stays falsifiable.</p></div>
+      <div><span>THIS PROTOTYPE DEMONSTRATES</span><p>Online learning from synthetic experience, active experimentation, concept formation, persistent local cognition, replay, cross-tab discovery exchange, and optional reasoning models that plan experiments from evidence produced inside the synthetic universe.</p></div>
+      <div><span>THIS PROTOTYPE DOES NOT CLAIM</span><p>That its toy laws are real subatomic physics, that it is conscious, or that pretrained meta-scientists are data-free. Genesis learning and pretrained scientific reasoning remain separate layers so the claim stays falsifiable.</p></div>
     </div>
   </section>
 
@@ -142,11 +142,12 @@
     <div class="genome-code" id="genome-code"></div>
   </section>
 
-  <footer><div class="brand"><span class="brand-mark">RE</span><span>REALITY ENGINE</span></div><p>Traditional software executes. AI predicts. <strong>Discovery systems experiment.</strong></p><span>Prototype 02 / Nemotron-augmented</span></footer>
+  <footer><div class="brand"><span class="brand-mark">RE</span><span>REALITY ENGINE</span></div><p>Traditional software executes. AI predicts. <strong>Discovery systems experiment.</strong></p><span>Prototype 02 / local-first</span></footer>
 </main>
 <script src="./nemotron-fallback.js"></script>
 <script src="./nemotron-robust.js"></script>
 <script src="./nemotron-budget.js"></script>
+<script src="./local-ollama.js"></script>
 <script src="./app.js"></script>
 </body>
 </html>
