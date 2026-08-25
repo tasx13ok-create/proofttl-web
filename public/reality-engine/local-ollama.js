@@ -3,10 +3,14 @@
 
   const OLLAMA = 'http://127.0.0.1:11434'
   const MODEL = 'qwen3:4b'
+  const MODE_KEY = 'reality-engine-scientist-mode-v2'
+  const PLAN_KEY = 'reality-engine-local-qwen-plan-v2'
   const priorFetch = window.fetch.bind(window)
   let localReady = false
   let probing = null
   let lastProbeAt = 0
+  let connectButton = null
+  let cloudButton = null
 
   const ACTIONS = ['pulse','vortex','cool','heat','well']
   const METRICS = ['energy','spread','centerX','centerY']
@@ -35,6 +39,22 @@ Prefer under-tested causal distinctions over repeating already-verified effects.
 Do not claim synthetic discoveries apply to the real universe.
 Return only the final experiment object matching the provided schema. Keep hypothesis and rationale concise and falsifiable.`
 
+  function mode() {
+    try { return localStorage.getItem(MODE_KEY) || 'local' } catch { return 'local' }
+  }
+
+  function setMode(value) {
+    try { localStorage.setItem(MODE_KEY, value) } catch {}
+  }
+
+  function cachedPlan() {
+    try { return JSON.parse(localStorage.getItem(PLAN_KEY) || 'null') } catch { return null }
+  }
+
+  function savePlan(payload) {
+    try { localStorage.setItem(PLAN_KEY, JSON.stringify(payload)) } catch {}
+  }
+
   function setUi(state, cls, note) {
     setTimeout(() => {
       const stateEl = document.querySelector('#nemotron-state')
@@ -44,9 +64,25 @@ Return only the final experiment object matching the provided schema. Keep hypot
         stateEl.textContent = state
         stateEl.className = cls === 'ok' ? 'status-ok' : cls === 'bad' ? 'status-bad' : 'status-warn'
       }
-      if (modelEl && localReady) modelEl.textContent = 'QWEN3 4B · LOCAL / UNLIMITED'
+      if (modelEl) {
+        modelEl.textContent = mode() === 'local'
+          ? 'QWEN3 4B · LOCAL / UNLIMITED'
+          : 'NEMOTRON 3 SUPER 120B A12B · CLOUD BACKUP'
+      }
       if (note && rationale) rationale.textContent = note
+      refreshButtons()
     }, 0)
+  }
+
+  function refreshButtons() {
+    if (connectButton) {
+      connectButton.textContent = localReady ? 'Local Qwen connected' : 'Connect local Qwen'
+      connectButton.disabled = localReady
+    }
+    if (cloudButton) {
+      cloudButton.textContent = mode() === 'cloud' ? 'Using cloud backup' : 'Use cloud backup'
+      cloudButton.disabled = mode() === 'cloud'
+    }
   }
 
   function normalize(plan) {
@@ -77,24 +113,58 @@ Return only the final experiment object matching the provided schema. Keep hypot
     throw new Error('Local Qwen final answer was not structured JSON')
   }
 
-  async function probe(force = false) {
+  function loopbackFetch(url, init = {}) {
+    const options = { ...init, mode: 'cors' }
+    // Chromium 145+ uses this to classify the request as an on-device loopback request.
+    options.targetAddressSpace = 'loopback'
+    return priorFetch(url, options)
+  }
+
+  async function permissionState() {
+    try {
+      if (!navigator.permissions?.query) return 'unknown'
+      const status = await navigator.permissions.query({ name: 'loopback-network' })
+      return status?.state || 'unknown'
+    } catch {
+      try {
+        const status = await navigator.permissions.query({ name: 'local-network-access' })
+        return status?.state || 'unknown'
+      } catch { return 'unknown' }
+    }
+  }
+
+  async function probe(force = false, interactive = false) {
     if (!force && Date.now() - lastProbeAt < 15000) return localReady
     if (probing) return probing
     probing = (async () => {
       lastProbeAt = Date.now()
       try {
-        const response = await priorFetch(`${OLLAMA}/api/tags`, { method: 'GET', cache: 'no-store' })
+        if (interactive) {
+          setMode('local')
+          const p = await permissionState()
+          setUi('REQUESTING LOCAL ACCESS', 'warn', p === 'denied'
+            ? 'Browser loopback access is currently denied. Allow “Apps on device” for this site, then click Connect local Qwen again.'
+            : 'Connecting this site to the Ollama service running only on this computer…')
+        }
+        const response = await loopbackFetch(`${OLLAMA}/api/tags`, { method: 'GET', cache: 'no-store' })
         if (!response.ok) throw new Error(`Ollama HTTP ${response.status}`)
         const data = await response.json()
         const names = (data.models || []).map(m => m.name)
         localReady = names.some(name => name === MODEL || name.startsWith(`${MODEL}:`))
-        if (localReady) {
-          setUi('LOCAL QWEN READY', 'ok', 'Qwen3 4B is running on this computer. Local reasoning is unlimited; Nemotron remains a cloud backup.')
-        } else {
-          setUi('LOCAL MODEL MISSING', 'warn', `Ollama is reachable, but ${MODEL} is not installed yet.`)
-        }
-      } catch {
+        if (!localReady) throw new Error(`${MODEL} is not installed in Ollama`)
+        setMode('local')
+        setUi('LOCAL QWEN READY', 'ok', 'Qwen3 4B is connected directly to this browser. Local reasoning has no API quota; cloud Nemotron is disabled unless you explicitly switch to it.')
+      } catch (error) {
         localReady = false
+        if (interactive) {
+          const p = await permissionState()
+          const detail = p === 'denied'
+            ? 'Browser access to apps on this device is denied. Open this site’s permissions and allow “Apps on device”, then click Connect local Qwen again.'
+            : `Could not reach Ollama from the browser (${String(error?.message || error).slice(0,120)}). Fully quit/relaunch Ollama after setting OLLAMA_ORIGINS, then click Connect local Qwen again.`
+          setUi('LOCAL QWEN BLOCKED', 'bad', detail)
+        } else if (mode() === 'local') {
+          setUi('CONNECT LOCAL QWEN', 'warn', 'Qwen is installed on this computer, but the browser still needs permission to talk to Ollama. Click “Connect local Qwen” below. Cloud calls are paused meanwhile.')
+        }
       } finally {
         probing = null
       }
@@ -108,7 +178,7 @@ Return only the final experiment object matching the provided schema. Keep hypot
     try { body = typeof init?.body === 'string' ? JSON.parse(init.body) : init?.body } catch {}
     if (!body) throw new Error('Reality Engine lab notebook missing')
 
-    const response = await priorFetch(`${OLLAMA}/api/chat`, {
+    const response = await loopbackFetch(`${OLLAMA}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -145,12 +215,10 @@ Return only the final experiment object matching the provided schema. Keep hypot
     let result
     try {
       result = await askLocal(init, true)
-    } catch (firstError) {
-      // Unlimited local inference: one deterministic final-only retry is safe and avoids parser failures.
+    } catch {
       result = await askLocal(init, false)
     }
-    setUi('LOCAL QWEN LIVE', 'ok', result.plan.rationale)
-    return new Response(JSON.stringify({
+    const payload = {
       ok: true,
       provider: 'ollama-local',
       model: MODEL,
@@ -159,7 +227,27 @@ Return only the final experiment object matching the provided schema. Keep hypot
       unlimited: true,
       usage: { output_tokens: result.evalCount },
       durationNs: result.totalDuration
-    }), { status: 200, headers: { 'content-type': 'application/json', 'x-reality-engine-local': 'qwen3-4b' } })
+    }
+    savePlan(payload)
+    setUi('LOCAL QWEN LIVE', 'ok', result.plan.rationale)
+    return new Response(JSON.stringify(payload), { status: 200, headers: { 'content-type': 'application/json', 'x-reality-engine-local': 'qwen3-4b' } })
+  }
+
+  function cachedLocalResponse() {
+    const payload = cachedPlan()
+    if (!payload?.plan) return null
+    setUi('LOCAL PLAN CACHE', 'warn', 'Ollama is temporarily unreachable, so Reality Engine is reusing the last local Qwen plan without touching the cloud API.')
+    return new Response(JSON.stringify({ ...payload, cached: true, provider: 'ollama-local-cache' }), {
+      status: 200,
+      headers: { 'content-type': 'application/json', 'x-reality-engine-local': 'cache' }
+    })
+  }
+
+  function localWaitingResponse() {
+    return new Response(JSON.stringify({
+      error: 'local_qwen_waiting_for_browser_permission',
+      detail: 'Local Qwen mode is selected. Click “Connect local Qwen” in the meta-scientist panel to grant this site access to Ollama. Cloud Nemotron calls are intentionally paused.'
+    }), { status: 503, headers: { 'content-type': 'application/json' } })
   }
 
   window.fetch = async (input, init) => {
@@ -167,19 +255,70 @@ Return only the final experiment object matching the provided schema. Keep hypot
     try { pathname = new URL(typeof input === 'string' ? input : input?.url, location.href).pathname } catch {}
     if (pathname !== '/api/reality-scientist') return priorFetch(input, init)
 
-    if (await probe()) {
+    if (mode() === 'cloud') return priorFetch(input, init)
+
+    if (localReady || await probe()) {
       try {
         return await localScientist(init)
       } catch (error) {
         localReady = false
-        setUi('LOCAL QWEN ERROR', 'bad', `Local Qwen failed: ${String(error?.message || error).slice(0, 180)}. Falling back to cloud scientist.`)
+        const cached = cachedLocalResponse()
+        if (cached) return cached
+        setUi('LOCAL QWEN ERROR', 'bad', `Local Qwen failed: ${String(error?.message || error).slice(0,160)}. Cloud fallback remains paused until you explicitly select it.`)
+        return localWaitingResponse()
       }
     }
 
-    return priorFetch(input, init)
+    const cached = cachedLocalResponse()
+    if (cached) return cached
+    return localWaitingResponse()
+  }
+
+  function mountControls() {
+    const host = document.querySelector('.nemotron-status')
+    if (!host || document.querySelector('#local-qwen-connect')) return
+
+    connectButton = document.createElement('button')
+    connectButton.id = 'local-qwen-connect'
+    connectButton.className = 'ghost wide'
+    connectButton.style.marginTop = '14px'
+    connectButton.textContent = 'Connect local Qwen'
+    connectButton.addEventListener('click', async () => {
+      connectButton.disabled = true
+      connectButton.textContent = 'Connecting local Qwen…'
+      await probe(true, true)
+      refreshButtons()
+    })
+    host.appendChild(connectButton)
+
+    cloudButton = document.createElement('button')
+    cloudButton.id = 'use-cloud-scientist'
+    cloudButton.className = 'ghost wide'
+    cloudButton.style.marginTop = '8px'
+    cloudButton.textContent = 'Use cloud backup'
+    cloudButton.addEventListener('click', () => {
+      setMode('cloud')
+      localReady = false
+      setUi('CLOUD BACKUP', 'warn', 'Cloud Nemotron is selected. Its provider rate limits still apply. Click Connect local Qwen anytime to return to unlimited local reasoning.')
+    })
+    host.appendChild(cloudButton)
+
+    const note = document.createElement('p')
+    note.className = 'muted'
+    note.style.margin = '8px 0 0'
+    note.style.fontSize = '9px'
+    note.textContent = 'Local mode talks only to Ollama on this computer. Your browser may ask for “Apps on device” access once.'
+    host.appendChild(note)
+
+    refreshButtons()
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => probe(true), 900)
+    mountControls()
+    if (mode() === 'local') {
+      setUi('CONNECT LOCAL QWEN', 'warn', 'Click “Connect local Qwen” once so the browser can authorize access to Ollama on this computer. Cloud calls are paused until then.')
+      // Silent probe may succeed on browsers that already granted loopback access.
+      setTimeout(() => probe(true, false), 1000)
+    }
   })
 })()
