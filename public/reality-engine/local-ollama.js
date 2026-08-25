@@ -124,7 +124,7 @@ Return only the final experiment object matching the provided schema. Keep hypot
         options: {
           temperature: 0.15,
           top_p: 0.9,
-          num_ctx: 8192
+          num_ctx: 4096
         }
       })
     })
