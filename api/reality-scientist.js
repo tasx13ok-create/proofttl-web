@@ -1,5 +1,3 @@
-import { generateText } from 'ai'
-
 const MODEL = 'nvidia/nemotron-3-super-120b-a12b'
 const ACTIONS = new Set(['pulse', 'vortex', 'cool', 'heat', 'well'])
 const METRICS = new Set(['speed', 'energy', 'spread', 'angular', 'density', 'entropy', 'coherence', 'drift'])
@@ -112,6 +110,7 @@ JSON schema:
 
 Choose exactly one next intervention.`
 
+    const { generateText } = await import('ai')
     const result = await generateText({
       model: MODEL,
       system,
