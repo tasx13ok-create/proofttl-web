@@ -7,7 +7,7 @@ const PORT = Number(process.env.REALITY_ENGINE_PORT || 4317)
 const HOST = '127.0.0.1'
 const OLLAMA = process.env.OLLAMA_URL || 'http://127.0.0.1:11434'
 const MODEL = process.env.REALITY_ENGINE_MODEL || 'qwen3:4b'
-const VERSION = '0.3.0-rc1'
+const VERSION = '0.3.0-rc2'
 const ALLOWED_ORIGINS = new Set([
   'https://proofttl-web.vercel.app',
   'https://proofttl-web-tasx13ok-1769s-projects.vercel.app',
@@ -77,7 +77,9 @@ function isLoopback(address = '') {
   return address === '127.0.0.1' || address === '::1' || address === '::ffff:127.0.0.1'
 }
 
-function allowedOrigin(origin) { return !origin || ALLOWED_ORIGINS.has(origin) }
+function allowedOrigin(origin) {
+  return !origin || ALLOWED_ORIGINS.has(origin)
+}
 
 function cors(req, res) {
   const origin = req.headers.origin
@@ -86,7 +88,9 @@ function cors(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
   res.setHeader('Access-Control-Max-Age', '600')
-  if (String(req.headers['access-control-request-private-network']).toLowerCase() === 'true') res.setHeader('Access-Control-Allow-Private-Network', 'true')
+  if (String(req.headers['access-control-request-private-network']).toLowerCase() === 'true') {
+    res.setHeader('Access-Control-Allow-Private-Network', 'true')
+  }
   res.setHeader('Cache-Control', 'no-store')
 }
 
@@ -96,7 +100,7 @@ function json(res, status, body) {
   res.end(JSON.stringify(body))
 }
 
-async function readBody(req, max = 1500000) {
+async function readBody(req, max = 1_500_000) {
   let size = 0
   const chunks = []
   for await (const chunk of req) {
@@ -108,7 +112,7 @@ async function readBody(req, max = 1500000) {
   return JSON.parse(Buffer.concat(chunks).toString('utf8'))
 }
 
-async function ollama(path, init = {}, timeoutMs = 120000) {
+async function ollama(path, init = {}, timeoutMs = 120_000) {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), timeoutMs)
   try {
@@ -116,7 +120,9 @@ async function ollama(path, init = {}, timeoutMs = 120000) {
     const data = await response.json().catch(() => ({}))
     if (!response.ok) throw new Error(data?.error || `Ollama HTTP ${response.status}`)
     return data
-  } finally { clearTimeout(timer) }
+  } finally {
+    clearTimeout(timer)
+  }
 }
 
 function parseObject(content) {
@@ -130,8 +136,18 @@ function parseObject(content) {
 }
 
 async function chatOllama(messages, schema, think = true) {
-  const payload = { model: MODEL, messages, format: schema, think, stream: false, keep_alive: '30m', options: { temperature: 0.15, top_p: 0.9, num_ctx: 4096 } }
-  const data = await ollama('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+  const payload = {
+    model: MODEL,
+    messages,
+    format: schema,
+    think,
+    stream: false,
+    keep_alive: '30m',
+    options: { temperature: 0.15, top_p: 0.9, num_ctx: 4096 }
+  }
+  const data = await ollama('/api/chat', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+  })
   return { parsed: parseObject(data?.message?.content), raw: data }
 }
 
@@ -147,9 +163,18 @@ async function structured(messages, schema) {
 
 function validateScience(plan) {
   if (!plan || !ACTIONS.includes(plan.action) || !METRICS.includes(plan.target_metric)) throw new Error('invalid experiment plan')
+  const direction = DIRECTIONS.includes(plan.expected_direction) ? plan.expected_direction : 'uncertain'
   const hypothesis = String(plan.hypothesis || '').trim()
   if (!hypothesis) throw new Error('experiment plan had no hypothesis')
-  return { action: plan.action, target_metric: plan.target_metric, expected_direction: DIRECTIONS.includes(plan.expected_direction) ? plan.expected_direction : 'uncertain', hypothesis: hypothesis.slice(0, 420), rationale: String(plan.rationale || 'Selected for information gain.').trim().slice(0, 700), confidence: Math.max(0, Math.min(1, Number(plan.confidence) || 0)), test_count: Math.max(1, Math.min(20, Math.round(Number(plan.test_count) || 1))) }
+  return {
+    action: plan.action,
+    target_metric: plan.target_metric,
+    expected_direction: direction,
+    hypothesis: hypothesis.slice(0, 420),
+    rationale: String(plan.rationale || 'Selected for information gain.').trim().slice(0, 700),
+    confidence: Math.max(0, Math.min(1, Number(plan.confidence) || 0)),
+    test_count: Math.max(1, Math.min(20, Math.round(Number(plan.test_count) || 1)))
+  }
 }
 
 function validateChat(result) {
@@ -165,14 +190,67 @@ function validateChat(result) {
       commands.push({ type: cmd.type, actions, trials_each: Math.max(1, Math.min(10, Math.round(Number(cmd.trials_each) || 2))), reason: String(cmd.reason || '').slice(0,240) })
     } else commands.push({ type: cmd.type, reason: String(cmd.reason || '').slice(0,240) })
   }
-  return { reply: String(result?.reply || 'I need more evidence before choosing a useful next step.').slice(0,2400), commands, proposed_hypothesis: result?.proposed_hypothesis == null ? null : String(result.proposed_hypothesis).slice(0,500) }
+  return {
+    reply: String(result?.reply || 'I need more evidence before choosing a useful next step.').slice(0,2400),
+    commands,
+    proposed_hypothesis: result?.proposed_hypothesis == null ? null : String(result.proposed_hypothesis).slice(0,500)
+  }
 }
 
 async function health() {
-  const [tags, ps, version] = await Promise.all([ollama('/api/tags', {}, 5000), ollama('/api/ps', {}, 5000).catch(() => ({ models: [] })), ollama('/api/version', {}, 5000).catch(() => ({}))])
+  const [tags, ps, version] = await Promise.all([
+    ollama('/api/tags', {}, 5000),
+    ollama('/api/ps', {}, 5000).catch(() => ({ models: [] })),
+    ollama('/api/version', {}, 5000).catch(() => ({}))
+  ])
   const models = (tags.models || []).map(m => m.name)
   const loaded = (ps.models || []).find(m => m.name === MODEL || String(m.name || '').startsWith(`${MODEL}:`)) || null
   return { ok: true, bridge: VERSION, ollama: version.version || 'unknown', model: MODEL, installed: models.includes(MODEL) || models.some(n => n.startsWith(`${MODEL}:`)), loaded }
+}
+
+function compactScienceContext(body = {}) {
+  const notebook = body.notebook || {}
+  const actions = {}
+  for (const action of ACTIONS) {
+    const src = notebook.actions?.[action] || {}
+    actions[action] = { trials: Number(src.trials) || 0, effects: src.effects || {}, confidence: src.confidence || {} }
+  }
+  const theories = (Array.isArray(body.theories) ? body.theories : []).slice(0, 12).map(t => ({
+    hypothesis: String(t.hypothesis || '').slice(0, 260), action: t.action, metric: t.metric, direction: t.direction,
+    confidence: Number(t.confidence) || 0, status: t.status, evidence: Number(t.evidence) || 0, lastMean: Number(t.lastMean) || 0
+  }))
+  const laws = (Array.isArray(notebook.laws) ? notebook.laws : []).slice(0, 18).map(l => ({ action:l.action, metric:l.metric, regime:l.regime || null, direction:l.direction, effect:Number(l.effect)||0, confidence:Number(l.confidence)||0, samples:Number(l.samples)||0, status:l.status }))
+  const recent = (Array.isArray(body.recent_trials) ? body.recent_trials : Array.isArray(notebook.recent) ? notebook.recent : []).slice(-12).map(t => ({ action:t.action, regime:t.regime, effects:t.effects || {} }))
+  return {
+    universe: { seed: body.universe?.seed, law_genome: body.universe?.law_genome || {}, current_state: body.universe?.current_state || {} },
+    notebook: { controlled_trials: Number(notebook.controlled_trials) || 0, actions, laws },
+    theories,
+    regimes: body.regimes || {},
+    recent_trials: recent
+  }
+}
+
+function compactChatContext(context = {}) {
+  const base = compactScienceContext({
+    universe: context.universe,
+    notebook: context.notebook,
+    theories: context.theories,
+    regimes: context.regimes,
+    recent_trials: context.recent_trials
+  })
+  base.theories = base.theories.slice(0, 6).map(t => ({ ...t, hypothesis: String(t.hypothesis || '').slice(0,180) }))
+  base.notebook.laws = base.notebook.laws.slice(0, 10)
+  base.recent_trials = base.recent_trials.slice(-6)
+  return {
+    ...base,
+    current_proposal: context.current_proposal ? {
+      action: context.current_proposal.action, target_metric: context.current_proposal.target_metric,
+      expected_direction: context.current_proposal.expected_direction,
+      hypothesis: String(context.current_proposal.hypothesis || '').slice(0,180), confidence: Number(context.current_proposal.confidence)||0,
+      test_count: Number(context.current_proposal.test_count)||0
+    } : null,
+    queue: (Array.isArray(context.queue) ? context.queue : []).slice(0, 8).map(j => ({ action:j.action, trials:Number(j.trials)||0, done:Number(j.done)||0, status:j.status }))
+  }
 }
 
 const server = http.createServer(async (req, res) => {
@@ -180,21 +258,32 @@ const server = http.createServer(async (req, res) => {
   if (!isLoopback(req.socket.remoteAddress)) return json(res, 403, { error: 'loopback_only' })
   if (!allowedOrigin(req.headers.origin)) return json(res, 403, { error: 'origin_not_allowed' })
   if (req.method === 'OPTIONS') { res.statusCode = 204; return res.end() }
+
   const url = new URL(req.url, `http://${HOST}:${PORT}`)
   try {
     if (req.method === 'GET' && url.pathname === '/health') return json(res, 200, await health())
+
     if (req.method === 'POST' && url.pathname === '/science') {
       const body = await readBody(req)
-      const context = { universe: body.universe || {}, notebook: body.notebook || {}, theories: body.theories || [], regimes: body.regimes || {}, recent_trials: body.recent_trials || [] }
-      const result = await structured([{ role: 'system', content: SCIENCE_SYSTEM },{ role: 'user', content: JSON.stringify(context) }], SCIENCE_SCHEMA)
+      const context = compactScienceContext(body)
+      const result = await structured([
+        { role: 'system', content: SCIENCE_SYSTEM },
+        { role: 'user', content: JSON.stringify(context) }
+      ], SCIENCE_SCHEMA)
       return json(res, 200, { ok: true, provider: 'ollama-local-bridge', model: MODEL, plan: validateScience(result.parsed), usage: { prompt: result.raw.prompt_eval_count || 0, output: result.raw.eval_count || 0 }, duration_ns: result.raw.total_duration || 0 })
     }
+
     if (req.method === 'POST' && url.pathname === '/chat') {
       const body = await readBody(req)
-      const messages = Array.isArray(body.messages) ? body.messages.slice(-12).map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: String(m.content || '').slice(0,4000) })) : []
-      const result = await structured([{ role: 'system', content: CHAT_SYSTEM }, ...messages, { role: 'user', content: `CURRENT_LAB_CONTEXT\n${JSON.stringify(body.context || {})}` }], CHAT_SCHEMA)
+      const messages = Array.isArray(body.messages) ? body.messages.filter(m => m?.role === 'user' || m?.role === 'assistant').slice(-4).map(m => ({ role: m.role, content: String(m.content || '').slice(0,700) })) : []
+      const context = compactChatContext(body.context || {})
+      const result = await structured([
+        { role: 'system', content: `${CHAT_SYSTEM}\nCURRENT_LAB_CONTEXT\n${JSON.stringify(context)}` },
+        ...messages
+      ], CHAT_SCHEMA)
       return json(res, 200, { ok: true, provider: 'ollama-local-bridge', model: MODEL, ...validateChat(result.parsed), usage: { prompt: result.raw.prompt_eval_count || 0, output: result.raw.eval_count || 0 }, duration_ns: result.raw.total_duration || 0 })
     }
+
     return json(res, 404, { error: 'not_found' })
   } catch (error) {
     const message = String(error?.message || error)
@@ -203,12 +292,27 @@ const server = http.createServer(async (req, res) => {
   }
 })
 
+server.on('error', error => {
+  if (error?.code === 'EADDRINUSE') {
+    console.error(`Reality Engine local port ${PORT} is already in use. Close the older Reality Engine Local Runtime window and launch again.`)
+    process.exitCode = 2
+    return
+  }
+  console.error(`Reality Engine Local Runtime failed: ${error?.message || error}`)
+  process.exitCode = 1
+})
+
 server.listen(PORT, HOST, async () => {
   console.log(`\nReality Engine Local Runtime ${VERSION}`)
   console.log(`Bridge: http://${HOST}:${PORT}`)
   console.log(`Model:  ${MODEL}`)
-  try { const h = await health(); console.log(`Ollama: ${h.ollama} · model ${h.installed ? 'installed' : 'MISSING'}`); if (!h.installed) console.log(`Run: ollama pull ${MODEL}`) }
-  catch (error) { console.log(`Ollama not reachable: ${error.message}`) }
+  try {
+    const h = await health()
+    console.log(`Ollama: ${h.ollama} · model ${h.installed ? 'installed' : 'MISSING'}`)
+    if (!h.installed) console.log(`Run: ollama pull ${MODEL}`)
+  } catch (error) {
+    console.log(`Ollama not reachable: ${error.message}`)
+  }
   console.log('Keep this window open while Reality Engine is running.\n')
 })
 
