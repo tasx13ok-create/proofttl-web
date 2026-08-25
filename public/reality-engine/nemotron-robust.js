@@ -9,7 +9,7 @@
   const METRICS = ['energy', 'spread', 'centerX', 'centerY']
   const DIRS = ['raises', 'lowers', 'uncertain']
 
-  const SYSTEM = `You are the meta-scientist inside Reality Engine. A separate local learner starts from random weights and gathers evidence inside a toy universe with arbitrary hidden laws. Never assume Earth physics. Choose exactly one high-information intervention that helps falsify or separate competing explanations. Treat contradictions as uncertainty to resolve. Prefer information gain over confirmation. Do not claim synthetic results transfer to the real universe.`
+  const SYSTEM = `You are the meta-scientist inside Reality Engine. A separate local learner starts from random weights and gathers evidence inside a toy universe with arbitrary hidden laws. Never assume Earth physics. Choose exactly one high-information intervention that helps falsify or separate competing explanations. Treat contradictions as uncertainty to resolve. Prefer information gain over confirmation. Do not claim synthetic results transfer to the real universe. Do not describe your reasoning process. Return only the requested final experiment.`
 
   const TOOL = {
     type: 'function',
@@ -41,31 +41,27 @@
 
   function normalize(v) {
     if (!v || typeof v !== 'object') throw new Error('no experiment object')
-    const action = ACTIONS.includes(v.action) ? v.action : ACTIONS.find(a => String(v.action || '').toLowerCase().includes(a))
-    const metric = METRICS.includes(v.target_metric) ? v.target_metric : METRICS.find(m => String(v.target_metric || '').toLowerCase() === m.toLowerCase())
-    const dir = DIRS.includes(v.expected_direction) ? v.expected_direction : DIRS.find(d => String(v.expected_direction || '').toLowerCase().includes(d)) || 'uncertain'
+    const actionText = String(v.action || '').trim().toLowerCase()
+    const metricText = String(v.target_metric || v.target || '').trim().toLowerCase()
+    const dirText = String(v.expected_direction || v.direction || '').trim().toLowerCase()
+    const action = ACTIONS.find(a => actionText === a || actionText.includes(a))
+    const metric = METRICS.find(m => metricText === m.toLowerCase())
+    const direction = DIRS.find(d => dirText === d || dirText.includes(d)) || 'uncertain'
     if (!action) throw new Error('missing valid intervention')
+    const hypothesis = String(v.hypothesis || '').trim()
+    const rationale = String(v.rationale || v.why || '').trim()
+    if (!hypothesis || /^(we need|i need|the user|the prompt|we must|i should)\b/i.test(hypothesis)) {
+      throw new Error('missing final hypothesis')
+    }
     return {
       action,
       target_metric: metric || 'energy',
-      expected_direction: dir,
-      hypothesis: String(v.hypothesis || `Test whether ${action} produces a repeatable change in ${metric || 'energy'}.`).slice(0, 280),
-      rationale: String(v.rationale || 'Chosen to resolve uncertainty in the current experiment history.').slice(0, 520),
+      expected_direction: direction,
+      hypothesis: hypothesis.slice(0, 280),
+      rationale: (rationale || 'Chosen to resolve uncertainty in the current experiment history.').slice(0, 520),
       confidence: clamp(Number(v.confidence) || 0, 0, 1),
-      test_count: clamp(Math.round(Number(v.test_count) || 1), 1, 8)
+      test_count: clamp(Math.round(Number(v.test_count || v.count) || 1), 1, 8)
     }
-  }
-
-  function unwrapJsonString(raw) {
-    let s = String(raw || '').trim()
-    for (let i = 0; i < 2; i++) {
-      if (!/^(["']).*\1$/s.test(s)) break
-      try {
-        const parsed = JSON.parse(s)
-        if (typeof parsed === 'string') s = parsed.trim(); else return parsed
-      } catch { break }
-    }
-    return s
   }
 
   function balancedObject(s) {
@@ -96,18 +92,60 @@
       .replace(/,\s*([}\]])/g, '$1')
   }
 
-  function parseProtocol(text) {
-    const s = String(text || '').replace(/\r?\n/g, ' | ')
-    const get = name => {
-      const re = new RegExp(`(?:^|[|;])\\s*${name}\\s*=\\s*([^|;]+)`, 'i')
-      return (s.match(re)?.[1] || '').trim()
+  function parseJsonish(value) {
+    if (value && typeof value === 'object') return normalize(value)
+    let s = String(value || '').trim()
+    if (!s) throw new Error('empty model output')
+    s = s.replace(/^```(?:json|javascript|python)?\s*/i, '').replace(/\s*```$/i, '')
+    try { return normalize(JSON.parse(s)) } catch {}
+    try {
+      const unwrapped = JSON.parse(s)
+      if (typeof unwrapped === 'string') return parseJsonish(unwrapped)
+    } catch {}
+    const fn = s.match(/propose_experiment\s*\(([^]*)\)\s*;?\s*$/i)
+    if (fn) {
+      try { return parseJsonish(fn[1]) } catch {}
     }
-    const action = get('ACTION').toLowerCase()
-    if (!ACTIONS.includes(action)) throw new Error('protocol missing action')
+    const obj = balancedObject(s)
+    if (obj) {
+      try { return normalize(JSON.parse(obj)) } catch {}
+      try { return normalize(JSON.parse(repairJsonish(obj))) } catch {}
+    }
+    throw new Error('model output was not a final experiment object')
+  }
+
+  function contentText(message) {
+    if (typeof message?.content === 'string') return message.content.trim()
+    if (Array.isArray(message?.content)) {
+      return message.content.map(p => typeof p?.text === 'string' ? p.text : '').filter(Boolean).join('\n').trim()
+    }
+    return ''
+  }
+
+  function parseToolMessage(message) {
+    const calls = Array.isArray(message?.tool_calls) ? message.tool_calls : []
+    for (const call of calls) {
+      if (call?.function?.name && call.function.name !== 'propose_experiment') continue
+      for (const candidate of [call?.function?.arguments, call?.arguments, call?.input]) {
+        if (candidate == null) continue
+        try { return parseJsonish(candidate) } catch {}
+      }
+    }
+    throw new Error('no usable propose_experiment tool call')
+  }
+
+  function parseProtocol(text) {
+    const lines = String(text || '').split(/\r?\n/).map(x => x.trim()).filter(Boolean)
+    const line = lines.find(x => /^ACTION\s*=/i.test(x)) || ''
+    if (!line) throw new Error('no final protocol line')
+    const get = name => {
+      const re = new RegExp(`(?:^|\\|)\\s*${name}\\s*=\\s*([^|]+)`, 'i')
+      return (line.match(re)?.[1] || '').trim()
+    }
     return normalize({
-      action,
+      action: get('ACTION'),
       target_metric: get('TARGET'),
-      expected_direction: get('DIR').toLowerCase(),
+      expected_direction: get('DIR'),
       confidence: get('CONF'),
       test_count: get('COUNT'),
       hypothesis: get('HYP'),
@@ -115,90 +153,61 @@
     })
   }
 
-  function parseLoose(value) {
-    if (value && typeof value === 'object') return normalize(value)
-    let s = unwrapJsonString(value)
-    if (s && typeof s === 'object') return normalize(s)
-    s = String(s || '').trim().replace(/^```(?:json|javascript|python)?\s*/i, '').replace(/\s*```$/i, '')
-    if (!s) throw new Error('empty model output')
-
-    try { return normalize(JSON.parse(s)) } catch {}
-    const fn = s.match(/propose_experiment\s*\(([^]*)\)\s*;?\s*$/i)
-    if (fn) {
-      try { return parseLoose(fn[1]) } catch {}
-    }
-    const obj = balancedObject(s)
-    if (obj) {
-      try { return normalize(JSON.parse(obj)) } catch {}
-      try { return normalize(JSON.parse(repairJsonish(obj))) } catch {}
-    }
-    try { return parseProtocol(s) } catch {}
-    throw new Error('unrecognized model serialization')
-  }
-
-  function allText(message) {
-    const out = []
-    if (typeof message?.content === 'string') out.push(message.content)
-    if (Array.isArray(message?.content)) for (const p of message.content) if (p?.text) out.push(p.text)
-    if (typeof message?.reasoning === 'string') out.push(message.reasoning)
-    if (typeof message?.reasoning_content === 'string') out.push(message.reasoning_content)
-    return out.join('\n')
-  }
-
-  function parseMessage(message) {
-    const calls = Array.isArray(message?.tool_calls) ? message.tool_calls : []
-    for (const call of calls) {
-      for (const candidate of [call?.function?.arguments, call?.arguments, call?.input]) {
-        if (candidate == null) continue
-        try { return parseLoose(candidate) } catch {}
-      }
-    }
-    const text = allText(message)
-    if (text) return parseLoose(text)
-    throw new Error('no usable model payload')
-  }
-
-  function extractFromProse(text) {
-    const s = String(text || '').trim()
-    const lower = s.toLowerCase()
-    const action = ACTIONS.find(a => new RegExp(`\\b${a}\\b`, 'i').test(s))
-    if (!action) throw new Error('prose had no intervention')
-    let metric = METRICS.find(m => lower.includes(m.toLowerCase())) || 'energy'
-    if (lower.includes('kinetic')) metric = 'energy'
-    if (lower.includes('dispersion')) metric = 'spread'
-    const direction = lower.includes('lower') || lower.includes('decrease') ? 'lowers' : lower.includes('raise') || lower.includes('increase') ? 'raises' : 'uncertain'
-    const confMatch = s.match(/(?:confidence|conf)\s*[:=]?\s*(0(?:\.\d+)?|1(?:\.0+)?|\d{1,3}%)/i)
-    let confidence = confMatch ? parseFloat(confMatch[1]) : 0.35
-    if (confMatch && confMatch[1].includes('%')) confidence /= 100
-    const countMatch = s.match(/(?:trials?|tests?|count)\s*[:=]?\s*(\d+)/i)
-    const compact = s.replace(/\s+/g, ' ').slice(0, 500)
-    return normalize({ action, target_metric: metric, expected_direction: direction, confidence, test_count: countMatch?.[1] || 1, hypothesis: compact.slice(0, 280), rationale: `Nemotron selected ${action} to probe ${metric}; the provider returned prose rather than a typed tool payload, so Reality Engine recovered the plan from the response.` })
+  function diagnostic(data) {
+    const message = data?.choices?.[0]?.message || {}
+    const content = contentText(message)
+    const finish = data?.choices?.[0]?.finish_reason || 'unknown'
+    const toolCount = Array.isArray(message.tool_calls) ? message.tool_calls.length : 0
+    return `finish=${finish}; tools=${toolCount}; content=${content.slice(0, 120).replace(/\s+/g, ' ') || '<empty>'}`
   }
 
   async function call(apiKey, notebook, mode) {
-    const protocol = mode === 'protocol'
-    const messages = protocol ? [
-      { role: 'system', content: SYSTEM + `\nReturn exactly ONE LINE and nothing else in this format:\nACTION=pulse|TARGET=energy|DIR=uncertain|CONF=0.40|COUNT=3|HYP=short hypothesis|WHY=short rationale\nReplace values as needed. ACTION must be pulse,vortex,cool,heat,or well. TARGET must be energy,spread,centerX,or centerY.` },
-      { role: 'user', content: JSON.stringify(notebook) }
-    ] : [
-      { role: 'system', content: SYSTEM + '\nCall propose_experiment exactly once. Do not answer with prose.' },
-      { role: 'user', content: JSON.stringify(notebook) }
-    ]
-
-    const body = { model: MODEL, messages, temperature: 0, top_p: 0.9, max_tokens: protocol ? 320 : 600 }
-    if (!protocol) {
-      body.tools = [TOOL]
-      body.tool_choice = { type: 'function', function: { name: 'propose_experiment' } }
-      body.parallel_tool_calls = false
+    const base = {
+      model: MODEL,
+      temperature: 0,
+      top_p: 1,
+      max_tokens: mode === 'protocol' ? 650 : 1000,
+      reasoning: { effort: 'none', exclude: true },
+      messages: []
     }
 
-    const r = await previousFetch(CHAT, {
+    if (mode === 'tool') {
+      base.messages = [
+        { role: 'system', content: SYSTEM + '\nCall propose_experiment exactly once. Do not output prose.' },
+        { role: 'user', content: JSON.stringify(notebook) }
+      ]
+      base.tools = [TOOL]
+      base.tool_choice = { type: 'function', function: { name: 'propose_experiment' } }
+      base.parallel_tool_calls = false
+    } else if (mode === 'json') {
+      base.messages = [
+        { role: 'system', content: SYSTEM + '\nReturn exactly one JSON object with these keys: action,target_metric,expected_direction,hypothesis,rationale,confidence,test_count. No markdown and no commentary.' },
+        { role: 'user', content: JSON.stringify(notebook) }
+      ]
+      base.response_format = { type: 'json_object' }
+    } else {
+      base.messages = [
+        { role: 'system', content: SYSTEM + '\nReturn exactly ONE final line beginning with ACTION=. Format: ACTION=pulse|TARGET=energy|DIR=uncertain|CONF=0.40|COUNT=3|HYP=short falsifiable hypothesis|WHY=short rationale. Replace every value. Do not repeat these instructions.' },
+        { role: 'user', content: JSON.stringify(notebook) }
+      ]
+    }
+
+    const response = await previousFetch(CHAT, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json', 'HTTP-Referer': `${location.origin}${location.pathname}`, 'X-Title': 'Reality Engine' },
-      body: JSON.stringify(body)
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': `${location.origin}${location.pathname}`,
+        'X-Title': 'Reality Engine'
+      },
+      body: JSON.stringify(base)
     })
-    const data = await r.json().catch(() => ({}))
-    if (!r.ok) throw new Error(data?.error?.message || data?.message || `OpenRouter HTTP ${r.status}`)
+    const data = await response.json().catch(() => ({}))
+    if (!response.ok) {
+      const error = new Error(data?.error?.message || data?.message || `OpenRouter HTTP ${response.status}`)
+      error.httpStatus = response.status
+      throw error
+    }
     return data
   }
 
@@ -209,24 +218,39 @@
     try { notebook = typeof init?.body === 'string' ? JSON.parse(init.body) : init?.body } catch {}
     if (!notebook) throw new Error('lab notebook missing')
 
-    let first, plan, repaired = false
-    try {
-      first = await call(apiKey, notebook, 'tool')
-      plan = parseMessage(first?.choices?.[0]?.message)
-    } catch (firstError) {
-      const second = await call(apiKey, notebook, 'protocol')
-      const msg = second?.choices?.[0]?.message
-      const raw = allText(msg)
-      try { plan = parseMessage(msg) }
-      catch {
-        try { plan = parseProtocol(raw) }
-        catch { plan = extractFromProse(raw) }
+    const failures = []
+    let data = null
+    let plan = null
+    let mode = ''
+
+    for (const attempt of ['tool', 'json', 'protocol']) {
+      try {
+        data = await call(apiKey, notebook, attempt)
+        const message = data?.choices?.[0]?.message
+        if (attempt === 'tool') plan = parseToolMessage(message)
+        else if (attempt === 'json') plan = parseJsonish(contentText(message))
+        else plan = parseProtocol(contentText(message))
+        mode = attempt
+        break
+      } catch (error) {
+        if (error?.httpStatus) throw error
+        failures.push(`${attempt}: ${error?.message || error}${data ? ` (${diagnostic(data)})` : ''}`)
+        data = null
       }
-      first = second
-      repaired = true
     }
 
-    return new Response(JSON.stringify({ ok: true, provider: 'openrouter-free-robust', model: MODEL, repaired, plan, usage: first?.usage || null, finishReason: first?.choices?.[0]?.finish_reason || null }), { status: 200, headers: { 'content-type': 'application/json' } })
+    if (!plan) throw new Error(`all final-output modes failed; ${failures.slice(-2).join(' | ')}`)
+
+    return new Response(JSON.stringify({
+      ok: true,
+      provider: 'openrouter-free-final-only',
+      model: MODEL,
+      repaired: mode !== 'tool',
+      mode,
+      plan,
+      usage: data?.usage || null,
+      finishReason: data?.choices?.[0]?.finish_reason || null
+    }), { status: 200, headers: { 'content-type': 'application/json' } })
   }
 
   window.fetch = async (input, init) => {
@@ -236,8 +260,11 @@
     try {
       return await robustScientist(init)
     } catch (error) {
-      const detail = String(error?.message || error).slice(0, 220)
-      return new Response(JSON.stringify({ error: 'nemotron_robust_decoder_failed', detail: `Nemotron decoder failed after tool + protocol attempts: ${detail}` }), { status: 502, headers: { 'content-type': 'application/json' } })
+      const detail = String(error?.message || error).slice(0, 360)
+      return new Response(JSON.stringify({
+        error: 'nemotron_final_output_failed',
+        detail: `Nemotron final-output pipeline failed: ${detail}`
+      }), { status: 502, headers: { 'content-type': 'application/json' } })
     }
   }
 })()
