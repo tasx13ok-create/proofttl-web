@@ -3,6 +3,7 @@ import { generateText } from 'ai'
 const MODEL = 'nvidia/nemotron-3-super-120b-a12b'
 const ACTIONS = new Set(['pulse', 'vortex', 'cool', 'heat', 'well'])
 const METRICS = new Set(['speed', 'energy', 'spread', 'angular', 'density', 'entropy', 'coherence', 'drift'])
+const PREVIEW_PROBE = 'reality-engine-probe-8f42a1d7'
 
 function parseBody(request) {
   if (request.body && typeof request.body === 'object') return request.body
@@ -39,18 +40,48 @@ function normalizePlan(value) {
   }
 }
 
+function probeNotebook() {
+  return {
+    universe: {
+      seed: 'PROBE',
+      law_genome: { attraction: 0.37, repulsion: 2.4, radius: 71, drag: 0.993 },
+      current_state: { energy: 0.42, spread: 0.51, centerX: 0.5, centerY: 0.49 },
+    },
+    notebook: {
+      experiments: 24,
+      actions: {
+        pulse: { trials: 8, means: { energy: 0.11, spread: 0.04 } },
+        vortex: { trials: 4, means: { energy: 0.01, spread: -0.01 } },
+        cool: { trials: 4, means: { energy: -0.06, spread: 0.0 } },
+        heat: { trials: 4, means: { energy: 0.05, spread: 0.03 } },
+        well: { trials: 4, means: { energy: 0.13, spread: -0.07 } },
+      },
+      discoveries: [
+        { action: 'pulse', metric: 'energy', direction: 'raises', effect: 0.11, confidence: 0.73, samples: 8 },
+        { action: 'well', metric: 'energy', direction: 'raises', effect: 0.13, confidence: 0.66, samples: 4 },
+      ],
+      falsified: [],
+    },
+    concepts: [],
+  }
+}
+
 export default async function handler(request, response) {
   response.setHeader('cache-control', 'no-store')
   response.setHeader('content-type', 'application/json; charset=utf-8')
 
-  if (request.method !== 'POST') {
+  const isPreviewProbe = request.method === 'GET'
+    && process.env.VERCEL_ENV === 'preview'
+    && String(request.query?.probe || '') === PREVIEW_PROBE
+
+  if (request.method !== 'POST' && !isPreviewProbe) {
     response.statusCode = 405
     response.end(JSON.stringify({ error: 'method_not_allowed' }))
     return
   }
 
   try {
-    const body = parseBody(request)
+    const body = isPreviewProbe ? probeNotebook() : parseBody(request)
     if (!body || !body.universe || !body.notebook) {
       response.statusCode = 400
       response.end(JSON.stringify({ error: 'invalid_lab_notebook' }))
@@ -93,6 +124,8 @@ Choose exactly one next intervention.`
     const plan = normalizePlan(extractJson(result.text))
     response.statusCode = 200
     response.end(JSON.stringify({
+      ok: true,
+      probe: isPreviewProbe,
       model: MODEL,
       plan,
       usage: result.usage || null,
