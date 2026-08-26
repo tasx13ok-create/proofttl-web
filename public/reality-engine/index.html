@@ -1,9 +1,118 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#05070a"><title>Reality Engine — Discovery Systems Experiment</title><meta name="description" content="A local-first synthetic discovery laboratory where autonomous learners and Qwen3 design, run, falsify, and interpret controlled experiments."><link rel="stylesheet" href="./release.css"></head><body><div class="shell">
-<header class="topbar"><div class="brand"><span class="mark">RE</span><span>REALITY ENGINE</span></div><div class="top-right"><span class="pill" id="version-pill">RC 0.3.0-2</span><span class="pill warn" id="runtime-pill">LOCAL RUNTIME OFFLINE</span><span class="pill" id="health-pill">SELF-TESTING</span></div></header>
-<section class="hero"><div><div class="kicker">POST-CORPUS DISCOVERY SYSTEM / RELEASE CANDIDATE</div><h1>Give it a universe.<br><em>Make it prove itself.</em></h1><p>Reality Engine couples a zero-pretrained local learner, controlled shadow experiments, falsifiable theory tracking, and a local Qwen3 Science Director that can order experiments through a constrained command layer.</p><div class="toolbar"><button class="btn primary" id="new-universe">New Big Bang</button><button class="btn" id="pause-sim">Pause universe</button><button class="btn" id="run-random">Run controlled trial</button></div></div><div class="hero-stats"><div><strong id="hero-experiments">0</strong><span>controlled trials</span></div><div><strong id="hero-laws">0</strong><span>promoted laws</span></div><div><strong id="hero-theories">0</strong><span>active theories</span></div><div><strong>LOCAL</strong><span>Qwen inference</span></div></div></section>
-<section class="section"><div class="section-head"><div><div class="kicker">LIVE SYNTHETIC UNIVERSE</div><h2 id="universe-title">Universe #--------</h2></div><div class="toolbar"><button class="btn" data-action="pulse">⊹ Pulse</button><button class="btn" data-action="vortex">Ψ Vortex</button><button class="btn" data-action="cool">∇ Cool</button><button class="btn" data-action="heat">∆ Heat</button><button class="btn" data-action="well">◆ Well</button></div></div><div class="lab-grid"><div class="card universe-wrap"><canvas id="universe"></canvas><div class="scan"></div><div class="hud tl"><span id="seed-hud">GENESIS</span><span id="entity-hud">0 entities</span></div><div class="hud br"><span>VISUAL WORLD · SHADOW LAB RUNS CONTROLLED CLONES</span></div></div><div class="side-stack"><div class="card"><div class="card-head"><span>WORLD STATE</span><span id="sim-status">RUNNING</span></div><div class="metrics"><div class="metric"><span>Energy</span><strong id="m-energy">0.000</strong></div><div class="metric"><span>Spread</span><strong id="m-spread">0.000</strong></div><div class="metric"><span>Center X</span><strong id="m-centerX">0.000</strong></div><div class="metric"><span>Center Y</span><strong id="m-centerY">0.000</strong></div></div></div><div class="card"><div class="card-head"><span>EXPERIMENT QUEUE</span><span id="queue-status">IDLE</span></div><div class="queue" id="queue"><div class="status-copy">No queued controlled experiments.</div></div></div></div></div></section>
-<section class="section"><div class="section-head"><div><div class="kicker">SCIENCE DIRECTOR</div><h2>Qwen3 can order experiments. Data decides.</h2></div><div class="toolbar"><button class="btn primary" id="connect-runtime">Connect local runtime</button><button class="btn" id="consult-director">Consult Qwen</button><button class="btn good" id="run-proposal">Run proposed batch</button></div></div><div class="card director-grid"><div><div class="card-head" style="padding:0 0 10px;border:0"><span>MODEL</span></div><div class="model-name" id="director-model">QWEN3 4B · LOCAL</div><div class="status-copy" id="director-status">Waiting for Reality Engine Local Runtime.</div><div class="runtime-offline" id="runtime-setup">Download and run the <a href="./START_REALITY_ENGINE_LOCAL.cmd" download>Local Runtime Launcher</a>. Keep its window open, then click <b>Connect local runtime</b>.</div></div><div><div class="card-head" style="padding:0 0 10px;border:0"><span>CURRENT HYPOTHESIS</span><span id="proposal-source">NO PLAN</span></div><div class="hypothesis" id="director-hypothesis">No external hypothesis yet.</div><div class="rationale" id="director-rationale">The autonomous learner is gathering controlled evidence.</div></div><div><div class="card-head" style="padding:0 0 10px;border:0"><span>NEXT PROPOSED TEST</span></div><div class="proposal"><div><span>Action</span><strong id="proposal-action">—</strong></div><div><span>Target</span><strong id="proposal-target">—</strong></div><div><span>Direction</span><strong id="proposal-direction">—</strong></div><div><span>Trials</span><strong id="proposal-trials">—</strong></div></div><div class="status-copy" id="proposal-confidence">confidence —</div></div></div></section>
-<section class="section"><div class="section-head"><div><div class="kicker">INTERACTIVE SCIENCE CONSOLE</div><h2>Talk to the scientist. Let it touch the universe.</h2></div></div><div class="chat-grid"><div class="card chat-card"><div class="card-head"><span>QWEN3 SCIENCE CHAT</span><span id="chat-state">LOCAL ONLY</span></div><div class="messages" id="messages"><div class="msg system">The chat can issue validated experiment commands. It cannot execute arbitrary code or silently reset the universe.</div></div><div class="composer"><textarea id="chat-input" placeholder="Try: Find the strongest contradiction and run the smallest experiment that can separate the explanations."></textarea><div class="composer-row"><div class="quick"><button class="btn" data-quick="Find the strongest contradiction in the evidence and test it.">Test contradiction</button><button class="btn" data-quick="Design a compact comparison across the most informative interventions.">Compare actions</button><button class="btn" data-quick="Explain what we actually know, what we do not know, and what evidence is weakest.">Audit evidence</button></div><button class="btn primary" id="send-chat">Send to Qwen</button></div></div></div><div class="card"><div class="card-head"><span>COGNITIVE / EXPERIMENT TRACE</span><span>LIVE</span></div><div class="trace" id="trace"></div></div></div></section>
-<section class="section"><div class="section-head"><div><div class="kicker">EVIDENCE</div><h2>Controlled effects, promoted laws, living theories.</h2></div></div><div class="evidence-grid"><div class="card"><div class="card-head"><span>CAUSAL EFFECT MATRIX</span><span>TEST − CONTROL</span></div><div class="matrix"><table><thead><tr><th>Intervention</th><th>n</th><th>Δ energy</th><th>Δ spread</th><th>Δ center-x</th><th>Δ center-y</th></tr></thead><tbody id="matrix-body"></tbody></table></div><div class="card-head"><span>DISCOVERY LEDGER</span><span>FALSIFIABLE</span></div><div class="law-list" id="laws"></div></div><div class="card"><div class="card-head"><span>THEORY LEDGER</span><span>QWEN + DATA</span></div><div class="theory-list" id="theories"></div></div></div></section>
-<section class="section"><div class="section-head"><div><div class="kicker">RELEASE HEALTH</div><h2>Built-in self tests.</h2></div><button class="btn" id="rerun-tests">Rerun self tests</button></div><div class="card"><div class="diag-grid" id="diagnostics"></div></div></section>
-<footer class="footer"><span>Traditional software executes. AI predicts. <b>Discovery systems experiment.</b></span><span>Reality Engine RC 0.3.0-2 · local-first</span></footer></div><div class="toast" id="toast"></div><script src="./release.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#030609">
+<title>Reality Engine — Ontology Breaker</title>
+<meta name="description" content="A zero-LLM discovery engine that manufactures epistemic twins and evolves new scientific instruments to break its own ontology.">
+<link rel="stylesheet" href="./ontology.css">
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <a class="brand" href="#top"><span class="mark">RE</span><span>REALITY ENGINE</span></a>
+  <div class="statusbar"><span class="pill">ONTOLOGY BREAKER</span><span class="pill" id="depth-pill">DEPTH 0</span><span class="pill warn" id="engine-pill">INITIALIZING</span></div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div>
+    <div class="kicker">ZERO-LLM OPEN-ENDED SCIENCE / EXPERIMENTAL CORE</div>
+    <h1>Reality attacks<br><em>what the machine can perceive.</em></h1>
+    <p class="lead">Twin Forge manufactures worlds that are different underneath but indistinguishable to the system's current science. Instrument Forge must invent a new measurable quantity that breaks the equivalence. If it survives replication, the machine permanently gains a new sense.</p>
+    <div class="actions">
+      <button class="btn primary" id="break-btn">Break current ontology</button>
+      <button class="btn" id="auto-btn">Auto evolve: off</button>
+      <button class="btn" id="new-lineage">New lineage</button>
+    </div>
+  </div>
+  <div class="hero-metrics">
+    <div><strong id="depth">0</strong><span>epistemic depth</span></div>
+    <div><strong id="instrument-count">4</strong><span>scientific senses</span></div>
+    <div><strong id="fracture-count">0</strong><span>ontologies broken</span></div>
+    <div><strong>0</strong><span>LLM calls</span></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <div><div class="kicker">TWIN FORGE</div><h2>Different reality. Same current science.</h2></div>
+    <div class="forge-state" id="forge-state">Waiting to attack the current ontology.</div>
+  </div>
+  <div class="twin-grid">
+    <article class="world-card">
+      <div class="card-head"><span>UNIVERSE A</span><span id="hash-a">HIDDEN</span></div>
+      <canvas id="world-a"></canvas>
+      <p>Hidden law genome is never exposed to the scientist.</p>
+    </article>
+    <div class="versus">
+      <div class="equivalence" id="equivalence">?</div>
+      <strong id="twin-label">NO TWIN YET</strong>
+      <span>under current ontology</span>
+    </div>
+    <article class="world-card">
+      <div class="card-head"><span>UNIVERSE B</span><span id="hash-b">HIDDEN</span></div>
+      <canvas id="world-b"></canvas>
+      <p>Its hidden mechanics are deliberately pushed away from A.</p>
+    </article>
+  </div>
+  <div class="distance-grid">
+    <div class="meter-card"><div><span>Hidden-law distance</span><strong id="hidden-distance">—</strong></div><div class="meter"><i id="hidden-meter"></i></div><p>Maximize this.</p></div>
+    <div class="meter-card"><div><span>Observable distance</span><strong id="observable-distance">—</strong></div><div class="meter"><i id="observable-meter"></i></div><p>Minimize this using every instrument science currently owns.</p></div>
+    <div class="meter-card"><div><span>Epistemic fracture pressure</span><strong id="pressure">—</strong></div><div class="meter"><i id="pressure-meter"></i></div><p>High means the worlds differ underneath while looking equivalent to current science.</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <div><div class="kicker">INSTRUMENT FORGE</div><h2>Invent a quantity that current science does not have.</h2></div>
+    <div class="generation" id="generation">IDLE</div>
+  </div>
+  <div class="instrument-grid">
+    <article class="candidate card">
+      <div class="card-head"><span>BEST EVOLVED INSTRUMENT</span><span id="candidate-id">NONE</span></div>
+      <div class="formula" id="candidate-formula">No candidate instrument yet.</div>
+      <p id="candidate-copy">The forge composes measurements from raw position, velocity, mass, aggregation and temporal operators. It is not choosing from a fixed menu of human-named observables.</p>
+    </article>
+    <article class="card scorecard">
+      <div class="score-row"><span>Fresh-seed separation</span><strong id="cert-effect">—</strong></div>
+      <div class="score-row"><span>Directional consistency</span><strong id="cert-consistency">—</strong></div>
+      <div class="score-row"><span>Redundancy with old senses</span><strong id="redundancy">—</strong></div>
+      <div class="score-row"><span>Program complexity</span><strong id="complexity">—</strong></div>
+      <div class="certificate" id="certificate">NOT TESTED</div>
+    </article>
+  </div>
+  <div class="dsl card">
+    <div class="card-head"><span>MEASUREMENT LANGUAGE</span><span>PROGRAMS, NOT LABELS</span></div>
+    <div class="dsl-flow"><code>x y vx vy m</code><b>→</b><code>abs sq sign + − ×</code><b>→</b><code>mean var q75 max</code><b>→</b><code>meanₜ varₜ Δ slope autocorr corrₜ</code></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><div class="kicker">ONTOLOGY LEDGER</div><h2>Every certified instrument becomes a permanent new sense.</h2></div><button class="btn danger" id="reset-btn">Reset ontology</button></div>
+  <div class="ontology-layout">
+    <div class="ontology-list card" id="ontology-list"></div>
+    <div class="lineage card">
+      <div class="card-head"><span>EPISTEMIC LINEAGE</span><span id="lineage-id">—</span></div>
+      <div id="lineage"></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><div class="kicker">COGNITIVE TRACE</div><h2>Watch science fail, mutate, and recover.</h2></div></div>
+  <div class="trace card" id="trace"></div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><div class="kicker">RELEASE HEALTH</div><h2>Core invariants.</h2></div><button class="btn" id="tests-btn">Rerun tests</button></div>
+  <div class="tests card" id="tests"></div>
+</section>
+</main>
+<footer><span>Learn a world → manufacture a blind spot → invent a sense → repeat.</span><span>Reality Engine · Ontology Breaker α</span></footer>
+</div>
+<script src="./ontology-engine.js"></script>
+<script src="./ontology.js"></script>
+</body>
+</html>
