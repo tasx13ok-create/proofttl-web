@@ -1,6 +1,6 @@
 'use strict'
-importScripts('./ontology-engine-v2.js')
-const E=self.OntologyEngineV2
+importScripts('./ontology-engine-v2.js','./ontology-engine-v3.js')
+const E=self.OntologyEngineV3
 self.onmessage=e=>{
   const msg=e.data||{}
   try{
