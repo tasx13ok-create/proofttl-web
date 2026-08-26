@@ -3,105 +3,98 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#030609">
-<title>Reality Engine — Ontology Breaker</title>
-<meta name="description" content="A zero-LLM discovery engine that manufactures epistemic twins and evolves new scientific instruments to break its own ontology.">
-<link rel="stylesheet" href="./ontology.css">
+<meta name="theme-color" content="#05070a">
+<title>Reality Engine — Representation Audit</title>
+<meta name="description" content="Reality Engine attacks its own scientific representation, evolves measurements, audits random baselines, and requires cross-simulator transfer before epistemic depth can increase.">
+<link rel="stylesheet" href="./ontology-v2.css">
 </head>
 <body>
 <div class="app">
 <header class="topbar">
-  <a class="brand" href="#top"><span class="mark">RE</span><span>REALITY ENGINE</span></a>
-  <div class="statusbar"><span class="pill">ONTOLOGY BREAKER</span><span class="pill" id="depth-pill">DEPTH 0</span><span class="pill warn" id="engine-pill">INITIALIZING</span></div>
+  <div class="brand"><span class="mark">RE</span><span>REALITY ENGINE</span></div>
+  <div class="status"><span class="pill">REPRESENTATION AUDIT</span><span class="pill" id="depth-pill">DEPTH 0</span><span class="pill warn" id="engine-pill">BOOTING</span></div>
 </header>
-
-<main id="top">
+<main>
 <section class="hero">
   <div>
-    <div class="kicker">ZERO-LLM OPEN-ENDED SCIENCE / EXPERIMENTAL CORE</div>
-    <h1>Reality attacks<br><em>what the machine can perceive.</em></h1>
-    <p class="lead">Twin Forge manufactures worlds that are different underneath but indistinguishable to the system's current science. Instrument Forge must invent a new measurable quantity that breaks the equivalence. If it survives replication, the machine permanently gains a new sense.</p>
+    <div class="kicker">ZERO-LLM ADVERSARIAL EPISTEMOLOGY / α 0.4</div>
+    <h1>Finding a feature is easy.<br><em>Prove the representation grew.</em></h1>
+    <p>Reality Engine manufactures worlds its current science struggles to distinguish, evolves new measurement programs, then tries to disqualify its own discovery with untouched splits, a second simulator family, irreducibility tests, multiplicity correction, and a fresh random-program baseline.</p>
     <div class="actions">
-      <button class="btn primary" id="break-btn">Break current ontology</button>
+      <button class="btn primary" id="attack-btn">Attack current science</button>
       <button class="btn" id="auto-btn">Auto evolve: off</button>
-      <button class="btn" id="new-lineage">New lineage</button>
+      <button class="btn" id="export-btn">Export evidence</button>
+      <button class="btn danger" id="new-btn">New lineage</button>
     </div>
   </div>
-  <div class="hero-metrics">
-    <div><strong id="depth">0</strong><span>epistemic depth</span></div>
-    <div><strong id="instrument-count">4</strong><span>scientific senses</span></div>
-    <div><strong id="fracture-count">0</strong><span>ontologies broken</span></div>
-    <div><strong>0</strong><span>LLM calls</span></div>
+  <div class="hero-stats">
+    <div><strong id="depth">0</strong><span>strict epistemic depth</span></div>
+    <div><strong id="senses">4</strong><span>total senses</span></div>
+    <div><strong id="derived">0</strong><span>derived DSL senses</span></div>
+    <div><strong>0</strong><span>LLM/API calls</span></div>
+  </div>
+</section>
+
+<section class="ruleband">
+  <div><b>DEPTH RULE</b><span>A useful sense may enter the ontology without increasing depth.</span></div>
+  <div><b>STRICT EVENT</b><span>Cross-simulator + irreducible + corrected significance + 0/32 random baseline passes.</span></div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><div class="kicker">EPISTEMIC TWIN AUDIT</div><h2>Can current science tell the hidden mechanisms apart?</h2></div><span id="attack-label" class="pill">NO ATTACK YET</span></div>
+  <div class="worlds">
+    <article class="world-card"><div class="card-head"><span id="family-a">PRIMARY / —</span><span id="hash-a">HIDDEN</span></div><canvas id="world-a"></canvas><div class="world-foot">Universe A · hidden genome never exposed to Instrument Forge</div></article>
+    <div class="vs"><strong id="twin-status">?</strong><span>current ontology classifier</span><em id="twin-acc">—</em></div>
+    <article class="world-card"><div class="card-head"><span id="family-b">PRIMARY / —</span><span id="hash-b">HIDDEN</span></div><canvas id="world-b"></canvas><div class="world-foot">Universe B · deliberately different hidden mechanics</div></article>
+  </div>
+  <div class="audit-grid">
+    <div class="metric"><span>Hidden-law distance</span><strong id="hidden-distance">—</strong><small>must stay high</small></div>
+    <div class="metric"><span>Current-ontology accuracy</span><strong id="ontology-accuracy">—</strong><small>chance ≈ 50%</small></div>
+    <div class="metric"><span>Max standardized feature gap</span><strong id="ontology-gap">—</strong><small>locked twin audit</small></div>
+    <div class="metric"><span>Transfer-family twin accuracy</span><strong id="transfer-twin-accuracy">—</strong><small>independent simulator</small></div>
   </div>
 </section>
 
 <section class="section">
-  <div class="section-head">
-    <div><div class="kicker">TWIN FORGE</div><h2>Different reality. Same current science.</h2></div>
-    <div class="forge-state" id="forge-state">Waiting to attack the current ontology.</div>
-  </div>
-  <div class="twin-grid">
-    <article class="world-card">
-      <div class="card-head"><span>UNIVERSE A</span><span id="hash-a">HIDDEN</span></div>
-      <canvas id="world-a"></canvas>
-      <p>Hidden law genome is never exposed to the scientist.</p>
-    </article>
-    <div class="versus">
-      <div class="equivalence" id="equivalence">?</div>
-      <strong id="twin-label">NO TWIN YET</strong>
-      <span>under current ontology</span>
-    </div>
-    <article class="world-card">
-      <div class="card-head"><span>UNIVERSE B</span><span id="hash-b">HIDDEN</span></div>
-      <canvas id="world-b"></canvas>
-      <p>Its hidden mechanics are deliberately pushed away from A.</p>
+  <div class="section-head"><div><div class="kicker">INSTRUMENT CERTIFICATION</div><h2>New sense, derived feature, or actual depth event?</h2></div><span id="certificate" class="pill">NO CANDIDATE</span></div>
+  <div class="instrument-layout">
+    <article class="card formula-card"><div class="card-head"><span>WINNING MEASUREMENT PROGRAM</span><span id="instrument-id">—</span></div><div class="formula" id="formula">No certified instrument yet.</div><p id="instrument-note">Instrument Forge composes programs from raw x, y, vx, vy and mass measurements. The result is audited against the entire current ontology.</p></article>
+    <article class="card cert-grid">
+      <div><span>Local separation</span><strong id="c-effect">—</strong></div>
+      <div><span>Local accuracy gain</span><strong id="c-acc">—</strong></div>
+      <div><span>Irreducibility</span><strong id="c-irr">—</strong></div>
+      <div><span>Corrected p</span><strong id="c-p">—</strong></div>
+      <div><span>Prediction gain</span><strong id="c-pred">—</strong></div>
+      <div><span>Transfer separation</span><strong id="t-effect">—</strong></div>
+      <div><span>Transfer accuracy gain</span><strong id="t-acc">—</strong></div>
+      <div><span>Transfer irreducibility</span><strong id="t-irr">—</strong></div>
     </article>
   </div>
-  <div class="distance-grid">
-    <div class="meter-card"><div><span>Hidden-law distance</span><strong id="hidden-distance">—</strong></div><div class="meter"><i id="hidden-meter"></i></div><p>Maximize this.</p></div>
-    <div class="meter-card"><div><span>Observable distance</span><strong id="observable-distance">—</strong></div><div class="meter"><i id="observable-meter"></i></div><p>Minimize this using every instrument science currently owns.</p></div>
-    <div class="meter-card"><div><span>Epistemic fracture pressure</span><strong id="pressure">—</strong></div><div class="meter"><i id="pressure-meter"></i></div><p>High means the worlds differ underneath while looking equivalent to current science.</p></div>
+  <div class="baseline card">
+    <div><span>Fresh random DSL probes</span><strong id="baseline-count">0 / 32 passed</strong></div>
+    <div><span>Depth verdict</span><strong id="depth-verdict">WAITING</strong></div>
+    <div><span>Operator pressure</span><strong id="operator-pressure">0 derived senses since last depth event</strong></div>
   </div>
 </section>
 
 <section class="section">
-  <div class="section-head">
-    <div><div class="kicker">INSTRUMENT FORGE</div><h2>Invent a quantity that current science does not have.</h2></div>
-    <div class="generation" id="generation">IDLE</div>
-  </div>
-  <div class="instrument-grid">
-    <article class="candidate card">
-      <div class="card-head"><span>BEST EVOLVED INSTRUMENT</span><span id="candidate-id">NONE</span></div>
-      <div class="formula" id="candidate-formula">No candidate instrument yet.</div>
-      <p id="candidate-copy">The forge composes measurements from raw position, velocity, mass, aggregation and temporal operators. It is not choosing from a fixed menu of human-named observables.</p>
-    </article>
-    <article class="card scorecard">
-      <div class="score-row"><span>Fresh-seed separation</span><strong id="cert-effect">—</strong></div>
-      <div class="score-row"><span>Directional consistency</span><strong id="cert-consistency">—</strong></div>
-      <div class="score-row"><span>Redundancy with old senses</span><strong id="redundancy">—</strong></div>
-      <div class="score-row"><span>Program complexity</span><strong id="complexity">—</strong></div>
-      <div class="certificate" id="certificate">NOT TESTED</div>
-    </article>
-  </div>
-  <div class="dsl card">
-    <div class="card-head"><span>MEASUREMENT LANGUAGE</span><span>PROGRAMS, NOT LABELS</span></div>
-    <div class="dsl-flow"><code>x y vx vy m</code><b>→</b><code>abs sq sign + − ×</code><b>→</b><code>mean var q75 max</code><b>→</b><code>meanₜ varₜ Δ slope autocorr corrₜ</code></div>
+  <div class="section-head"><div><div class="kicker">LOCKED SPLITS</div><h2>Every attack burns its holdouts.</h2></div></div>
+  <div class="splits card">
+    <div><span>Twin search</span><code id="split-search">—</code></div>
+    <div><span>Twin audit</span><code id="split-audit">—</code></div>
+    <div><span>Instrument certification</span><code id="split-cert">—</code></div>
+    <div><span>Prediction test</span><code id="split-pred">—</code></div>
+    <div><span>Cross-simulator transfer</span><code id="split-transfer">—</code></div>
   </div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div><div class="kicker">ONTOLOGY LEDGER</div><h2>Every certified instrument becomes a permanent new sense.</h2></div><button class="btn danger" id="reset-btn">Reset ontology</button></div>
-  <div class="ontology-layout">
-    <div class="ontology-list card" id="ontology-list"></div>
-    <div class="lineage card">
-      <div class="card-head"><span>EPISTEMIC LINEAGE</span><span id="lineage-id">—</span></div>
-      <div id="lineage"></div>
-    </div>
-  </div>
+  <div class="section-head"><div><div class="kicker">ONTOLOGY LEDGER</div><h2>Useful senses can accumulate without gaming depth.</h2></div></div>
+  <div class="ledger-layout"><div class="card" id="ontology"></div><div class="card lineage"><div class="card-head"><span>LINEAGE</span><span id="lineage-id">—</span></div><div id="lineage"></div></div></div>
 </section>
 
 <section class="section">
-  <div class="section-head"><div><div class="kicker">COGNITIVE TRACE</div><h2>Watch science fail, mutate, and recover.</h2></div></div>
+  <div class="section-head"><div><div class="kicker">COGNITIVE TRACE</div><h2>Watch the system try to disprove itself.</h2></div></div>
   <div class="trace card" id="trace"></div>
 </section>
 
@@ -110,9 +103,9 @@
   <div class="tests card" id="tests"></div>
 </section>
 </main>
-<footer><span>Learn a world → manufacture a blind spot → invent a sense → repeat.</span><span>Reality Engine · Ontology Breaker α</span></footer>
+<footer><span>Ontology expansion ≠ epistemic depth. The engine has to earn the difference.</span><span>Reality Engine α 0.4 · zero-LLM</span></footer>
 </div>
-<script src="./ontology-engine.js"></script>
-<script src="./ontology.js"></script>
+<script src="./ontology-engine-v2.js"></script>
+<script src="./ontology-v2.js"></script>
 </body>
 </html>
