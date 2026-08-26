@@ -119,7 +119,7 @@ function certifyInstrument(candidate,twin){const v=instrumentVector(candidate.pr
 function epistemicCycle({ontology,depth=0,seed=1,progress}={}){
   let twin=null,bestQ=-Infinity;
   for(let attempt=0;attempt<3;attempt++){const t=forgeTwin({ontology,seed:(seed^0xA11CE^(attempt*0x9E3779B9))>>>0,progress}),q=t.hiddenDistance*1.6-t.observableDistance*3.8;if(q>bestQ){bestQ=q;twin=t}if(t.hiddenDistance>=.30&&t.observableDistance<=.22){twin=t;break}}
-  if(!twin||twin.hiddenDistance<.24||twin.observableDistance>.32)return{ok:false,twin,reason:'no_epistemic_twin',depth};
+  if(!twin||twin.hiddenDistance<.24||twin.observableDistance>.25)return{ok:false,twin,reason:'no_epistemic_twin',depth};
   const finalists=forgeInstrument({twin,ontology,seed:seed^0xBEEFF,progress});if(!finalists?.length)return{ok:false,twin,reason:'no_candidate',depth};
   let candidate=finalists[0],cert=certifyInstrument(candidate,twin),accepted=false;
   for(const c of finalists){const x=certifyInstrument(c,twin);if(c.certified&&x.pass){candidate=c;cert=x;accepted=true;break}if(x.effect>cert.effect){candidate=c;cert=x}}
