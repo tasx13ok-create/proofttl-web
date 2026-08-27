@@ -1,5 +1,5 @@
 'use strict'
-importScripts('./ontology-engine-v2.js','./ontology-engine-v3.js','./ontology-engine-v4.js','./ontology-engine-v5.js','./ontology-engine-v6.js','./ontology-engine-v7.js','./ontology-engine-v8.js')
+importScripts('./ontology-engine-v2.js','./ontology-engine-v3.js','./ontology-engine-v4.js','./ontology-engine-v5.js','./ontology-engine-v6.js','./ontology-engine-v7b.js','./ontology-engine-v8.js')
 const E=self.OntologyEngineV8
 self.onmessage=e=>{
   const msg=e.data||{}
