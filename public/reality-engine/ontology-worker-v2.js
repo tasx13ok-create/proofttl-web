@@ -1,6 +1,6 @@
 'use strict'
-importScripts('./ontology-engine-v2.js','./ontology-engine-v3.js','./ontology-engine-v4.js','./ontology-engine-v5.js','./ontology-engine-v6.js')
-const E=self.OntologyEngineV6
+importScripts('./ontology-engine-v2.js','./ontology-engine-v3.js','./ontology-engine-v4.js','./ontology-engine-v5.js','./ontology-engine-v6.js','./ontology-engine-v7.js','./ontology-engine-v8.js')
+const E=self.OntologyEngineV8
 self.onmessage=e=>{
   const msg=e.data||{}
   try{
@@ -11,6 +11,8 @@ self.onmessage=e=>{
         depth:Number(msg.depth)||0,
         attack:Number(msg.attack)||0,
         seed:Number(msg.seed)||1,
+        lineageSeed:Number(msg.lineageSeed)||Number(msg.seed)||1,
+        ecologyState:msg.ecologyState||null,
         progress:p=>self.postMessage({type:'progress',...p})
       })
       self.postMessage({type:'cycle',result,requestId:msg.requestId})
