@@ -126,8 +126,27 @@ function pinnedLookup(pinned) {
   }
 }
 
+function totalDeclaredBytes(headers) {
+  const range = String(headers?.['content-range'] || '')
+  const match = range.match(/\/(\d+)\s*$/)
+  if (match) return Number(match[1]) || 0
+  return Number(headers?.['content-length'] || 0) || 0
+}
+
 function requestPinned(url, pinned) {
   return new Promise((resolve, reject) => {
+    let settled = false
+    const finishResolve = (value) => {
+      if (settled) return
+      settled = true
+      resolve(value)
+    }
+    const finishReject = (error) => {
+      if (settled) return
+      settled = true
+      reject(error)
+    }
+
     const req = https.request({
       protocol: 'https:',
       hostname: url.hostname,
@@ -139,33 +158,52 @@ function requestPinned(url, pinned) {
       autoSelectFamily: false,
       lookup: pinnedLookup(pinned),
       headers: {
-        'user-agent': 'RealityEngine-Observer/0.2 (+https://proofttl-web.vercel.app/reality-engine/)',
+        'user-agent': 'RealityEngine-Observer/0.3 (+https://proofttl-web.vercel.app/reality-engine/)',
         accept: 'text/html,text/plain,application/json,application/xml,application/xhtml+xml,application/rss+xml,application/atom+xml;q=0.9,*/*;q=0.1',
         'accept-encoding': 'identity',
+        range: `bytes=0-${MAX_BYTES - 1}`,
         connection: 'close',
       },
     }, (res) => {
       const chunks = []
       let bytes = 0
-      const declared = Number(res.headers['content-length'] || 0)
-      if (declared > MAX_BYTES) {
-        res.destroy()
-        reject(new Error('response_too_large'))
-        return
-      }
+      let truncated = false
+      const declaredBytes = totalDeclaredBytes(res.headers)
+
+      const snapshot = () => ({
+        status: res.statusCode || 0,
+        headers: res.headers,
+        body: Buffer.concat(chunks),
+        bytes,
+        declaredBytes,
+        truncated: truncated || declaredBytes > bytes,
+      })
+
       res.on('data', (chunk) => {
-        bytes += chunk.length
-        if (bytes > MAX_BYTES) {
-          res.destroy(new Error('response_too_large'))
+        if (settled) return
+        const remaining = MAX_BYTES - bytes
+        if (remaining <= 0) {
+          truncated = true
+          finishResolve(snapshot())
+          res.destroy()
+          return
+        }
+        if (chunk.length > remaining) {
+          chunks.push(Buffer.from(chunk.subarray(0, remaining)))
+          bytes += remaining
+          truncated = true
+          finishResolve(snapshot())
+          res.destroy()
           return
         }
         chunks.push(Buffer.from(chunk))
+        bytes += chunk.length
       })
-      res.on('end', () => resolve({ status: res.statusCode || 0, headers: res.headers, body: Buffer.concat(chunks), bytes }))
-      res.on('error', reject)
+      res.on('end', () => finishResolve(snapshot()))
+      res.on('error', finishReject)
     })
     req.setTimeout(TIMEOUT_MS, () => req.destroy(new Error('upstream_timeout')))
-    req.on('error', reject)
+    req.on('error', finishReject)
     req.end()
   })
 }
@@ -254,7 +292,7 @@ function errorCode(error) {
   const value = String(error?.message || error || 'internet_observation_failed')
   const known = new Set([
     'invalid_url','https_required','credentials_in_url_forbidden','custom_port_forbidden','private_network_target',
-    'dns_no_public_address','dns_contains_private_address','response_too_large','upstream_timeout','redirect_without_location','too_many_redirects',
+    'dns_no_public_address','dns_contains_private_address','upstream_timeout','redirect_without_location','too_many_redirects',
   ])
   return known.has(value) ? value : 'internet_observation_failed'
 }
@@ -307,7 +345,7 @@ export default async function handler(request, response) {
     response.end(JSON.stringify({
       ok: true,
       mode: 'read-only-public-web',
-      gatewayVersion: '0.2.0',
+      gatewayVersion: '0.3.0',
       url: result.url.href,
       status: result.status,
       contentType: contentType.slice(0, 120),
@@ -315,6 +353,8 @@ export default async function handler(request, response) {
       text,
       links,
       bytes: result.bytes,
+      declaredBytes: result.declaredBytes || result.bytes,
+      truncated: Boolean(result.truncated),
       fingerprint,
       redirects: result.hops,
       fetchedAt: new Date().toISOString(),
@@ -324,13 +364,13 @@ export default async function handler(request, response) {
         credentialsForwarded: false,
         writesAllowed: false,
         maxBytes: MAX_BYTES,
+        oversizedPages: 'truncated-to-maxBytes',
         timeoutMs: TIMEOUT_MS,
       },
     }))
   } catch (error) {
     const code = errorCode(error)
     const status = code === 'private_network_target' || code === 'dns_contains_private_address' ? 403
-      : code === 'response_too_large' ? 413
       : code === 'upstream_timeout' ? 504
       : 502
     console.error('Reality Engine internet observation failed', code, String(error?.stack || error?.message || error))
