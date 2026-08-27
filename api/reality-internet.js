@@ -116,15 +116,14 @@ async function resolvePublic(hostname) {
   return { address: chosen.address, family: chosen.family }
 }
 
-function validateUrl(input) {
-  let url
-  try { url = new URL(String(input || '').trim()) } catch { throw new Error('invalid_url') }
-  if (url.protocol !== 'https:') throw new Error('https_required')
-  if (url.username || url.password) throw new Error('credentials_in_url_forbidden')
-  if (url.port && url.port !== '443') throw new Error('custom_port_forbidden')
-  if (blockedHostname(url.hostname)) throw new Error('private_network_target')
-  url.hash = ''
-  return url
+function pinnedLookup(pinned) {
+  return (_hostname, options, callback) => {
+    if (options && options.all) {
+      callback(null, [{ address: pinned.address, family: pinned.family }])
+      return
+    }
+    callback(null, pinned.address, pinned.family)
+  }
 }
 
 function requestPinned(url, pinned) {
@@ -136,9 +135,11 @@ function requestPinned(url, pinned) {
       method: 'GET',
       path: `${url.pathname || '/'}${url.search || ''}`,
       servername: url.hostname,
-      lookup: (_hostname, _options, callback) => callback(null, pinned.address, pinned.family),
+      family: pinned.family,
+      autoSelectFamily: false,
+      lookup: pinnedLookup(pinned),
       headers: {
-        'user-agent': 'RealityEngine-Observer/0.1 (+https://proofttl-web.vercel.app/reality-engine/)',
+        'user-agent': 'RealityEngine-Observer/0.2 (+https://proofttl-web.vercel.app/reality-engine/)',
         accept: 'text/html,text/plain,application/json,application/xml,application/xhtml+xml,application/rss+xml,application/atom+xml;q=0.9,*/*;q=0.1',
         'accept-encoding': 'identity',
         connection: 'close',
@@ -186,6 +187,17 @@ async function fetchPublic(startUrl) {
     return { ...result, url, hops }
   }
   throw new Error('too_many_redirects')
+}
+
+function validateUrl(input) {
+  let url
+  try { url = new URL(String(input || '').trim()) } catch { throw new Error('invalid_url') }
+  if (url.protocol !== 'https:') throw new Error('https_required')
+  if (url.username || url.password) throw new Error('credentials_in_url_forbidden')
+  if (url.port && url.port !== '443') throw new Error('custom_port_forbidden')
+  if (blockedHostname(url.hostname)) throw new Error('private_network_target')
+  url.hash = ''
+  return url
 }
 
 function decodeEntities(text) {
@@ -295,6 +307,7 @@ export default async function handler(request, response) {
     response.end(JSON.stringify({
       ok: true,
       mode: 'read-only-public-web',
+      gatewayVersion: '0.2.0',
       url: result.url.href,
       status: result.status,
       contentType: contentType.slice(0, 120),
@@ -320,7 +333,7 @@ export default async function handler(request, response) {
       : code === 'response_too_large' ? 413
       : code === 'upstream_timeout' ? 504
       : 502
-    console.error('Reality Engine internet observation failed', code)
+    console.error('Reality Engine internet observation failed', code, String(error?.stack || error?.message || error))
     response.statusCode = status
     response.end(JSON.stringify({ error: code }))
   }
