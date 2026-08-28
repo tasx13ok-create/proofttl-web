@@ -10,13 +10,17 @@ const RATE_WINDOW_MS = 60_000
 const RATE_MAX = 30
 const ALLOWED_ORIGIN = 'https://proofttl-web.vercel.app'
 const TEXT_TYPES = [
-  'text/',
+  'text/html',
+  'text/plain',
+  'text/markdown',
+  'text/xml',
   'application/json',
   'application/xml',
   'application/xhtml+xml',
   'application/rss+xml',
   'application/atom+xml',
 ]
+const STATIC_RESOURCE = /\.(?:css|js|mjs|map|woff2?|ttf|otf|eot|png|jpe?g|gif|webp|svg|ico|avif|mp4|webm|mp3|wav|zip|gz|tgz|tar|7z)(?:$|[?#])/i
 const rate = new Map()
 
 function parseBody(request) {
@@ -158,8 +162,8 @@ function requestPinned(url, pinned) {
       autoSelectFamily: false,
       lookup: pinnedLookup(pinned),
       headers: {
-        'user-agent': 'RealityEngine-Observer/0.3 (+https://proofttl-web.vercel.app/reality-engine/)',
-        accept: 'text/html,text/plain,application/json,application/xml,application/xhtml+xml,application/rss+xml,application/atom+xml;q=0.9,*/*;q=0.1',
+        'user-agent': 'RealityEngine-Observer/0.4 (+https://proofttl-web.vercel.app/reality-engine/)',
+        accept: 'text/html,text/plain,text/markdown,application/json,application/xml,application/xhtml+xml,application/rss+xml,application/atom+xml;q=0.9,*/*;q=0.1',
         'accept-encoding': 'identity',
         range: `bytes=0-${MAX_BYTES - 1}`,
         connection: 'close',
@@ -277,6 +281,7 @@ function extractLinks(html, baseUrl) {
     if (!raw || raw.startsWith('#') || /^(javascript|mailto|tel|data):/i.test(raw)) continue
     try {
       const link = validateUrl(new URL(raw, baseUrl).href)
+      if (STATIC_RESOURCE.test(`${link.pathname}${link.search}`)) continue
       found.add(link.href)
     } catch {}
   }
@@ -285,7 +290,7 @@ function extractLinks(html, baseUrl) {
 
 function contentAllowed(contentType) {
   const type = String(contentType || '').toLowerCase().split(';')[0].trim()
-  return TEXT_TYPES.some((prefix) => type.startsWith(prefix))
+  return TEXT_TYPES.includes(type)
 }
 
 function errorCode(error) {
@@ -345,7 +350,7 @@ export default async function handler(request, response) {
     response.end(JSON.stringify({
       ok: true,
       mode: 'read-only-public-web',
-      gatewayVersion: '0.3.0',
+      gatewayVersion: '0.4.0-semantic-text',
       url: result.url.href,
       status: result.status,
       contentType: contentType.slice(0, 120),
@@ -365,6 +370,8 @@ export default async function handler(request, response) {
         writesAllowed: false,
         maxBytes: MAX_BYTES,
         oversizedPages: 'truncated-to-maxBytes',
+        semanticTextOnly: true,
+        staticResourceLinksRejected: true,
         timeoutMs: TIMEOUT_MS,
       },
     }))
