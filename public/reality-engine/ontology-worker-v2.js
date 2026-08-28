@@ -1,6 +1,6 @@
 'use strict'
-importScripts('./ontology-engine-v2.js','./ontology-engine-v3.js','./ontology-engine-v4.js','./ontology-engine-v5.js','./ontology-engine-v6.js','./ontology-engine-v7b.js','./ontology-engine-v8.js','./ontology-engine-v9.js','./ontology-engine-v10.js','./ontology-engine-v11.js','./ontology-engine-v12.js','./ontology-engine-v13.js','./ontology-engine-v14.js','./ontology-engine-v15.js','./ontology-engine-v16.js')
-const E=self.OntologyEngineV16
+importScripts('./ontology-engine-v2.js','./ontology-engine-v3.js','./ontology-engine-v4.js','./ontology-engine-v5.js','./ontology-engine-v6.js','./ontology-engine-v7b.js','./ontology-engine-v8.js','./ontology-engine-v9.js','./ontology-engine-v10.js','./ontology-engine-v11.js','./ontology-engine-v12.js','./ontology-engine-v13.js','./ontology-engine-v14.js','./ontology-engine-v15.js','./ontology-engine-v16.js','./ontology-engine-v17.js')
+const E=self.OntologyEngineV17
 let worldEcologyState=null,questionEcologyState=null,strategyEcologyState=null,theoryEcologyState=null,experimentState=null,barrierState=null,causalState=null,conceptState=null
 self.onmessage=e=>{
   const msg=e.data||{}
