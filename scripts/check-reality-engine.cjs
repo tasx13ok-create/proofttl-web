@@ -12,7 +12,8 @@ const files=[
   'public/reality-engine/ontology-engine-v7b.js',
   'public/reality-engine/ontology-engine-v8.js',
   'public/reality-engine/ontology-engine-v9.js',
-  'public/reality-engine/ontology-engine-v10.js'
+  'public/reality-engine/ontology-engine-v10.js',
+  'public/reality-engine/ontology-engine-v11.js'
 ]
 const ctx={console,setTimeout,clearTimeout,Math,Date,JSON,Array,Object,Number,String,Boolean,Map,Set,Uint32Array}
 ctx.globalThis=ctx
@@ -23,9 +24,9 @@ for(const rel of files){
   if(!fs.existsSync(file))throw new Error(`Reality Engine asset missing: ${rel}`)
   vm.runInContext(fs.readFileSync(file,'utf8'),ctx,{filename:rel,timeout:15000})
 }
-const E=ctx.OntologyEngineV10
-if(!E)throw new Error('OntologyEngineV10 did not boot')
-if(E.VERSION!=='1.1.0-alpha')throw new Error(`Unexpected Reality Engine version: ${E.VERSION}`)
+const E=ctx.OntologyEngineV11
+if(!E)throw new Error('OntologyEngineV11 did not boot')
+if(E.VERSION!=='1.2.0-alpha')throw new Error(`Unexpected Reality Engine version: ${E.VERSION}`)
 const tests=E.selfTest()
 const failed=tests.filter(t=>!t.pass)
 for(const t of tests)console.log(`${t.pass?'PASS':'FAIL'} Reality Engine: ${t.name} — ${t.detail}`)
@@ -34,6 +35,7 @@ if(!E.__v7||E.__v7.LANGUAGE_NULL_COUNT!==256)throw new Error('Language Court con
 if(!E.__v8||E.__v8.POPULATION!==6)throw new Error('Scientist Ecology contract missing')
 if(!E.__v9||E.__v9.POPULATION!==6)throw new Error('World Ecology contract missing')
 if(!E.__v10||E.__v10.POPULATION!==6)throw new Error('Question Ecology contract missing')
+if(!E.__v11||E.__v11.SPOP!==5)throw new Error('Meta-Science Strategy Ecology contract missing')
 const seed=E.seedOntology()
 if(seed.length!==4)throw new Error('Seed ontology contract changed unexpectedly')
 console.log(`SUCCESS: Reality Engine ${E.VERSION} booted ${files.length} chained engine layers and passed ${tests.length} invariant tests.`)
