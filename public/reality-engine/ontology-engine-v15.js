@@ -10,7 +10,7 @@ const VERSION='1.6.0-alpha';
 const HISTORY_LIMIT=72;
 const CONFIRMATIONS=2;
 function mix(x){x=x>>>0;x^=x>>>16;x=Math.imul(x,0x7feb352d);x^=x>>>15;x=Math.imul(x,0x846ca68b);x^=x>>>16;return x>>>0||1}
-class RNG{constructor(seed){this.s=seed>>>0||1}next(){let a=this.s|0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;this.s=a>>>0;return((t^t>>>14)>>>0)/4294967296}int(n){return Math.floor(this.next()*n)}}
+class RNG{constructor(seed){this.s=seed>>>0||1}next(){let a=this.s|0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;this.s=a>>>0;return((t^t>>>14)>>>0)/4294967296}int(n){return Math.floor(this.next()*n)}range(a,b){return a+(b-a)*this.next()}}
 const mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
 const variance=a=>{if(a.length<2)return 0;const m=mean(a);return a.reduce((s,x)=>s+(x-m)*(x-m),0)/(a.length-1)};
 function erf(x){const sign=x<0?-1:1,a=Math.abs(x),t=1/(1+.3275911*a),y=1-(((((1.061405429*t-1.453152027)*t+1.421413741)*t-.284496736)*t+.254829592)*t)*Math.exp(-a*a);return sign*y}
@@ -21,7 +21,7 @@ function programId(p){let h=2166136261>>>0,s=programString(p);for(let i=0;i<s.le
 function makeProgram(measurement,measurementId,measurementLabel,actionA,actionB){return{kind:'experiment-program',measurement:JSON.parse(JSON.stringify(measurement)),measurementId:String(measurementId||''),measurementLabel:String(measurementLabel||''),actionA:String(actionA),actionB:String(actionB),reducer:'difference'}}
 function evaluateExperimentProgram(p,{family,genome,seed}){if(!p||p.kind!=='experiment-program')throw new Error('invalid_experiment_program');const a=V14.evaluateInstrument(p.measurement,V14.trajectory(family,genome,seed,p.actionA)),b=V14.evaluateInstrument(p.measurement,V14.trajectory(family,genome,seed,p.actionB));return b-a}
 function values(twin,p,ss){const A=[],B=[];for(const seed of ss){A.push(evaluateExperimentProgram(p,{family:twin.family,genome:twin.a,seed}));B.push(evaluateExperimentProgram(p,{family:twin.family,genome:twin.b,seed}))}return{A,B}}
-function certifyOnTwin(twin,p,ss){const s=stats(values(twin,p,ss).A,values(twin,p,ss).B);return{...s,certified:s.effect>=.75&&s.consistency>=.70&&s.p<.05}}
+function certifyOnTwin(twin,p,ss){const v=values(twin,p,ss),s=stats(v.A,v.B);return{...s,certified:s.effect>=.75&&s.consistency>=.70&&s.p<.05}}
 function findMeasurement(ontology,id){return(ontology||[]).find(x=>String(x.id||'')===String(id||''))||null}
 function buildFromAudit(audit,ontology){const c=audit?.candidate;if(!audit?.certified||!c)return null;const sense=findMeasurement(ontology,c.featureId);if(!sense?.program)return null;return makeProgram(sense.program,sense.id,sense.label,c.actionA,c.actionB)}
 function causalCourt(p,result,seed){if(!p||!result?.primary||!result?.transfer)return{certified:false,reason:'twins_required'};const confirmations=[];for(let i=0;i<CONFIRMATIONS;i++){const local=certifyOnTwin(result.primary,p,seeds(seed,5,0xC101+i)),transfer=certifyOnTwin(result.transfer,p,seeds(seed,5,0xC201+i));confirmations.push({certified:local.certified&&transfer.effect>=.50&&transfer.consistency>=.60&&transfer.p<.10,local,transfer})}return{certified:confirmations.every(x=>x.certified),confirmations,programId:programId(p),programLabel:programString(p),splitSeeds:Array.from({length:CONFIRMATIONS},(_,i)=>({local:mix(seed^(0xC101+i)),transfer:mix(seed^(0xC201+i))}))}}
