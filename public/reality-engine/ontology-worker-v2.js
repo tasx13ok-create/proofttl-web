@@ -1,8 +1,9 @@
 'use strict'
-importScripts('./ontology-engine-v2.js','./ontology-engine-v3.js','./ontology-engine-v4.js','./ontology-engine-v5.js','./ontology-engine-v6.js','./ontology-engine-v7b.js','./ontology-engine-v8.js','./ontology-engine-v9.js','./ontology-engine-v10.js')
-const E=self.OntologyEngineV10
+importScripts('./ontology-engine-v2.js','./ontology-engine-v3.js','./ontology-engine-v4.js','./ontology-engine-v5.js','./ontology-engine-v6.js','./ontology-engine-v7b.js','./ontology-engine-v8.js','./ontology-engine-v9.js','./ontology-engine-v10.js','./ontology-engine-v11.js')
+const E=self.OntologyEngineV11
 let worldEcologyState=null
 let questionEcologyState=null
+let strategyEcologyState=null
 self.onmessage=e=>{
   const msg=e.data||{}
   try{
@@ -10,6 +11,7 @@ self.onmessage=e=>{
     if(msg.type==='cycle'){
       const embeddedWorld=msg.ecologyState?.worldEcology||worldEcologyState||null
       const embeddedQuestion=msg.ecologyState?.questionEcology||questionEcologyState||null
+      const embeddedStrategy=msg.ecologyState?.strategyEcology||strategyEcologyState||null
       const result=E.epistemicCycle({
         ontology:Array.isArray(msg.ontology)&&msg.ontology.length?msg.ontology:E.seedOntology(),
         depth:Number(msg.depth)||0,
@@ -19,13 +21,16 @@ self.onmessage=e=>{
         ecologyState:msg.ecologyState||null,
         worldEcologyState:embeddedWorld,
         questionEcologyState:embeddedQuestion,
+        strategyEcologyState:embeddedStrategy,
         progress:p=>self.postMessage({type:'progress',...p})
       })
       worldEcologyState=result?.worldEcology?.persistable||embeddedWorld
       questionEcologyState=result?.questionEcology?.persistable||embeddedQuestion
+      strategyEcologyState=result?.strategyEcology?.persistable||embeddedStrategy
       if(result?.scientistEcology?.persistable){
         if(worldEcologyState)result.scientistEcology.persistable.worldEcology=worldEcologyState
         if(questionEcologyState)result.scientistEcology.persistable.questionEcology=questionEcologyState
+        if(strategyEcologyState)result.scientistEcology.persistable.strategyEcology=strategyEcologyState
       }
       self.postMessage({type:'cycle',result,requestId:msg.requestId})
     }
