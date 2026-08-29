@@ -77,12 +77,13 @@ export default function AiFactCheckerPage() {
         <div className="audit-sales-card">
           <header className="audit-sales-hero">
             <p className="app-kicker">AI FACT CHECKER / SOURCE-BACKED VERIFICATION</p>
-            <h1 className="app-title">Fact-check AI claims against sources before you rely on them.</h1>
-            <p className="app-copy">ProofTTL is an AI fact checker for specific factual claims that matter. Send the claims from ChatGPT, Claude, Gemini, Copilot, Perplexity, an agent, or an AI-written document. ProofTTL checks them against accessible public evidence and returns explicit <strong>SUPPORTED</strong>, <strong>CONTRADICTED</strong>, or <strong>UNKNOWN</strong> verdicts with sources.</p>
+            <h1 className="app-title">Don’t trust the answer. Stress-test the claims.</h1>
+            <p className="app-copy">Paste output from ChatGPT, Claude, Gemini, Copilot, Perplexity, an agent, or an AI-written document. Start by finding the concrete factual claims worth checking, then send the consequential ones for source-backed verification with explicit <strong>SUPPORTED</strong>, <strong>CONTRADICTED</strong>, or <strong>UNKNOWN</strong> verdicts.</p>
             <div className="audit-sales-actions">
-              <a className="button button-primary" href="/audit/#audit-intake">Fact-check 3–5 claims — $129 <span>→</span></a>
+              <a className="button button-primary" href="/stress-test/">Run the free claim preflight <span>→</span></a>
               <a className="button button-secondary" href="/audit/sample/">See a sample audit</a>
             </div>
+            <p className="app-note" style={{ marginTop: 12 }}>The free preflight identifies candidate claims; it does not issue truth verdicts. Independent source-backed verification is scoped separately.</p>
           </header>
 
           <section className="audit-sales-proof">
@@ -96,6 +97,15 @@ export default function AiFactCheckerPage() {
               <h2>See why the claim passed or failed.</h2>
               <p className="app-copy">Each scoped fact check is tied to inspectable evidence. ProofTTL does not force a binary answer when the public record is insufficient. UNKNOWN is a valid result.</p>
             </article>
+          </section>
+
+          <section style={{ marginTop: 28 }}>
+            <p className="app-kicker">START WITH THE DOCUMENT, NOT A BLANK FORM</p>
+            <h2 className="app-title" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.4rem)' }}>Turn long AI output into the claims actually worth checking.</h2>
+            <p className="app-copy">The Claim Stress Test preflight looks for concrete assertions with numbers, dates, product or company facts, certifications, research language, and other signals that a sentence may carry decision risk. Choose 3–5 and carry them directly into verification intake.</p>
+            <div className="audit-sales-actions" style={{ marginTop: 18 }}>
+              <a className="button button-primary" href="/stress-test/">Find claims worth verifying <span>→</span></a>
+            </div>
           </section>
 
           <section style={{ marginTop: 28 }}>
@@ -129,7 +139,7 @@ export default function AiFactCheckerPage() {
               <article><h2>$500 Full Verification Audit</h2><p className="app-copy">10–25 claims, a verification report, signed Fact Leases, and 7 days of monitoring. The original $129 is credited if you upgrade.</p></article>
             </div>
             <div className="audit-sales-actions" style={{ marginTop: 20 }}>
-              <a className="button button-primary" href="/audit/#audit-intake">Start AI fact checking <span>→</span></a>
+              <a className="button button-primary" href="/stress-test/">Start with the free preflight <span>→</span></a>
               <a className="text-link" href="/services/ai-claim-verification/">Read AI claim verification details <span>↗</span></a>
             </div>
           </section>
