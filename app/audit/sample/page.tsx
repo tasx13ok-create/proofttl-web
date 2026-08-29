@@ -16,7 +16,7 @@ const claims = [
   ['PX-003', 'Perplexity Enterprise Max costs $325 per active seat per month or $3,250 per year.', 'SUPPORTED', 'HIGH', 'Two current Perplexity help-center pages independently state the same Enterprise Max pricing.'],
   ['PX-004', "Perplexity's current Max Search-model roster includes GPT-5.6 Sol and Claude Opus 5.", 'SUPPORTED', 'HIGH', 'The current advanced-model table lists both as Max-only Search options.'],
   ['PX-005', "Perplexity's current Pro and Max Search-model roster includes Gemini 3.1 Pro.", 'SUPPORTED', 'HIGH', 'The current advanced-model table lists Gemini 3.1 Pro on both Pro and Max.'],
-  ['PX-006', "Perplexity's documentation is fully synchronized on which advanced models Max users can access.", 'CONTRADICTED', 'HIGH', 'The current advanced-model page and another current Pro help article reference different Max model examples.'],
+  ['PX-006', "Perplexity's documentation is fully synchronized on which advanced models Max users can access.", 'CONTRADICTED', 'HIGH', 'Two current first-party help pages give different Max model examples, so the universal synchronization claim does not survive.'],
 ]
 
 const sources = [
@@ -33,8 +33,8 @@ export default function SampleAuditPage() {
       <section className="onboarding-wrap">
         <div className="onboarding-card">
           <p className="app-kicker">SAMPLE VERIFICATION AUDIT · PTTL-DEMO-PX-20260818-001</p>
-          <h1 className="app-title">Verification that doesn&apos;t go stale.</h1>
-          <p className="app-copy">This public sample reviews six time-sensitive statements in Perplexity AI&apos;s public documentation. It demonstrates how ProofTTL separates current source support from documentation drift instead of treating a fact as permanently valid.</p>
+          <h1 className="app-title">Watch a believable claim break.</h1>
+          <p className="app-copy">This public sample reviews six time-sensitive statements in Perplexity AI&apos;s public documentation. Five survive the evidence examined. One sounds reasonable, but fails once two current first-party pages are compared.</p>
 
           <div className="price-preview">
             <div><p className="app-kicker">RESULTS</p><strong>5 / 1</strong><span>5 supported · 1 contradicted · 5 high-drift claims</span></div>
@@ -42,9 +42,28 @@ export default function SampleAuditPage() {
           </div>
 
           <div className="onboarding-card" style={{ marginTop: 24 }}>
-            <p className="app-kicker">HEADLINE FINDING</p>
-            <h2 className="app-title" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)' }}>A once-correct product fact can become unsafe to reuse.</h2>
-            <p className="app-copy">Perplexity&apos;s current advanced-model page says model availability changes over time and lists GPT-5.6 Sol and Claude Opus 5 for Max. Another current Pro help article still references o3-Pro and Claude 4.5 Opus for Max users. The problem is not that a historical statement had to be false when written. The problem is that rapidly changing product facts need an explicit validity window.</p>
+            <p className="app-kicker">CLAIM LOCKED · PX-006</p>
+            <h2 className="app-title" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)' }}>“Perplexity&apos;s documentation is fully synchronized on which advanced models Max users can access.”</h2>
+            <p className="app-copy">The important word is <strong>fully</strong>. A verifier cannot quietly weaken that into “some documentation is current.” The exact proposition has to survive.</p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 12, marginTop: 16 }}>
+            <article style={{ padding: 18, border: '1px solid rgba(34,197,94,.22)', borderRadius: 14, background: 'rgba(34,197,94,.035)' }}>
+              <p className="app-kicker">EVIDENCE FOR / CURRENT ROSTER</p>
+              <h3 style={{ margin: '8px 0' }}>S3 looks authoritative.</h3>
+              <p className="app-copy" style={{ margin: 0 }}>The current advanced-model page explicitly lists current model availability and says availability can change over time. If this were the only page examined, the documentation could appear internally clean.</p>
+            </article>
+            <article style={{ padding: 18, border: '1px solid rgba(248,113,113,.28)', borderRadius: 14, background: 'rgba(248,113,113,.04)' }}>
+              <p className="app-kicker">EVIDENCE AGAINST / CONTRADICTION PASS</p>
+              <h3 style={{ margin: '8px 0' }}>S4 breaks the universal claim.</h3>
+              <p className="app-copy" style={{ margin: 0 }}>Another current first-party Pro help article references different Max model examples. Both pages can exist while the broad “fully synchronized” proposition is false.</p>
+            </article>
+          </div>
+
+          <div className="onboarding-card" style={{ marginTop: 16, borderColor: 'rgba(248,113,113,.28)' }}>
+            <p className="app-kicker">VERDICT BROKEN</p>
+            <h2 className="app-title" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.4rem)' }}>CONTRADICTED</h2>
+            <p className="app-copy">The contradiction is narrow: the inspected documentation is not fully synchronized. This does not imply that Perplexity&apos;s product is defective, that every help page is stale, or that either page was false when originally written. ProofTTL keeps the verdict attached to the exact claim.</p>
           </div>
 
           <div className="app-table" aria-label="Sample audit claim results" style={{ marginTop: 24 }}>
@@ -58,13 +77,19 @@ export default function SampleAuditPage() {
           </div>
 
           <div className="onboarding-card" style={{ marginTop: 24 }}>
-            <p className="app-kicker">WHY THIS MATTERS</p>
-            <p className="app-copy">Pricing, model availability, connector counts, policies, limits, and product capabilities are copied into RAG systems, support answers, sales material, internal research, and automated workflows. ProofTTL is designed to bind those claims to their evidence and a defined lifetime so stale information can be rechecked before it quietly becomes operational truth.</p>
+            <p className="app-kicker">WHY TTL MATTERS</p>
+            <h2 style={{ margin: '8px 0' }}>Supported is not the same as permanently true.</h2>
+            <p className="app-copy">Pricing, model rosters, connector counts, policies, limits, certifications, and product capabilities can change after a check is completed. This sample therefore records the source-access date instead of silently presenting a time-sensitive conclusion as timeless.</p>
+            <div className="app-table" style={{ marginTop: 14 }}>
+              <div className="app-table-row"><span>OBSERVED</span><span>AUG 18 2026</span><span>POINT-IN-TIME</span></div>
+              <div className="app-table-row"><span>VOLATILITY</span><span>Pricing + model availability can change quickly.</span><span>HIGH</span></div>
+              <div className="app-table-row"><span>INVALIDATE WHEN</span><span>A cited page changes, disappears, or a newer authoritative page supersedes the observed evidence.</span><span>RECHECK</span></div>
+            </div>
           </div>
 
           <div className="onboarding-card" style={{ marginTop: 24 }}>
             <p className="app-kicker">METHODOLOGY</p>
-            <p className="app-copy">Claims are written precisely before review. Primary sources are preferred. A company page supporting its own statement is recorded as source support, not independent proof of broad real-world performance. CONTRADICTED is reserved for evidence that directly negates the precise claim. This sample is intentionally narrow and does not claim exhaustive product accuracy.</p>
+            <p className="app-copy">Claims are written precisely before review. Suitable primary sources are preferred. A company page supporting its own statement is recorded as first-party source support, not independent proof of broad real-world performance. Evidence that weakens the preliminary conclusion is preserved rather than hidden. CONTRADICTED is reserved for evidence that negates the precise claim, and UNKNOWN remains available when the examined record cannot justify a stronger verdict.</p>
           </div>
 
           <div className="onboarding-card" style={{ marginTop: 24 }}>
@@ -79,11 +104,11 @@ export default function SampleAuditPage() {
           </div>
 
           <div className="onboarding-card" style={{ marginTop: 24 }}>
-            <p className="app-kicker">WANT YOUR OWN CLAIMS CHECKED?</p>
-            <p className="app-copy">Start with the $129 Claim Stress Test. Send 3–5 claims, get the scope confirmed before payment, and upgrade to the $500 Full Audit later for $371 more if the first pass proves useful.</p>
+            <p className="app-kicker">PUT YOUR OWN DOCUMENT UNDER PRESSURE</p>
+            <p className="app-copy">Start with the free preflight to identify the concrete claims carrying risk. Select 3–5 and carry them into the $129 Claim Stress Test for scope review before payment.</p>
             <div className="hero-actions">
-              <a className="button button-primary" href="/audit/#audit-intake">START THE $129 STRESS TEST →</a>
-              <a className="button button-secondary" href="/audit/">COMPARE BOTH OPTIONS</a>
+              <a className="button button-primary" href="/stress-test/">RUN THE FREE CLAIM PREFLIGHT →</a>
+              <a className="button button-secondary" href="/audit/">COMPARE VERIFICATION OPTIONS</a>
             </div>
           </div>
 
