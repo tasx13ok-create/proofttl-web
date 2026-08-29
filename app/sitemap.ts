@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/audit/',
     '/audit/sample/',
     '/ai-fact-checker/',
+    '/stress-test/',
     '/services/',
     '/faq/',
     '/machine-definition/',
@@ -38,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return routes.map((route) => {
     const isHome = route === '/'
     const isIdentity = route === '/about/' || route === '/machine-definition/'
-    const isCommercial = route === '/audit/' || route === '/ai-fact-checker/' || route === '/services/' || route.startsWith('/services/')
+    const isCommercial = route === '/audit/' || route === '/ai-fact-checker/' || route === '/stress-test/' || route === '/services/' || route.startsWith('/services/')
     const isTrust = route === '/faq/' || route === '/glossary/' || route === '/trust/' || route === '/how-proofttl-works/' || route === '/support/' || route === '/status/' || route === '/privacy/' || route === '/terms/'
     return {
       url: `${SITE_URL}${route}`,
