@@ -44,6 +44,7 @@ const PUBLIC_PATH_PREFIXES = [
   '/',
   '/about/',
   '/audit/',
+  '/stress-test/',
   '/services/',
   '/solutions/',
   '/faq/',
