@@ -20,10 +20,10 @@ body {
 }
 
 body::before {
-  opacity: 0.16;
-  background-image: linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
+  opacity: 0.12;
+  background-image: linear-gradient(rgba(148, 163, 184, 0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.028) 1px, transparent 1px);
   background-size: 96px 96px;
-  mask-image: linear-gradient(to bottom, black, transparent 42%);
+  mask-image: linear-gradient(to bottom, black, transparent 38%);
 }
 
 .product-nav[data-nav-mode='public'] {
@@ -51,6 +51,281 @@ body::before {
   border: 0;
   box-shadow: 0 12px 30px -18px rgba(94, 231, 242, 0.92);
   font-weight: 750;
+}
+
+/* Public homepage: premium B2B instead of terminal/devtool. */
+body > main > .shell,
+body > div > main > .shell {
+  width: min(1180px, calc(100% - 64px));
+}
+
+.hero.shell {
+  min-height: min(820px, calc(100vh - 72px));
+  grid-template-columns: minmax(0, 1.08fr) minmax(380px, .92fr);
+  gap: clamp(44px, 6vw, 82px);
+  align-items: center;
+  padding-top: clamp(72px, 10vw, 120px);
+  padding-bottom: clamp(82px, 10vw, 126px);
+}
+
+.hero-copy {
+  min-width: 0;
+}
+
+.status-line,
+.hero-notes,
+.eyebrow,
+.plan-label {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 720;
+}
+
+.status-line {
+  color: #b7c5d3;
+  letter-spacing: .075em;
+}
+
+.hero h1 {
+  max-width: 760px;
+  margin: 26px 0 25px;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: clamp(52px, 7vw, 88px);
+  font-weight: 680;
+  line-height: .98;
+  letter-spacing: -.057em;
+  text-wrap: balance;
+}
+
+.hero h1 em,
+h2 em {
+  color: #72e9f2;
+}
+
+.hero-lede {
+  max-width: 670px;
+  color: #b2bfcc;
+  font-size: clamp(17px, 2vw, 20px);
+  line-height: 1.68;
+}
+
+.hero-actions {
+  gap: 12px;
+  margin-top: 34px;
+}
+
+.hero-actions .button,
+.final-cta .button,
+.pricing-cards .button {
+  min-height: 50px;
+  border-radius: 12px;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 12px;
+  font-weight: 780;
+  letter-spacing: .015em;
+  text-transform: none;
+}
+
+.hero-actions .button-primary,
+.final-cta .button-primary,
+.pricing-cards .button-primary {
+  background: linear-gradient(135deg, #70eef5, #30cbd9);
+  color: #041116;
+  box-shadow: 0 18px 38px -24px rgba(94, 231, 242, .95);
+}
+
+.hero-actions .button-secondary,
+.final-cta .button-secondary,
+.pricing-cards .button-secondary {
+  border-color: rgba(148, 163, 184, .22);
+  background: rgba(255, 255, 255, .025);
+}
+
+.hero .text-link,
+.section .text-link {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 12px;
+  font-weight: 680;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.hero-notes {
+  gap: 9px;
+  margin-top: 28px;
+  letter-spacing: .05em;
+}
+
+.hero-notes span {
+  padding: 7px 10px;
+  border: 1px solid rgba(148, 163, 184, .12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .018);
+}
+
+.hero-visual {
+  border-color: rgba(148, 163, 184, .15);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(15, 31, 44, .96), rgba(8, 19, 29, .96));
+  box-shadow: 0 38px 90px -50px rgba(0,0,0,.88), inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.visual-header,
+.visual-footer {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  letter-spacing: .055em;
+}
+
+.pipeline {
+  padding: 42px 30px 48px;
+}
+
+.pipeline-node strong,
+.pipeline-node code,
+.node-index {
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.pipeline-node code {
+  border-radius: 9px;
+  background: rgba(3, 10, 17, .52);
+}
+
+.ticker {
+  background: rgba(94, 231, 242, .025);
+  border-color: rgba(148, 163, 184, .10);
+  color: #89edf3;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 680;
+}
+
+.section {
+  padding-top: clamp(96px, 12vw, 140px);
+}
+
+.section-heading {
+  max-width: 780px;
+}
+
+.section-heading h2,
+.final-cta h2 {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 670;
+  letter-spacing: -.045em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.section-lede {
+  max-width: 650px;
+  color: #aebccb;
+  font-size: 17px;
+  line-height: 1.72;
+}
+
+.pricing-cards {
+  gap: 18px;
+}
+
+.pricing-cards article,
+.lease-card {
+  border-color: rgba(148, 163, 184, .14);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(15, 29, 42, .86), rgba(9, 20, 30, .80));
+  box-shadow: 0 28px 80px -54px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+.pricing-cards article {
+  padding: clamp(26px, 4vw, 40px);
+}
+
+.pricing-cards .featured-plan {
+  border-color: rgba(94, 231, 242, .24);
+  background: linear-gradient(145deg, rgba(94, 231, 242, .065), rgba(11, 24, 35, .92) 38%);
+}
+
+.price {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 730;
+  letter-spacing: -.045em;
+}
+
+.pricing-cards h3,
+.steps h3 {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 680;
+  letter-spacing: -.025em;
+}
+
+.pricing-cards p,
+.steps p {
+  color: #aebccb;
+  max-width: none;
+  line-height: 1.7;
+}
+
+.steps {
+  gap: 12px;
+  border-top: 0;
+}
+
+.steps article {
+  min-width: 0;
+  margin-right: 0;
+  padding: 24px;
+  border: 1px solid rgba(148, 163, 184, .12);
+  border-radius: 16px;
+  background: rgba(255,255,255,.016);
+}
+
+.steps article:last-child {
+  border: 1px solid rgba(148, 163, 184, .12);
+}
+
+.split-section {
+  gap: clamp(48px, 7vw, 86px);
+}
+
+.fact-list {
+  border-color: rgba(148, 163, 184, .12);
+}
+
+.fact-list div {
+  border-color: rgba(148, 163, 184, .10);
+  gap: 24px;
+  padding: 17px 0;
+}
+
+.fact-list dd {
+  color: #bcc8d4;
+  line-height: 1.6;
+}
+
+.lease-card {
+  padding: clamp(24px, 4vw, 38px);
+}
+
+.lease-claim {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 590;
+  line-height: 1.35;
+}
+
+.final-cta {
+  margin-top: 110px;
+  margin-bottom: 88px;
+  padding: clamp(42px, 7vw, 70px);
+  border: 1px solid rgba(94, 231, 242, .17);
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(94,231,242,.055), rgba(11,24,35,.88) 44%, rgba(8,18,28,.92));
+  box-shadow: var(--premium-shadow);
+}
+
+.footer.shell {
+  width: min(1180px, calc(100% - 64px));
+  padding-top: 30px;
+  padding-bottom: 34px;
+  border-top-color: rgba(148, 163, 184, .10);
 }
 
 .audit-sales-page,
@@ -301,7 +576,27 @@ body::before {
   overflow-wrap: anywhere;
 }
 
+@media (max-width: 980px) {
+  .hero.shell {
+    min-height: auto;
+    grid-template-columns: 1fr;
+  }
+  .hero-visual {
+    width: 100%;
+    max-width: 720px;
+  }
+  .steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .split-section {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 860px) {
+  body > main > .shell,
+  body > div > main > .shell,
+  .footer.shell,
   .product-nav[data-nav-mode='public'] .product-nav-inner,
   .audit-sales-page .onboarding-wrap,
   .audit-status-page .onboarding-wrap {
@@ -341,7 +636,30 @@ body::before {
   }
 }
 
+@media (max-width: 620px) {
+  .hero.shell {
+    padding-top: 48px;
+    padding-bottom: 66px;
+  }
+  .hero h1 {
+    font-size: clamp(42px, 13vw, 58px);
+  }
+  .steps {
+    grid-template-columns: 1fr;
+  }
+  .lease-meta {
+    grid-template-columns: 1fr;
+  }
+  .final-cta {
+    margin-top: 72px;
+    padding: 30px 22px;
+  }
+}
+
 @media (max-width: 540px) {
+  body > main > .shell,
+  body > div > main > .shell,
+  .footer.shell,
   .product-nav[data-nav-mode='public'] .product-nav-inner,
   .audit-sales-page .onboarding-wrap,
   .audit-status-page .onboarding-wrap {
@@ -396,7 +714,8 @@ body::before {
   }
 
   .hero-actions .button,
-  .audit-sales-actions .button {
+  .audit-sales-actions .button,
+  .final-cta .button {
     width: 100%;
   }
 }
