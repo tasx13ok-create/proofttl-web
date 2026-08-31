@@ -99,12 +99,13 @@ export default function AuditIntakeForm() {
       if (!response.ok) {
         const message = body.message || (response.status === 504 ? 'The intake service timed out before confirming receipt. Your draft is saved; please try again.' : undefined)
         setResult({ error: body.error || `HTTP ${response.status}`, message })
-      } else {
+      } else if (body.audit_intake_id) {
+        try { localStorage.setItem(AUDIT_STORAGE_KEY, JSON.stringify({ audit_intake_id: body.audit_intake_id, email: verifiedEmail, offer_type: 'full_audit', saved_at_ms: Date.now() })); localStorage.removeItem(AUDIT_DRAFT_KEY) } catch {}
         setResult(body)
-        if (body.audit_intake_id) {
-          try { localStorage.setItem(AUDIT_STORAGE_KEY, JSON.stringify({ audit_intake_id: body.audit_intake_id, email: verifiedEmail, offer_type: 'full_audit', saved_at_ms: Date.now() })); localStorage.removeItem(AUDIT_DRAFT_KEY) } catch {}
-          setDraft({ ...blankDraft(), email: verifiedEmail })
-        }
+        window.location.assign(`/audit/status/?request=${encodeURIComponent(body.audit_intake_id)}&submitted=1`)
+        return
+      } else {
+        setResult({ error: 'ProofTTL did not return an audit reference. Your draft is saved; please retry.' })
       }
     } catch (error) {
       const timedOut = error instanceof DOMException && error.name === 'AbortError'
@@ -129,10 +130,9 @@ export default function AuditIntakeForm() {
       <label>APPROXIMATE COUNT<select name="approximate_claims" value={draft.approximate_claims} onChange={(e) => update('approximate_claims', e.target.value)} required><option value="10-15">10–15</option><option value="16-25">16–25</option><option value="25+">More than 25 — scope separately</option></select></label>
       <div className="audit-form-grid two"><label>WHY IT MATTERS<textarea name="why_it_matters" required maxLength={2500} rows={3} value={draft.why_it_matters} onChange={(e) => update('why_it_matters', e.target.value)} placeholder="What happens if these outputs are wrong?" /></label><label>DEADLINE <span>OPTIONAL</span><textarea name="deadline" maxLength={120} rows={3} value={draft.deadline} onChange={(e) => update('deadline', e.target.value)} placeholder="Friday / before launch / no rush" /></label></div>
       <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}><label>Company site<input name="company_site" tabIndex={-1} autoComplete="off" /></label></div>
-      <button className="button button-primary audit-submit-button" type="submit" disabled={submitting || authState === 'checking'}>{submitting ? 'SUBMITTING…' : 'SUBMIT FACT AUDIT FOR SCOPE REVIEW →'}</button>
+      <button className="button button-primary audit-submit-button" type="submit" disabled={submitting || authState === 'checking'}>{submitting ? 'CREATING AUDIT…' : 'START FACT AUDIT →'}</button>
       <p className="audit-form-footnote">SIGN-IN REQUIRED · SCOPE CONFIRMED BEFORE PAYMENT · HUMAN APPROVAL REQUIRED BEFORE CUSTOMER-FACING PUBLICATION</p>
     </form>
-    {result?.audit_intake_id && <div className="app-note audit-result" role="status"><strong>{result.duplicate ? 'REQUEST ALREADY RECEIVED.' : 'REQUEST RECEIVED.'}</strong><br />Reference: <code>{result.audit_intake_id}</code><br />Offer: {result.offer?.name || offer.label}<br />{result.next_step || 'Scope review comes before payment.'}<br /><a href={`/audit/status/?request=${encodeURIComponent(result.audit_intake_id)}`}>CHECK THIS REQUEST →</a></div>}
-    {result?.error && <div className="app-note audit-result" role="alert"><strong>INTAKE NOT SUBMITTED:</strong> {result.message || result.error}</div>}
+    {result?.error && <div className="app-note audit-result" role="alert"><strong>AUDIT NOT CREATED:</strong> {result.message || result.error}</div>}
   </section>
 }
