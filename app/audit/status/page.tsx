@@ -2,7 +2,7 @@ import AuditStatusLookup from '../../../components/AuditStatusLookup'
 
 export const metadata = {
   title: 'Audit Status',
-  description: 'Check the status of a ProofTTL Claim Stress Test or Full Verification Audit request.',
+  description: 'Check the status, approved scope, payment state, and fulfillment progress of a ProofTTL Fact Audit request.',
   alternates: { canonical: '/audit/status/' },
 }
 
