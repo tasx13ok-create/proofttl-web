@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises'
 const homePage = await readFile('app/page.tsx', 'utf8')
 const home = await readFile('components/CommercialHome.tsx', 'utf8')
 const auditPage = await readFile('app/audit/page.tsx', 'utf8')
+const auditStatusPage = await readFile('app/audit/status/page.tsx', 'utf8')
 const intake = await readFile('components/AuditIntakeForm.tsx', 'utf8')
 const status = await readFile('components/AuditStatusLookup.tsx', 'utf8')
 const nav = await readFile('components/ProductNav.tsx', 'utf8')
@@ -89,7 +90,9 @@ for (const expected of [
 }
 for (const obsolete of ['Claim Stress Test', 'Full Verification Audit', 'Upgrade credit', 'Stress Test payment credited', '$129', '$371 more', '$500']) {
   if (status.includes(obsolete)) throw new Error(`Audit status still exposes obsolete launch offer: ${obsolete}`)
+  if (auditStatusPage.includes(obsolete)) throw new Error(`Audit status metadata still exposes obsolete launch offer: ${obsolete}`)
 }
+if (!auditStatusPage.includes('ProofTTL Fact Audit request')) throw new Error('Audit status metadata must describe the current Fact Audit offer')
 if (status.includes(".catch(() => {\n      if (!cancelled) setAuthReady(true)")) throw new Error('Audit status must never fail open when session lookup fails')
 if (!nav.includes('Log out / Switch account')) throw new Error('Signed-in navigation must expose Log out / Switch account')
 if (!nav.includes('signInHref(returnTo)')) throw new Error('Account switching must preserve the current return location')
