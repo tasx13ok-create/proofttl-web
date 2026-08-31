@@ -27,7 +27,9 @@
 .audit-sales-steps,
 .audit-limit-note,
 .audit-intake-clean,
-.audit-faq-list {
+.audit-faq-list,
+.audit-preflight-panel,
+.audit-preflight-standard {
   margin-left: clamp(24px, 4vw, 48px);
   margin-right: clamp(24px, 4vw, 48px);
 }
@@ -358,6 +360,14 @@
   color: #647287;
 }
 
+.audit-preflight-panel {
+  margin-bottom: 28px;
+}
+
+.audit-preflight-standard {
+  margin-top: 28px;
+}
+
 .audit-faq-list {
   display: grid;
   gap: 0;
@@ -391,7 +401,9 @@
   .audit-sales-steps,
   .audit-limit-note,
   .audit-intake-clean,
-  .audit-faq-list { margin-left: 22px; margin-right: 22px; }
+  .audit-faq-list,
+  .audit-preflight-panel,
+  .audit-preflight-standard { margin-left: 22px; margin-right: 22px; }
   .audit-sales-hero { padding-top: 30px; }
   .audit-sales-hero .app-title { font-size: clamp(36px, 10vw, 52px); }
   .audit-offer-summary { grid-template-columns: 1fr; }
@@ -413,7 +425,9 @@
   .audit-sales-steps,
   .audit-limit-note,
   .audit-intake-clean,
-  .audit-faq-list { margin-left: 18px; margin-right: 18px; }
+  .audit-faq-list,
+  .audit-preflight-panel,
+  .audit-preflight-standard { margin-left: 18px; margin-right: 18px; }
   .audit-step-grid { grid-template-columns: 1fr; }
   .audit-offer-switch { grid-template-columns: 1fr; }
   .audit-sales-trustline span { flex: 1 1 auto; text-align: center; }
