@@ -98,6 +98,84 @@ export default function HowProofTTLWorksPage() {
           <div className="hero-actions"><a className="button button-primary" href="/audit/#audit-intake">START A $1,500 FACT AUDIT →</a><a className="button button-secondary" href="/audit/sample/">VIEW SAMPLE</a></div>
         </section>
       </section>
+
+      <style>{`
+        .how-works-page { overflow-x: clip; }
+        .how-works-shell {
+          padding: 38px 0 110px;
+          display: grid;
+          grid-template-columns: minmax(0, 1fr);
+          gap: 18px;
+        }
+        .how-works-shell > * {
+          grid-column: 1 !important;
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+        }
+        .how-works-card { padding: 30px; }
+        .how-works-page .console-panel,
+        .how-works-page .pricing-cards,
+        .how-works-page .pricing-cards > article,
+        .how-works-page .hero-actions { min-width: 0; max-width: 100%; }
+        .how-works-matrix .app-table-row {
+          grid-template-columns: minmax(150px, .72fr) minmax(0, 1.7fr);
+        }
+        .how-works-matrix .app-table-row > span {
+          min-width: 0;
+          overflow-wrap: anywhere;
+          word-break: normal;
+        }
+
+        @media (max-width: 760px) {
+          .how-works-shell {
+            width: calc(100% - 24px);
+            padding: 24px 0 72px;
+            gap: 14px;
+          }
+          .how-works-card,
+          .how-works-page .console-panel { padding: 20px; }
+          .how-works-page .app-title {
+            font-size: clamp(30px, 9vw, 42px);
+            line-height: 1.04;
+          }
+          .how-works-page .app-copy { line-height: 1.58; }
+          .how-works-page .hero-actions {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            width: 100%;
+          }
+          .how-works-page .hero-actions .button,
+          .how-works-page .hero-actions .text-link {
+            width: 100%;
+            max-width: 100%;
+            justify-content: center;
+            text-align: center;
+            white-space: normal;
+            overflow-wrap: anywhere;
+          }
+          .how-works-matrix .app-table-row {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 7px;
+            padding: 14px 0;
+          }
+          .how-works-matrix .app-table-row > span:first-child {
+            color: var(--foreground);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            letter-spacing: .035em;
+          }
+          .how-works-page .pricing-cards { grid-template-columns: minmax(0, 1fr); }
+          .how-works-page .price { overflow-wrap: anywhere; }
+        }
+
+        @media (max-width: 390px) {
+          .how-works-shell { width: calc(100% - 18px); }
+          .how-works-card,
+          .how-works-page .console-panel { padding: 17px; }
+        }
+      `}</style>
     </main>
   )
 }
