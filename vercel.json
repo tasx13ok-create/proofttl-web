@@ -42,6 +42,7 @@
   "routes": [
     { "src": "^/google057072aa15e009ed\\.html$", "dest": "/api/google-site-verification" },
     { "src": "^/(workspace|studio|work|files|automations|money|connections)(?:/.*)?$", "headers": { "X-Robots-Tag": "noindex, nofollow" }, "continue": true },
+    { "src": "^/preflight/?$", "status": 308, "headers": { "Location": "/stress-test/" } },
     { "src": "^/api/auth/(?<authpath>.*)$", "dest": "/api/auth-proxy.js?path=$authpath" },
     { "src": "^/api/runtime/(?<runtimepath>.*)$", "dest": "/api/runtime-proxy.js?path=$runtimepath" },
     { "src": "^/trust\\.html$", "status": 308, "headers": { "Location": "/trust/" } },
