@@ -81,18 +81,23 @@ export default function AuditIntakeForm() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (submitting) return
+
+    // Capture all event-backed values before the first await. React only guarantees
+    // currentTarget while the event callback is actively dispatching.
+    const formElement = event.currentTarget
+    const companySite = String(new FormData(formElement).get('company_site') || '')
+
     setResult(null)
     persistDraft()
     const verifiedEmail = await requireSession()
     if (!verifiedEmail) return
 
     setSubmitting(true)
-    const form = new FormData(event.currentTarget)
-    const payload = { offer_type: 'full_audit', email: verifiedEmail, company_or_project: draft.company_or_project, website_url: draft.website_url, claim_scope: draft.claim_scope, approximate_claims: draft.approximate_claims, why_it_matters: draft.why_it_matters, deadline: draft.deadline, company_site: String(form.get('company_site') || '') }
     const controller = new AbortController()
     const timeout = window.setTimeout(() => controller.abort(), INTAKE_TIMEOUT_MS)
 
     try {
+      const payload = { offer_type: 'full_audit', email: verifiedEmail, company_or_project: draft.company_or_project, website_url: draft.website_url, claim_scope: draft.claim_scope, approximate_claims: draft.approximate_claims, why_it_matters: draft.why_it_matters, deadline: draft.deadline, company_site: companySite }
       const response = await fetch(`${PROOFTTL_API_URL}/audit/intake`, { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload), signal: controller.signal })
       const body = await response.json().catch(() => ({})) as IntakeResponse
       if (response.status === 401) { setAuthState('signed_out'); redirectToSignIn(); return }
