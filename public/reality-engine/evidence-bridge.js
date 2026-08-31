@@ -4,7 +4,23 @@ const SCIENCE_KEY='reality-engine-representation-audit-v2'
 const BACKUP_KEY='reality-engine-lineage-backup-v1'
 let armUntil=0,armTimer=null
 function download(name,payload){const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-function networkPayload(){return{product:'Reality Engine — Autogenic Kernel Evidence',version:window.RealityAutogenicKernel?.VERSION||null,exportedAt:new Date().toISOString(),audit:window.__REALITY_ENGINE_AUDIT__?.getState?.()||null,network:window.RealityAutogenicKernel?.getState?.()||null,overnight:window.RealityAutogenicOvernight?.getState?.()||null}}
+function normalizeAudit(audit){
+  if(!audit||typeof audit!=='object')return audit
+  const workerVersion=audit.last?.engineVersion||audit.engineVersion||null
+  const workerLayer=audit.last?.engineLayer||audit.engineLayer||null
+  if(!workerVersion)return audit
+  return{...audit,uiVersion:audit.uiVersion||audit.version||null,version:workerVersion,engineVersion:workerVersion,engineLayer:workerLayer||null}
+}
+function auditState(){return normalizeAudit(window.__REALITY_ENGINE_AUDIT__?.getState?.()||null)}
+function networkPayload(){return{product:'Reality Engine — Autogenic Kernel Evidence',version:window.RealityAutogenicKernel?.VERSION||null,exportedAt:new Date().toISOString(),audit:auditState(),network:window.RealityAutogenicKernel?.getState?.()||null,overnight:window.RealityAutogenicOvernight?.getState?.()||null}}
+function syncVisibleEngineTruth(){
+  const audit=auditState(),v=audit?.engineVersion,layer=audit?.engineLayer
+  if(!v)return
+  let pill=document.querySelector('#worker-version-pill')
+  if(!pill){pill=document.createElement('span');pill.className='pill';pill.id='worker-version-pill';document.querySelector('.topbar .status')?.prepend(pill)}
+  if(pill)pill.textContent=`${layer||'WORKER'} · ${v}`
+  const footer=[...document.querySelectorAll('footer span')].at(-1);if(footer)footer.textContent=`Reality Engine ${v} · ${layer||'worker'} · zero-LLM · immutable judge`
+}
 function backupCurrent(reason='manual'){
   try{
     const snapshot=localStorage.getItem(SCIENCE_KEY)
@@ -89,10 +105,18 @@ function protectNewLineage(){
 function showRestoreNote(){
   try{const x=JSON.parse(sessionStorage.getItem('reality-engine-restore-note')||'null');if(!x)return;sessionStorage.removeItem('reality-engine-restore-note');setTimeout(()=>{const host=document.querySelector('#trace');if(host){const d=document.createElement('div');d.innerHTML=`<time>${new Date().toLocaleTimeString()}</time>RECOVERY · restored lineage ${Number(x.lineageSeed).toString(16).toUpperCase()} · Ω${x.depth} · attack ${x.attack}`;host.prepend(d)}},250)}catch{}
 }
+function wrapAuditState(){
+  const api=window.__REALITY_ENGINE_AUDIT__,original=api?.getState
+  if(!api||typeof original!=='function'||original.__workerTruthWrapped)return
+  const wrapped=()=>normalizeAudit(original())
+  wrapped.__workerTruthWrapped=true
+  api.getState=wrapped
+}
 function init(){
-  const b=document.querySelector('#export-btn');if(b){b.textContent='Export evidence + network';b.addEventListener('click',()=>{setTimeout(()=>{try{const seed=window.__REALITY_ENGINE_AUDIT__?.getState?.()?.lineageSeed||'network';download(`reality-engine-network-evidence-${seed}.json`,networkPayload())}catch(e){console.error('network evidence export failed',e)}},100)})}
-  injectRecoveryControls();protectNewLineage();showRestoreNote()
+  wrapAuditState()
+  const b=document.querySelector('#export-btn');if(b){b.textContent='Export evidence + network';b.addEventListener('click',()=>{setTimeout(()=>{try{const seed=auditState()?.lineageSeed||'network';download(`reality-engine-network-evidence-${seed}.json`,networkPayload())}catch(e){console.error('network evidence export failed',e)}},100)})}
+  injectRecoveryControls();protectNewLineage();showRestoreNote();syncVisibleEngineTruth();setInterval(syncVisibleEngineTruth,1500)
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init()
-window.RealityEvidenceBridge={exportNetwork:()=>download('reality-engine-network-evidence.json',networkPayload()),restorePayload,backupCurrent,restoreBackup}
+window.RealityEvidenceBridge={exportNetwork:()=>download('reality-engine-network-evidence.json',networkPayload()),restorePayload,backupCurrent,restoreBackup,normalizeAudit}
 })()
