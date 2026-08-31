@@ -22,7 +22,7 @@ async function main() {
   if (!about.includes('application/ld+json')) throw new Error('About page is missing structured data')
 
   const home = await expect('out/index.html', ['ProofTTL', 'Fact Audit'])
-  for (const marker of ['#brand', 'ProofTTL Claim Verification', 'github.com/tasx13ok-create/proofttl-web']) {
+  for (const marker of ['#brand', 'ProofTTL Fact Audit', 'github.com/tasx13ok-create/proofttl-web']) {
     if (!home.includes(marker)) throw new Error(`Homepage structured identity is missing ${marker}`)
   }
 
@@ -61,7 +61,7 @@ async function main() {
   }
 
   const layout = await readFile('app/layout.tsx', 'utf8')
-  for (const marker of ["'@type': 'Brand'", 'rel="me"', '/feed.xml', '/.well-known/proofttl.json', 'ProofTTL Claim Verification']) {
+  for (const marker of ["'@type': 'Brand'", 'rel="me"', '/feed.xml', '/.well-known/proofttl.json', 'ProofTTL Fact Audit']) {
     if (!layout.includes(marker)) throw new Error(`Root identity schema is missing ${marker}`)
   }
 
