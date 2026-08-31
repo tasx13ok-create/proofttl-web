@@ -47,7 +47,7 @@ export default function SampleAuditPage() {
             <p className="app-copy">The important word is <strong>fully</strong>. A verifier cannot quietly weaken that into “some documentation is current.” The exact proposition has to survive.</p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 12, marginTop: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(280px,100%),1fr))', gap: 12, marginTop: 16 }}>
             <article style={{ padding: 18, border: '1px solid rgba(34,197,94,.22)', borderRadius: 14, background: 'rgba(34,197,94,.035)' }}>
               <p className="app-kicker">EVIDENCE FOR / CURRENT ROSTER</p>
               <h3 style={{ margin: '8px 0' }}>S3 looks authoritative.</h3>
@@ -104,11 +104,11 @@ export default function SampleAuditPage() {
           </div>
 
           <div className="onboarding-card" style={{ marginTop: 24 }}>
-            <p className="app-kicker">PUT YOUR OWN DOCUMENT UNDER PRESSURE</p>
-            <p className="app-copy">Start with the free preflight to identify the concrete claims carrying risk. Select 3–5 and carry them into the $129 Claim Stress Test for scope review before payment.</p>
+            <p className="app-kicker">PUT YOUR OWN OUTPUTS UNDER PRESSURE</p>
+            <p className="app-copy">The $1,500 Fact Audit accepts 10–25 outputs or claims. ProofTTL decomposes the material into atomic claims, ranks consequence, deeply verifies the highest-risk findings with authoritative FOR/AGAINST evidence and a contradiction pass, requires human approval before customer-facing publication, produces proof/report deliverables, and monitors important findings for seven days before the final reread.</p>
             <div className="hero-actions">
-              <a className="button button-primary" href="/stress-test/">RUN THE FREE CLAIM PREFLIGHT →</a>
-              <a className="button button-secondary" href="/audit/">COMPARE VERIFICATION OPTIONS</a>
+              <a className="button button-primary" href="/audit/">START THE $1,500 FACT AUDIT →</a>
+              <a className="button button-secondary" href="/faq/">READ THE FACT AUDIT FAQ</a>
             </div>
           </div>
 
