@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "name": "ProofTTL",
   "alternate_names": ["Proof TTL", "ProofTTL Claim Verification"],
   "canonical_url": "https://proofttl-web.vercel.app/",
@@ -48,29 +48,15 @@
     "payment_provider": "Stripe",
     "offers": [
       {
-        "id": "claim_stress_test_129",
-        "name": "Claim Stress Test",
-        "price_usd": 129,
-        "claims": "3-5",
-        "turnaround": "48 hours after payment and scope confirmation",
-        "monitoring_days": 0,
-        "url": "https://proofttl-web.vercel.app/audit/#audit-intake"
-      },
-      {
-        "id": "verification_audit_500",
-        "name": "Full Verification Audit",
-        "price_usd": 500,
-        "claims": "10-25",
+        "id": "fact_audit_1500",
+        "name": "Fact Audit",
+        "price_usd": 1500,
+        "scope": "up to 25 real outputs or claims",
+        "deep_verification": "highest-risk findings",
         "turnaround": "3-5 business days after payment and scope confirmation",
         "monitoring_days": 7,
+        "human_approval_before_customer_publication": true,
         "url": "https://proofttl-web.vercel.app/audit/#audit-intake"
-      },
-      {
-        "id": "full_audit_upgrade_371",
-        "name": "Stress Test to Full Audit Upgrade",
-        "price_usd": 371,
-        "prior_credit_usd": 129,
-        "total_full_audit_usd": 500
       }
     ]
   },
