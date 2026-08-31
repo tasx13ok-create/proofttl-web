@@ -21,4 +21,8 @@ if(!E.__v19||E.__v19.MIN_SUPPORT!==2||E.__v19.GENERATION_CADENCE!==6)throw new E
 if(!E.__v20||E.__v20.HOLDOUT_MIN!==8||Math.abs(E.__v20.TRUST_MARGIN-.03)>1e-12)throw new Error('Matched Theory Court contract missing')
 if(!E.__v21||E.__v21.MIN_PAIRS!==16||E.__v21.DECISION_PAIRS!==24||E.__v21.MAX_PAIRS!==48||Math.abs(E.__v21.PRACTICAL_EDGE-.25)>1e-12)throw new Error('Research Method Court contract missing')
 if(E.seedOntology().length!==4)throw new Error('Seed ontology contract changed unexpectedly')
+const worker=fs.readFileSync(path.join(root,'public/reality-engine/ontology-worker-v2.js'),'utf8')
+if(!worker.includes("const E=self.OntologyEngineV21")||!worker.includes("engineVersion:E.VERSION")||!worker.includes("engineLayer:'V21'"))throw new Error('Worker version truth contract missing')
+const evidence=fs.readFileSync(path.join(root,'public/reality-engine/evidence-bridge.js'),'utf8')
+if(!evidence.includes('function normalizeAudit')||!evidence.includes('uiVersion:')||!evidence.includes('engineVersion:workerVersion'))throw new Error('Evidence worker-version normalization missing')
 console.log(`SUCCESS: Reality Engine ${E.VERSION} booted ${files.length} chained engine layers and passed ${tests.length} invariant tests.`)
