@@ -174,13 +174,12 @@ export default function AuditStatusLookup() {
           <p className="app-kicker">{labels[result.status || ''] || String(result.status || '').toUpperCase()}</p>
           <div className="app-table">
             <div className="app-table-row"><span>Reference</span><span><code>{result.audit_intake_id}</code></span><span>✓</span></div>
-            <div className="app-table-row"><span>Offer</span><span>{result.offer_type === 'stress_test' ? 'Claim Stress Test' : 'Full Verification Audit'}</span><span>{result.scope?.price_usd ? `$${result.scope.price_usd}` : 'PENDING'}</span></div>
-            {result.scope?.prior_credit_usd ? <div className="app-table-row"><span>Upgrade credit</span><span>Stress Test payment credited in full</span><span>−${result.scope.prior_credit_usd}</span></div> : null}
+            <div className="app-table-row"><span>Offer</span><span>Fact Audit</span><span>{result.scope?.price_usd ? `$${result.scope.price_usd.toLocaleString('en-US')}` : 'PENDING'}</span></div>
             {result.scope?.summary && <div className="app-table-row"><span>Scope</span><span>{result.scope.summary}</span><span>CONFIRMED</span></div>}
             {result.scope?.turnaround && <div className="app-table-row"><span>Turnaround</span><span>{result.scope.turnaround}</span><span>SET</span></div>}
-            <div className="app-table-row"><span>Payment</span><span>{result.payment?.provider === 'stripe' ? 'Secure Stripe Checkout' : String(result.payment?.state || 'not_requested').replaceAll('_', ' ')}</span><span>{result.payment?.state === 'paid' ? '✓' : result.payment?.amount_due_usd ? `$${result.payment.amount_due_usd}` : '—'}</span></div>
+            <div className="app-table-row"><span>Payment</span><span>{result.payment?.provider === 'stripe' ? 'Secure Stripe Checkout' : String(result.payment?.state || 'not_requested').replaceAll('_', ' ')}</span><span>{result.payment?.state === 'paid' ? '✓' : result.payment?.amount_due_usd ? `$${result.payment.amount_due_usd.toLocaleString('en-US')}` : '—'}</span></div>
           </div>
-          {result.payment?.state === 'ready' && result.payment.url && <div className="hero-actions" style={{ marginTop: 18 }}><a className="button button-primary" href={result.payment.url} rel="noreferrer">PAY ${result.payment.amount_due_usd || result.scope?.amount_due_usd || ''} SECURELY →</a></div>}
+          {result.payment?.state === 'ready' && result.payment.url && <div className="hero-actions" style={{ marginTop: 18 }}><a className="button button-primary" href={result.payment.url} rel="noreferrer">PAY ${(result.payment.amount_due_usd || result.scope?.amount_due_usd || 0).toLocaleString('en-US')} SECURELY →</a></div>}
           {result.status === 'received' && <p className="app-note">Your request is stored. The next checkpoint is scope review; payment is not due yet.</p>}
           {result.status === 'scoped' && <p className="app-note">Your scope is approved. ProofTTL has not created checkout yet, so no payment is currently due.</p>}
           {result.status === 'paid' && <p className="app-note">Stripe payment is recorded. Fulfillment is now the active step.</p>}
