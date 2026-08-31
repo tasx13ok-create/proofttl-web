@@ -61,7 +61,7 @@ const checks = [
   [/fact audit/i.test(home) && home.includes('$1,500') && !home.includes('$129') && !home.includes('$500'), 'single flagship $1,500 commercial offer'],
   [/fact audit/i.test(audit) && audit.includes('$1,500') && /human approval/i.test(audit), 'audit page preserves flagship scope and human-approval boundary'],
   [/GitHub/i.test(login) && /Google/i.test(login) && /Discord/i.test(login) && /Passkey/i.test(login), 'GitHub + Google + Discord + passkey login'],
-  [/Fact Lease/i.test(guide) && /L\.O\.V\.E\./i.test(guide) && /monitor/i.test(guide), 'single deep product guide'],
+  [/Fact Audit/i.test(guide) && guide.includes('$1,500') && /human approval/i.test(guide) && /seven days/i.test(guide) && !guide.includes('$129') && !guide.includes('$500'), 'single deep product guide'],
   [workspacePage.includes('WorkspaceDesktopShell') && !workspacePage.includes('WorkspaceLaunchpad') && !workspacePage.includes('ProofTTLOSWorkspace'), 'Workspace stays sparse instead of duplicating documentation'],
   [workspace.includes('os-activity') && workspace.includes('os-sidebar') && workspace.includes('os-tabs') && workspace.includes('os-terminal') && workspace.includes('os-status'), 'VS Code familiar Workspace shell'],
   [workspace.includes('/studio/') && workspace.includes('/audit/') && workspace.includes('/files/') && !workspace.includes('href="/worlds/"') && !workspace.includes('href="/cinematics/"'), 'Workspace routes to current capability pages'],
