@@ -1,7 +1,7 @@
 'use strict'
-importScripts('./ontology-engine-v2.js','./ontology-engine-v3.js','./ontology-engine-v4.js','./ontology-engine-v5.js','./ontology-engine-v6.js','./ontology-engine-v7b.js','./ontology-engine-v8.js','./ontology-engine-v9.js','./ontology-engine-v10.js','./ontology-engine-v11.js','./ontology-engine-v12.js','./ontology-engine-v13.js','./ontology-engine-v14.js','./ontology-engine-v15.js','./ontology-engine-v16.js','./ontology-engine-v17.js','./ontology-engine-v18.js','./ontology-engine-v19.js','./ontology-engine-v20.js')
-const E=self.OntologyEngineV20
-let worldEcologyState=null,questionEcologyState=null,strategyEcologyState=null,theoryEcologyState=null,experimentState=null,barrierState=null,causalState=null,conceptState=null,sequentialState=null,macroState=null,theoryCourtState=null
+importScripts('./ontology-engine-v2.js','./ontology-engine-v3.js','./ontology-engine-v4.js','./ontology-engine-v5.js','./ontology-engine-v6.js','./ontology-engine-v7b.js','./ontology-engine-v8.js','./ontology-engine-v9.js','./ontology-engine-v10.js','./ontology-engine-v11.js','./ontology-engine-v12.js','./ontology-engine-v13.js','./ontology-engine-v14.js','./ontology-engine-v15.js','./ontology-engine-v16.js','./ontology-engine-v17.js','./ontology-engine-v18.js','./ontology-engine-v19.js','./ontology-engine-v20.js','./ontology-engine-v21.js')
+const E=self.OntologyEngineV21
+let worldEcologyState=null,questionEcologyState=null,strategyEcologyState=null,theoryEcologyState=null,experimentState=null,barrierState=null,causalState=null,conceptState=null,sequentialState=null,macroState=null,theoryCourtState=null,methodCourtState=null
 self.onmessage=e=>{
   const msg=e.data||{}
   try{
@@ -18,7 +18,8 @@ self.onmessage=e=>{
       const embeddedSequential=msg.ecologyState?.sequentialState||sequentialState||null
       const embeddedMacro=msg.ecologyState?.macroState||macroState||null
       const embeddedTheoryCourt=msg.ecologyState?.theoryCourtState||theoryCourtState||null
-      const result=E.epistemicCycle({ontology:Array.isArray(msg.ontology)&&msg.ontology.length?msg.ontology:E.seedOntology(),depth:Number(msg.depth)||0,attack:Number(msg.attack)||0,seed:Number(msg.seed)||1,lineageSeed:Number(msg.lineageSeed)||Number(msg.seed)||1,ecologyState:msg.ecologyState||null,worldEcologyState:embeddedWorld,questionEcologyState:embeddedQuestion,strategyEcologyState:embeddedStrategy,theoryEcologyState:embeddedTheory,experimentState:embeddedExperiment,barrierState:embeddedBarrier,causalState:embeddedCausal,conceptState:embeddedConcept,sequentialState:embeddedSequential,macroState:embeddedMacro,theoryCourtState:embeddedTheoryCourt,progress:p=>self.postMessage({type:'progress',...p})})
+      const embeddedMethodCourt=msg.ecologyState?.methodCourtState||methodCourtState||null
+      const result=E.epistemicCycle({ontology:Array.isArray(msg.ontology)&&msg.ontology.length?msg.ontology:E.seedOntology(),depth:Number(msg.depth)||0,attack:Number(msg.attack)||0,seed:Number(msg.seed)||1,lineageSeed:Number(msg.lineageSeed)||Number(msg.seed)||1,ecologyState:msg.ecologyState||null,worldEcologyState:embeddedWorld,questionEcologyState:embeddedQuestion,strategyEcologyState:embeddedStrategy,theoryEcologyState:embeddedTheory,experimentState:embeddedExperiment,barrierState:embeddedBarrier,causalState:embeddedCausal,conceptState:embeddedConcept,sequentialState:embeddedSequential,macroState:embeddedMacro,theoryCourtState:embeddedTheoryCourt,methodCourtState:embeddedMethodCourt,progress:p=>self.postMessage({type:'progress',...p})})
       worldEcologyState=result?.worldEcology?.persistable||embeddedWorld
       questionEcologyState=result?.questionEcology?.persistable||embeddedQuestion
       strategyEcologyState=result?.strategyEcology?.persistable||embeddedStrategy
@@ -30,6 +31,7 @@ self.onmessage=e=>{
       sequentialState=result?.sequentialForge?.persistable||embeddedSequential
       macroState=result?.interventionLanguage?.persistable||embeddedMacro
       theoryCourtState=result?.matchedTheoryCourt?.persistable||embeddedTheoryCourt
+      methodCourtState=result?.researchMethodCourt?.persistable||embeddedMethodCourt
       if(result?.scientistEcology?.persistable){
         const p=result.scientistEcology.persistable
         if(worldEcologyState)p.worldEcology=worldEcologyState
@@ -43,6 +45,7 @@ self.onmessage=e=>{
         if(sequentialState)p.sequentialState=sequentialState
         if(macroState)p.macroState=macroState
         if(theoryCourtState)p.theoryCourtState=theoryCourtState
+        if(methodCourtState)p.methodCourtState=methodCourtState
       }
       self.postMessage({type:'cycle',result,requestId:msg.requestId})
     }
