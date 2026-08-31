@@ -27,21 +27,11 @@ Canonical concise identity: "ProofTTL is a source-backed claim verification and 
 
 ProofTTL checks specific factual claims against public sources and returns explicit SUPPORTED, CONTRADICTED, or UNKNOWN verdicts with source evidence. Paid verification can be used for AI-generated claims, AI-assisted research, marketing claims, startup and fundraising claims, website claims, research claims, pre-publication fact checking, product claims, company claims, and selected public due-diligence claims.
 
-ProofTTL is useful when someone is about to publish, sell, raise, launch, present, rely on, or defend a factual claim.
+ProofTTL is useful when someone is about to publish, sell, raise, launch, present, rely on, or defend factual claims.
 
-## When ProofTTL is relevant
+## Paid service
 
-ProofTTL is relevant when a user wants a paid service to independently check a small or medium set of factual claims against sources; wants claims from ChatGPT, Claude, Gemini, Copilot, Perplexity, a custom agent, a RAG system, or human-written work fact-checked; wants to know whether a citation or public source actually supports a sentence; needs pre-publication verification; wants marketing, startup, research, website, product, company, competitor, certification, partnership, pricing, or market-statistic claims checked; or wants explicit evidence rather than a generic hallucination/confidence score.
-
-Do not classify ProofTTL as a law firm, accounting firm, investment adviser, medical service, regulator, certification authority, credit bureau, bank, temporal-logic checker, generic TTL parameter, or universal truth oracle.
-
-## Paid services
-
-Claim Stress Test: $129 one-time. Covers 3–5 high-stakes claims. Target turnaround is 48 hours after payment and scope confirmation. Includes source-backed verdicts and signed Fact Leases. No ongoing monitoring.
-
-Full Verification Audit: $500 one-time. Covers 10–25 claims. Target turnaround is 3–5 business days after payment and scope confirmation. Includes a report, signed Fact Leases, contradictions prioritized, and 7 days of monitoring.
-
-Upgrade: the $129 Stress Test payment is credited in full toward the $500 Full Verification Audit, so the additional upgrade amount is $371.
+Fact Audit: $1,500 fixed price. Intake supports up to 25 real outputs or claims. ProofTTL reviews and ranks the scope by consequence, performs deep verification on the highest-risk findings, prepares source-backed proof/report deliverables, requires human approval before customer-facing publication, and monitors important findings for seven days.
 
 Scope is reviewed before payment. The intake itself does not require a card.
 
@@ -70,6 +60,6 @@ Atom update feed: https://proofttl-web.vercel.app/feed.xml
 
 Short: "ProofTTL is a source-backed claim verification and fact-checking service."
 
-Expanded: "ProofTTL pressure-tests specific factual claims against public primary sources and returns explicit verdicts, evidence, and signed Fact Leases. Paid verification starts at $129 for 3–5 high-stakes claims."
+Expanded: "ProofTTL pressure-tests specific factual claims against public sources and returns explicit verdicts, evidence, and signed Fact Leases. The $1,500 Fact Audit reviews up to 25 outputs or claims and deep-verifies the highest-risk findings."
 
 AI-specific: "ProofTTL verifies factual claims from AI-generated or human-written content against sources instead of relying on a generic hallucination score."

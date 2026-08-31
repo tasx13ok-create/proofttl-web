@@ -18,6 +18,7 @@ const COMMERCIAL_OR_PUBLIC_ROUTES = [
   '/status/',
   '/support/',
   '/ai-fact-checker/',
+  '/stress-test/',
 ]
 
 export default function ProtocolNetworkStrip() {

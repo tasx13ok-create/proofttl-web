@@ -91,9 +91,9 @@ export default function TrustCenter() {
     <section className="onboarding-card" style={{ padding: 26 }}>
       <p className="app-kicker">PROOFTTL / TRUST CENTER</p>
       <h1 className="app-title">Know what you are paying for before you pay.</h1>
-      <p className="app-copy">ProofTTL sells scoped source-backed claim verification. The $129 Claim Stress Test covers 3–5 high-stakes claims and the $500 Full Verification Audit covers 10–25 claims. Scope is confirmed before a Stripe payment request is created. Card details are handled by Stripe rather than stored by ProofTTL.</p>
+      <p className="app-copy">ProofTTL sells one launch offer: a fixed-price <strong>$1,500 Fact Audit</strong> for 10–25 real outputs or consequential claims, with deep verification of the highest-risk findings. Scope is confirmed before a Stripe payment request is created. Card details are handled by Stripe rather than stored by ProofTTL. Customer-facing findings require human approval before publication.</p>
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
-        <a className="button button-primary" href="/audit/#audit-intake">START VERIFICATION →</a>
+        <a className="button button-primary" href="/audit/#audit-intake">START FACT AUDIT →</a>
         <a className="button button-secondary" href="/audit/sample/">VIEW SAMPLE</a>
         <a className="text-link" href="/verify-lease.html">VERIFY A FACT LEASE →</a>
       </div>
@@ -112,17 +112,19 @@ export default function TrustCenter() {
       <div className="app-table" style={{ marginTop: 12 }}>
         <div className="app-table-row"><span>Intake</span><span>NO CARD REQUIRED</span></div>
         <div className="app-table-row"><span>Scope</span><span>CONFIRMED BEFORE PAYMENT REQUEST</span></div>
+        <div className="app-table-row"><span>Fact Audit price</span><span>$1,500 FIXED SCOPE</span></div>
         <div className="app-table-row"><span>Payment processing</span><span>STRIPE-HOSTED / TOKENIZED</span></div>
         <div className="app-table-row"><span>Claim verdicts</span><span>SUPPORTED / CONTRADICTED / UNKNOWN</span></div>
-        <div className="app-table-row"><span>Full-audit monitoring</span><span>7 DAYS FOR THE AGREED CLAIM SET</span></div>
+        <div className="app-table-row"><span>Monitoring</span><span>7 DAYS FOR IMPORTANT FINDINGS + FINAL RE-READ</span></div>
+        <div className="app-table-row"><span>Publication</span><span>HUMAN APPROVAL REQUIRED</span></div>
         <div className="app-table-row"><span>Professional advice</span><span>NOT LEGAL, MEDICAL, FINANCIAL, OR REGULATORY ADVICE</span></div>
       </div>
     </section>
 
     <section className="console-panel wide">
       <p className="app-kicker">TECHNICAL PROTOCOL BOUNDARY</p>
-      <h2>The developer payment rail is separate from the human service.</h2>
-      <p className="app-copy">ProofTTL also has a technical Fact Lease API whose x402 settlement rail remains on Base Sepolia testnet. That testnet protocol does not process the human verification-service payment. Human audit payments use the live Stripe-backed scope-first flow described above.</p>
+      <h2>Developer infrastructure is separate from the human audit checkout.</h2>
+      <p className="app-copy">ProofTTL also maintains technical verification infrastructure for developer workflows. Those protocol experiments are separate from the commercial Fact Audit and do not process the human service payment. Fact Audit payments use the live Stripe-backed scope-first flow described above.</p>
     </section>
   </div>
 }
