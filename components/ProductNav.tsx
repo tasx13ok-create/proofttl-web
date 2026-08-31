@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { authClient, PROOFTTL_API_URL, signInHref } from '../lib/proofttl-auth'
+import { isPublicPath } from '../lib/route-mode'
 
 const APP_PRIMARY = [
   { href: '/workspace/', label: 'Workspace' },
@@ -40,38 +41,12 @@ const PUBLIC_SECONDARY = [
   { href: '/terms/', label: 'Terms' },
 ] as const
 
-const PUBLIC_PATH_PREFIXES = [
-  '/',
-  '/about/',
-  '/audit/',
-  '/stress-test/',
-  '/services/',
-  '/solutions/',
-  '/faq/',
-  '/machine-definition/',
-  '/glossary/',
-  '/trust/',
-  '/how-proofttl-works/',
-  '/docs/',
-  '/privacy/',
-  '/terms/',
-  '/status/',
-  '/support/',
-  '/ai-fact-checker/',
-  '/verify-lease.html',
-] as const
-
 type SessionUser = { name?: string | null; email?: string | null; image?: string | null }
 type Quota = { plan?: string; membership_status?: string; limit?: number | null; used?: number | null; remaining?: number | null; reset?: string; unlimited?: boolean }
 
 function active(pathname: string, href: string) {
   if (href === '/') return pathname === '/'
   return pathname === href || pathname.startsWith(href)
-}
-
-function isPublicPath(pathname: string) {
-  if (pathname === '/') return true
-  return PUBLIC_PATH_PREFIXES.some((prefix) => prefix !== '/' && (pathname === prefix || pathname.startsWith(prefix)))
 }
 
 function prettyPlan(value?: string) {
