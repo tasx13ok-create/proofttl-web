@@ -73,7 +73,7 @@ export default function ClaimStressTestClient() {
       .map(scoreSentence)
       .filter((item): item is Candidate => Boolean(item))
       .sort((a, b) => b.score - a.score)
-      .slice(0, 24)
+      .slice(0, 25)
   }, [input, analyzed])
 
   const selectedClaims = candidates.filter((item) => selected.includes(item.id))
@@ -87,7 +87,7 @@ export default function ClaimStressTestClient() {
   function toggle(id: string) {
     setSelected((current) => {
       if (current.includes(id)) return current.filter((item) => item !== id)
-      if (current.length >= 5) return current
+      if (current.length >= 25) return current
       return [...current, id]
     })
   }
@@ -97,13 +97,13 @@ export default function ClaimStressTestClient() {
     const claimScope = selectedClaims.map((item, index) => `${index + 1}. ${item.text}`).join('\n')
     try {
       localStorage.setItem(AUDIT_DRAFT_KEY, JSON.stringify({
-        offer_type: 'stress_test',
+        offer_type: 'full_audit',
         email: '',
         company_or_project: '',
         website_url: '',
         claim_scope: claimScope,
-        approximate_claims: '3-5',
-        why_it_matters: 'Selected from the ProofTTL Claim Stress Test preflight. These are the claims I want independently verified before I rely on them.',
+        approximate_claims: selectedClaims.length <= 15 ? '10-15' : '16-25',
+        why_it_matters: 'Selected from the ProofTTL claim preflight. These are the outputs or claims I want reviewed and ranked for source-backed verification before I rely on them.',
         deadline: '',
       }))
     } catch {}
@@ -124,7 +124,7 @@ export default function ClaimStressTestClient() {
           style={{ width: '100%', resize: 'vertical', borderRadius: 12, border: '1px solid rgba(148,163,184,.16)', background: 'rgba(2,6,23,.45)', color: 'inherit', padding: 16, font: 'inherit', lineHeight: 1.55 }}
         />
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', marginTop: 14 }}>
-          <button className="button button-primary" type="button" onClick={runPreflight} disabled={input.trim().length < 24}>FIND CLAIMS WORTH STRESS-TESTING →</button>
+          <button className="button button-primary" type="button" onClick={runPreflight} disabled={input.trim().length < 24}>FIND CLAIMS WORTH REVIEWING →</button>
           <span className="app-note" style={{ margin: 0 }}>{input.length.toLocaleString()} / 18,000 characters</span>
         </div>
         <p className="app-note" style={{ margin: '12px 0 0' }}><strong>Preflight only:</strong> this step identifies candidate factual claims locally in your browser. It does not issue verification verdicts or pretend a claim is true or false. Source-backed verification begins after scope review.</p>
@@ -132,10 +132,10 @@ export default function ClaimStressTestClient() {
 
       {analyzed && (
         <div style={{ display: 'grid', gap: 16 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(170px,1fr))', gap: 10 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(170px,100%),1fr))', gap: 10 }}>
             <div style={{ padding: 16, border: '1px solid rgba(148,163,184,.12)', borderRadius: 12 }}><span className="app-kicker">CANDIDATES</span><strong style={{ display: 'block', fontSize: 28, marginTop: 6 }}>{candidates.length}</strong></div>
             <div style={{ padding: 16, border: '1px solid rgba(148,163,184,.12)', borderRadius: 12 }}><span className="app-kicker">HIGH MATERIALITY</span><strong style={{ display: 'block', fontSize: 28, marginTop: 6 }}>{highCount}</strong></div>
-            <div style={{ padding: 16, border: '1px solid rgba(148,163,184,.12)', borderRadius: 12 }}><span className="app-kicker">SELECTED</span><strong style={{ display: 'block', fontSize: 28, marginTop: 6 }}>{selected.length}/5</strong></div>
+            <div style={{ padding: 16, border: '1px solid rgba(148,163,184,.12)', borderRadius: 12 }}><span className="app-kicker">SELECTED</span><strong style={{ display: 'block', fontSize: 28, marginTop: 6 }}>{selected.length}/25</strong></div>
           </div>
 
           {candidates.length === 0 ? (
@@ -150,11 +150,11 @@ export default function ClaimStressTestClient() {
                     key={`${candidate.id}-${index}`}
                     onClick={() => toggle(candidate.id)}
                     aria-pressed={active}
-                    style={{ textAlign: 'left', color: 'inherit', width: '100%', borderRadius: 12, border: active ? '1px solid rgba(34,211,238,.7)' : '1px solid rgba(148,163,184,.12)', background: active ? 'rgba(34,211,238,.07)' : 'rgba(255,255,255,.012)', padding: 16, cursor: 'pointer' }}
+                    style={{ textAlign: 'left', color: 'inherit', width: '100%', borderRadius: 12, border: active ? '1px solid rgba(34,211,238,.7)' : '1px solid rgba(148,163,184,.12)', background: active ? 'rgba(34,211,238,.07)' : 'rgba(255,255,255,.012)', padding: 16, cursor: 'pointer', overflowWrap: 'anywhere' }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
                       <span className="app-kicker">CLAIM {String(index + 1).padStart(2, '0')} · {candidate.materiality}</span>
-                      <span style={{ fontSize: 11, opacity: .72 }}>{active ? 'SELECTED FOR VERIFICATION' : selected.length >= 5 ? '5 CLAIM LIMIT REACHED' : 'SELECT'}</span>
+                      <span style={{ fontSize: 11, opacity: .72 }}>{active ? 'SELECTED FOR AUDIT' : selected.length >= 25 ? '25 CLAIM LIMIT REACHED' : 'SELECT'}</span>
                     </div>
                     <strong style={{ display: 'block', lineHeight: 1.45, fontSize: 15 }}>{candidate.text}</strong>
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
@@ -168,10 +168,10 @@ export default function ClaimStressTestClient() {
 
           {selectedClaims.length > 0 && (
             <div style={{ padding: 18, border: '1px solid rgba(34,211,238,.24)', borderRadius: 14, background: 'linear-gradient(180deg,rgba(34,211,238,.04),rgba(255,255,255,.01))' }}>
-              <p className="app-kicker">NEXT: INDEPENDENT VERIFICATION</p>
-              <h2 style={{ margin: '8px 0 8px' }}>{selectedClaims.length < 3 ? 'Pick 3–5 claims for the $129 Stress Test.' : `${selectedClaims.length} claims ready for scope review.`}</h2>
-              <p className="app-copy" style={{ marginTop: 0 }}>ProofTTL will carry these exact claims into the intake so they can be scoped for source-backed verification. No verdict is implied by the preflight ranking.</p>
-              <button className="button button-primary" type="button" disabled={selectedClaims.length < 3} onClick={sendToAudit}>VERIFY THESE {selectedClaims.length} CLAIMS — $129 →</button>
+              <p className="app-kicker">NEXT: FACT AUDIT SCOPE REVIEW</p>
+              <h2 style={{ margin: '8px 0 8px' }}>{selectedClaims.length < 10 ? 'Select at least 10 outputs or claims for the Fact Audit intake.' : `${selectedClaims.length} claims ready for scope review.`}</h2>
+              <p className="app-copy" style={{ marginTop: 0 }}>ProofTTL will carry these exact claims into the $1,500 Fact Audit intake, rank them by consequence, and concentrate deep verification on the highest-risk findings. No verdict is implied by the preflight ranking.</p>
+              <button className="button button-primary" type="button" disabled={selectedClaims.length < 10} onClick={sendToAudit}>START FACT AUDIT WITH {selectedClaims.length} CLAIMS — $1,500 →</button>
             </div>
           )}
         </div>
