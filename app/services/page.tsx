@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   keywords: ['claim verification service', 'fact checking service', 'AI claim verification', 'AI fact checking', 'source-backed fact checking', 'factual claim audit', 'pre-publication fact checking'],
   openGraph: {
     title: 'ProofTTL Claim Verification & Fact-Checking Services',
-    description: 'Source-backed claim verification starting at $129. Scope is confirmed before payment.',
+    description: 'A fixed-price $1,500 Fact Audit for up to 25 real outputs or factual claims. Scope is confirmed before payment.',
     url: '/services/',
     type: 'website',
   },
@@ -40,11 +40,11 @@ export default function ServicesPage() {
 
       <div className={`${styles.shell} ${styles.cta}`}>
         <div>
-          <h2>Start with 3–5 high-stakes claims for $129.</h2>
-          <p>No card to submit. Scope is reviewed before payment. The $129 payment is fully credited if you upgrade to the $500 Full Verification Audit.</p>
+          <h2>Fact Audit · $1,500 fixed price · up to 25 outputs or claims.</h2>
+          <p>No card to submit. Send the real outputs first; ProofTTL confirms fit and scope before sending the fixed-price payment request.</p>
         </div>
         <div className={styles.actions}>
-          <a className={styles.primary} href="/audit/#audit-intake">Start Claim Stress Test</a>
+          <a className={styles.primary} href="/audit/#audit-intake">Start Fact Audit</a>
           <a className={styles.secondary} href="/audit/sample/">See sample audit</a>
         </div>
       </div>
