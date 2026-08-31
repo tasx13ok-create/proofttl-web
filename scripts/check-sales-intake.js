@@ -69,10 +69,28 @@ for (const expected of [
   'SIGN IN TO START FACT AUDIT',
   'SCOPE CONFIRMED BEFORE PAYMENT',
   'HUMAN APPROVAL REQUIRED',
+  'const formElement = event.currentTarget',
+  'new FormData(formElement)',
+  'INTAKE_TIMEOUT_MS',
+  'controller.abort()',
 ]) {
   if (!intake.includes(expected)) throw new Error(`Audit intake component missing required field/behavior: ${expected}`)
 }
 for (const obsolete of ['stress_test', '$129', '$500', '$371 more']) if (intake.includes(obsolete)) throw new Error(`Audit intake still exposes obsolete launch offer: ${obsolete}`)
+
+const captureTargetIndex = intake.indexOf('const formElement = event.currentTarget')
+const firstSubmitAwaitIndex = intake.indexOf('await requireSession()')
+const submittingTrueIndex = intake.indexOf('setSubmitting(true)')
+const tryIndex = intake.indexOf('    try {', submittingTrueIndex)
+if (captureTargetIndex < 0 || firstSubmitAwaitIndex < 0 || captureTargetIndex > firstSubmitAwaitIndex) {
+  throw new Error('Audit submit must capture event.currentTarget before its first await to prevent a stranded submit state')
+}
+if (submittingTrueIndex < 0 || tryIndex < 0 || tryIndex < submittingTrueIndex) {
+  throw new Error('Audit submit must enter protected request handling after setting the submitting state')
+}
+if (!intake.includes('finally {\n      window.clearTimeout(timeout)\n      setSubmitting(false)')) {
+  throw new Error('Audit submit must always clear its timeout and release the submitting state')
+}
 
 for (const expected of [
   'authClient.getSession',
@@ -97,4 +115,4 @@ if (status.includes(".catch(() => {\n      if (!cancelled) setAuthReady(true)"))
 if (!nav.includes('Log out / Switch account')) throw new Error('Signed-in navigation must expose Log out / Switch account')
 if (!nav.includes('signInHref(returnTo)')) throw new Error('Account switching must preserve the current return location')
 
-console.log('SUCCESS: ProofTTL authenticated $1,500 Fact Audit funnel passed saved-draft, sign-in-gate, return-to-page, secure-status, buyer-focused homepage, canonical metadata, human-approval, and scope-before-payment checks.')
+console.log('SUCCESS: ProofTTL authenticated $1,500 Fact Audit funnel passed saved-draft, sign-in-gate, non-stranding submit, return-to-page, secure-status, buyer-focused homepage, canonical metadata, human-approval, and scope-before-payment checks.')
