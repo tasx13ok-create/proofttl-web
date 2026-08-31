@@ -6,7 +6,7 @@
 }
 
 .audit-sales-page .onboarding-wrap {
-  width: min(1020px, calc(100% - 40px));
+  width: min(1088px, calc(100% - 64px));
   padding: 34px 0 104px;
 }
 
@@ -26,9 +26,10 @@
 .audit-sales-proof,
 .audit-sales-steps,
 .audit-limit-note,
-.audit-intake-clean {
-  margin-left: 34px;
-  margin-right: 34px;
+.audit-intake-clean,
+.audit-faq-list {
+  margin-left: clamp(24px, 4vw, 48px);
+  margin-right: clamp(24px, 4vw, 48px);
 }
 
 .audit-sales-hero {
@@ -357,14 +358,40 @@
   color: #647287;
 }
 
+.audit-faq-list {
+  display: grid;
+  gap: 0;
+  margin-top: 20px;
+}
+
+.audit-faq-item {
+  padding: 24px 0;
+  border-top: 1px solid rgba(148,163,184,.14);
+  overflow-wrap: anywhere;
+}
+
+.audit-faq-item h2 {
+  max-width: 840px;
+  margin: 0 0 10px;
+  font-size: clamp(20px, 3vw, 28px);
+  line-height: 1.18;
+}
+
+.audit-faq-item .app-copy {
+  max-width: 820px;
+  margin: 0;
+  line-height: 1.7;
+}
+
 @media (max-width: 760px) {
-  .audit-sales-page .onboarding-wrap { width: min(100% - 24px, 1020px); padding-top: 18px; }
+  .audit-sales-page .onboarding-wrap { width: min(100% - 32px, 1020px); padding-top: 18px; }
   .audit-sales-hero,
   .audit-offer-summary,
   .audit-sales-proof,
   .audit-sales-steps,
   .audit-limit-note,
-  .audit-intake-clean { margin-left: 18px; margin-right: 18px; }
+  .audit-intake-clean,
+  .audit-faq-list { margin-left: 22px; margin-right: 22px; }
   .audit-sales-hero { padding-top: 30px; }
   .audit-sales-hero .app-title { font-size: clamp(36px, 10vw, 52px); }
   .audit-offer-summary { grid-template-columns: 1fr; }
@@ -378,8 +405,17 @@
 }
 
 @media (max-width: 480px) {
+  .audit-sales-page .onboarding-wrap { width: calc(100% - 24px); }
   .audit-sales-card { border-radius: 15px; }
+  .audit-sales-hero,
+  .audit-offer-summary,
+  .audit-sales-proof,
+  .audit-sales-steps,
+  .audit-limit-note,
+  .audit-intake-clean,
+  .audit-faq-list { margin-left: 18px; margin-right: 18px; }
   .audit-step-grid { grid-template-columns: 1fr; }
   .audit-offer-switch { grid-template-columns: 1fr; }
   .audit-sales-trustline span { flex: 1 1 auto; text-align: center; }
+  .audit-faq-item { padding: 22px 0; }
 }
