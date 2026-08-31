@@ -19,6 +19,7 @@ const PUBLIC_ROUTES = [
   '/status/',
   '/support/',
   '/ai-fact-checker/',
+  '/stress-test/',
 ]
 
 export default function AppOnlyChatBar() {
