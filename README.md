@@ -21,12 +21,11 @@ ProofTTL checks specific factual claims — including claims produced by ChatGPT
 
 ## Human verification service
 
-The commercial service is scope-first rather than instant checkout:
+The commercial service is one scope-first launch offer rather than instant checkout:
 
-- **$129 Claim Stress Test** — 3–5 high-stakes claims, target 48-hour turnaround after payment and scope confirmation.
-- **$500 Full Verification Audit** — 10–25 claims, target 3–5 business days, signed Fact Leases, and 7 days of monitoring.
-- **$371 upgrade balance** — the original $129 is credited in full toward the $500 audit.
-- No card is required to submit an intake. ProofTTL reviews the exact claim set before creating the Stripe payment request.
+- **$1,500 Fact Audit** — submit 10–25 real AI outputs or consequential claims. ProofTTL ranks findings by consequence, deep-verifies the highest-risk findings against authoritative evidence, prepares proof/report deliverables, requires human approval before customer-facing publication, and monitors important findings for seven days followed by a final re-read.
+- Scope is confirmed before payment. No card is required to submit an intake; ProofTTL reviews the exact claim set before creating the Stripe payment request.
+- The fixed commercial price is **$1,500**. Retired pilot and upgrade offers are no longer part of the live product.
 
 Good use cases include AI-output fact checking, pre-publication review, marketing claim verification, startup/pitch claims, research claims, website claim audits, product and competitor claims, market statistics, and selected public due-diligence claims.
 
@@ -44,7 +43,7 @@ Protocol: `ProofTTL/0.3.1`
 
 - `/` — official ProofTTL website
 - `/about/` — canonical brand identity and disambiguation
-- `/audit/` — paid Claim Stress Test and Full Verification Audit intake
+- `/audit/` — paid $1,500 Fact Audit intake
 - `/audit/sample/` — public sample verification audit
 - `/services/` — commercial verification use-case index
 - `/faq/` — claim verification, pricing, Fact Lease, and AI fact-checking FAQ
@@ -93,19 +92,12 @@ The production browser authentication and credentialed account routes are proxie
 
 ## Product routes
 
-- `/workspace/` — ProofTTL workspace shell
-- `/studio/` — coding/project surface
-- `/work/` — work/tasks surface
-- `/files/` — account files surface
-- `/automations/` — automation definitions
-- `/money/` — future financial-intelligence surface
-- `/connections/` — integrations/connections surface
+Buyer-facing launch surfaces are intentionally focused on the Fact Audit path. Legacy general-purpose workspace routes remain non-discovery surfaces and are subject to quarantine guards while the launch funnel is active.
+
 - `/login/` — customer authentication
 - `/console/` — account, security, usage, and verification ownership surface
 
-These app/account surfaces are intentionally kept out of the public search sitemap so crawlers learn the claim-verification identity before product-workspace internals.
-
-Experimental 3D Worlds and Cinematics code remains in the repository but is intentionally hidden from the current revenue-focused product navigation.
+The public search sitemap prioritizes claim-verification identity, trust, sample, FAQ, services, and the paid Fact Audit path.
 
 ## Static production build
 
