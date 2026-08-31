@@ -5,6 +5,8 @@ import { authClient, PROOFTTL_API_URL, rememberAuthReturn, signInHref } from '..
 
 const AUDIT_STORAGE_KEY = 'proofttl:last-audit-request'
 const AUDIT_DRAFT_KEY = 'proofttl:audit-draft-v1'
+const SESSION_TIMEOUT_MS = 8000
+const INTAKE_TIMEOUT_MS = 20000
 
 type OfferType = 'full_audit'
 type AuthState = 'checking' | 'signed_in' | 'signed_out' | 'error'
@@ -15,6 +17,13 @@ const offerCopy = { full_audit: { label: 'Fact Audit', price: '$1,500', claims: 
 
 function blankDraft(): AuditDraft { return { offer_type: 'full_audit', email: '', company_or_project: '', website_url: '', claim_scope: '', approximate_claims: '10-15', why_it_matters: '', deadline: '' } }
 function auditReturnTo() { if (typeof window === 'undefined') return '/audit/#audit-intake'; return `${window.location.pathname}${window.location.search}#audit-intake` }
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = window.setTimeout(() => reject(new Error(`${label}_timeout`)), timeoutMs)
+    promise.then((value) => { window.clearTimeout(timer); resolve(value) }, (error) => { window.clearTimeout(timer); reject(error) })
+  })
+}
 
 export default function AuditIntakeForm() {
   const [draft, setDraft] = useState<AuditDraft>(() => blankDraft())
@@ -27,22 +36,83 @@ export default function AuditIntakeForm() {
 
   useEffect(() => { try { const raw = localStorage.getItem(AUDIT_DRAFT_KEY); if (raw) setDraft({ ...blankDraft(), ...(JSON.parse(raw) as Partial<AuditDraft>), offer_type: 'full_audit' }) } catch {} setDraftReady(true) }, [])
   useEffect(() => { if (!draftReady) return; try { localStorage.setItem(AUDIT_DRAFT_KEY, JSON.stringify(draft)) } catch {} }, [draft, draftReady])
-  useEffect(() => { let cancelled = false; void authClient.getSession().then((session) => { if (cancelled) return; const user = session?.data?.user; if (!user) { setAuthState('signed_out'); return } const sessionEmail = typeof user.email === 'string' ? user.email.trim().toLowerCase() : ''; if (!sessionEmail) { setAuthState('error'); return } setAccountEmail(sessionEmail); setDraft((c) => ({ ...c, email: sessionEmail })); setAuthState('signed_in') }).catch(() => { if (!cancelled) setAuthState('error') }); return () => { cancelled = true } }, [])
+  useEffect(() => {
+    let cancelled = false
+    void withTimeout(authClient.getSession(), SESSION_TIMEOUT_MS, 'session_check').then((session) => {
+      if (cancelled) return
+      const user = session?.data?.user
+      if (!user) { setAuthState('signed_out'); return }
+      const sessionEmail = typeof user.email === 'string' ? user.email.trim().toLowerCase() : ''
+      if (!sessionEmail) { setAuthState('error'); return }
+      setAccountEmail(sessionEmail)
+      setDraft((c) => ({ ...c, email: sessionEmail }))
+      setAuthState('signed_in')
+    }).catch(() => { if (!cancelled) setAuthState('error') })
+    return () => { cancelled = true }
+  }, [])
   useEffect(() => { if (authState !== 'signed_out') return; const redirectIfAuditHash = () => { if (window.location.hash === '#audit-intake') redirectToSignIn() }; redirectIfAuditHash(); window.addEventListener('hashchange', redirectIfAuditHash); return () => window.removeEventListener('hashchange', redirectIfAuditHash) // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authState])
 
   function persistDraft(next = draft) { try { localStorage.setItem(AUDIT_DRAFT_KEY, JSON.stringify(next)) } catch {} }
   function redirectToSignIn() { persistDraft(); const returnTo = auditReturnTo(); rememberAuthReturn(returnTo); window.location.assign(signInHref(returnTo)) }
   function update<K extends keyof AuditDraft>(key: K, value: AuditDraft[K]) { if (key === 'email' && authState === 'signed_in') return; setDraft((c) => ({ ...c, [key]: value })); setResult(null) }
-  async function requireSession(): Promise<string | null> { try { const session = await authClient.getSession(); const email = typeof session?.data?.user?.email === 'string' ? session.data.user.email.trim().toLowerCase() : ''; if (session?.data?.user && email) { setAuthState('signed_in'); setAccountEmail(email); setDraft((c) => ({ ...c, email })); return email } } catch { setAuthState('error') } setAuthState('signed_out'); redirectToSignIn(); return null }
+  async function requireSession(): Promise<string | null> {
+    try {
+      const session = await withTimeout(authClient.getSession(), SESSION_TIMEOUT_MS, 'session_check')
+      const email = typeof session?.data?.user?.email === 'string' ? session.data.user.email.trim().toLowerCase() : ''
+      if (session?.data?.user && email) {
+        setAuthState('signed_in')
+        setAccountEmail(email)
+        setDraft((c) => ({ ...c, email }))
+        return email
+      }
+    } catch {
+      setAuthState('error')
+      setResult({ error: 'Session check timed out. Please sign in again.' })
+      return null
+    }
+    setAuthState('signed_out')
+    redirectToSignIn()
+    return null
+  }
   function gatePointer(event: PointerEvent<HTMLFormElement>) { if (authState !== 'signed_out' && authState !== 'error') return; event.preventDefault(); redirectToSignIn() }
   function gateFocus() { if (authState === 'signed_out' || authState === 'error') redirectToSignIn() }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); if (submitting) return; setResult(null); persistDraft(); const verifiedEmail = await requireSession(); if (!verifiedEmail) return; setSubmitting(true)
+    event.preventDefault()
+    if (submitting) return
+    setResult(null)
+    persistDraft()
+    const verifiedEmail = await requireSession()
+    if (!verifiedEmail) return
+
+    setSubmitting(true)
     const form = new FormData(event.currentTarget)
     const payload = { offer_type: 'full_audit', email: verifiedEmail, company_or_project: draft.company_or_project, website_url: draft.website_url, claim_scope: draft.claim_scope, approximate_claims: draft.approximate_claims, why_it_matters: draft.why_it_matters, deadline: draft.deadline, company_site: String(form.get('company_site') || '') }
-    try { const response = await fetch(`${PROOFTTL_API_URL}/audit/intake`, { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) }); const body = await response.json().catch(() => ({})) as IntakeResponse; if (response.status === 401) { setAuthState('signed_out'); redirectToSignIn(); return } if (!response.ok) setResult({ error: body.error || `HTTP ${response.status}`, message: body.message }); else { setResult(body); if (body.audit_intake_id) { try { localStorage.setItem(AUDIT_STORAGE_KEY, JSON.stringify({ audit_intake_id: body.audit_intake_id, email: verifiedEmail, offer_type: 'full_audit', saved_at_ms: Date.now() })); localStorage.removeItem(AUDIT_DRAFT_KEY) } catch {} setDraft({ ...blankDraft(), email: verifiedEmail }) } } } catch { setResult({ error: 'Could not reach ProofTTL intake. Please try again shortly.' }) } finally { setSubmitting(false) }
+    const controller = new AbortController()
+    const timeout = window.setTimeout(() => controller.abort(), INTAKE_TIMEOUT_MS)
+
+    try {
+      const response = await fetch(`${PROOFTTL_API_URL}/audit/intake`, { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload), signal: controller.signal })
+      const body = await response.json().catch(() => ({})) as IntakeResponse
+      if (response.status === 401) { setAuthState('signed_out'); redirectToSignIn(); return }
+      if (!response.ok) {
+        const message = body.message || (response.status === 504 ? 'The intake service timed out before confirming receipt. Your draft is saved; please try again.' : undefined)
+        setResult({ error: body.error || `HTTP ${response.status}`, message })
+      } else {
+        setResult(body)
+        if (body.audit_intake_id) {
+          try { localStorage.setItem(AUDIT_STORAGE_KEY, JSON.stringify({ audit_intake_id: body.audit_intake_id, email: verifiedEmail, offer_type: 'full_audit', saved_at_ms: Date.now() })); localStorage.removeItem(AUDIT_DRAFT_KEY) } catch {}
+          setDraft({ ...blankDraft(), email: verifiedEmail })
+        }
+      }
+    } catch (error) {
+      const timedOut = error instanceof DOMException && error.name === 'AbortError'
+      setResult({ error: timedOut ? 'The intake service did not respond within 20 seconds. Your draft is saved; please try again.' : 'Could not reach ProofTTL intake. Your draft is saved; please try again shortly.' })
+    } finally {
+      window.clearTimeout(timeout)
+      setSubmitting(false)
+    }
   }
 
   return <section className="audit-intake-clean" id="audit-intake" aria-labelledby="audit-intake-heading">
