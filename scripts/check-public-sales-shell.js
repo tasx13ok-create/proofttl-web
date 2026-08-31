@@ -54,6 +54,7 @@ const buyerPages = [
   'out/about/index.html',
   'out/audit/index.html',
   'out/audit/sample/index.html',
+  'out/stress-test/index.html',
   'out/services/index.html',
   'out/ai-fact-checker/index.html',
   'out/trust/index.html',
@@ -81,6 +82,16 @@ const forbiddenBuyerFragments = [
   'Future support form preview',
   'not connected yet',
   'CONSOLE SUPPORT PREVIEW',
+]
+
+const retiredOfferFragments = [
+  '$129',
+  '$371',
+  '$500',
+  'START 3–5 CLAIMS',
+  'VERIFY THESE 3 CLAIMS',
+  'Claim Stress Test payment',
+  'Full Verification Audit',
 ]
 
 async function exists(file) {
@@ -128,6 +139,19 @@ for (const file of buyerPages) {
   for (const fragment of forbiddenBuyerFragments) {
     if (html.includes(fragment)) throw new Error(`${file} leaked prototype/app-only public UI: ${fragment}`)
   }
+  for (const fragment of retiredOfferFragments) {
+    if (html.includes(fragment)) throw new Error(`${file} leaked retired ProofTTL offer copy: ${fragment}`)
+  }
+}
+
+const faq = await readFile('out/faq/index.html', 'utf8')
+for (const required of ['$1,500', 'Fact Audit', 'up to 25', 'seven days', 'Human approval']) {
+  if (!faq.toLowerCase().includes(required.toLowerCase())) throw new Error(`FAQ missing canonical Fact Audit contract: ${required}`)
+}
+
+const preflight = await readFile('out/stress-test/index.html', 'utf8')
+for (const required of ['$1,500', 'Fact Audit', '25']) {
+  if (!preflight.includes(required)) throw new Error(`Claim preflight missing canonical Fact Audit handoff: ${required}`)
 }
 
 const sitemap = await readFile('out/sitemap.xml', 'utf8')
@@ -140,4 +164,4 @@ for (const file of sitemapFiles) {
   await checkInternalLinks(file)
 }
 
-console.log(`SUCCESS: public ProofTTL sales shell is buyer-focused; ${buyerPages.length} buyer pages passed prototype-leak checks and ${sitemapFiles.length} sitemap pages passed internal-link validation.`)
+console.log(`SUCCESS: public ProofTTL sales shell is buyer-focused; ${buyerPages.length} buyer pages passed prototype/retired-offer checks and ${sitemapFiles.length} sitemap pages passed internal-link validation.`)
