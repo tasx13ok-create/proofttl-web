@@ -27,7 +27,8 @@ async function main() {
   await expect('out/login/index.html', ['noindex','CONTINUE WITH GITHUB','CONTINUE WITH GOOGLE','CONTINUE WITH DISCORD','CONTINUE WITH PASSKEY','TOTP','RECOVERY CODES'], 'Login')
   await expect('out/two-factor/index.html', ['noindex','SECURITY CHECK','AUTHENTICATOR','RECOVERY CODE'], 'Two factor')
   await expect('out/docs/index.html', ['ProofTTL API Docs','HTTP 402','PAYMENT-REQUIRED','Fact Lease'], 'Docs')
-  await expect('out/audit/index.html', ['Claim Stress Test','Verification Audit','$129','$500','SCOPE BEFORE PAYMENT','/audit/sample/'], 'Audit')
+  const audit = await expect('out/audit/index.html', ['Fact Audit','$1,500','up to 25','7-day','human approval','/audit/sample/'], 'Audit')
+  for (const obsolete of ['$129','$500']) if (audit.includes(obsolete)) throw new Error(`Audit still exposes obsolete launch pricing: ${obsolete}`)
   await expect('out/audit/sample/index.html', ['Sample Verification Audit','PX-006','CONTRADICTED','PUBLIC DEMONSTRATION'], 'Sample audit')
   await expect('out/audit/status/index.html', ['SECURE AUDIT ACCESS','Checking your session','signed-in ProofTTL account'], 'Audit status auth gate')
   await expect('out/support/index.html', ['Get to the right help without posting private details.','CHECK MY AUDIT STATUS','OPEN VERIFICATION INTAKE','NEVER POST PUBLICLY'], 'Customer support')
@@ -92,7 +93,7 @@ async function main() {
   for (const expected of ['X-Content-Type-Options: nosniff','X-Frame-Options: DENY','Permissions-Policy: camera=(), microphone=(self), geolocation=()']) if (!headers.includes(expected)) throw new Error(`Static headers missing: ${expected}`)
   if (headers.includes('microphone=()')) throw new Error('Static headers disable L.O.V.E. microphone')
 
-  console.log('\nSUCCESS: ProofTTL web v1.0.1 static export passed with buyer-safe support/status pages, no launch ads, first-party auth return flow, protected audit access, launch branding, private app surfaces, and hidden render code preserved for later reactivation.')
+  console.log('\nSUCCESS: ProofTTL web v1.0.1 static export passed with flagship Fact Audit pricing, buyer-safe support/status pages, no launch ads, first-party auth return flow, protected audit access, launch branding, private app surfaces, and hidden render code preserved for later reactivation.')
 }
 
 main().catch((error) => { console.error('\nSTATIC EXPORT CHECK FAILED:', error.message || error); process.exitCode = 1 })
