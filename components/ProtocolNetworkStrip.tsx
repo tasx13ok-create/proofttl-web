@@ -5,7 +5,7 @@ import { isAppPath } from '../lib/route-mode'
 
 export default function ProtocolNetworkStrip() {
   const pathname = usePathname()
-  // Public buyer routes such as '/' and '/audit/' stay clean because only explicit app paths render this technical network strip.
+  // Buyer routes including '/trust/', '/ai-fact-checker/', '/services/', '/audit/', '/support/', '/status/', and '/' stay clean because only explicit app paths render this technical network strip.
   if (!isAppPath(pathname)) return null
 
   return (
