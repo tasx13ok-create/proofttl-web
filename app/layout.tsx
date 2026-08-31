@@ -24,6 +24,7 @@ import './workspace-polish.css'
 import './workspace-shell.css'
 import './worlds.css'
 import './cinematics.css'
+import './premium-public.css'
 
 const SITE_URL = 'https://proofttl-web.vercel.app'
 const GITHUB_PROFILE = 'https://github.com/tasx13ok-create'
@@ -70,8 +71,8 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  width: 'device-width', initialScale: 1, maximumScale: 1, userScalable: false,
-  colorScheme: 'dark', themeColor: '#070b13',
+  width: 'device-width', initialScale: 1,
+  colorScheme: 'dark', themeColor: '#071018',
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
