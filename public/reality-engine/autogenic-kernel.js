@@ -19,7 +19,7 @@ const SEEDS=[
 
 const clamp=(n,a=0,b=1)=>Math.max(a,Math.min(b,n))
 const now=()=>Date.now()
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]))
 const hash=s=>{let h=2166136261>>>0;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 const uid=(p='g')=>`${p}${Math.random().toString(36).slice(2,8)}${Date.now().toString(36).slice(-4)}`
 const domainOf=u=>{try{return new URL(u).hostname.toLowerCase()}catch{return''}}
@@ -183,6 +183,7 @@ function evolvePolicies(){
 async function gatewayObserve(url){
   const response=await fetch(ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({url})})
   const data=await response.json().catch(()=>({}))
+  if(response.status===410){const error=new Error(data.error||'legacy_route_retired');error.permanent=true;throw error}
   if(!response.ok)throw new Error(data.error||`internet_http_${response.status}`)
   return data
 }
@@ -221,7 +222,7 @@ async function observe(url,{policy=null,parent=null,depth=0,source='manual'}={})
     return exp
   }catch(error){
     state.lastError=String(error?.message||error)
-    log(`NETWORK REJECTED · ${state.lastError}`)
+    if(error?.permanent){disable();log(`NETWORK PAUSED · gateway unavailable · ${state.lastError}`)}else log(`NETWORK REJECTED · ${state.lastError}`)
     throw error
   }finally{
     busy=false
