@@ -1,30 +1,11 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-
-const COMMERCIAL_OR_PUBLIC_ROUTES = [
-  '/',
-  '/audit/',
-  '/services/',
-  '/solutions/',
-  '/faq/',
-  '/about/',
-  '/machine-definition/',
-  '/glossary/',
-  '/how-proofttl-works/',
-  '/privacy/',
-  '/terms/',
-  '/trust/',
-  '/status/',
-  '/support/',
-  '/ai-fact-checker/',
-  '/stress-test/',
-]
+import { isAppPath } from '../lib/route-mode'
 
 export default function ProtocolNetworkStrip() {
   const pathname = usePathname()
-  const hideProtocolBanner = pathname === '/' || COMMERCIAL_OR_PUBLIC_ROUTES.some((route) => route !== '/' && (pathname === route || pathname.startsWith(route)))
-  if (hideProtocolBanner) return null
+  if (!isAppPath(pathname)) return null
 
   return (
     <div className="product-network-strip" data-proofttl-network-banner="testnet">
