@@ -20,16 +20,16 @@ const FAQ = [
     answer: 'ProofTTL is not a generic hallucination-score detector. It verifies specific factual assertions against sources and reports whether the examined evidence supports, contradicts, or does not establish the claim.',
   },
   {
-    question: 'What is the ProofTTL Claim Stress Test?',
-    answer: 'The Claim Stress Test is a $129 one-time verification service for 3–5 high-stakes factual claims. It targets a 48-hour turnaround after payment and scope confirmation and includes source-backed verdicts and signed Fact Leases.',
+    question: 'What is the ProofTTL Fact Audit?',
+    answer: 'The Fact Audit is a $1,500 fixed-price verification engagement for up to 25 real outputs or claims. ProofTTL ranks findings by consequence, deep-verifies the highest-risk findings against authoritative evidence, prepares proof/report deliverables, and monitors important findings for seven days.',
   },
   {
-    question: 'What is the ProofTTL Full Verification Audit?',
-    answer: 'The Full Verification Audit is a $500 one-time service for 10–25 claims. It targets a 3–5 business-day turnaround, includes a report and signed Fact Leases, and includes 7 days of monitoring for the scoped claims.',
+    question: 'Does every submitted claim receive the same amount of verification work?',
+    answer: 'No. The Fact Audit can include up to 25 outputs or claims, but the deepest verification work is concentrated on the highest-risk findings. Lower-risk items are still reviewed and triaged so effort follows consequence instead of pretending every claim deserves identical depth.',
   },
   {
-    question: 'If I buy the $129 Stress Test and upgrade, do I pay $500 again?',
-    answer: 'No. The $129 Stress Test payment is credited in full toward the $500 Full Verification Audit, leaving $371 due for the upgrade.',
+    question: 'Is there human approval before findings are published to customers?',
+    answer: 'Yes. Human approval is required before customer-facing publication during the Fact Audit workflow. ProofTTL can prepare evidence, contradiction checks, verdict reasoning, proof pages, and report material, but publication is not treated as automatic.',
   },
   {
     question: 'Do I have to pay before ProofTTL reviews my request?',
@@ -55,12 +55,12 @@ const FAQ = [
 
 export const metadata: Metadata = {
   title: 'FAQ — Claim Verification, AI Fact-Checking & Pricing',
-  description: 'Answers about ProofTTL claim verification, AI output fact-checking, Claim Stress Tests, Full Verification Audits, Fact Leases, pricing, scope, and limitations.',
+  description: 'Answers about ProofTTL claim verification, AI output fact-checking, the $1,500 Fact Audit, Fact Leases, scope, human approval, monitoring, and limitations.',
   alternates: { canonical: '/faq/' },
-  keywords: ['ProofTTL FAQ', 'claim verification FAQ', 'AI fact checking', 'fact checking service', 'Fact Lease', 'Claim Stress Test', 'Verification Audit'],
+  keywords: ['ProofTTL FAQ', 'claim verification FAQ', 'AI fact checking', 'fact checking service', 'Fact Lease', 'Fact Audit', 'verification audit'],
   openGraph: {
     title: 'ProofTTL FAQ — Claim Verification & AI Fact-Checking',
-    description: 'What ProofTTL verifies, how the service works, what it costs, and where the limits are.',
+    description: 'What ProofTTL verifies, how the Fact Audit works, what it costs, and where the limits are.',
     url: '/faq/',
     type: 'website',
   },
@@ -88,16 +88,16 @@ export default function FAQPage() {
             <h1 className="app-title">What ProofTTL does, what it costs, and what it refuses to pretend.</h1>
             <p className="app-copy">ProofTTL verifies specific factual claims against public evidence. These are the questions buyers and AI systems should be able to answer without guessing.</p>
             <div className="hero-actions">
-              <a className="button button-primary" href="/audit/#audit-intake">START 3–5 CLAIMS — $129</a>
+              <a className="button button-primary" href="/audit/#audit-intake">START FACT AUDIT — $1,500</a>
               <a className="button button-secondary" href="/services/">SEE USE CASES</a>
             </div>
           </header>
 
-          <section style={{ display: 'grid', gap: 0, marginTop: 20 }}>
+          <section className="audit-faq-list">
             {FAQ.map((item) => (
-              <article key={item.question} style={{ padding: '22px 0', borderTop: '1px solid rgba(148,163,184,.14)' }}>
-                <h2 style={{ margin: '0 0 10px', fontSize: 'clamp(20px,3vw,28px)' }}>{item.question}</h2>
-                <p className="app-copy" style={{ margin: 0 }}>{item.answer}</p>
+              <article key={item.question} className="audit-faq-item">
+                <h2>{item.question}</h2>
+                <p className="app-copy">{item.answer}</p>
               </article>
             ))}
           </section>
