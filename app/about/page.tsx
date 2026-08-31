@@ -88,18 +88,13 @@ export default function AboutProofTTLPage() {
 
           <section style={{ marginTop: 28 }}>
             <p className="app-kicker">PAID VERIFICATION</p>
-            <div className="audit-offer-summary" aria-label="ProofTTL commercial offers">
+            <div className="audit-offer-summary" aria-label="ProofTTL commercial offer">
               <div>
-                <span>CLAIM STRESS TEST</span>
-                <strong>$129 one-time</strong>
-                <small>3–5 high-stakes claims · target 48 hours after payment and scope confirmation</small>
+                <span>FACT AUDIT</span>
+                <strong>$1,500 fixed scope</strong>
+                <small>Up to 25 outputs or claims · consequence-ranked findings · deep verification of the highest-risk claims · 7 days of monitoring and a final reread</small>
               </div>
-              <div>
-                <span>FULL VERIFICATION AUDIT</span>
-                <strong>$500 one-time</strong>
-                <small>10–25 claims · target 3–5 business days · 7 days of monitoring</small>
-              </div>
-              <p>The first $129 is credited in full toward a Full Verification Audit, leaving <strong>$371</strong> due on upgrade. Scope is confirmed before payment.</p>
+              <p>Customer-facing findings require human approval before publication. The audit records authoritative FOR and AGAINST evidence, explicit verdicts, and repair guidance rather than a generic hallucination score.</p>
             </div>
           </section>
 
@@ -126,7 +121,7 @@ export default function AboutProofTTLPage() {
           </section>
 
           <div className="hero-actions" style={{ marginTop: 28 }}>
-            <a className="button button-primary" href="/audit/#audit-intake">Start a $129 Claim Stress Test</a>
+            <a className="button button-primary" href="/audit/#audit-intake">Start a $1,500 Fact Audit</a>
             <a className="button button-secondary" href="/services/">Browse verification services</a>
             <a className="text-link" href="/audit/sample/">Inspect a sample audit →</a>
           </div>
