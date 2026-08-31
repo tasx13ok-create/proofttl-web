@@ -1,4 +1,5 @@
 const RUNTIME_UPSTREAM = 'https://proofttl.tasx13ok.workers.dev'
+const UPSTREAM_TIMEOUT_MS = 15000
 
 const ALLOWED_PATHS = [
   /^\.well-known\/proofttl-auth\.json$/,
@@ -79,6 +80,9 @@ export const config = {
 }
 
 export default async function handler(request, response) {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS)
+
   try {
     const path = runtimePathFromRequest(request)
     if (!allowedRuntimePath(path)) {
@@ -100,6 +104,7 @@ export default async function handler(request, response) {
       headers: copyRequestHeaders(request),
       body,
       redirect: 'manual',
+      signal: controller.signal,
     })
 
     response.statusCode = upstream.status
@@ -122,10 +127,13 @@ export default async function handler(request, response) {
     response.setHeader('cache-control', 'no-store')
     response.end(Buffer.from(await upstream.arrayBuffer()))
   } catch (error) {
+    const timedOut = error?.name === 'AbortError' || controller.signal.aborted
     console.error('ProofTTL runtime proxy failed', error)
-    response.statusCode = 502
+    response.statusCode = timedOut ? 504 : 502
     response.setHeader('content-type', 'application/json; charset=utf-8')
     response.setHeader('cache-control', 'no-store')
-    response.end(JSON.stringify({ error: 'runtime_proxy_failed' }))
+    response.end(JSON.stringify({ error: timedOut ? 'runtime_upstream_timeout' : 'runtime_proxy_failed' }))
+  } finally {
+    clearTimeout(timeout)
   }
 }
