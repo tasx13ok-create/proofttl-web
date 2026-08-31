@@ -90,7 +90,7 @@ export default function TrustCenter() {
   return <div style={{ display: 'grid', gap: 18 }}>
     <section className="onboarding-card" style={{ padding: 26 }}>
       <p className="app-kicker">PROOFTTL / TRUST CENTER</p>
-      <h1 className="app-title">Know exactly what you are paying for before you pay.</h1>
+      <h1 className="app-title">Know what you are paying for before you pay.</h1>
       <p className="app-copy">ProofTTL sells one launch offer: a fixed-price <strong>$1,500 Fact Audit</strong> for 10–25 real outputs or consequential claims, with deep verification of the highest-risk findings. Scope is confirmed before a Stripe payment request is created. Card details are handled by Stripe rather than stored by ProofTTL. Customer-facing findings require human approval before publication.</p>
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
         <a className="button button-primary" href="/audit/#audit-intake">START FACT AUDIT →</a>
