@@ -5,7 +5,7 @@ let worldEcologyState=null,questionEcologyState=null,strategyEcologyState=null,t
 self.onmessage=e=>{
   const msg=e.data||{}
   try{
-    if(msg.type==='selftest') return self.postMessage({type:'selftest',tests:E.selfTest()})
+    if(msg.type==='selftest') return self.postMessage({type:'selftest',engineVersion:E.VERSION,engineLayer:'V21',tests:E.selfTest()})
     if(msg.type==='cycle'){
       const embeddedWorld=msg.ecologyState?.worldEcology||worldEcologyState||null
       const embeddedQuestion=msg.ecologyState?.questionEcology||questionEcologyState||null
@@ -19,7 +19,8 @@ self.onmessage=e=>{
       const embeddedMacro=msg.ecologyState?.macroState||macroState||null
       const embeddedTheoryCourt=msg.ecologyState?.theoryCourtState||theoryCourtState||null
       const embeddedMethodCourt=msg.ecologyState?.methodCourtState||methodCourtState||null
-      const result=E.epistemicCycle({ontology:Array.isArray(msg.ontology)&&msg.ontology.length?msg.ontology:E.seedOntology(),depth:Number(msg.depth)||0,attack:Number(msg.attack)||0,seed:Number(msg.seed)||1,lineageSeed:Number(msg.lineageSeed)||Number(msg.seed)||1,ecologyState:msg.ecologyState||null,worldEcologyState:embeddedWorld,questionEcologyState:embeddedQuestion,strategyEcologyState:embeddedStrategy,theoryEcologyState:embeddedTheory,experimentState:embeddedExperiment,barrierState:embeddedBarrier,causalState:embeddedCausal,conceptState:embeddedConcept,sequentialState:embeddedSequential,macroState:embeddedMacro,theoryCourtState:embeddedTheoryCourt,methodCourtState:embeddedMethodCourt,progress:p=>self.postMessage({type:'progress',...p})})
+      const cycle=E.epistemicCycle({ontology:Array.isArray(msg.ontology)&&msg.ontology.length?msg.ontology:E.seedOntology(),depth:Number(msg.depth)||0,attack:Number(msg.attack)||0,seed:Number(msg.seed)||1,lineageSeed:Number(msg.lineageSeed)||Number(msg.seed)||1,ecologyState:msg.ecologyState||null,worldEcologyState:embeddedWorld,questionEcologyState:embeddedQuestion,strategyEcologyState:embeddedStrategy,theoryEcologyState:embeddedTheory,experimentState:embeddedExperiment,barrierState:embeddedBarrier,causalState:embeddedCausal,conceptState:embeddedConcept,sequentialState:embeddedSequential,macroState:embeddedMacro,theoryCourtState:embeddedTheoryCourt,methodCourtState:embeddedMethodCourt,progress:p=>self.postMessage({type:'progress',engineVersion:E.VERSION,engineLayer:'V21',...p})})
+      const result={...cycle,engineVersion:E.VERSION,engineLayer:'V21'}
       worldEcologyState=result?.worldEcology?.persistable||embeddedWorld
       questionEcologyState=result?.questionEcology?.persistable||embeddedQuestion
       strategyEcologyState=result?.strategyEcology?.persistable||embeddedStrategy
@@ -47,7 +48,7 @@ self.onmessage=e=>{
         if(theoryCourtState)p.theoryCourtState=theoryCourtState
         if(methodCourtState)p.methodCourtState=methodCourtState
       }
-      self.postMessage({type:'cycle',result,requestId:msg.requestId})
+      self.postMessage({type:'cycle',engineVersion:E.VERSION,engineLayer:'V21',result,requestId:msg.requestId})
     }
-  }catch(error){self.postMessage({type:'error',message:String(error?.stack||error?.message||error),requestId:msg.requestId})}
+  }catch(error){self.postMessage({type:'error',engineVersion:E.VERSION,engineLayer:'V21',message:String(error?.stack||error?.message||error),requestId:msg.requestId})}
 }
