@@ -17,11 +17,11 @@ async function main() {
     'proofttl-web.vercel.app',
     'time-to-live',
     'formal temporal-logic',
-    '$129',
+    '$1,500',
   ])
   if (!about.includes('application/ld+json')) throw new Error('About page is missing structured data')
 
-  const home = await expect('out/index.html', ['ProofTTL', 'Source-Backed Claim Verification'])
+  const home = await expect('out/index.html', ['ProofTTL', 'Fact Audit'])
   for (const marker of ['#brand', 'ProofTTL Claim Verification', 'github.com/tasx13ok-create/proofttl-web']) {
     if (!home.includes(marker)) throw new Error(`Homepage structured identity is missing ${marker}`)
   }
