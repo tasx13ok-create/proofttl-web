@@ -1,0 +1,402 @@
+:root {
+  --premium-bg: #071018;
+  --premium-panel: rgba(12, 24, 35, 0.88);
+  --premium-panel-strong: #0d1b28;
+  --premium-border: rgba(148, 163, 184, 0.16);
+  --premium-border-strong: rgba(148, 163, 184, 0.28);
+  --premium-text: #f7fafc;
+  --premium-muted: #a8b6c7;
+  --premium-accent: #5ee7f2;
+  --premium-accent-strong: #22c7d6;
+  --premium-shadow: 0 28px 80px -42px rgba(0, 0, 0, 0.82);
+}
+
+body {
+  background:
+    radial-gradient(circle at 18% -10%, rgba(34, 199, 214, 0.10), transparent 34%),
+    radial-gradient(circle at 88% 12%, rgba(59, 130, 246, 0.07), transparent 28%),
+    var(--premium-bg);
+  color: var(--premium-text);
+}
+
+body::before {
+  opacity: 0.16;
+  background-image: linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
+  background-size: 96px 96px;
+  mask-image: linear-gradient(to bottom, black, transparent 42%);
+}
+
+.product-nav[data-nav-mode='public'] {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.10);
+  background: rgba(7, 16, 24, 0.78);
+  backdrop-filter: blur(22px) saturate(125%);
+}
+
+.product-nav[data-nav-mode='public'] .product-nav-inner {
+  width: min(1240px, calc(100% - 64px));
+  min-height: 72px;
+}
+
+.product-nav[data-nav-mode='public'] a,
+.product-nav[data-nav-mode='public'] button {
+  letter-spacing: -0.01em;
+}
+
+.product-nav[data-nav-mode='public'] .product-nav-workspace {
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #68edf5, #32cfdd);
+  color: #041116;
+  border: 0;
+  box-shadow: 0 12px 30px -18px rgba(94, 231, 242, 0.92);
+  font-weight: 750;
+}
+
+.audit-sales-page,
+.audit-status-page {
+  position: relative;
+  isolation: isolate;
+}
+
+.audit-sales-page .onboarding-wrap,
+.audit-status-page .onboarding-wrap {
+  width: min(1180px, calc(100% - 64px));
+  margin-inline: auto;
+  padding: clamp(44px, 7vw, 92px) 0 96px;
+}
+
+.audit-sales-card,
+.audit-status-page .onboarding-card {
+  overflow: hidden;
+  border: 1px solid var(--premium-border);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(15, 29, 42, 0.96), rgba(8, 18, 28, 0.94));
+  box-shadow: var(--premium-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.audit-sales-hero {
+  position: relative;
+  padding: clamp(34px, 5vw, 64px);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.10);
+  background: linear-gradient(135deg, rgba(94, 231, 242, 0.055), transparent 46%);
+}
+
+.audit-sales-hero::after {
+  content: '';
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  right: -80px;
+  top: -105px;
+  border-radius: 50%;
+  background: rgba(94, 231, 242, 0.10);
+  filter: blur(55px);
+  pointer-events: none;
+}
+
+.audit-sales-page .app-kicker,
+.audit-status-page .app-kicker {
+  color: #72e9f2;
+  font-size: 11px;
+  font-weight: 760;
+  letter-spacing: 0.11em;
+}
+
+.audit-sales-page .app-title,
+.audit-status-page .app-title {
+  max-width: 900px;
+  color: var(--premium-text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 690;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.audit-sales-hero > .app-title {
+  font-size: clamp(42px, 6vw, 76px);
+  margin: 14px 0 20px;
+}
+
+.audit-sales-page .app-copy,
+.audit-status-page .app-copy {
+  color: var(--premium-muted);
+  font-size: 15px;
+  line-height: 1.72;
+}
+
+.audit-sales-hero > .app-copy {
+  max-width: 760px;
+  font-size: clamp(17px, 2vw, 20px);
+  line-height: 1.62;
+}
+
+.audit-sales-trustline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 28px;
+}
+
+.audit-sales-trustline span {
+  padding: 8px 11px;
+  border: 1px solid rgba(94, 231, 242, 0.16);
+  border-radius: 999px;
+  background: rgba(94, 231, 242, 0.045);
+  color: #c9f8fb;
+  font-size: 10px;
+  font-weight: 720;
+  letter-spacing: 0.07em;
+}
+
+.audit-offer-summary,
+.audit-sales-proof,
+.audit-sales-steps,
+.audit-intake-clean,
+.audit-faq-list {
+  margin-inline: clamp(20px, 4vw, 48px);
+}
+
+.audit-offer-summary {
+  margin-top: 32px;
+  padding: 22px;
+  border: 1px solid var(--premium-border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.018);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.audit-intake-clean {
+  margin-top: 22px;
+  padding: clamp(22px, 4vw, 34px);
+  border: 1px solid rgba(94, 231, 242, 0.16);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(13, 30, 42, 0.86), rgba(9, 21, 31, 0.78));
+  box-shadow: 0 22px 60px -44px rgba(34, 199, 214, 0.58);
+}
+
+.audit-intake-heading-row {
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.audit-intake-heading-row h2 {
+  margin-top: 5px;
+  font-size: clamp(25px, 3vw, 34px);
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+}
+
+.audit-offer-switch button {
+  border-radius: 999px;
+  border: 1px solid rgba(94, 231, 242, 0.25);
+  background: rgba(94, 231, 242, 0.08);
+  color: #bff7fb;
+  padding: 10px 14px;
+  font-weight: 760;
+}
+
+.audit-clean-form {
+  gap: 18px;
+}
+
+.audit-clean-form label,
+.app-form label {
+  color: #c8d4df;
+  font-size: 11px;
+  font-weight: 710;
+  letter-spacing: 0.055em;
+}
+
+.audit-clean-form input,
+.audit-clean-form textarea,
+.audit-clean-form select,
+.app-form input,
+.app-form textarea,
+.app-form select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 12px;
+  background: rgba(3, 10, 17, 0.62);
+  color: var(--premium-text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.audit-clean-form input:focus,
+.audit-clean-form textarea:focus,
+.audit-clean-form select:focus,
+.app-form input:focus,
+.app-form textarea:focus,
+.app-form select:focus {
+  outline: none;
+  border-color: rgba(94, 231, 242, 0.56);
+  background: rgba(5, 15, 23, 0.82);
+  box-shadow: 0 0 0 4px rgba(94, 231, 242, 0.08);
+}
+
+.audit-submit-button,
+.audit-sales-page .button-primary,
+.audit-status-page .button-primary {
+  min-height: 50px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #70eef5, #30cbd9);
+  color: #041116;
+  font-weight: 800;
+  letter-spacing: 0.025em;
+  box-shadow: 0 16px 34px -22px rgba(94, 231, 242, 0.95);
+}
+
+.audit-submit-button:hover,
+.audit-sales-page .button-primary:hover,
+.audit-status-page .button-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 40px -22px rgba(94, 231, 242, 0.95);
+}
+
+.audit-sales-page .button-secondary {
+  min-height: 48px;
+  border-radius: 12px;
+  border-color: var(--premium-border-strong);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.audit-result,
+.app-note {
+  border-radius: 12px;
+}
+
+.audit-sales-proof,
+.audit-step-grid,
+.audit-faq-list {
+  gap: 14px;
+}
+
+.audit-sales-proof > *,
+.audit-step-grid > *,
+.audit-faq-item,
+.audit-sample-card {
+  border-radius: 16px;
+  border-color: rgba(148, 163, 184, 0.13) !important;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.app-table {
+  overflow: hidden;
+  border: 1px solid var(--premium-border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.app-table-row {
+  min-width: 0;
+  border-color: rgba(148, 163, 184, 0.10) !important;
+}
+
+.app-table-row span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 860px) {
+  .product-nav[data-nav-mode='public'] .product-nav-inner,
+  .audit-sales-page .onboarding-wrap,
+  .audit-status-page .onboarding-wrap {
+    width: min(100% - 32px, 1180px);
+  }
+
+  .audit-sales-hero {
+    padding: 32px 24px;
+  }
+
+  .audit-offer-summary,
+  .audit-sales-proof,
+  .audit-sales-steps,
+  .audit-intake-clean,
+  .audit-faq-list {
+    margin-inline: 16px;
+  }
+
+  .audit-intake-clean {
+    padding: 22px 18px;
+  }
+
+  .audit-form-grid.two,
+  .audit-sales-proof,
+  .audit-step-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .audit-intake-heading-row {
+    flex-direction: column;
+  }
+
+  .audit-offer-switch,
+  .audit-offer-switch button,
+  .audit-submit-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 540px) {
+  .product-nav[data-nav-mode='public'] .product-nav-inner,
+  .audit-sales-page .onboarding-wrap,
+  .audit-status-page .onboarding-wrap {
+    width: min(100% - 24px, 1180px);
+  }
+
+  .audit-sales-page .onboarding-wrap,
+  .audit-status-page .onboarding-wrap {
+    padding-top: 24px;
+    padding-bottom: 60px;
+  }
+
+  .audit-sales-card,
+  .audit-status-page .onboarding-card {
+    border-radius: 18px;
+  }
+
+  .audit-sales-hero {
+    padding: 28px 18px;
+  }
+
+  .audit-sales-hero > .app-title {
+    font-size: clamp(35px, 11vw, 48px);
+    letter-spacing: -0.05em;
+  }
+
+  .audit-offer-summary,
+  .audit-sales-proof,
+  .audit-sales-steps,
+  .audit-intake-clean,
+  .audit-faq-list {
+    margin-inline: 12px;
+  }
+
+  .audit-intake-clean {
+    padding: 20px 14px;
+  }
+
+  .audit-clean-form input,
+  .audit-clean-form textarea,
+  .audit-clean-form select,
+  .app-form input,
+  .app-form textarea,
+  .app-form select {
+    font-size: 16px;
+  }
+
+  .hero-actions,
+  .audit-sales-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .hero-actions .button,
+  .audit-sales-actions .button {
+    width: 100%;
+  }
+}
