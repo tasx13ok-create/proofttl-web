@@ -4,23 +4,23 @@ import ClaimStressTestClient from '../../components/ClaimStressTestClient'
 const SITE_URL = 'https://proofttl-web.vercel.app'
 
 export const metadata: Metadata = {
-  title: 'Free Claim Stress Test — Find Claims Worth Verifying',
-  description: 'Paste AI output, research, or a report. ProofTTL identifies concrete factual claims that may deserve source-backed verification before you rely on them.',
+  title: 'Free Claim Preflight — Find Claims Worth Verifying',
+  description: 'Paste AI output, research, or a report. ProofTTL identifies concrete factual claims worth carrying into the $1,500 Fact Audit for source-backed verification.',
   alternates: { canonical: '/stress-test/' },
   robots: { index: true, follow: true },
   keywords: [
-    'claim stress test',
+    'claim preflight',
     'AI claim checker',
     'find factual claims',
     'verify AI output',
     'fact check AI report',
     'claim verification',
     'source-backed verification',
-    'ProofTTL',
+    'ProofTTL Fact Audit',
   ],
   openGraph: {
-    title: 'ProofTTL Claim Stress Test — Find the Claims That Matter',
-    description: 'Turn a long AI answer or report into a ranked set of factual claims worth independently verifying.',
+    title: 'ProofTTL Claim Preflight — Find the Claims That Matter',
+    description: 'Turn a long AI answer or report into a ranked set of factual claims worth carrying into a source-backed Fact Audit.',
     url: '/stress-test/',
     type: 'website',
   },
@@ -30,12 +30,12 @@ export default function StressTestPage() {
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'ProofTTL Claim Stress Test Preflight',
+    name: 'ProofTTL Claim Preflight',
     url: `${SITE_URL}/stress-test/`,
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
-    description: 'A browser-based preflight that identifies concrete factual claims in pasted text and helps users choose 3–5 claims for independent source-backed verification.',
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Claim identification preflight. Independent source-backed verification is a separate paid service.' },
+    description: 'A browser-based preflight that identifies concrete factual claims in pasted text and helps users select up to 25 outputs or claims for Fact Audit scope review.',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Claim identification preflight. The source-backed Fact Audit is a separate $1,500 engagement.' },
   }
 
   return (
@@ -44,9 +44,9 @@ export default function StressTestPage() {
       <section className="onboarding-wrap">
         <div className="audit-sales-card">
           <header className="audit-sales-hero">
-            <p className="app-kicker">FREE PREFLIGHT / CLAIM STRESS TEST</p>
+            <p className="app-kicker">FREE PREFLIGHT / CLAIM SELECTION</p>
             <h1 className="app-title">What are you about to trust?</h1>
-            <p className="app-copy">Paste an AI answer, research draft, vendor write-up, pitch material, or report. ProofTTL will pull out the concrete factual statements most worth putting under pressure so you can choose the claims that deserve independent verification.</p>
+            <p className="app-copy">Paste an AI answer, research draft, vendor write-up, pitch material, or report. ProofTTL will pull out the concrete factual statements most worth putting under pressure so you can choose the outputs or claims that deserve independent verification.</p>
             <div className="audit-sales-trustline">
               <span>NO ACCOUNT FOR PREFLIGHT</span>
               <span>LOCAL CLAIM IDENTIFICATION</span>
@@ -54,7 +54,7 @@ export default function StressTestPage() {
             </div>
           </header>
 
-          <section style={{ margin: '0 34px 28px' }}>
+          <section className="audit-preflight-panel">
             <ClaimStressTestClient />
           </section>
 
@@ -71,7 +71,7 @@ export default function StressTestPage() {
             </article>
           </section>
 
-          <section style={{ margin: '28px 34px 0' }}>
+          <section className="audit-preflight-standard">
             <p className="app-kicker">THE PROOFTTL STANDARD</p>
             <h2 className="app-title" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.4rem)' }}>Make the claim survive evidence.</h2>
             <p className="app-copy">The direction is deliberately narrower than generic AI confidence scoring: freeze the proposition, inspect real sources, preserve contradictions and uncertainty, and make the resulting verification record something another person can challenge.</p>
