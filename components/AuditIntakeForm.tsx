@@ -131,7 +131,7 @@ export default function AuditIntakeForm() {
       <div className="audit-form-grid two"><label>WHY IT MATTERS<textarea name="why_it_matters" required maxLength={2500} rows={3} value={draft.why_it_matters} onChange={(e) => update('why_it_matters', e.target.value)} placeholder="What happens if these outputs are wrong?" /></label><label>DEADLINE <span>OPTIONAL</span><textarea name="deadline" maxLength={120} rows={3} value={draft.deadline} onChange={(e) => update('deadline', e.target.value)} placeholder="Friday / before launch / no rush" /></label></div>
       <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}><label>Company site<input name="company_site" tabIndex={-1} autoComplete="off" /></label></div>
       <button className="button button-primary audit-submit-button" type="submit" disabled={submitting || authState === 'checking'}>{submitting ? 'CREATING AUDIT…' : 'START FACT AUDIT →'}</button>
-      <p className="audit-form-footnote">SIGN-IN REQUIRED · SCOPE CONFIRMED BEFORE PAYMENT · HUMAN APPROVAL REQUIRED BEFORE CUSTOMER-FACING PUBLICATION</p>
+      <p className="audit-form-footnote">SIGN-IN REQUIRED · SCOPE REVIEW · SCOPE CONFIRMED BEFORE PAYMENT · HUMAN APPROVAL REQUIRED BEFORE CUSTOMER-FACING PUBLICATION</p>
     </form>
     {result?.error && <div className="app-note audit-result" role="alert"><strong>AUDIT NOT CREATED:</strong> {result.message || result.error}</div>}
   </section>
