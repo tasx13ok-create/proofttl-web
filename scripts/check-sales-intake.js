@@ -83,8 +83,12 @@ for (const expected of [
   'pollAfterPayment',
   'Payment confirmed by Stripe',
   'Older requests can be claimed automatically',
+  '<span>Fact Audit</span>',
 ]) {
   if (!status.includes(expected)) throw new Error(`Audit status component missing secure return behavior: ${expected}`)
+}
+for (const obsolete of ['Claim Stress Test', 'Full Verification Audit', 'Upgrade credit', 'Stress Test payment credited', '$129', '$371 more', '$500']) {
+  if (status.includes(obsolete)) throw new Error(`Audit status still exposes obsolete launch offer: ${obsolete}`)
 }
 if (status.includes(".catch(() => {\n      if (!cancelled) setAuthReady(true)")) throw new Error('Audit status must never fail open when session lookup fails')
 if (!nav.includes('Log out / Switch account')) throw new Error('Signed-in navigation must expose Log out / Switch account')
