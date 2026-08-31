@@ -35,7 +35,7 @@ if (layout.includes('<ProofTTLChatBar />')) throw new Error('Root layout must no
 
 for (const expected of [
   'Know what you are paying for before you pay.',
-  'START VERIFICATION',
+  'START FACT AUDIT',
   'VIEW SAMPLE',
   'Stripe',
   'NO CARD REQUIRED',
