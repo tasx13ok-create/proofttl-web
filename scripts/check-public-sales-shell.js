@@ -144,6 +144,22 @@ for (const file of buyerPages) {
   }
 }
 
+const discoveryFiles = [
+  'out/llms.txt',
+  'out/llms-full.txt',
+  'out/.well-known/proofttl.json',
+  'out/.well-known/proofttl-intents.json',
+]
+for (const file of discoveryFiles) {
+  if (!(await exists(file))) throw new Error(`Machine discovery surface missing: ${file}`)
+  const body = await readFile(file, 'utf8')
+  for (const fragment of retiredOfferFragments) {
+    if (body.includes(fragment)) throw new Error(`${file} leaked retired ProofTTL offer copy: ${fragment}`)
+  }
+  if (!body.includes('1500') && !body.includes('$1,500')) throw new Error(`${file} missing canonical $1,500 Fact Audit price`)
+  if (!body.includes('Fact Audit')) throw new Error(`${file} missing canonical Fact Audit identity`)
+}
+
 const faq = await readFile('out/faq/index.html', 'utf8')
 for (const required of ['$1,500', 'Fact Audit', 'up to 25', 'seven days', 'Human approval']) {
   if (!faq.toLowerCase().includes(required.toLowerCase())) throw new Error(`FAQ missing canonical Fact Audit contract: ${required}`)
@@ -164,4 +180,4 @@ for (const file of sitemapFiles) {
   await checkInternalLinks(file)
 }
 
-console.log(`SUCCESS: public ProofTTL sales shell is buyer-focused; ${buyerPages.length} buyer pages passed prototype/retired-offer checks and ${sitemapFiles.length} sitemap pages passed internal-link validation.`)
+console.log(`SUCCESS: public ProofTTL sales shell is buyer-focused; ${buyerPages.length} buyer pages and ${discoveryFiles.length} discovery surfaces passed prototype/retired-offer checks, and ${sitemapFiles.length} sitemap pages passed internal-link validation.`)
