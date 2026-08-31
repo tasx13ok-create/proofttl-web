@@ -32,14 +32,14 @@ const boundaries = [
 ] as const
 
 function Matrix({ rows }: { rows: readonly (readonly [string, string])[] }) {
-  return <div className="app-table">{rows.map(([name, description]) => <div className="app-table-row" key={name}><span>{name}</span><span>{description}</span></div>)}</div>
+  return <div className="app-table how-works-matrix">{rows.map(([name, description]) => <div className="app-table-row" key={name}><span>{name}</span><span>{description}</span></div>)}</div>
 }
 
 export default function HowProofTTLWorksPage() {
   return (
-    <main className="app-page audit-sales-page">
-      <section className="app-shell" style={{ padding: '38px 0 110px', display: 'grid', gap: 18 }}>
-        <section className="onboarding-card" style={{ padding: 30 }}>
+    <main className="app-page audit-sales-page how-works-page">
+      <section className="app-shell how-works-shell">
+        <section className="onboarding-card how-works-card">
           <p className="app-kicker">HOW PROOFTTL WORKS</p>
           <h1 className="app-title" style={{ maxWidth: 900 }}>From a risky AI output to a defensible evidence trail.</h1>
           <p className="app-copy" style={{ maxWidth: 940 }}>ProofTTL sells one launch engagement: the <strong>$1,500 Fact Audit</strong>. Submit 10–25 real outputs or claims, identify what could cause the most damage if wrong, verify the highest-risk findings deeply, require human approval, and keep the important findings under watch for seven days.</p>
@@ -92,7 +92,7 @@ export default function HowProofTTLWorksPage() {
           <Matrix rows={boundaries} />
         </section>
 
-        <section className="onboarding-card" style={{ padding: 30 }}>
+        <section className="onboarding-card how-works-card">
           <p className="app-kicker">READY TO AUDIT THE OUTPUT?</p>
           <h2>Submit the real outputs first. Pay only after the scope is clear.</h2>
           <div className="hero-actions"><a className="button button-primary" href="/audit/#audit-intake">START A $1,500 FACT AUDIT →</a><a className="button button-secondary" href="/audit/sample/">VIEW SAMPLE</a></div>
