@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import ProofTTLAds from '../components/ProofTTLAds'
 import AppOnlyChatBar from '../components/AppOnlyChatBar'
 import AccountPreferenceBridge from '../components/AccountPreferenceBridge'
+import HomepageControlBridge from '../components/HomepageControlBridge'
 import ProductNav from '../components/ProductNav'
 import ProtocolNetworkStrip from '../components/ProtocolNetworkStrip'
 import SmoothPageMotion from '../components/SmoothPageMotion'
@@ -137,6 +138,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <SmoothPageMotion />
         <AccountPreferenceBridge />
+        <HomepageControlBridge />
         <ProtocolNetworkStrip />
         <ProductNav />
         {children}
