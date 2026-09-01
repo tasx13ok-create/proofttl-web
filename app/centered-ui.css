@@ -1,12 +1,16 @@
 /* ProofTTL global alignment layer.
-   Loaded last so every current page/extension inherits one centered visual system. */
+   Loaded last so every current page inherits one polished centering system. */
 
 :root {
-  --centered-content-max: 760px;
-  --centered-copy-max: 680px;
+  --center-copy: 680px;
+  --center-heading: 820px;
+  --center-gap-xs: 8px;
+  --center-gap-sm: 12px;
+  --center-gap-md: 18px;
+  --center-gap-lg: 26px;
 }
 
-/* Primary page copy and section framing. */
+/* Page-level composition: centered, balanced, never edge-hugging. */
 .hero-copy,
 .section-heading,
 .final-cta,
@@ -37,39 +41,41 @@ article {
   text-align: center;
 }
 
-.hero-copy,
-.section-heading,
+.hero-copy > *,
+.section-heading > *,
+.final-cta > *,
 .audit-sales-hero > *,
 .audit-offer-summary > *,
 .audit-intake-clean > *,
-.final-cta > * {
+.onboarding-card > *,
+.pricing-cards article > *,
+.steps article > * {
   margin-left: auto;
   margin-right: auto;
 }
 
-.hero-lede,
-.section-lede,
-.large-copy,
-.audit-sales-hero > .app-copy,
-.pricing-cards p,
-.steps p,
-.lease-claim,
-article > p,
-article > small {
-  margin-left: auto;
-  margin-right: auto;
+:where(h1, h2, h3, h4) {
+  text-wrap: balance;
 }
 
-/* Every boxed surface gets centered copy and balanced inner geometry. */
+:where(.hero-copy, .section-heading, .final-cta, .audit-sales-hero, article, [class*='card'], [class*='panel']) :where(h1, h2, h3, h4) {
+  max-width: var(--center-heading);
+}
+
+:where(.hero-copy, .section-heading, .final-cta, .audit-sales-hero, article, [class*='card'], [class*='panel']) :where(p, small) {
+  max-width: var(--center-copy);
+  margin-left: auto;
+  margin-right: auto;
+  text-wrap: pretty;
+}
+
+/* Boxed surfaces: center the actual content, not only the text baseline. */
 :where(
   article,
   [class*='card'],
   [class*='panel'],
   [class*='tile'],
   [class*='box'],
-  [class*='badge'],
-  [class*='pill'],
-  [class*='chip'],
   [class*='note'],
   [class*='result'],
   [class*='summary'],
@@ -95,78 +101,53 @@ article > small {
   [class*='offer'],
   [class*='plan'],
   [class*='step']
-) > :where(h1, h2, h3, h4, h5, h6, p, small, strong, span, code, dl, ul, ol) {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-:where(
-  [class*='card'],
-  [class*='panel'],
-  [class*='tile'],
-  [class*='box'],
-  [class*='badge'],
-  [class*='pill'],
-  [class*='chip'],
-  [class*='note'],
-  [class*='result'],
-  [class*='summary'],
-  [class*='status'],
-  [class*='offer'],
-  [class*='plan'],
-  [class*='step']
-) :where(h1, h2, h3, h4, h5, h6, p, small, strong, span, code, dt, dd, label) {
+) :where(h1, h2, h3, h4, h5, h6, p, small, strong, span, dt, dd, label) {
   text-align: center;
 }
 
-:where(
-  article,
-  [class*='card'],
-  [class*='panel'],
-  [class*='tile'],
-  [class*='box'],
-  [class*='note'],
-  [class*='result'],
-  [class*='summary']
-) :where(h1, h2, h3, h4, h5, h6) {
-  text-wrap: balance;
-}
-
-:where(
-  article,
-  [class*='card'],
-  [class*='panel'],
-  [class*='tile'],
-  [class*='box'],
-  [class*='note'],
-  [class*='result'],
-  [class*='summary']
-) :where(p, small) {
-  max-width: var(--centered-copy-max);
-  text-wrap: pretty;
-}
-
-/* Existing flex/grid boxes should geometrically center their contents too. */
-:where(
-  [class*='card'],
-  [class*='panel'],
-  [class*='tile'],
-  [class*='box'],
-  [class*='badge'],
-  [class*='pill'],
-  [class*='chip'],
-  [class*='note'],
-  [class*='result'],
-  [class*='summary'],
-  [class*='status'],
-  [class*='offer'],
-  [class*='plan'],
-  [class*='step']
-) {
+/* Known grid/flex cards get true optical centering and even vertical rhythm. */
+.pricing-cards article,
+.steps article,
+.audit-sample-card,
+.audit-step-grid > div,
+.audit-offer-summary > div,
+.lease-card,
+.verify-card,
+.app-card,
+.status-card,
+.result-card,
+.proof-card,
+.security-card,
+.settings-card {
+  align-content: center;
   justify-items: center;
 }
 
-/* Buttons, tabs, badges and compact controls are geometrically centered. */
+.pricing-cards article,
+.steps article,
+.audit-sample-card,
+.audit-step-grid > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pricing-cards article > * + *,
+.steps article > * + *,
+.audit-sample-card > * + *,
+.audit-step-grid > div > * + * {
+  margin-top: var(--center-gap-sm);
+}
+
+.pricing-cards article > :first-child,
+.steps article > :first-child,
+.audit-sample-card > :first-child,
+.audit-step-grid > div > :first-child {
+  margin-top: 0;
+}
+
+/* Compact labels and controls are centered geometrically. */
 :where(
   .button,
   button,
@@ -177,13 +158,22 @@ article > small {
   .app-kicker,
   .product-nav-workspace,
   .audit-sales-trustline span,
-  .hero-notes span
+  .hero-notes span,
+  [class*='badge'],
+  [class*='pill'],
+  [class*='chip']
 ) {
   text-align: center;
   justify-content: center;
 }
 
-/* Public navigation and menus. */
+.button,
+[role='button'],
+.product-nav-workspace {
+  align-items: center;
+}
+
+/* Navigation/footer/CTA groups stay centered as groups. */
 .product-nav-primary,
 .product-nav-actions,
 .product-nav-menu,
@@ -205,53 +195,107 @@ article > small {
   text-align: center;
 }
 
-/* Homepage verification graphic. */
-.visual-header,
-.visual-footer,
-.pipeline-node,
-.pipeline-node code,
-.lease-top,
-.lease-meta,
-.lease-signature,
-.fact-list div {
+/* Audit hero + offer blocks: align columns and remove the 'almost centered' look. */
+.audit-sales-hero,
+.audit-intake-heading-row,
+.audit-offer-summary,
+.audit-sales-proof,
+.audit-sales-steps {
   text-align: center;
 }
 
+.audit-intake-heading-row {
+  align-items: center;
+}
+
+.audit-intake-heading-row > *,
+.audit-offer-summary > *,
+.audit-sales-proof > * {
+  min-width: 0;
+  text-align: center;
+}
+
+.audit-sales-trustline,
+.audit-offer-switch,
+.audit-clean-form .audit-submit-button {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.audit-clean-list {
+  width: min(100%, 760px);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0;
+  list-style-position: inside;
+  text-align: center;
+}
+
+.audit-clean-list li {
+  text-align: center;
+  padding-inline: 8px;
+}
+
+/* Verification graphic: every label sits on the visual axis. */
 .visual-header,
 .visual-footer,
 .lease-top,
-.lease-signature {
+.lease-signature,
+.status-line {
   justify-content: center;
-  gap: 14px;
+  gap: var(--center-gap-sm);
   flex-wrap: wrap;
 }
 
 .pipeline-node {
   justify-items: center;
+  text-align: center;
+}
+
+.pipeline-node strong,
+.pipeline-node small,
+.pipeline-node code,
+.node-index {
+  text-align: center;
 }
 
 .pipeline-node code {
   width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lease-claim {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.lease-meta {
+  justify-items: center;
+  text-align: center;
+}
+
+.lease-meta > *,
+.fact-list dt,
+.fact-list dd {
+  text-align: center;
+}
+
+.lease-signature code {
+  text-align: center;
 }
 
 .signature-seal {
   margin-left: 0;
 }
 
-.lease-meta {
-  justify-items: center;
-}
-
 .fact-list div {
   align-items: center;
-}
-
-.fact-list dt,
-.fact-list dd {
   text-align: center;
 }
 
-/* Form chrome and values: centered consistently on intake/account surfaces. */
+/* Forms: labels, entered text and placeholders share one centerline. */
 :where(.audit-clean-form, .app-form, form) label {
   text-align: center;
 }
@@ -269,13 +313,13 @@ article > small {
   margin-right: auto;
 }
 
-/* Tables/status rows center each cell while preserving wrapping. */
+/* Table/status/result rows center every cell without collapsing wrapping. */
 .app-table-row,
 [class*='table-row'],
 [class*='status-row'],
 [class*='result-row'] {
-  text-align: center;
   align-items: center;
+  text-align: center;
 }
 
 .app-table-row > *,
@@ -286,13 +330,16 @@ article > small {
   justify-self: center;
 }
 
-/* Keep technical blocks readable while still centering their container. */
+/* Preserve readability for raw technical artifacts. */
 pre,
-pre code {
+pre code,
+.code-block,
+.evidence-raw,
+.raw-json {
   text-align: left;
 }
 
-/* Narrow screens retain centering and safe breathing room. */
+/* Mobile: centered composition with equal safe edges and stacked controls. */
 @media (max-width: 860px) {
   .hero-copy,
   .section-heading,
@@ -310,23 +357,24 @@ pre code {
   .audit-sales-trustline,
   .hero-notes,
   .footer,
-  .footer > div {
+  .footer > div,
+  .audit-intake-heading-row {
     align-items: center;
     justify-content: center;
+  }
+
+  .audit-intake-heading-row {
+    flex-direction: column;
+    gap: var(--center-gap-md);
+  }
+
+  .audit-offer-switch,
+  .audit-submit-button {
+    width: min(100%, 560px);
   }
 }
 
 @media (max-width: 540px) {
-  :where(
-    article,
-    [class*='card'],
-    [class*='panel'],
-    [class*='tile'],
-    [class*='box']
-  ) {
-    background-clip: padding-box;
-  }
-
   .product-nav-menu a,
   .button,
   button,
@@ -334,5 +382,15 @@ pre code {
   select,
   textarea {
     text-align: center;
+  }
+
+  .button,
+  .audit-submit-button,
+  .product-nav-workspace {
+    justify-content: center;
+  }
+
+  :where(article, [class*='card'], [class*='panel'], [class*='tile'], [class*='box']) {
+    background-clip: padding-box;
   }
 }
