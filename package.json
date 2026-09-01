@@ -2,7 +2,7 @@
   "name": "proofttl-web",
   "version": "1.0.1",
   "private": true,
-  "description": "Official ProofTTL website for source-backed claim verification, AI fact checking, verification audits, and signed Fact Leases.",
+  "description": "Official ProofTTL website for the $1,500 Fact Audit: source-backed verification of high-consequence AI outputs and factual claims with human approval and a seven-day watch.",
   "homepage": "https://proofttl-web.vercel.app/",
   "repository": {
     "type": "git",
@@ -10,12 +10,14 @@
   },
   "keywords": [
     "ProofTTL",
+    "Fact Audit",
+    "ai-fact-audit",
     "claim-verification",
     "fact-checking",
     "ai-claim-verification",
     "source-backed-verification",
-    "fact-leases",
-    "verification-audit"
+    "adversarial-verification",
+    "human-approved-verification"
   ],
   "type": "module",
   "scripts": {
