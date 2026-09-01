@@ -5,7 +5,7 @@ const SITE_URL = 'https://proofttl-web.vercel.app'
 const FAQ = [
   {
     question: 'What is ProofTTL?',
-    answer: 'ProofTTL is a source-backed claim verification and fact-checking service. It checks specific factual claims against public sources and returns explicit verdicts with evidence and signed Fact Leases.',
+    answer: 'ProofTTL is a source-backed claim verification and fact-checking service. It checks specific factual claims against public evidence and returns explicit verdicts with an inspectable evidence trail and human-approved proof/report artifacts.',
   },
   {
     question: 'What kinds of claims can ProofTTL verify?',
@@ -21,7 +21,7 @@ const FAQ = [
   },
   {
     question: 'What is the ProofTTL Fact Audit?',
-    answer: 'The Fact Audit is a $1,500 fixed-price verification engagement for up to 25 real outputs or claims. ProofTTL ranks findings by consequence, deep-verifies the highest-risk findings against authoritative evidence, prepares proof/report deliverables, and monitors important findings for seven days.',
+    answer: 'The Fact Audit is a $1,500 fixed-price verification engagement for up to 25 real outputs or claims. ProofTTL ranks findings by consequence, deep-verifies the highest-risk findings against authoritative evidence, prepares human-approved proof/report deliverables, and monitors important findings for seven days.',
   },
   {
     question: 'Does every submitted claim receive the same amount of verification work?',
@@ -40,8 +40,8 @@ const FAQ = [
     answer: 'The paid verification service uses SUPPORTED, CONTRADICTED, and UNKNOWN. UNKNOWN is preserved when the examined evidence is insufficient for a stronger conclusion.',
   },
   {
-    question: 'What is a Fact Lease?',
-    answer: 'A Fact Lease is a signed ProofTTL record that keeps a verified claim tied to its source observation, evidence, verdict, and time context. It is evidence of what the examined source supported at a point in time, not a guarantee of permanent truth.',
+    question: 'How does ProofTTL handle facts that can change over time?',
+    answer: 'ProofTTL records what the examined evidence supported at the time of review. Important findings in the Fact Audit remain under watch for seven days and receive a final reread so time-sensitive evidence is not silently treated as permanent truth.',
   },
   {
     question: 'Does ProofTTL guarantee that a claim is legally or permanently true?',
@@ -55,12 +55,12 @@ const FAQ = [
 
 export const metadata: Metadata = {
   title: 'FAQ — Claim Verification, AI Fact-Checking & Pricing',
-  description: 'Answers about ProofTTL claim verification, AI output fact-checking, the $1,500 Fact Audit, Fact Leases, scope, human approval, monitoring, and limitations.',
+  description: 'Answers about ProofTTL claim verification, AI output fact-checking, the $1,500 Fact Audit, scope, human approval, seven-day monitoring, and limitations.',
   alternates: { canonical: '/faq/' },
-  keywords: ['ProofTTL FAQ', 'claim verification FAQ', 'AI fact checking', 'fact checking service', 'Fact Lease', 'Fact Audit', 'verification audit'],
+  keywords: ['ProofTTL FAQ', 'claim verification FAQ', 'AI fact checking', 'fact checking service', 'Fact Audit', 'verification audit', 'seven-day monitoring'],
   openGraph: {
     title: 'ProofTTL FAQ — Claim Verification & AI Fact-Checking',
-    description: 'What ProofTTL verifies, how the Fact Audit works, what it costs, and where the limits are.',
+    description: 'What ProofTTL verifies, how the $1,500 Fact Audit works, what it costs, and where the limits are.',
     url: '/faq/',
     type: 'website',
   },
@@ -105,7 +105,7 @@ export default function FAQPage() {
           <section className="audit-sales-proof">
             <div>
               <p className="app-kicker">NEED THE METHOD?</p>
-              <p className="app-copy">Read how claims, sources, verdicts, evidence, and Fact Leases fit together.</p>
+              <p className="app-copy">Read how claims, sources, verdicts, evidence, consequence ranking, human approval, and the seven-day watch fit together.</p>
               <a className="text-link" href="/how-proofttl-works/">HOW PROOFTTL WORKS →</a>
             </div>
             <div>
