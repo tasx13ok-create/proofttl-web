@@ -1,9 +1,10 @@
-/* Optical alignment guardrails. Loaded last.
-   Center compact controls; preserve intentional editorial alignment and readable evidence. */
+/* Optical alignment guardrails. Loaded after the main public system.
+   Compact controls are centered; editorial copy and evidence keep a readable axis. */
 
 :where(.button, button, [role='button'], [role='tab'], .valid-pill, .product-nav-workspace) {
   text-align: center;
   justify-content: center;
+  align-items: center;
 }
 
 :where(h1, h2, h3, .app-title) { text-wrap: balance; }
@@ -19,6 +20,114 @@
   text-align: center;
 }
 
+/* Homepage canvas: use the viewport instead of floating inside a 1440px box. */
+.ptl-ai-shell.shell {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  grid-template-columns: 220px minmax(0, 1fr);
+}
+
+.ptl-ai-main {
+  width: 100%;
+  min-width: 0;
+  padding-inline: clamp(22px, 3vw, 54px);
+}
+
+.ptl-ai-main > .ptl-shared-header {
+  margin-inline: calc(clamp(22px, 3vw, 54px) * -1);
+  padding-inline: clamp(22px, 3vw, 54px);
+}
+
+.ptl-ai-hero,
+.ptl-ai-workspace,
+.ptl-ai-section,
+.ptl-ai-offer,
+.ptl-ai-footer {
+  width: min(100%, 1240px);
+}
+
+.ptl-ai-hero {
+  max-width: 1040px;
+  padding-inline: 0;
+}
+
+.ptl-ai-composer,
+.ptl-ai-shortcuts {
+  max-width: 900px;
+}
+
+/* Every rounded/pill control is centered as a complete icon + label group. */
+.ptl-ai-sidebar nav a,
+.ptl-ai-help,
+.ptl-ai-shortcuts > a,
+.ptl-ai-offer-actions > a,
+.ptl-shared-audit-cta,
+.ptl-detail-actions > a,
+.ptl-home-inline-link,
+.ptl-home-trust-links > a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.ptl-ai-sidebar nav a,
+.ptl-ai-help {
+  width: 100%;
+  gap: 10px;
+}
+
+.ptl-ai-sidebar nav a b,
+.ptl-ai-help b {
+  width: auto;
+  min-width: 18px;
+  text-align: center;
+}
+
+.ptl-ai-shortcuts > a {
+  min-height: 40px;
+  padding-inline: 16px;
+}
+
+.ptl-ai-shortcuts > a > div,
+.ptl-ai-shortcuts > a strong,
+.ptl-shared-audit-cta,
+.ptl-detail-actions > a,
+.ptl-ai-offer-actions > a {
+  line-height: 1;
+}
+
+.ptl-ai-composer-tools button,
+.ptl-ai-composer-tools a,
+.ptl-ai-mark,
+.ptl-ai-verdict-orb,
+.ptl-ai-approval i,
+.ptl-ai-mini-sources i,
+.ptl-ai-mini-sources b {
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.ptl-ai-composer-tools button {
+  padding: 0;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* Header controls stay visually centered even with the northeast arrow. */
+.ptl-shared-header-actions,
+.ptl-shared-brand {
+  align-items: center;
+}
+
+.ptl-shared-audit-cta b {
+  display: inline-grid;
+  place-items: center;
+  line-height: 1;
+}
+
 /* Inputs and evidence remain left-aligned: scanning beats decorative centering. */
 :where(input, select, textarea, pre, pre code) { text-align: left; }
 :where(input, textarea)::placeholder { text-align: left; }
@@ -28,6 +137,16 @@
   align-items: center;
 }
 
+@media (max-width: 900px) {
+  .ptl-ai-shell.shell { grid-template-columns: 1fr; }
+  .ptl-ai-main { padding-inline: clamp(16px, 4vw, 28px); }
+  .ptl-ai-main > .ptl-shared-header {
+    margin-inline: calc(clamp(16px, 4vw, 28px) * -1);
+    padding-inline: clamp(16px, 4vw, 28px);
+  }
+}
+
 @media (max-width: 680px) {
   :where(.button, button, [role='button']) { min-height: 44px; }
+  .ptl-ai-shortcuts > a { flex: 1 1 calc(50% - 8px); }
 }
