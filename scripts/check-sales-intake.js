@@ -21,6 +21,9 @@ for (const expected of [
   if (!home.includes(expected)) throw new Error(`Homepage missing required conversion behavior: ${expected}`)
 }
 for (const obsolete of ['$129', '$500', 'Stress Test', 'Start small. Upgrade']) if (home.includes(obsolete)) throw new Error(`Homepage still exposes obsolete launch offer: ${obsolete}`)
+const homepageAuditCtas = home.match(/href="\/audit\/#audit-intake"/g) || []
+if (homepageAuditCtas.length !== 1) throw new Error(`Homepage must expose exactly one primary audit-start CTA, found ${homepageAuditCtas.length}`)
+if (!nav.includes("publicMode && pathname !== '/'")) throw new Error('Public navigation must suppress its audit-start CTA on the homepage to avoid competing conversion actions')
 
 for (const expected of ["alternates: { canonical: '/' }", 'CommercialHome']) {
   if (!homePage.includes(expected)) throw new Error(`Homepage metadata wrapper missing required search behavior: ${expected}`)
@@ -115,4 +118,4 @@ if (status.includes(".catch(() => {\n      if (!cancelled) setAuthReady(true)"))
 if (!nav.includes('Log out / Switch account')) throw new Error('Signed-in navigation must expose Log out / Switch account')
 if (!nav.includes('signInHref(returnTo)')) throw new Error('Account switching must preserve the current return location')
 
-console.log('SUCCESS: ProofTTL authenticated $1,500 Fact Audit funnel passed saved-draft, sign-in-gate, non-stranding submit, return-to-page, secure-status, buyer-focused homepage, canonical metadata, human-approval, and scope-before-payment checks.')
+console.log('SUCCESS: ProofTTL authenticated $1,500 Fact Audit funnel passed saved-draft, sign-in-gate, non-stranding submit, single-homepage-CTA, return-to-page, secure-status, buyer-focused homepage, canonical metadata, human-approval, and scope-before-payment checks.')
