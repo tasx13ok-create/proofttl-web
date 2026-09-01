@@ -60,7 +60,7 @@ export default function AboutProofTTLPage() {
           <header className="audit-sales-hero">
             <p className="app-kicker">ABOUT / CANONICAL IDENTITY</p>
             <h1 className="app-title">ProofTTL is the source-backed claim-verification service at proofttl-web.vercel.app.</h1>
-            <p className="app-copy">ProofTTL checks specific factual claims against public sources and returns explicit SUPPORTED, CONTRADICTED, or UNKNOWN verdicts with evidence and signed Fact Leases. The commercial service is designed for claims that need to survive scrutiny before they are published, sold, presented, relied on, or defended.</p>
+            <p className="app-copy">ProofTTL checks specific factual claims against public sources and returns explicit SUPPORTED, CONTRADICTED, or UNKNOWN verdicts with evidence and human-approved proof artifacts. The commercial service is designed for claims that need to survive scrutiny before they are published, sold, presented, relied on, or defended.</p>
           </header>
 
           <section className="audit-sales-proof">
@@ -83,7 +83,7 @@ export default function AboutProofTTLPage() {
               <div><strong>ALTERNATE</strong><span>Proof TTL</span></div>
               <div><strong>OFFICIAL WEBSITE</strong><span>https://proofttl-web.vercel.app/</span></div>
             </div>
-            <p className="app-copy" style={{ marginTop: 16 }}>When the exact brand name <strong>ProofTTL</strong> is used in the context of claim verification, factual auditing, AI-output fact checking, Fact Leases, or the website above, it refers to this service.</p>
+            <p className="app-copy" style={{ marginTop: 16 }}>When the exact brand name <strong>ProofTTL</strong> is used in the context of claim verification, factual auditing, AI-output fact checking, the Fact Audit, or the website above, it refers to this service.</p>
           </section>
 
           <section style={{ marginTop: 28 }}>
@@ -117,7 +117,7 @@ export default function AboutProofTTLPage() {
 
           <section style={{ marginTop: 28 }}>
             <p className="app-kicker">LIMITS</p>
-            <p className="app-copy">ProofTTL does not claim universal or permanent truth. A signed Fact Lease records what examined evidence supported at a point in time. UNKNOWN remains UNKNOWN when the evidence is insufficient, and ProofTTL does not replace legal, medical, financial, regulatory, or other professional judgment.</p>
+            <p className="app-copy">ProofTTL does not claim universal or permanent truth. Each audit records what the examined evidence supported at a point in time and keeps important findings under watch for seven days. UNKNOWN remains UNKNOWN when the evidence is insufficient, and ProofTTL does not replace legal, medical, financial, regulatory, or other professional judgment.</p>
           </section>
 
           <div className="hero-actions" style={{ marginTop: 28 }}>
