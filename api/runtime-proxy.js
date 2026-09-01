@@ -1,16 +1,12 @@
 const RUNTIME_UPSTREAM = 'https://proofttl.tasx13ok.workers.dev'
 const UPSTREAM_TIMEOUT_MS = 15000
 
+// Production browser runtime is intentionally narrow. Legacy assistant, studio,
+// automation, file, command, foundry, and general-purpose execution surfaces
+// are not reachable through the public ProofTTL origin.
 const ALLOWED_PATHS = [
   /^\.well-known\/proofttl-auth\.json$/,
-  /^account\/(?:preferences|audits|entitlement|actions(?:\/[a-z0-9_-]+)?|automations(?:\/[a-z0-9_-]+)?|files(?:\/[a-z0-9_-]+)?|tasks(?:\/[a-z0-9_-]+)?)$/i,
-  /^actions\/plan$/,
-  /^commands\/plan$/,
-  /^capabilities$/,
-  /^assistant\/(?:text|voice|speech|usage|models|visuals)$/,
-  /^studio\/(?:chat|run|runner|projects(?:\/[a-z0-9_-]+)?)$/i,
-  /^foundry\/runs(?:\/fdr_[a-f0-9]{32}(?:\/step)?)?$/i,
-  /^lease\/ftl_[a-f0-9]{16,64}$/i,
+  /^account\/(?:preferences|audits)$/i,
   /^audit\/intake(?:\/status)?$/,
 ]
 
