@@ -173,3 +173,7 @@ export const SERVICE_INTENTS: ServiceIntent[] = [
     faq: factAuditFaq,
   },
 ]
+
+export function getServiceIntent(slug: string) {
+  return SERVICE_INTENTS.find((intent) => intent.slug === slug)
+}
