@@ -27,7 +27,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/docs/',
     '/privacy/',
     '/terms/',
-    '/verify-lease.html',
   ]
 
   const routes = [
@@ -39,7 +38,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return routes.map((route) => {
     const isHome = route === '/'
     const isIdentity = route === '/about/' || route === '/machine-definition/'
-    const isCommercial = route === '/audit/' || route === '/ai-fact-checker/' || route === '/stress-test/' || route === '/services/' || route.startsWith('/services/')
+    const isCommercial = route === '/audit/' || route === '/ai-fact-checker/' || route === '/stress-test/' || route === '/services/' || route.startsWith('/services/') || route === '/solutions/' || route.startsWith('/solutions/')
     const isTrust = route === '/faq/' || route === '/glossary/' || route === '/trust/' || route === '/how-proofttl-works/' || route === '/support/' || route === '/status/' || route === '/privacy/' || route === '/terms/'
     return {
       url: `${SITE_URL}${route}`,
