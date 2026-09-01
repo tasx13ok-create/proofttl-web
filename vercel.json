@@ -28,6 +28,7 @@
     { "source": "/worlds/:path*", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] },
     { "source": "/cinematics", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] },
     { "source": "/cinematics/:path*", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] },
+    { "source": "/reality-engine", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] },
     { "source": "/reality-engine/:path*", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] },
     { "source": "/edon-bootstrap/:path*", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] },
     { "source": "/edon-live/:path*", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] },
@@ -44,7 +45,7 @@
   ],
   "routes": [
     { "src": "^/google057072aa15e009ed\\.html$", "dest": "/api/google-site-verification" },
-    { "src": "^/(studio|work|files|automations|money|connections|worlds|cinematics)(?:/.*)?$", "status": 308, "headers": { "Location": "/audit/", "X-Robots-Tag": "noindex, nofollow" } },
+    { "src": "^/(studio|work|files|automations|money|connections|worlds|cinematics|reality-engine)(?:/.*)?$", "status": 308, "headers": { "Location": "/audit/", "X-Robots-Tag": "noindex, nofollow" } },
     { "src": "^/(edon-bootstrap|edon-live)(?:/.*)?$", "status": 308, "headers": { "Location": "/audit/", "X-Robots-Tag": "noindex, nofollow" } },
     { "src": "^/cinematics-runtime\\.js$", "status": 308, "headers": { "Location": "/audit/", "X-Robots-Tag": "noindex, nofollow" } },
     { "src": "^/preflight/?$", "status": 308, "headers": { "Location": "/stress-test/" } },
