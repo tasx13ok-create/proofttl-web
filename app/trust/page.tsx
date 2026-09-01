@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import ProductDetailShell from '../../components/ProductDetailShell'
 import TrustCenter from '../../components/TrustCenter'
 
 export const metadata: Metadata = {
@@ -6,20 +7,17 @@ export const metadata: Metadata = {
   description: 'ProofTTL payment, account-security, seven-day monitoring, human approval, and delivery boundaries for the $1,500 Fact Audit.',
   alternates: { canonical: '/trust/' },
   robots: { index: true, follow: true },
-  openGraph: {
-    title: 'ProofTTL Trust Center',
-    description: 'See how ProofTTL handles scope-before-payment, Stripe-backed checkout, account security, human-approved proof/report delivery, seven-day monitoring, and service limitations.',
-    url: '/trust/',
-    type: 'website',
-  },
+  openGraph: { title: 'ProofTTL Trust Center', description: 'See how ProofTTL handles scope-before-payment, Stripe-backed checkout, account security, human-approved proof/report delivery, seven-day monitoring, and service limitations.', url: '/trust/', type: 'website' },
 }
 
 export default function TrustPage() {
-  return (
-    <main className="app-page">
-      <section className="app-shell" style={{ paddingTop: 34, paddingBottom: 100 }}>
-        <TrustCenter />
-      </section>
-    </main>
-  )
+  return <ProductDetailShell
+    active="trust"
+    eyebrow="Trust Center"
+    title={<>Trust should be<br/><em>inspectable too.</em></>}
+    description={<>See what ProofTTL checks live, how payment is handled, where human approval sits, and the boundaries the service refuses to hide.</>}
+    actions={<><a className="primary" href="/audit/#audit-intake">Start Fact Audit <span>↗</span></a><a href="/audit/sample/">View sample</a></>}
+  >
+    <TrustCenter />
+  </ProductDetailShell>
 }
