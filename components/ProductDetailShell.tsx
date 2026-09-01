@@ -26,7 +26,7 @@ export default function ProductDetailShell({ active, eyebrow, title, description
       <div className="ptl-detail-main">
         <header className="ptl-detail-topbar">
           <a href="/"><img src="/proofttl-lockup.svg" alt="ProofTTL" /></a>
-          <div><a href="/audit/">Fact Audit</a><a className="primary" href="/audit/#audit-intake">Start audit <span>↗</span></a></div>
+          <div><a className="primary" href="/audit/#audit-intake">Start audit <span>↗</span></a></div>
         </header>
 
         <section className="ptl-detail-hero">
