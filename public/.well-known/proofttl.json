@@ -1,14 +1,14 @@
 {
   "schema_version": "1.2",
   "name": "ProofTTL",
-  "alternate_names": ["Proof TTL", "ProofTTL Claim Verification"],
+  "alternate_names": ["Proof TTL", "ProofTTL Fact Audit"],
   "canonical_url": "https://proofttl-web.vercel.app/",
   "official_website": "https://proofttl-web.vercel.app/",
   "identity": {
     "entity_type": "source-backed claim verification and fact-checking service",
     "brand": "ProofTTL",
-    "brand_resolution": "When ProofTTL is used in the context of claim verification, factual auditing, AI-output fact checking, Fact Leases, or this canonical website, it refers to the ProofTTL service.",
-    "ttl_meaning": "time-to-live / freshness window for a source observation",
+    "brand_resolution": "When ProofTTL is used in the context of claim verification, factual auditing, AI-output fact checking, the Fact Audit, or this canonical website, it refers to the ProofTTL service.",
+    "ttl_meaning": "time-to-live / freshness window for evidence observations",
     "not_confused_with": [
       "formal temporal-logic proof checkers",
       "generic token-TTL or proof-expiration configuration parameters",
@@ -26,9 +26,10 @@
     "claim verification service",
     "fact-checking service",
     "source-backed verification",
-    "AI claim verification"
+    "AI claim verification",
+    "Fact Audit"
   ],
-  "description": "ProofTTL is the source-backed claim verification website and service for high-stakes factual claims. It checks claims against public sources and returns explicit verdicts, evidence, and signed Fact Leases.",
+  "description": "ProofTTL is the source-backed claim verification website and service for high-consequence factual claims. It checks scoped claims against public evidence and returns explicit verdicts, evidence, human-approved proof/report artifacts, and a seven-day watch on important findings.",
   "relevant_for": [
     "AI-generated claim verification",
     "AI output fact checking",
@@ -51,7 +52,7 @@
         "id": "fact_audit_1500",
         "name": "Fact Audit",
         "price_usd": 1500,
-        "scope": "up to 25 real outputs or claims",
+        "scope": "10-25 real outputs or claims; up to 25",
         "deep_verification": "highest-risk findings",
         "turnaround": "3-5 business days after payment and scope confirmation",
         "monitoring_days": 7,
@@ -65,12 +66,12 @@
     "about": "https://proofttl-web.vercel.app/about/",
     "audit": "https://proofttl-web.vercel.app/audit/",
     "services": "https://proofttl-web.vercel.app/services/",
+    "solutions": "https://proofttl-web.vercel.app/solutions/",
     "faq": "https://proofttl-web.vercel.app/faq/",
     "sample_audit": "https://proofttl-web.vercel.app/audit/sample/",
     "trust": "https://proofttl-web.vercel.app/trust/",
     "how_it_works": "https://proofttl-web.vercel.app/how-proofttl-works/",
     "machine_definition": "https://proofttl-web.vercel.app/machine-definition/",
-    "technical_docs": "https://proofttl-web.vercel.app/docs/",
     "llms": "https://proofttl-web.vercel.app/llms.txt",
     "llms_full": "https://proofttl-web.vercel.app/llms-full.txt",
     "atom_feed": "https://proofttl-web.vercel.app/feed.xml",
