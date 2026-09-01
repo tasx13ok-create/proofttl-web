@@ -1,126 +1,68 @@
 import type { Metadata } from 'next'
 import styles from '../solutions/search-page.module.css'
 
-const API_URL = process.env.NEXT_PUBLIC_PROOFTTL_API_URL || 'https://proofttl.tasx13ok.workers.dev'
-
 export const metadata: Metadata = {
-  title: 'ProofTTL API Docs — Fact Verification & Expiring Fact Leases',
-  description: 'Developer documentation for ProofTTL: verify source-backed claims, handle x402 payment challenges, read Fact Leases, use the product AI assistant, and integrate expiration-aware evidence into apps and AI agents.',
+  title: 'ProofTTL Fact Audit Guide',
+  description: 'Buyer-facing guide to the $1,500 ProofTTL Fact Audit: intake, scope review, payment, verification, human approval, proof/report delivery, and seven-day monitoring.',
+  alternates: { canonical: '/docs/' },
   robots: { index: true, follow: true },
   openGraph: {
-    title: 'ProofTTL API Docs',
-    description: 'Integrate source-backed, expiring Fact Leases with the ProofTTL API.',
+    title: 'ProofTTL Fact Audit Guide',
+    description: 'How the $1,500 Fact Audit moves from submitted outputs to human-approved, monitored findings.',
     type: 'website',
   },
 }
 
-const requestExample = `POST ${API_URL}/verify\nContent-Type: application/json\n\n{\n  "claim": "Example.com is intended for illustrative examples in documents.",\n  "source_url": "https://example.com",\n  "ttl_seconds": 300\n}`
-
-const readExample = `GET ${API_URL}/lease/ftl_<lease_id>`
+const steps = [
+  ['1 · INTAKE', 'Submit 10–25 real AI outputs or consequential factual claims, why they matter, and any deadline. No card is required for intake.'],
+  ['2 · SCOPE REVIEW', 'ProofTTL confirms that the material fits the fixed Fact Audit engagement before any payment request is created.'],
+  ['3 · $1,500 PAYMENT', 'After scope is confirmed, the exact fixed-price Stripe payment flow is created. Raw card details are handled by Stripe rather than stored by ProofTTL.'],
+  ['4 · VERIFY', 'Claims are decomposed and ranked by consequence. The highest-risk findings receive the deepest verification effort using accessible authoritative evidence, including evidence FOR and AGAINST.'],
+  ['5 · CONTRADICTION PASS', 'The evidence set is challenged before a finding is finalized as SUPPORTED, CONTRADICTED, or UNKNOWN.'],
+  ['6 · HUMAN APPROVAL', 'Customer-facing findings are not published automatically. Human approval is required before final proof/report delivery.'],
+  ['7 · SEVEN-DAY WATCH', 'Important findings remain under watch for seven days and receive a final reread before the monitoring window closes.'],
+] as const
 
 export default function DocsPage() {
   return (
     <main className={styles.page}>
-      <nav className={`${styles.shell} ${styles.nav}`} aria-label="ProofTTL documentation navigation">
-        <a className={styles.brand} href="/">PROOF<span>TTL</span></a>
-        <div className={styles.navLinks}>
-          <a href="/solutions/">Solutions</a>
-          <a href="/#verify">Verifier</a>
-          <a href="/support/">Support</a>
-          <a href="/console/">Console</a>
-        </div>
-      </nav>
-
-      <section className={`${styles.shell} ${styles.hero}`}>
-        <div>
-          <p className={styles.eyebrow}>DEVELOPER DOCUMENTATION</p>
-          <h1>Give software facts that expire.</h1>
-          <p className={styles.lede}>
-            ProofTTL verifies whether a specified public source currently supports a precise claim, fingerprints the observed source, and issues a time-bound Fact Lease that can later be monitored, revoked, or expired.
-          </p>
-        </div>
-        <aside className={styles.card} aria-label="ProofTTL request example">
-          <span className={styles.cardLabel}>VERIFY REQUEST</span>
-          <code>{requestExample}</code>
-        </aside>
+      <section className={`${styles.shell} ${styles.indexHero}`}>
+        <p className={styles.eyebrow}>PROOFTTL / FACT AUDIT GUIDE</p>
+        <h1>From submitted output to a defensible evidence trail.</h1>
+        <p>ProofTTL sells one launch engagement: the <strong>$1,500 Fact Audit</strong>. The workflow is scope-first, consequence-ranked, source-backed, human-approved, and monitored for seven days on important findings.</p>
       </section>
 
       <section className={`${styles.shell} ${styles.mainGrid}`}>
-        <article className={styles.panel}>
-          <h2>1. Verify a claim</h2>
-          <p>Send a precise claim, a public HTTP(S) source URL, and a TTL. The current protected testnet endpoint is <code>POST /verify</code>.</p>
-          <p>Requests must use <code>application/json</code>. Claims are limited to 1,000 characters and TTLs are currently accepted from 60 to 604,800 seconds.</p>
+        {steps.map(([title, description]) => (
+          <article className={styles.panel} key={title}>
+            <p className={styles.eyebrow}>{title}</p>
+            <p>{description}</p>
+          </article>
+        ))}
+
+        <article className={styles.panel} style={{ gridColumn: '1 / -1' }}>
+          <h2>What you receive</h2>
+          <p>A ranked set of findings, inspectable evidence, explicit verdicts, contradiction analysis, repair guidance where useful, and human-approved proof/report delivery. UNKNOWN remains a valid result when the examined evidence does not justify certainty.</p>
         </article>
 
-        <article className={styles.panel}>
-          <h2>2. Handle HTTP 402</h2>
-          <p>An unpaid verification returns HTTP 402 with an x402 v2 <code>PAYMENT-REQUIRED</code> response header. The current testnet price is $0.001 USDC on Base Sepolia.</p>
-          <p>An x402-capable client settles the requirement, retries with <code>PAYMENT-SIGNATURE</code>, and can read settlement metadata from <code>PAYMENT-RESPONSE</code>.</p>
-        </article>
-
-        <article className={styles.panel}>
-          <h2>3. Receive a Fact Lease</h2>
-          <p>A successful verification records the claim, source, evidence, verdict, issue time, expiry, SHA-256 source fingerprint, confidence, verifier, monitoring state, and lease ID.</p>
-          <p>Verdicts are <strong>SUPPORTED</strong>, <strong>CONTRADICTED</strong>, or <strong>UNKNOWN</strong>. Lease states are <strong>ACTIVE</strong>, <strong>REVOKED</strong>, or <strong>EXPIRED</strong>.</p>
-        </article>
-
-        <article className={styles.panel}>
-          <h2>4. Read it later</h2>
-          <p>Fetch a stored lease by ID without creating another verification:</p>
-          <div className={styles.card} style={{ marginTop: 16 }}><code>{readExample}</code></div>
-          <p>Prefer <code>current_status</code> when evaluating the lease now. <code>issued_status</code> preserves the original issuance verdict.</p>
-        </article>
-
-        <article className={styles.panel}>
-          <h2>Automatic monitoring</h2>
-          <p>Active leases are rechecked automatically. If the source changes and ProofTTL can no longer maintain the original verdict, the lease can move to <strong>REVOKED</strong>. A lease reaches <strong>EXPIRED</strong> when its TTL ends.</p>
-          <p>Public manual reverification is intentionally disabled so callers cannot force unmetered source-fetch and AI work.</p>
-        </article>
-
-        <article className={styles.panel}>
-          <h2>ProofTTL product AI</h2>
-          <p>The assistant is deliberately product-scoped rather than general-purpose chat. Use <code>POST /assistant/text</code> for typed questions or <code>POST /assistant/voice</code> for short microphone recordings. Both return text.</p>
-          <p>Text chat can send up to six recent bounded conversation messages for useful follow-ups. Text and voice share the same daily free allowance. Read the current anonymous allowance without invoking AI at <code>GET /assistant/usage</code>.</p>
-        </article>
-
-        <article className={styles.panel}>
-          <h2>Browser integrations</h2>
-          <p>ProofTTL exposes CORS for the browser x402 flow, including <code>Content-Type</code> and <code>Payment-Signature</code> request headers and the <code>Payment-Required</code>, <code>Payment-Response</code>, and <code>Retry-After</code> response headers.</p>
-          <p>The public website demo intentionally does not pretend to hold a wallet or payment signature.</p>
-        </article>
-
-        <article className={styles.panel}>
-          <h2>Machine-readable surfaces</h2>
-          <ul>
-            <li><a href={`${API_URL}/openapi.json`}>OpenAPI 3.1 specification</a></li>
-            <li><a href={`${API_URL}/.well-known/proofttl.json`}>ProofTTL discovery document</a></li>
-            <li><a href={`${API_URL}/pricing`}>Machine-readable pricing</a></li>
-            <li><a href={`${API_URL}/readiness`}>Deployment readiness</a></li>
-            <li><a href={`${API_URL}/assistant/usage`}>Current assistant usage allowance</a></li>
-            <li><a href={`${API_URL}/.well-known/proofttl-keys.json`}>Fact Lease public signing keys</a></li>
-            <li><a href={`${API_URL}/.well-known/proofttl-assistant.json`}>Product assistant discovery</a></li>
-          </ul>
-        </article>
-
-        <article className={styles.panel}>
-          <h2>Current environment</h2>
-          <p>ProofTTL is currently operating on <strong>Base Sepolia testnet</strong>. Mainnet is not enabled. The current public verifier price is $0.001 per Fact Lease issuance in test USDC.</p>
-          <p>No account is required for the public x402 API path. Paid AI membership is not enabled yet.</p>
+        <article className={styles.panel} style={{ gridColumn: '1 / -1' }}>
+          <h2>Evidence boundary</h2>
+          <p>The standard Fact Audit is built around accessible public evidence. ProofTTL records what the examined sources support at the time of review; it does not promise permanent truth or replace legal, medical, financial, regulatory, accounting, or other professional advice.</p>
         </article>
 
         <div className={styles.cta}>
           <div>
-            <h2>Try the actual endpoint.</h2>
-            <p>Start with the unpaid 402 challenge or inspect the machine-readable API contract.</p>
+            <h2>Submit the real outputs first.</h2>
+            <p>Scope is confirmed before the exact $1,500 payment request is created.</p>
           </div>
           <div className={styles.actions}>
-            <a className={styles.primary} href="/#verify">Try verifier</a>
-            <a className={styles.secondary} href={`${API_URL}/openapi.json`}>OpenAPI</a>
+            <a className={styles.primary} href="/audit/#audit-intake">Start Fact Audit</a>
+            <a className={styles.secondary} href="/audit/sample/">See sample audit</a>
           </div>
         </div>
       </section>
 
-      <footer className={`${styles.shell} ${styles.footer}`}>ProofTTL · ProofTTL/0.3.1 · Base Sepolia testnet</footer>
+      <footer className={`${styles.shell} ${styles.footer}`}>ProofTTL · $1,500 Fact Audit · human-approved findings · seven-day watch</footer>
     </main>
   )
 }
