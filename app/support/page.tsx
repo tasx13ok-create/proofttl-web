@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Support',
-  description: 'Get help with a ProofTTL Fact Audit, payment status, account access, Fact Lease, or technical integration without exposing private customer information publicly.',
+  description: 'Get help with a ProofTTL Fact Audit, payment status, account access, or public website issue without exposing private customer information publicly.',
   alternates: { canonical: '/support/' },
   robots: { index: true, follow: true },
 }
@@ -14,7 +14,7 @@ export default function SupportPage() {
         <section className="onboarding-card" style={{ padding: 30 }}>
           <p className="app-kicker">PROOFTTL / SUPPORT</p>
           <h1 className="app-title">Get to the right help without posting private details.</h1>
-          <p className="app-copy">Payment, account, and customer-verification information should stay private. Public GitHub issues are reserved for reproducible technical problems with the public API or website — never card details, personal account information, private claims, or customer documents.</p>
+          <p className="app-copy">Payment, account, and customer-verification information should stay private. Public GitHub issues are reserved for reproducible website problems — never card details, personal account information, private claims, or customer documents.</p>
         </section>
 
         <div className="pricing-cards">
@@ -40,10 +40,10 @@ export default function SupportPage() {
         </section>
 
         <section className="console-panel wide">
-          <p className="app-kicker">TECHNICAL SUPPORT</p>
-          <h2>Public issues are for public, reproducible technical bugs only.</h2>
-          <p className="app-copy">Use GitHub for API behavior, documentation defects, public website bugs, or Fact Lease verification problems that can be described without customer secrets. Remove tokens, cookies, payment identifiers, personal information, and private claim data before posting.</p>
-          <div className="hero-actions"><a className="button button-secondary" href="https://github.com/tasx13ok-create/proofttl/issues" target="_blank" rel="noreferrer">OPEN TECHNICAL ISSUES ↗</a><a className="text-link" href="/docs/">API documentation →</a></div>
+          <p className="app-kicker">PUBLIC WEBSITE SUPPORT</p>
+          <h2>Public issues are for reproducible public website bugs only.</h2>
+          <p className="app-copy">Use GitHub only when a public website defect can be described without customer secrets. Remove tokens, cookies, payment identifiers, personal information, and private claim data before posting.</p>
+          <div className="hero-actions"><a className="button button-secondary" href="https://github.com/tasx13ok-create/proofttl-web/issues" target="_blank" rel="noreferrer">OPEN WEBSITE ISSUES ↗</a><a className="text-link" href="/faq/">Fact Audit FAQ →</a></div>
         </section>
 
         <section className="console-panel wide">
@@ -52,7 +52,7 @@ export default function SupportPage() {
             <div className="app-table-row"><span>Card or bank details</span><span>NEVER POST PUBLICLY</span></div>
             <div className="app-table-row"><span>Session cookies / auth tokens</span><span>NEVER POST PUBLICLY</span></div>
             <div className="app-table-row"><span>Private customer claims or documents</span><span>KEEP IN THE PRIVATE WORKFLOW</span></div>
-            <div className="app-table-row"><span>Public API reproduction with secrets removed</span><span>OK FOR GITHUB ISSUES</span></div>
+            <div className="app-table-row"><span>Public website reproduction with secrets removed</span><span>OK FOR GITHUB ISSUES</span></div>
           </div>
         </section>
       </section>
