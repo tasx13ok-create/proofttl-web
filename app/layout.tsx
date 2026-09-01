@@ -25,6 +25,7 @@ import './workspace-shell.css'
 import './worlds.css'
 import './cinematics.css'
 import './premium-public.css'
+import './centered-ui.css'
 
 const SITE_URL = 'https://proofttl-web.vercel.app'
 const GITHUB_PROFILE = 'https://github.com/tasx13ok-create'
