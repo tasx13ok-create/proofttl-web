@@ -34,13 +34,13 @@ export default function CommercialHome() {
           <span className="plan-label">FACT AUDIT</span>
           <div className="price">$1,500<span> fixed price</span></div>
           <p>Up to 25 real outputs or claims, consequence ranking, deep verification of the highest-risk findings, authoritative FOR / AGAINST evidence, explicit contradiction checks, human-approved proof artifacts, and seven days of monitoring on important findings.</p>
-          <a className="button button-primary" href="/audit/#audit-intake">Submit outputs for scope review</a>
+          <a className="text-link" href="/audit/sample/">Inspect what the deliverable looks like <span>↗</span></a>
         </article>
         <article>
           <span className="plan-label">DELIVERABLE</span>
           <h3>Evidence, verdicts, fixes.</h3>
           <p>Material findings become customer-ready proof pages with the exact claim, primary evidence, verdict logic, uncertainty, consequence, and recommended repair. UNKNOWN stays UNKNOWN when evidence is insufficient.</p>
-          <a className="button button-secondary" href="/audit/sample/">Inspect a sample audit</a>
+          <a className="text-link" href="/how-proofttl-works/">See the verification method <span>↗</span></a>
         </article>
       </div>
       <p className="app-copy" style={{ marginTop: 16 }}>No subscription required. No raw card number is stored by ProofTTL; payment is handled through Stripe after scope confirmation.</p>
@@ -91,8 +91,9 @@ export default function CommercialHome() {
 
     <section className="section shell final-cta">
       <p className="eyebrow">BEFORE THE OUTPUT REACHES A CUSTOMER</p>
-      <h2>Find out what holds up.<br /><em>Send the real outputs.</em></h2>
-      <div className="hero-actions"><a className="button button-primary" href="/audit/#audit-intake">Start the $1,500 Fact Audit <span>→</span></a><a className="button button-secondary" href="/audit/sample/">View sample</a></div>
+      <h2>See exactly what a finished audit contains.</h2>
+      <p className="section-lede">The sample shows the claim, evidence chain, verdict logic, uncertainty, consequence, and repair without introducing another competing start button.</p>
+      <div className="hero-actions"><a className="button button-secondary" href="/audit/sample/">View sample audit</a><a className="text-link" href="/how-proofttl-works/">Review the method <span>↗</span></a></div>
     </section>
 
     <footer className="footer shell">
