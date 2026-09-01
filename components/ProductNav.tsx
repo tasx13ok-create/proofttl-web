@@ -180,9 +180,9 @@ export default function ProductNav() {
             </div>
           ) : !accountLoading ? <a className="product-nav-signin" href={signInHref(signInTarget)}>Sign in</a> : <span className="product-account-loading" aria-hidden="true" />}
 
-          {publicMode
+          {publicMode && pathname !== '/'
             ? <a className="product-nav-workspace" href="/audit/#audit-intake">Start verification <span>→</span></a>
-            : <a className="product-nav-workspace" href="/workspace/">Open Workspace <span>→</span></a>}
+            : !publicMode ? <a className="product-nav-workspace" href="/workspace/">Open Workspace <span>→</span></a> : null}
         </div>
       </div>
     </header>
