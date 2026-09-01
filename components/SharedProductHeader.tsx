@@ -2,7 +2,17 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-export default function SharedProductHeader() {
+type Props = {
+  auditHref?: string
+  auditLabel?: string
+  auditAriaLabel?: string
+}
+
+export default function SharedProductHeader({
+  auditHref = '/audit/#audit-intake',
+  auditLabel = 'Start audit',
+  auditAriaLabel = 'Start Fact Audit',
+}: Props) {
   const [hidden, setHidden] = useState(false)
   const lastY = useRef(0)
 
@@ -13,13 +23,9 @@ export default function SharedProductHeader() {
       const currentY = window.scrollY
       const delta = currentY - lastY.current
 
-      if (currentY < 48) {
-        setHidden(false)
-      } else if (delta > 7) {
-        setHidden(true)
-      } else if (delta < -7) {
-        setHidden(false)
-      }
+      if (currentY < 48) setHidden(false)
+      else if (delta > 7) setHidden(true)
+      else if (delta < -7) setHidden(false)
 
       lastY.current = currentY
     }
@@ -35,7 +41,7 @@ export default function SharedProductHeader() {
     </a>
     <div className="ptl-shared-header-actions">
       <span>Fact Audit</span>
-      <a className="ptl-shared-audit-cta" href="/audit/#audit-intake">Start audit <b>↗</b></a>
+      <a className="ptl-shared-audit-cta" href={auditHref} aria-label={auditAriaLabel}>{auditLabel} <b>↗</b></a>
     </div>
   </header>
 }
