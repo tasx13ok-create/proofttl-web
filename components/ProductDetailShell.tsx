@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
 type Props = {
-  active: 'sample' | 'method' | 'trust'
+  active: 'sample' | 'method' | 'trust' | 'support'
   eyebrow: string
   title: ReactNode
   description: ReactNode
@@ -20,7 +20,7 @@ export default function ProductDetailShell({ active, eyebrow, title, description
           <a className={active === 'method' ? 'active' : ''} href="/how-proofttl-works/"><b>◎</b><span>Method</span></a>
           <a className={active === 'trust' ? 'active' : ''} href="/trust/"><b>◇</b><span>Trust</span></a>
         </nav>
-        <a className="ptl-detail-help" href="/support/"><b>?</b><span>Support</span></a>
+        <a className={`ptl-detail-help ${active === 'support' ? 'active' : ''}`} href="/support/"><b>?</b><span>Support</span></a>
       </aside>
 
       <div className="ptl-detail-main">
