@@ -11,7 +11,7 @@ export default function CommercialHome() {
         </div>
         <div className="ptl-hero-trust">
           <span>UP TO 25 OUTPUTS</span>
-          <span>SCOPE BEFORE PAYMENT</span>
+          <span>SCOPE CONFIRMED BEFORE PAYMENT</span>
           <span>HUMAN APPROVAL</span>
           <span>7-DAY WATCH</span>
         </div>
@@ -44,7 +44,7 @@ export default function CommercialHome() {
           <div className="ptl-card-label">Fact Audit</div>
           <div className="ptl-price-row"><strong>$1,500</strong><span>fixed price</span></div>
           <p>Up to 25 real outputs or claims, consequence ranking, deep verification of the highest-risk findings, authoritative FOR / AGAINST evidence, contradiction checks, human-approved proof artifacts, and seven days of monitoring.</p>
-          <a href="/audit/#audit-intake">Submit outputs <span>↗</span></a>
+          <a href="/audit/">Open Fact Audit <span>↗</span></a>
         </article>
         <article className="ptl-feature-card">
           <div className="ptl-card-icon">⌁</div><div className="ptl-card-label">Evidence chain</div><h3>Every verdict stays inspectable.</h3><p>Exact claim, primary evidence, verdict logic, uncertainty, consequence, and recommended repair.</p><a href="/audit/sample/">Inspect sample <span>→</span></a>
@@ -53,6 +53,7 @@ export default function CommercialHome() {
           <div className="ptl-card-icon">◎</div><div className="ptl-card-label">Conservative by design</div><h3>UNKNOWN stays UNKNOWN.</h3><p>ProofTTL does not force incomplete evidence into a confident answer just to make the report look cleaner.</p><a href="/how-proofttl-works/">Read the method <span>→</span></a>
         </article>
       </div>
+      <p className="ptl-payment-note">No subscription required. No raw card number is stored by ProofTTL; payment is handled through Stripe after scope confirmation.</p>
     </section>
 
     <section className="ptl-section shell" id="process">
@@ -99,7 +100,7 @@ export default function CommercialHome() {
 
     <section className="ptl-final shell">
       <div><span>Ready when your outputs are.</span><h2>Find the expensive wrong answer first.</h2><p>Fixed-scope $1,500 Fact Audit · up to 25 outputs · scope before payment.</p></div>
-      <a href="/audit/#audit-intake">Start Fact Audit <span>↗</span></a>
+      <a href="/audit/">Open Fact Audit <span>↗</span></a>
     </section>
 
     <footer className="ptl-footer shell">
