@@ -1,120 +1,57 @@
+import ProductDetailShell from '../../../components/ProductDetailShell'
+
 export const metadata = {
   title: 'Sample Verification Audit',
   description: 'Inspect a public ProofTTL verification sample showing source-backed verdicts, documentation drift, uncertainty handling, and the evidence behind each claim.',
   alternates: { canonical: '/audit/sample/' },
-  openGraph: {
-    title: 'ProofTTL Sample Verification Audit',
-    description: 'See how ProofTTL pressure-tests time-sensitive claims against public primary sources before you buy.',
-    url: '/audit/sample/',
-    type: 'article',
-  },
+  openGraph: { title: 'ProofTTL Sample Verification Audit', description: 'See how ProofTTL pressure-tests time-sensitive claims against public primary sources before you buy.', url: '/audit/sample/', type: 'article' },
 }
 
 const claims = [
-  ['PX-001', 'Perplexity Max costs $200/month or $2,000/year on the web app.', 'SUPPORTED', 'MEDIUM', 'Current Max help-center pricing directly supports the claim.'],
-  ['PX-002', 'Perplexity Enterprise Pro costs $40 per active seat per month or $400 per year.', 'SUPPORTED', 'HIGH', 'Two current Perplexity help-center pages independently state the same Enterprise Pro pricing.'],
-  ['PX-003', 'Perplexity Enterprise Max costs $325 per active seat per month or $3,250 per year.', 'SUPPORTED', 'HIGH', 'Two current Perplexity help-center pages independently state the same Enterprise Max pricing.'],
-  ['PX-004', "Perplexity's current Max Search-model roster includes GPT-5.6 Sol and Claude Opus 5.", 'SUPPORTED', 'HIGH', 'The current advanced-model table lists both as Max-only Search options.'],
-  ['PX-005', "Perplexity's current Pro and Max Search-model roster includes Gemini 3.1 Pro.", 'SUPPORTED', 'HIGH', 'The current advanced-model table lists Gemini 3.1 Pro on both Pro and Max.'],
-  ['PX-006', "Perplexity's documentation is fully synchronized on which advanced models Max users can access.", 'CONTRADICTED', 'HIGH', 'Two current first-party help pages give different Max model examples, so the universal synchronization claim does not survive.'],
-]
+  ['PX-001', 'Perplexity Max costs $200/month or $2,000/year on the web app.', 'SUPPORTED', 'MEDIUM'],
+  ['PX-002', 'Perplexity Enterprise Pro costs $40 per active seat per month or $400 per year.', 'SUPPORTED', 'HIGH'],
+  ['PX-003', 'Perplexity Enterprise Max costs $325 per active seat per month or $3,250 per year.', 'SUPPORTED', 'HIGH'],
+  ['PX-004', "Perplexity's current Max Search-model roster includes GPT-5.6 Sol and Claude Opus 5.", 'SUPPORTED', 'HIGH'],
+  ['PX-005', "Perplexity's current Pro and Max Search-model roster includes Gemini 3.1 Pro.", 'SUPPORTED', 'HIGH'],
+  ['PX-006', "Perplexity's documentation is fully synchronized on which advanced models Max users can access.", 'CONTRADICTED', 'HIGH'],
+] as const
 
 const sources = [
-  ['S1', 'Perplexity Max - Help Center', 'https://www.perplexity.ai/help-center/en/articles/11680686-perplexity-max'],
+  ['S1', 'Perplexity Max — Help Center', 'https://www.perplexity.ai/help-center/en/articles/11680686-perplexity-max'],
   ['S2', 'Enterprise Pricing and Billing FAQ', 'https://www.perplexity.ai/help-center/en/articles/10352986-enterprise-pricing-and-billing-frequently-asked-questions'],
   ['S3', 'Advanced AI models included in subscription', 'https://www.perplexity.ai/help-center/en/articles/10354919-what-advanced-ai-models-are-included-in-my-subscription'],
   ['S4', 'What is Perplexity Pro?', 'https://www.perplexity.ai/help-center/en/articles/9385876-what-is-perplexity-pro'],
-  ['S5', 'Perplexity Enterprise Onboarding Guide', 'https://www.perplexity.ai/help-center/en/articles/12742827-perplexity-enterprise-onboarding-guide'],
-]
+] as const
 
 export default function SampleAuditPage() {
-  return (
-    <main className="app-page audit-sample-page">
-      <section className="onboarding-wrap">
-        <div className="onboarding-card">
-          <p className="app-kicker">SAMPLE VERIFICATION AUDIT · PTTL-DEMO-PX-20260818-001</p>
-          <h1 className="app-title">Watch a believable claim break.</h1>
-          <p className="app-copy">This public sample reviews six time-sensitive statements in Perplexity AI&apos;s public documentation. Five survive the evidence examined. One sounds reasonable, but fails once two current first-party pages are compared.</p>
+  return <ProductDetailShell
+    active="sample"
+    eyebrow="Sample finding · PTTL-DEMO-PX-20260818-001"
+    title={<>A believable claim.<br/><em>Then the contradiction.</em></>}
+    description={<>This sample reviews six time-sensitive statements in public Perplexity documentation. Five survive. One fails only after two current first-party pages are compared.</>}
+    actions={<><a className="primary" href="/audit/#audit-intake">Start the $1,500 Fact Audit <span>↗</span></a><a href="/how-proofttl-works/">See the method</a></>}
+  >
+    <section className="ptl-finding-hero">
+      <div className="ptl-finding-meta"><span>Claim PX-006</span><span>Observed Aug 18, 2026</span><span>High consequence</span></div>
+      <blockquote>“Perplexity&apos;s documentation is fully synchronized on which advanced models Max users can access.”</blockquote>
+      <p>The important word is <strong>fully</strong>. ProofTTL keeps the proposition intact instead of quietly weakening it until the evidence fits.</p>
+    </section>
 
-          <div className="price-preview">
-            <div><p className="app-kicker">RESULTS</p><strong>5 / 1</strong><span>5 supported · 1 contradicted · 5 high-drift claims</span></div>
-            <div className="app-meta">SOURCE ACCESS · AUG 18 2026</div>
-          </div>
+    <section className="ptl-evidence-compare">
+      <article className="support"><div className="ptl-evidence-label"><i/> Evidence for</div><h2>S3 looks clean on its own.</h2><p>The current advanced-model page explicitly lists model availability and notes that availability can change. Examined alone, the documentation appears internally consistent.</p><span className="source-chip">S3 · first-party · current</span></article>
+      <article className="against"><div className="ptl-evidence-label"><i/> Contradiction pass</div><h2>S4 breaks the universal claim.</h2><p>Another current first-party help article references a different set of Max model examples. Both pages can exist while “fully synchronized” is false.</p><span className="source-chip">S4 · first-party · current</span></article>
+    </section>
 
-          <div className="onboarding-card" style={{ marginTop: 24 }}>
-            <p className="app-kicker">CLAIM LOCKED · PX-006</p>
-            <h2 className="app-title" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)' }}>“Perplexity&apos;s documentation is fully synchronized on which advanced models Max users can access.”</h2>
-            <p className="app-copy">The important word is <strong>fully</strong>. A verifier cannot quietly weaken that into “some documentation is current.” The exact proposition has to survive.</p>
-          </div>
+    <section className="ptl-verdict-card contradicted"><div><span>Verdict</span><strong>CONTRADICTED</strong></div><p>The inspected documentation is not fully synchronized. The verdict is intentionally narrow: it does not imply the product is defective or that every help page is stale.</p><div className="ptl-verdict-foot"><span>Exact claim preserved</span><span>Contradiction retained</span><span>Human-readable scope</span></div></section>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(280px,100%),1fr))', gap: 12, marginTop: 16 }}>
-            <article style={{ padding: 18, border: '1px solid rgba(34,197,94,.22)', borderRadius: 14, background: 'rgba(34,197,94,.035)' }}>
-              <p className="app-kicker">EVIDENCE FOR / CURRENT ROSTER</p>
-              <h3 style={{ margin: '8px 0' }}>S3 looks authoritative.</h3>
-              <p className="app-copy" style={{ margin: 0 }}>The current advanced-model page explicitly lists current model availability and says availability can change over time. If this were the only page examined, the documentation could appear internally clean.</p>
-            </article>
-            <article style={{ padding: 18, border: '1px solid rgba(248,113,113,.28)', borderRadius: 14, background: 'rgba(248,113,113,.04)' }}>
-              <p className="app-kicker">EVIDENCE AGAINST / CONTRADICTION PASS</p>
-              <h3 style={{ margin: '8px 0' }}>S4 breaks the universal claim.</h3>
-              <p className="app-copy" style={{ margin: 0 }}>Another current first-party Pro help article references different Max model examples. Both pages can exist while the broad “fully synchronized” proposition is false.</p>
-            </article>
-          </div>
+    <section className="ptl-detail-section"><header><span>Audit overview</span><h2>Six claims. One material break.</h2><p>The table is secondary. The finding stays primary.</p></header><div className="ptl-claim-list">{claims.map(([id, claim, verdict, risk]) => <article key={id}><div><small>{id} · {risk}</small><strong>{claim}</strong></div><span className={verdict === 'SUPPORTED' ? 'supported' : 'contradicted'}>{verdict}</span></article>)}</div></section>
 
-          <div className="onboarding-card" style={{ marginTop: 16, borderColor: 'rgba(248,113,113,.28)' }}>
-            <p className="app-kicker">VERDICT BROKEN</p>
-            <h2 className="app-title" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.4rem)' }}>CONTRADICTED</h2>
-            <p className="app-copy">The contradiction is narrow: the inspected documentation is not fully synchronized. This does not imply that Perplexity&apos;s product is defective, that every help page is stale, or that either page was false when originally written. ProofTTL keeps the verdict attached to the exact claim.</p>
-          </div>
+    <section className="ptl-detail-section"><header><span>Why TTL matters</span><h2>Supported is not permanently true.</h2><p>Pricing, model rosters, limits, policies, and capabilities can change after a check. ProofTTL records the evidence-access date and knows when a claim deserves another look.</p></header><div className="ptl-three-up"><article><span>Observed</span><strong>Aug 18, 2026</strong><p>Point-in-time evidence.</p></article><article><span>Volatility</span><strong>High</strong><p>Pricing and model availability move quickly.</p></article><article><span>Recheck when</span><strong>Source changes</strong><p>A cited page changes, disappears, or is superseded.</p></article></div></section>
 
-          <div className="app-table" aria-label="Sample audit claim results" style={{ marginTop: 24 }}>
-            {claims.map(([id, claim, verdict, risk, evidence]) => (
-              <div className="app-table-row" key={id}>
-                <span>{id}<br /><strong>{verdict}</strong> · {risk}</span>
-                <span><strong>{claim}</strong><br />{evidence}</span>
-                <span>{verdict === 'SUPPORTED' ? '✓' : '!'}</span>
-              </div>
-            ))}
-          </div>
+    <section className="ptl-detail-section"><header><span>Source index</span><h2>Every source remains inspectable.</h2></header><div className="ptl-source-list">{sources.map(([id,title,href]) => <a key={id} href={href} target="_blank" rel="noreferrer"><span>{id}</span><strong>{title}</strong><b>↗</b></a>)}</div></section>
 
-          <div className="onboarding-card" style={{ marginTop: 24 }}>
-            <p className="app-kicker">WHY TTL MATTERS</p>
-            <h2 style={{ margin: '8px 0' }}>Supported is not the same as permanently true.</h2>
-            <p className="app-copy">Pricing, model rosters, connector counts, policies, limits, certifications, and product capabilities can change after a check is completed. This sample therefore records the source-access date instead of silently presenting a time-sensitive conclusion as timeless.</p>
-            <div className="app-table" style={{ marginTop: 14 }}>
-              <div className="app-table-row"><span>OBSERVED</span><span>AUG 18 2026</span><span>POINT-IN-TIME</span></div>
-              <div className="app-table-row"><span>VOLATILITY</span><span>Pricing + model availability can change quickly.</span><span>HIGH</span></div>
-              <div className="app-table-row"><span>INVALIDATE WHEN</span><span>A cited page changes, disappears, or a newer authoritative page supersedes the observed evidence.</span><span>RECHECK</span></div>
-            </div>
-          </div>
+    <section className="ptl-detail-cta"><div><span>Put your own outputs under pressure</span><h2>Up to 25 real outputs. Fixed $1,500 scope.</h2><p>Consequence ranking, deep verification of the highest-risk findings, human approval, proof/report delivery, and a seven-day watch.</p></div><a href="/audit/#audit-intake">Start Fact Audit <span>↗</span></a></section>
 
-          <div className="onboarding-card" style={{ marginTop: 24 }}>
-            <p className="app-kicker">METHODOLOGY</p>
-            <p className="app-copy">Claims are written precisely before review. Suitable primary sources are preferred. A company page supporting its own statement is recorded as first-party source support, not independent proof of broad real-world performance. Evidence that weakens the preliminary conclusion is preserved rather than hidden. CONTRADICTED is reserved for evidence that negates the precise claim, and UNKNOWN remains available when the examined record cannot justify a stronger verdict.</p>
-          </div>
-
-          <div className="onboarding-card" style={{ marginTop: 24 }}>
-            <p className="app-kicker">SOURCE INDEX</p>
-            <div className="app-table">
-              {sources.map(([id, title, href]) => (
-                <div className="app-table-row" key={id}>
-                  <span>{id}</span><span>{title}</span><span><a href={href} target="_blank" rel="noreferrer">SOURCE ↗</a></span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="onboarding-card" style={{ marginTop: 24 }}>
-            <p className="app-kicker">PUT YOUR OWN OUTPUTS UNDER PRESSURE</p>
-            <p className="app-copy">The $1,500 Fact Audit accepts 10–25 outputs or claims. ProofTTL decomposes the material into atomic claims, ranks consequence, deeply verifies the highest-risk findings with authoritative FOR/AGAINST evidence and a contradiction pass, requires human approval before customer-facing publication, produces proof/report deliverables, and monitors important findings for seven days before the final reread.</p>
-            <div className="hero-actions">
-              <a className="button button-primary" href="/audit/">START THE $1,500 FACT AUDIT →</a>
-              <a className="button button-secondary" href="/faq/">READ THE FACT AUDIT FAQ</a>
-            </div>
-          </div>
-
-          <p className="app-note">Public demonstration only. This is not a commissioned audit of Perplexity, an endorsement, an accusation, or legal, financial, medical, regulatory, certification, or compliance advice. Production proof artifacts are delivered only after the live Fact Audit workflow completes and human approval is recorded.</p>
-        </div>
-      </section>
-    </main>
-  )
+    <p className="ptl-detail-note">Public demonstration only. This is not a commissioned audit of Perplexity, an endorsement, an accusation, or legal, financial, medical, regulatory, certification, or compliance advice.</p>
+  </ProductDetailShell>
 }
