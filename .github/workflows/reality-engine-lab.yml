@@ -33,9 +33,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .reality-lab
-          key: reality-engine-lab-${{ github.run_id }}-${{ github.run_attempt }}
+          key: reality-engine-lab-certified-v2-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            reality-engine-lab-
+            reality-engine-lab-certified-v2-
 
       - name: Verify immutable scientific contracts
         run: node scripts/check-reality-engine.cjs
