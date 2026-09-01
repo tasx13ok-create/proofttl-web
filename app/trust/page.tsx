@@ -16,7 +16,7 @@ export default function TrustPage() {
     eyebrow="Trust Center"
     title={<>Trust should be<br/><em>inspectable too.</em></>}
     description={<>See what ProofTTL checks live, how payment is handled, where human approval sits, and the boundaries the service refuses to hide.</>}
-    actions={<><a className="primary" href="/audit/#audit-intake">Start Fact Audit <span>↗</span></a><a href="/audit/sample/">View sample</a></>}
+    actions={<a href="/audit/sample/">View sample</a>}
   >
     <TrustCenter />
   </ProductDetailShell>
