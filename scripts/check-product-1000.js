@@ -77,7 +77,7 @@ const checks = [
   [richText.includes('```') && richText.includes('data-love-code-block') && richText.includes('navigator.clipboard.writeText'), 'safe copyable chat code blocks'],
   [chat.includes('AssistantRichText') && chat.includes('LoveVisualStrip') && chat.includes('fetchRelevantVisuals'), 'L.O.V.E. rich answer rendering'],
   [chat.includes('askProofTTLByVoice') && chat.includes('loveSpeechDataUrl') && chat.includes("type LoveState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'awake'"), 'voice and reactive L.O.V.E. preserved'],
-  [trust.includes('/health') && trust.includes('/monitor/status') && /PAYMENT \+ DELIVERY BOUNDARY/i.test(trust) && /TECHNICAL PROTOCOL BOUNDARY/i.test(trust) && !trust.includes('/readiness'), 'public Trust Center exposes buyer-relevant live controls without internal readiness diagnostics'],
+  [trust.includes('/health') && trust.includes('/monitor/status') && /PAYMENT \+ DELIVERY BOUNDARY/i.test(trust) && /WHAT THE BUYER RECEIVES/i.test(trust) && !trust.includes('/readiness') && !/Fact Lease/i.test(trust), 'public Trust Center stays buyer-focused without legacy protocol surfaces'],
   [visuals.includes('/assistant/visuals') && visuals.includes('provider_returned_only'), 'grounded visual retrieval'],
   [tasks.includes('/account/tasks') && tasks.includes('No tasks yet.') && tasks.includes('RETRY →') && tasks.includes('aria-live'), 'native account tasks have working empty, retry, and status-feedback states'],
   [files.includes('/account/files'), 'native account files'],
