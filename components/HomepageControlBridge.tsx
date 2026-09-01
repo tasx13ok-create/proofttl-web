@@ -7,6 +7,8 @@ export default function HomepageControlBridge() {
     if (window.location.pathname !== '/') return
 
     const root = document.querySelector<HTMLElement>('.ptl-ai-home')
+    const composer = document.querySelector<HTMLElement>('.ptl-ai-composer')
+    const composerInput = document.querySelector<HTMLElement>('.ptl-ai-composer-input')
     const controls = [
       document.querySelector<HTMLButtonElement>('button[aria-label="Attach evidence"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="Verification intake is available from the header"]'),
@@ -21,8 +23,34 @@ export default function HomepageControlBridge() {
       control.setAttribute('title', 'Open Claim Preflight')
     })
 
+    const activateComposer = (event: Event) => {
+      const target = event.target as HTMLElement | null
+      if (target?.closest('button,a')) return
+      openPreflight()
+    }
+    const onComposerKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return
+      event.preventDefault()
+      openPreflight()
+    }
+    if (composer) {
+      composer.setAttribute('role', 'link')
+      composer.setAttribute('tabindex', '0')
+      composer.setAttribute('aria-label', 'Open Claim Preflight to paste an output, claim, or source')
+      composer.setAttribute('title', 'Open Claim Preflight')
+      composer.addEventListener('click', activateComposer)
+      composer.addEventListener('keydown', onComposerKeyDown)
+      composer.addEventListener('focus', () => composer.setAttribute('data-keyboard-focus', 'true'))
+      composer.addEventListener('blur', () => composer.removeAttribute('data-keyboard-focus'))
+    }
+    if (composerInput) composerInput.setAttribute('title', 'Open Claim Preflight')
+
     if (!root) {
-      return () => controls.forEach((control) => control.removeEventListener('click', openPreflight))
+      return () => {
+        controls.forEach((control) => control.removeEventListener('click', openPreflight))
+        composer?.removeEventListener('click', activateComposer)
+        composer?.removeEventListener('keydown', onComposerKeyDown)
+      }
     }
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -93,6 +121,8 @@ export default function HomepageControlBridge() {
 
     return () => {
       controls.forEach((control) => control.removeEventListener('click', openPreflight))
+      composer?.removeEventListener('click', activateComposer)
+      composer?.removeEventListener('keydown', onComposerKeyDown)
       window.removeEventListener('pointermove', onPointerMove)
       surfaceCleanups.forEach((cleanup) => cleanup())
       if (frame) window.cancelAnimationFrame(frame)
