@@ -1,4 +1,5 @@
 import AuditStatusLookup from '../../../components/AuditStatusLookup'
+import SharedProductHeader from '../../../components/SharedProductHeader'
 
 export const metadata = {
   title: 'Audit Status',
@@ -9,6 +10,7 @@ export const metadata = {
 export default function AuditStatusPage() {
   return (
     <main className="app-page audit-status-page">
+      <SharedProductHeader />
       <section className="onboarding-wrap">
         <AuditStatusLookup />
       </section>
