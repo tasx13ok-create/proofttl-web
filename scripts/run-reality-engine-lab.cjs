@@ -10,10 +10,12 @@ const outDir=path.resolve(process.env.REALITY_LAB_DIR||path.join(root,'.reality-
 const statePath=path.join(outDir,'state.json'),evidencePath=path.join(outDir,'latest-evidence.json')
 const cycles=Math.max(0,Math.min(8,Number(process.env.REALITY_LAB_CYCLES??4)||0))
 const defaultLineage=Number(process.env.REALITY_LAB_LINEAGE||1128242223)>>>0
+const bootstrapAllowed=process.env.REALITY_LAB_ALLOW_FRESH_BOOTSTRAP==='1'
 const mix=x=>{x=x>>>0;x^=x>>>16;x=Math.imul(x,0x7feb352d);x^=x>>>15;x=Math.imul(x,0x846ca68b);x^=x>>>16;return x>>>0||1}
 const readState=()=>{try{return JSON.parse(fs.readFileSync(statePath,'utf8'))}catch(error){if(error?.code==='ENOENT')return null;throw new Error(`Cloud lab state unreadable/corrupt; refusing silent reset: ${error?.message||error}`)}}
-const initial=()=>({schema:'reality-cloud-lab-v1',engineVersion:E.VERSION,engineLayer:'V21',lineageSeed:defaultLineage,depth:0,languageDepth:0,attack:0,ontology:E.seedOntology(),ecologyState:null,worldEcologyState:null,questionEcologyState:null,strategyEcologyState:null,theoryEcologyState:null,experimentState:null,barrierState:null,causalState:null,conceptState:null,sequentialState:null,macroState:null,theoryCourtState:null,methodCourtState:null,runs:0,cycles:0})
-let state=readState()||initial()
+const initial=()=>({schema:'reality-cloud-lab-v1',engineVersion:E.VERSION,engineLayer:'V21',lineageSeed:defaultLineage,bootstrapProvenance:'fresh-isolated-explicit',depth:0,languageDepth:0,attack:0,ontology:E.seedOntology(),ecologyState:null,worldEcologyState:null,questionEcologyState:null,strategyEcologyState:null,theoryEcologyState:null,experimentState:null,barrierState:null,causalState:null,conceptState:null,sequentialState:null,macroState:null,theoryCourtState:null,methodCourtState:null,runs:0,cycles:0})
+let state=readState()
+if(!state){if(!bootstrapAllowed)throw new Error('Cloud lab state missing; refusing unproven fresh bootstrap for an existing lineage');state=initial()}
 if(state.schema!=='reality-cloud-lab-v1'||Number(state.lineageSeed)!==defaultLineage)throw new Error('Cloud lab state lineage/schema mismatch; refusing silent reset')
 const history=[]
 for(let i=0;i<cycles;i++){
@@ -26,6 +28,6 @@ for(let i=0;i<cycles;i++){
 state.runs=(Number(state.runs)||0)+1
 state.updatedAt=new Date().toISOString()
 fs.mkdirSync(outDir,{recursive:true});fs.writeFileSync(statePath,JSON.stringify(state,null,2))
-const evidence={product:'Reality Engine — Isolated Cloud Lab Evidence',schema:'reality-cloud-lab-evidence-v1',exportedAt:new Date().toISOString(),engineVersion:E.VERSION,engineLayer:'V21',lineageSeed:state.lineageSeed,runCycles:cycles,totalCycles:state.cycles,attack:state.attack,depth:state.depth,languageDepth:state.languageDepth,ontology:Array.isArray(state.ontology)?state.ontology.length:0,experimentDepth:Number(state.experimentState?.depth)||0,causalDepth:Number(state.causalState?.depth)||0,conceptDepth:Number(state.conceptState?.depth)||0,sequentialDepth:Number(state.sequentialState?.depth)||0,macroDepth:Number(state.macroState?.depth)||0,researchMethodCourt:state.methodCourtState||null,history}
+const evidence={product:'Reality Engine — Isolated Cloud Lab Evidence',schema:'reality-cloud-lab-evidence-v1',exportedAt:new Date().toISOString(),engineVersion:E.VERSION,engineLayer:'V21',lineageSeed:state.lineageSeed,bootstrapProvenance:state.bootstrapProvenance||'restored-persistent-state',runCycles:cycles,totalCycles:state.cycles,attack:state.attack,depth:state.depth,languageDepth:state.languageDepth,ontology:Array.isArray(state.ontology)?state.ontology.length:0,experimentDepth:Number(state.experimentState?.depth)||0,causalDepth:Number(state.causalState?.depth)||0,conceptDepth:Number(state.conceptState?.depth)||0,sequentialDepth:Number(state.sequentialState?.depth)||0,macroDepth:Number(state.macroState?.depth)||0,researchMethodCourt:state.methodCourtState||null,history}
 fs.writeFileSync(evidencePath,JSON.stringify(evidence,null,2))
 console.log(`SUCCESS: isolated Reality Engine cloud lab V21 · cycles ${cycles} · attack ${state.attack} · Ω${state.depth}/K${state.languageDepth} · ontology ${evidence.ontology}`)
