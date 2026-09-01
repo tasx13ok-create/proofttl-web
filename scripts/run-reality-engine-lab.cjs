@@ -11,7 +11,7 @@ const statePath=path.join(outDir,'state.json'),evidencePath=path.join(outDir,'la
 const cycles=Math.max(0,Math.min(8,Number(process.env.REALITY_LAB_CYCLES??4)||0))
 const defaultLineage=Number(process.env.REALITY_LAB_LINEAGE||1128242223)>>>0
 const mix=x=>{x=x>>>0;x^=x>>>16;x=Math.imul(x,0x7feb352d);x^=x>>>15;x=Math.imul(x,0x846ca68b);x^=x>>>16;return x>>>0||1}
-const readState=()=>{try{return JSON.parse(fs.readFileSync(statePath,'utf8'))}catch{return null}}
+const readState=()=>{try{return JSON.parse(fs.readFileSync(statePath,'utf8'))}catch(error){if(error?.code==='ENOENT')return null;throw new Error(`Cloud lab state unreadable/corrupt; refusing silent reset: ${error?.message||error}`)}}
 const initial=()=>({schema:'reality-cloud-lab-v1',engineVersion:E.VERSION,engineLayer:'V21',lineageSeed:defaultLineage,depth:0,languageDepth:0,attack:0,ontology:E.seedOntology(),ecologyState:null,worldEcologyState:null,questionEcologyState:null,strategyEcologyState:null,theoryEcologyState:null,experimentState:null,barrierState:null,causalState:null,conceptState:null,sequentialState:null,macroState:null,theoryCourtState:null,methodCourtState:null,runs:0,cycles:0})
 let state=readState()||initial()
 if(state.schema!=='reality-cloud-lab-v1'||Number(state.lineageSeed)!==defaultLineage)throw new Error('Cloud lab state lineage/schema mismatch; refusing silent reset')
