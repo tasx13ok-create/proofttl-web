@@ -40,13 +40,13 @@ for (const expected of [
   'Stripe',
   'NO CARD REQUIRED',
   'CONFIRMED BEFORE PAYMENT REQUEST',
-  'TECHNICAL PROTOCOL BOUNDARY',
+  'WHAT THE BUYER RECEIVES',
 ]) {
   if (!trust.includes(expected)) throw new Error(`Trust Center missing buyer-facing trust behavior: ${expected}`)
 }
 
-for (const forbidden of ['OPEN WORKSPACE', 'VOICE PIPELINE', 'Studio cloud', 'Isolated runner']) {
-  if (trust.includes(forbidden)) throw new Error(`Trust Center leaked internal/prototype messaging: ${forbidden}`)
+for (const forbidden of ['OPEN WORKSPACE', 'VOICE PIPELINE', 'Studio cloud', 'Isolated runner', 'TECHNICAL PROTOCOL BOUNDARY', 'Fact Lease']) {
+  if (trust.includes(forbidden)) throw new Error(`Trust Center leaked internal/retired messaging: ${forbidden}`)
 }
 
 const buyerPages = [
@@ -56,6 +56,7 @@ const buyerPages = [
   'out/audit/sample/index.html',
   'out/stress-test/index.html',
   'out/services/index.html',
+  'out/solutions/index.html',
   'out/ai-fact-checker/index.html',
   'out/trust/index.html',
   'out/how-proofttl-works/index.html',
@@ -91,6 +92,7 @@ const retiredOfferFragments = [
   'START 3–5 CLAIMS',
   'VERIFY THESE 3 CLAIMS',
   'Claim Stress Test payment',
+  'Claim Stress Test',
   'Full Verification Audit',
   'Fact Lease',
   'fact-leases',
@@ -135,15 +137,19 @@ async function checkInternalLinks(file) {
   }
 }
 
+function assertNoRetiredOffer(file, body) {
+  for (const fragment of retiredOfferFragments) {
+    if (body.includes(fragment)) throw new Error(`${file} leaked retired ProofTTL offer copy: ${fragment}`)
+  }
+}
+
 for (const file of buyerPages) {
   if (!(await exists(file))) throw new Error(`Buyer-facing export missing: ${file}`)
   const html = await readFile(file, 'utf8')
   for (const fragment of forbiddenBuyerFragments) {
     if (html.includes(fragment)) throw new Error(`${file} leaked prototype/app-only public UI: ${fragment}`)
   }
-  for (const fragment of retiredOfferFragments) {
-    if (html.includes(fragment)) throw new Error(`${file} leaked retired ProofTTL offer copy: ${fragment}`)
-  }
+  assertNoRetiredOffer(file, html)
 }
 
 const discoveryFiles = [
@@ -156,9 +162,7 @@ const discoveryFiles = [
 for (const file of discoveryFiles) {
   if (!(await exists(file))) throw new Error(`Machine discovery surface missing: ${file}`)
   const body = await readFile(file, 'utf8')
-  for (const fragment of retiredOfferFragments) {
-    if (body.includes(fragment)) throw new Error(`${file} leaked retired ProofTTL offer copy: ${fragment}`)
-  }
+  assertNoRetiredOffer(file, body)
   if (!body.includes('1500') && !body.includes('$1,500')) throw new Error(`${file} missing canonical $1,500 Fact Audit price`)
   if (!body.includes('Fact Audit')) throw new Error(`${file} missing canonical Fact Audit identity`)
 }
@@ -174,13 +178,17 @@ for (const required of ['$1,500', 'Fact Audit', '25']) {
 }
 
 const sitemap = await readFile('out/sitemap.xml', 'utf8')
+assertNoRetiredOffer('out/sitemap.xml', sitemap)
+if (sitemap.includes('/verify-lease.html')) throw new Error('Public sitemap still advertises retired lease verifier')
 const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1])
 if (sitemapUrls.length < 10) throw new Error(`Public sitemap unexpectedly small: ${sitemapUrls.length} URLs`)
 
 const sitemapFiles = [...new Set(sitemapUrls.map(outputFileForPublicUrl))]
 for (const file of sitemapFiles) {
   if (!(await exists(file))) throw new Error(`Sitemap points to a missing exported page: ${file}`)
+  const html = await readFile(file, 'utf8')
+  assertNoRetiredOffer(file, html)
   await checkInternalLinks(file)
 }
 
-console.log(`SUCCESS: public ProofTTL sales shell is buyer-focused; ${buyerPages.length} buyer pages and ${discoveryFiles.length} discovery surfaces passed prototype/retired-offer checks, and ${sitemapFiles.length} sitemap pages passed internal-link validation.`)
+console.log(`SUCCESS: public ProofTTL sales shell is buyer-focused; ${buyerPages.length} buyer pages, ${discoveryFiles.length} discovery surfaces, and all ${sitemapFiles.length} sitemap pages passed retired-offer and internal-link validation.`)
