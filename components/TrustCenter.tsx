@@ -85,7 +85,7 @@ export default function TrustCenter() {
       <article><span>03</span><h3>No timeless claims.</h3><p>Important findings are monitored for seven days because evidence can change after the initial review.</p></article>
     </section>
 
-    <section className="ptl-detail-cta"><div><span>Buyer boundary</span><h2>Know exactly what you are paying for.</h2><p>Up to 25 outputs or claims, highest-risk findings deep-verified, human approval, proof/report delivery, and a seven-day watch.</p></div><div className="ptl-detail-actions"><a className="primary" href="/audit/#audit-intake">START FACT AUDIT <span>↗</span></a><a href="/audit/sample/">VIEW SAMPLE</a></div></section>
+    <section className="ptl-detail-cta"><div><span>Buyer boundary</span><h2>Know exactly what the Fact Audit includes.</h2><p>Up to 25 outputs or claims, highest-risk findings deep-verified, human approval, proof/report delivery, and a seven-day watch.</p></div><a href="/audit/sample/">View sample <span>↗</span></a></section>
 
     <p className="ptl-detail-note">ProofTTL does not replace legal, medical, financial, regulatory, accounting, or other professional judgment.</p>
   </>
