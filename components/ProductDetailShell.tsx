@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
+import SharedProductHeader from './SharedProductHeader'
 
 type Props = {
-  active: 'sample' | 'method' | 'trust' | 'support'
+  active: 'sample' | 'method' | 'trust' | 'support' | 'none'
   eyebrow: string
   title: ReactNode
   description: ReactNode
@@ -24,10 +25,7 @@ export default function ProductDetailShell({ active, eyebrow, title, description
       </aside>
 
       <div className="ptl-detail-main">
-        <header className="ptl-detail-topbar">
-          <a href="/"><img src="/proofttl-lockup.svg" alt="ProofTTL" /></a>
-          <div><a className="primary" href="/audit/#audit-intake">Start audit <span>↗</span></a></div>
-        </header>
+        <SharedProductHeader />
 
         <section className="ptl-detail-hero">
           <span className="ptl-detail-eyebrow">{eyebrow}</span>
