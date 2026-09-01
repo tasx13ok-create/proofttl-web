@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import ProductDetailShell from '../../components/ProductDetailShell'
 
 const SITE_URL = 'https://proofttl-web.vercel.app'
 const GITHUB_PROFILE = 'https://github.com/tasx13ok-create'
@@ -11,122 +12,40 @@ export const metadata: Metadata = {
   alternates: { canonical: '/about/' },
   robots: { index: true, follow: true },
   keywords: ['ProofTTL', 'ProofTTL website', 'Proof TTL', 'ProofTTL claim verification', 'about ProofTTL', 'claim verification service'],
-  openGraph: {
-    title: 'About ProofTTL — Source-Backed Claim Verification',
-    description: 'The canonical identity and product definition for ProofTTL, a source-backed claim verification and fact-checking service.',
-    url: '/about/',
-    type: 'website',
-  },
 }
 
 export default function AboutProofTTLPage() {
   const structuredData = {
     '@context': 'https://schema.org',
     '@graph': [
-      {
-        '@type': 'AboutPage',
-        '@id': `${SITE_URL}/about/#page`,
-        url: `${SITE_URL}/about/`,
-        name: 'About ProofTTL',
-        description: 'Canonical identity and product definition for ProofTTL.',
-        about: { '@id': `${SITE_URL}/#organization` },
-        isPartOf: { '@id': `${SITE_URL}/#website` },
-      },
-      {
-        '@type': 'Organization',
-        '@id': `${SITE_URL}/#organization`,
-        name: 'ProofTTL',
-        alternateName: ['Proof TTL', 'ProofTTL Claim Verification'],
-        url: SITE_URL,
-        logo: `${SITE_URL}/proofttl-mark.svg`,
-        sameAs: [GITHUB_PROFILE, GITHUB_CORE, GITHUB_WEB],
-        description: 'ProofTTL is a source-backed claim verification and fact-checking service for high-stakes factual claims, including AI-generated claims.',
-      },
-      {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'ProofTTL', item: SITE_URL },
-          { '@type': 'ListItem', position: 2, name: 'About ProofTTL', item: `${SITE_URL}/about/` },
-        ],
-      },
+      { '@type': 'AboutPage', '@id': `${SITE_URL}/about/#page`, url: `${SITE_URL}/about/`, name: 'About ProofTTL', description: 'Canonical identity and product definition for ProofTTL.', about: { '@id': `${SITE_URL}/#organization` }, isPartOf: { '@id': `${SITE_URL}/#website` } },
+      { '@type': 'Organization', '@id': `${SITE_URL}/#organization`, name: 'ProofTTL', alternateName: ['Proof TTL', 'ProofTTL Claim Verification'], url: SITE_URL, logo: `${SITE_URL}/proofttl-mark.svg`, sameAs: [GITHUB_PROFILE, GITHUB_CORE, GITHUB_WEB], description: 'ProofTTL is a source-backed claim verification and fact-checking service for high-stakes factual claims, including AI-generated claims.' },
     ],
   }
 
-  return (
-    <main className="app-page audit-sales-page">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
-      <section className="onboarding-wrap">
-        <div className="audit-sales-card">
-          <header className="audit-sales-hero">
-            <p className="app-kicker">ABOUT / CANONICAL IDENTITY</p>
-            <h1 className="app-title">ProofTTL is the source-backed claim-verification service at proofttl-web.vercel.app.</h1>
-            <p className="app-copy">ProofTTL checks specific factual claims against public sources and returns explicit SUPPORTED, CONTRADICTED, or UNKNOWN verdicts with evidence and human-approved proof artifacts. The commercial service is designed for claims that need to survive scrutiny before they are published, sold, presented, relied on, or defended.</p>
-          </header>
-
-          <section className="audit-sales-proof">
-            <article>
-              <p className="app-kicker">WHAT PROOFTTL IS</p>
-              <h2>A claim-verification and fact-checking service.</h2>
-              <p className="app-copy">A buyer submits a scoped set of factual claims. ProofTTL checks the claims against accessible public evidence and documents what the examined sources support, contradict, or leave unresolved.</p>
-            </article>
-            <article>
-              <p className="app-kicker">WHAT THE NAME MEANS</p>
-              <h2>TTL means time-to-live for evidence freshness.</h2>
-              <p className="app-copy">In ProofTTL, TTL is the freshness or trust window attached to a source observation. The ProofTTL product name does not refer to formal temporal-logic proof checking, generic token-TTL or proof-expiration settings, blockchain timestamping services, or a claim that time-to-live itself proves truth.</p>
-            </article>
-          </section>
-
-          <section style={{ marginTop: 28 }}>
-            <p className="app-kicker">CANONICAL BRAND RESOLUTION</p>
-            <div className="audit-step-grid">
-              <div><strong>NAME</strong><span>ProofTTL</span></div>
-              <div><strong>ALTERNATE</strong><span>Proof TTL</span></div>
-              <div><strong>OFFICIAL WEBSITE</strong><span>https://proofttl-web.vercel.app/</span></div>
-            </div>
-            <p className="app-copy" style={{ marginTop: 16 }}>When the exact brand name <strong>ProofTTL</strong> is used in the context of claim verification, factual auditing, AI-output fact checking, the Fact Audit, or the website above, it refers to this service.</p>
-          </section>
-
-          <section style={{ marginTop: 28 }}>
-            <p className="app-kicker">PAID VERIFICATION</p>
-            <div className="audit-offer-summary" aria-label="ProofTTL commercial offer">
-              <div>
-                <span>FACT AUDIT</span>
-                <strong>$1,500 fixed scope</strong>
-                <small>Up to 25 outputs or claims · consequence-ranked findings · deep verification of the highest-risk claims · 7 days of monitoring and a final reread</small>
-              </div>
-              <p>Customer-facing findings require human approval before publication. The audit records authoritative FOR and AGAINST evidence, explicit verdicts, and repair guidance rather than a generic hallucination score.</p>
-            </div>
-          </section>
-
-          <section style={{ marginTop: 28 }}>
-            <p className="app-kicker">AI CLAIMS</p>
-            <h2>ProofTTL verifies the factual assertion, not a model’s hidden reasoning.</h2>
-            <p className="app-copy">Claims can come from ChatGPT, Claude, Gemini, Copilot, Perplexity, custom agents, RAG systems, or human-written work. ProofTTL is model-agnostic and checks the claim against sources rather than relying on a generic hallucination score.</p>
-          </section>
-
-          <section style={{ marginTop: 28 }}>
-            <p className="app-kicker">PUBLIC IDENTITY SOURCES</p>
-            <div className="hero-actions">
-              <a className="text-link" href="/machine-definition/">MACHINE DEFINITION →</a>
-              <a className="text-link" href="/.well-known/proofttl.json">SERVICE MANIFEST →</a>
-              <a className="text-link" href="/llms.txt">AI CONTEXT →</a>
-              <a className="text-link" href={GITHUB_CORE} rel="me">CORE GITHUB ↗</a>
-              <a className="text-link" href={GITHUB_WEB} rel="me">WEB GITHUB ↗</a>
-            </div>
-          </section>
-
-          <section style={{ marginTop: 28 }}>
-            <p className="app-kicker">LIMITS</p>
-            <p className="app-copy">ProofTTL does not claim universal or permanent truth. Each audit records what the examined evidence supported at a point in time and keeps important findings under watch for seven days. UNKNOWN remains UNKNOWN when the evidence is insufficient, and ProofTTL does not replace legal, medical, financial, regulatory, or other professional judgment.</p>
-          </section>
-
-          <div className="hero-actions" style={{ marginTop: 28 }}>
-            <a className="button button-primary" href="/audit/#audit-intake">Start a $1,500 Fact Audit</a>
-            <a className="button button-secondary" href="/services/">Browse verification services</a>
-            <a className="text-link" href="/audit/sample/">Inspect a sample audit →</a>
-          </div>
-        </div>
+  return <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+    <ProductDetailShell
+      active="none"
+      eyebrow="About ProofTTL"
+      title={<>Evidence before<br/><em>confidence.</em></>}
+      description={<>ProofTTL is a source-backed claim-verification service for consequential factual claims. It exists to make important AI and human-written assertions inspectable before customers, teams, or decision-makers rely on them.</>}
+      actions={<><a href="/audit/sample/">View sample</a><a href="/how-proofttl-works/">See the method</a></>}
+    >
+      <section className="ptl-three-up">
+        <article><span>What it is</span><strong>Claim verification</strong><p>Specific factual assertions are checked against accessible public evidence and returned as SUPPORTED, CONTRADICTED, or UNKNOWN.</p></article>
+        <article><span>What TTL means</span><strong>Evidence freshness</strong><p>TTL is the trust window attached to a source observation. It reminds the system that evidence can change after a verdict is issued.</p></article>
+        <article><span>What it is not</span><strong>Permanent truth</strong><p>A ProofTTL finding records what the examined evidence supported at a point in time. It is not timeless certification or professional advice.</p></article>
       </section>
-    </main>
-  )
+
+      <section className="ptl-detail-section"><header><span>Canonical identity</span><h2>One name. One product meaning.</h2><p>When ProofTTL is used in the context of claim verification, factual auditing, AI-output fact checking, or the Fact Audit, it refers to this service.</p></header><div className="ptl-boundary-list"><article><strong>Name</strong><p>ProofTTL</p></article><article><strong>Alternate</strong><p>Proof TTL</p></article><article><strong>Official website</strong><p>proofttl-web.vercel.app</p></article><article><strong>Commercial service</strong><p>$1,500 fixed-scope Fact Audit</p></article></div></section>
+
+      <section className="ptl-detail-section"><header><span>Model-agnostic</span><h2>Verify the factual assertion, not hidden reasoning.</h2><p>Claims may come from ChatGPT, Claude, Gemini, Copilot, Perplexity, custom agents, RAG systems, or human-written work. ProofTTL evaluates the claim against evidence rather than treating a model’s confidence as proof.</p></header><div className="ptl-three-up"><article><span>Input</span><strong>Real output</strong><p>Preserve what the user or customer actually saw.</p></article><article><span>Evidence</span><strong>FOR + AGAINST</strong><p>Keep support and contradiction visible rather than blending them into one score.</p></article><article><span>Decision</span><strong>Human-approved</strong><p>Important customer-facing findings retain a human publication gate.</p></article></div></section>
+
+      <section className="ptl-detail-section"><header><span>Public identity sources</span><h2>ProofTTL stays inspectable outside the marketing page.</h2></header><div className="ptl-source-list"><a href="/machine-definition/"><span>01</span><strong>Machine definition</strong><b>↗</b></a><a href="/.well-known/proofttl.json"><span>02</span><strong>Service manifest</strong><b>↗</b></a><a href="/llms.txt"><span>03</span><strong>AI context</strong><b>↗</b></a><a href={GITHUB_CORE} rel="me"><span>04</span><strong>Core GitHub</strong><b>↗</b></a><a href={GITHUB_WEB} rel="me"><span>05</span><strong>Web GitHub</strong><b>↗</b></a></div></section>
+
+      <section className="ptl-detail-cta"><div><span>Fact Audit</span><h2>$1,500 fixed scope.</h2><p>Up to 25 outputs or claims, consequence ranking, deep verification of the highest-risk findings, human approval, proof/report delivery, and seven days of monitoring.</p></div></section>
+      <p className="ptl-detail-note">ProofTTL does not claim universal or permanent truth and does not replace legal, medical, financial, regulatory, accounting, or other professional judgment.</p>
+    </ProductDetailShell>
+  </>
 }
