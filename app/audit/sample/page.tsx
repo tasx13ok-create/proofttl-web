@@ -112,7 +112,7 @@ export default function SampleAuditPage() {
             </div>
           </div>
 
-          <p className="app-note">Public demonstration only. This is not a commissioned audit of Perplexity, an endorsement, an accusation, or legal, financial, medical, regulatory, certification, or compliance advice. No Fact Lease IDs or cryptographic signatures are displayed until those records are actually issued by the live verifier.</p>
+          <p className="app-note">Public demonstration only. This is not a commissioned audit of Perplexity, an endorsement, an accusation, or legal, financial, medical, regulatory, certification, or compliance advice. Production proof artifacts are delivered only after the live Fact Audit workflow completes and human approval is recorded.</p>
         </div>
       </section>
     </main>
