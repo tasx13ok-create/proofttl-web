@@ -10,10 +10,10 @@ export default function CommercialHome() {
           <a className="ptl-secondary-cta" href="/audit/sample/"><span>View sample audit</span><b>→</b></a>
         </div>
         <div className="ptl-hero-trust">
-          <span>Up to 25 outputs</span>
-          <span>Scope before payment</span>
-          <span>Human approval</span>
-          <span>7-day watch</span>
+          <span>UP TO 25 OUTPUTS</span>
+          <span>SCOPE BEFORE PAYMENT</span>
+          <span>HUMAN APPROVAL</span>
+          <span>7-DAY WATCH</span>
         </div>
       </div>
 
