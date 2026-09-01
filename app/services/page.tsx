@@ -35,7 +35,7 @@ export default function ServicesPage() {
       <section className={`${styles.shell} ${styles.indexHero}`}>
         <p className={styles.eyebrow}>PROOFTTL / VERIFICATION SERVICES</p>
         <h1>Bring the risky claim. Get the source-backed answer.</h1>
-        <p>ProofTTL is a claim verification and fact-checking service for factual assertions that need to survive scrutiny. We check scoped claims against public primary sources and return explicit verdicts, evidence, and signed Fact Leases.</p>
+        <p>ProofTTL is a claim verification and fact-checking service for factual assertions that need to survive scrutiny. We check scoped claims against public primary sources and return explicit verdicts, evidence, and human-approved proof artifacts.</p>
       </section>
 
       <div className={`${styles.shell} ${styles.cta}`}>
@@ -71,7 +71,7 @@ export default function ServicesPage() {
       </section>
 
       <footer className={`${styles.shell} ${styles.footer}`}>
-        ProofTTL · claim verification · source-backed fact checking · signed Fact Leases
+        ProofTTL · claim verification · source-backed fact checking · human-approved Fact Audits
       </footer>
     </main>
   )
