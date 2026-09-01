@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import ProductDetailShell from '../../components/ProductDetailShell'
 
 export const metadata: Metadata = {
   title: 'How ProofTTL Works — Source-Backed Fact Audits',
@@ -7,175 +8,37 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 }
 
-const process = [
-  ['1 · SUBMIT', 'Send 10–25 real AI outputs or consequential factual claims, why they matter, and your deadline. No card is required to submit an intake.'],
-  ['2 · DECOMPOSE + RANK', 'ProofTTL isolates atomic factual assertions and ranks them by consequence so the highest-risk findings receive the deepest verification effort.'],
-  ['3 · SCOPE + PAY', 'ProofTTL confirms the scope before creating the Stripe payment request. The Fact Audit is $1,500 fixed scope; raw card details are handled by Stripe rather than stored by ProofTTL.'],
-  ['4 · VERIFY', 'Important claims are checked against relevant accessible public evidence with authoritative and primary sources prioritized where appropriate, including evidence FOR and AGAINST.'],
-  ['5 · CONTRADICTION PASS + VERDICT', 'A separate contradiction pass challenges the evidence set before each finding is finalized as SUPPORTED, CONTRADICTED, or UNKNOWN. UNKNOWN remains valid when evidence does not justify certainty.'],
-  ['6 · HUMAN APPROVAL + DELIVERY', 'Customer-facing findings require human approval before publication. The audit deliverable includes evidence, readable reasoning, proof artifacts, and seven days of monitoring on important findings with a final re-read.'],
+const steps = [
+  ['01', 'Submit', 'Send 10–25 real AI outputs or consequential factual claims. No card is required to submit an intake.'],
+  ['02', 'Decompose', 'ProofTTL isolates atomic factual assertions and separates the claims that actually need evidence.'],
+  ['03', 'Rank', 'Claims are ordered by consequence so the highest-risk failures receive the deepest verification effort.'],
+  ['04', 'Verify', 'Relevant public evidence is examined with authoritative and primary sources prioritized where appropriate.'],
+  ['05', 'Challenge', 'A separate contradiction pass looks for evidence that weakens or negates the preliminary conclusion.'],
+  ['06', 'Approve + watch', 'Customer-facing findings require human approval, then important findings enter a seven-day watch.'],
 ] as const
-
-const verdicts = [
-  ['SUPPORTED', 'The examined public evidence supports the scoped factual claim as written.'],
-  ['CONTRADICTED', 'The examined evidence materially conflicts with the scoped claim.'],
-  ['UNKNOWN', 'The available evidence does not justify calling the claim supported or contradicted.'],
-] as const
-
-const boundaries = [
-  ['Scope before payment', 'Submitting an intake does not charge a card. The engagement is confirmed before the $1,500 payment request is created.'],
-  ['Evidence over confidence vibes', 'ProofTTL documents what the examined sources support instead of presenting unexplained certainty.'],
-  ['Human approval', 'Customer-facing findings are not published automatically during the launch workflow. Human approval is required.'],
-  ['Time matters', 'Important findings enter a seven-day watch with a final re-read because evidence can change after the initial audit.'],
-  ['Public-source service', 'The standard Fact Audit is built around accessible public evidence. Private or internal evidence requires separate scoping.'],
-  ['Professional boundaries', 'ProofTTL does not replace legal, medical, financial, regulatory, accounting, or other professional advice.'],
-] as const
-
-function Matrix({ rows }: { rows: readonly (readonly [string, string])[] }) {
-  return <div className="app-table how-works-matrix">{rows.map(([name, description]) => <div className="app-table-row" key={name}><span>{name}</span><span>{description}</span></div>)}</div>
-}
 
 export default function HowProofTTLWorksPage() {
-  return (
-    <main className="app-page audit-sales-page how-works-page">
-      <section className="app-shell how-works-shell">
-        <section className="onboarding-card how-works-card">
-          <p className="app-kicker">HOW PROOFTTL WORKS</p>
-          <h1 className="app-title" style={{ maxWidth: 900 }}>From a risky AI output to a defensible evidence trail.</h1>
-          <p className="app-copy" style={{ maxWidth: 940 }}>ProofTTL sells one launch engagement: the <strong>$1,500 Fact Audit</strong>. Submit 10–25 real outputs or claims, identify what could cause the most damage if wrong, verify the highest-risk findings deeply, require human approval, and keep the important findings under watch for seven days.</p>
-          <div className="hero-actions">
-            <a className="button button-primary" href="/audit/#audit-intake">START FACT AUDIT →</a>
-            <a className="button button-secondary" href="/audit/sample/">VIEW SAMPLE AUDIT</a>
-            <a className="text-link" href="/trust/">Payment + trust boundary ↗</a>
-          </div>
-        </section>
+  return <ProductDetailShell
+    active="method"
+    eyebrow="Method"
+    title={<>From an AI answer<br/><em>to inspectable proof.</em></>}
+    description={<>ProofTTL is designed around one idea: confidence should come after evidence, not before it. The Fact Audit turns real outputs into scoped claims, challenges them, and preserves uncertainty when the record is incomplete.</>}
+    actions={<><a className="primary" href="/audit/#audit-intake">Start Fact Audit <span>↗</span></a><a href="/audit/sample/">View sample</a></>}
+  >
+    <section className="ptl-method-flow">
+      {steps.map(([number,title,copy]) => <article key={number}><span>{number}</span><div><h2>{title}</h2><p>{copy}</p></div></article>)}
+    </section>
 
-        <section className="console-panel wide">
-          <p className="app-kicker">THE CUSTOMER FLOW</p>
-          <h2>Six explicit steps from intake to monitored findings.</h2>
-          <Matrix rows={process} />
-        </section>
+    <section className="ptl-detail-section"><header><span>Verdict discipline</span><h2>Three outcomes. No forced certainty.</h2><p>Each verdict stays attached to the exact proposition and the evidence actually examined.</p></header><div className="ptl-verdict-grid"><article className="supported"><span>SUPPORTED</span><p>The examined public evidence supports the scoped factual claim as written.</p></article><article className="contradicted"><span>CONTRADICTED</span><p>The examined evidence materially conflicts with the scoped claim.</p></article><article className="unknown"><span>UNKNOWN</span><p>The available evidence does not justify calling the claim supported or contradicted.</p></article></div></section>
 
-        <section className="console-panel wide">
-          <p className="app-kicker">THE VERDICTS</p>
-          <h2>Uncertainty is a valid result.</h2>
-          <p className="app-copy">ProofTTL does not force every claim into a yes/no answer just to look decisive.</p>
-          <Matrix rows={verdicts} />
-        </section>
+    <section className="ptl-method-diagram">
+      <div className="ptl-method-column"><span>Input</span><strong>Real customer-facing output</strong><p>Preserve the original wording and context.</p></div><b>→</b><div className="ptl-method-column"><span>Evidence</span><strong>FOR + AGAINST</strong><p>Prefer inspectable authoritative sources.</p></div><b>→</b><div className="ptl-method-column"><span>Judgment</span><strong>Verdict + uncertainty</strong><p>Challenge first, then finalize.</p></div><b>→</b><div className="ptl-method-column"><span>Delivery</span><strong>Human-approved finding</strong><p>Monitor important claims for seven days.</p></div>
+    </section>
 
-        <section className="console-panel wide">
-          <p className="app-kicker">WHAT YOU RECEIVE</p>
-          <h2>A customer-ready audit, not a loose collection of links.</h2>
-          <div className="pricing-cards">
-            <article><span className="plan-label">RANKED FINDINGS</span><h3>Consequence first</h3><p>The audit separates low-impact noise from the claims most likely to create customer, compliance, financial, or reputational damage.</p></article>
-            <article><span className="plan-label">EVIDENCE</span><h3>FOR / AGAINST</h3><p>Important findings are tied to inspectable authoritative evidence and challenged with a contradiction pass before finalization.</p></article>
-            <article><span className="plan-label">PROOF + WATCH</span><h3>Human-approved delivery</h3><p>Approved proof artifacts and the report are delivered with seven days of monitoring on important findings and a final re-read.</p></article>
-          </div>
-        </section>
+    <section className="ptl-detail-section"><header><span>What you receive</span><h2>A complete finding, not a pile of links.</h2></header><div className="ptl-three-up"><article><span>Ranked findings</span><strong>Consequence first</strong><p>Separate low-impact noise from the claims most likely to create customer, compliance, financial, or reputational damage.</p></article><article><span>Evidence</span><strong>FOR / AGAINST</strong><p>Important findings remain tied to inspectable sources and a preserved contradiction pass.</p></article><article><span>Proof + watch</span><strong>Human-approved</strong><p>Approved findings ship with a readable proof artifact and seven days of monitoring on important claims.</p></article></div></section>
 
-        <section className="console-panel wide">
-          <p className="app-kicker">ONE LAUNCH OFFER</p>
-          <h2>$1,500 Fact Audit</h2>
-          <div className="pricing-cards">
-            <article className="featured-plan">
-              <span className="plan-label">FACT AUDIT</span>
-              <div className="price">$1,500<span> fixed scope</span></div>
-              <p>10–25 real outputs or claims reviewed, with deep verification of the highest-risk findings, evidence FOR and AGAINST, a contradiction pass, human approval before customer-facing publication, proof/report delivery, and seven days of monitoring on important findings.</p>
-              <a className="button button-primary" href="/audit/#audit-intake">Start Fact Audit</a>
-            </article>
-          </div>
-        </section>
+    <section className="ptl-detail-section"><header><span>Boundaries</span><h2>The limits are part of the method.</h2></header><div className="ptl-boundary-list"><article><strong>Scope before payment</strong><p>Submitting an intake does not charge a card. ProofTTL confirms the engagement before the $1,500 payment request is created.</p></article><article><strong>Public-source service</strong><p>The standard Fact Audit is built around accessible public evidence. Private or internal evidence requires separate scoping.</p></article><article><strong>Human publication gate</strong><p>Customer-facing findings are not automatically published during the launch workflow.</p></article><article><strong>Professional boundaries</strong><p>ProofTTL does not replace legal, medical, financial, regulatory, accounting, or other professional advice.</p></article></div></section>
 
-        <section className="console-panel wide">
-          <p className="app-kicker">BOUNDARIES</p>
-          <h2>What ProofTTL does — and does not — promise.</h2>
-          <Matrix rows={boundaries} />
-        </section>
-
-        <section className="onboarding-card how-works-card">
-          <p className="app-kicker">READY TO AUDIT THE OUTPUT?</p>
-          <h2>Submit the real outputs first. Pay only after the scope is clear.</h2>
-          <div className="hero-actions"><a className="button button-primary" href="/audit/#audit-intake">START A $1,500 FACT AUDIT →</a><a className="button button-secondary" href="/audit/sample/">VIEW SAMPLE</a></div>
-        </section>
-      </section>
-
-      <style>{`
-        .how-works-page { overflow-x: clip; }
-        .how-works-shell {
-          padding: 38px 0 110px;
-          display: grid;
-          grid-template-columns: minmax(0, 1fr);
-          gap: 18px;
-        }
-        .how-works-shell > * {
-          grid-column: 1 !important;
-          width: 100%;
-          max-width: 100%;
-          min-width: 0;
-        }
-        .how-works-card { padding: 30px; }
-        .how-works-page .console-panel,
-        .how-works-page .pricing-cards,
-        .how-works-page .pricing-cards > article,
-        .how-works-page .hero-actions { min-width: 0; max-width: 100%; }
-        .how-works-matrix .app-table-row {
-          grid-template-columns: minmax(150px, .72fr) minmax(0, 1.7fr);
-        }
-        .how-works-matrix .app-table-row > span {
-          min-width: 0;
-          overflow-wrap: anywhere;
-          word-break: normal;
-        }
-
-        @media (max-width: 760px) {
-          .how-works-shell {
-            width: calc(100% - 24px);
-            padding: 24px 0 72px;
-            gap: 14px;
-          }
-          .how-works-card,
-          .how-works-page .console-panel { padding: 20px; }
-          .how-works-page .app-title {
-            font-size: clamp(30px, 9vw, 42px);
-            line-height: 1.04;
-          }
-          .how-works-page .app-copy { line-height: 1.58; }
-          .how-works-page .hero-actions {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            width: 100%;
-          }
-          .how-works-page .hero-actions .button,
-          .how-works-page .hero-actions .text-link {
-            width: 100%;
-            max-width: 100%;
-            justify-content: center;
-            text-align: center;
-            white-space: normal;
-            overflow-wrap: anywhere;
-          }
-          .how-works-matrix .app-table-row {
-            grid-template-columns: minmax(0, 1fr);
-            gap: 7px;
-            padding: 14px 0;
-          }
-          .how-works-matrix .app-table-row > span:first-child {
-            color: var(--foreground);
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 10px;
-            letter-spacing: .035em;
-          }
-          .how-works-page .pricing-cards { grid-template-columns: minmax(0, 1fr); }
-          .how-works-page .price { overflow-wrap: anywhere; }
-        }
-
-        @media (max-width: 390px) {
-          .how-works-shell { width: calc(100% - 18px); }
-          .how-works-card,
-          .how-works-page .console-panel { padding: 17px; }
-        }
-      `}</style>
-    </main>
-  )
+    <section className="ptl-detail-cta"><div><span>One launch offer</span><h2>$1,500 Fact Audit</h2><p>10–25 real outputs or claims, deep verification of the highest-risk findings, human approval, proof/report delivery, and seven days of monitoring.</p></div><a href="/audit/#audit-intake">Start Fact Audit <span>↗</span></a></section>
+  </ProductDetailShell>
 }
