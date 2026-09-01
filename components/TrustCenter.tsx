@@ -75,7 +75,7 @@ export default function TrustCenter() {
       <LiveCard title="SEVEN-DAY WATCH" subtitle="Monitoring status for important findings" data={monitoring}/>
     </section>
 
-    <section className="ptl-detail-section"><header><span>PAYMENT + DELIVERY BOUNDARY</span><h2>Scope first. Payment second.</h2><p>The commercial flow is intentionally boring where money is involved.</p></header><div className="ptl-boundary-list"><article><strong>Intake</strong><p>No card required. Send the real outputs first.</p></article><article><strong>Scope</strong><p>ProofTTL confirms fit and scope before creating the payment request.</p></article><article><strong>Payment</strong><p>$1,500 fixed scope. Card details are handled by Stripe rather than stored by ProofTTL.</p></article><article><strong>Publication</strong><p>Customer-facing findings require explicit human approval.</p></article></div></section>
+    <section className="ptl-detail-section"><header><span>PAYMENT + DELIVERY BOUNDARY</span><h2>Know what you are paying for before you pay.</h2><p>The commercial flow is intentionally boring where money is involved.</p></header><div className="ptl-boundary-list"><article><strong>Intake</strong><p>NO CARD REQUIRED. Send the real outputs first.</p></article><article><strong>Scope</strong><p>CONFIRMED BEFORE PAYMENT REQUEST. ProofTTL verifies fit before creating checkout.</p></article><article><strong>Payment</strong><p>$1,500 fixed scope. Card details are handled by Stripe rather than stored by ProofTTL.</p></article><article><strong>Publication</strong><p>Customer-facing findings require explicit human approval.</p></article></div></section>
 
     <section className="ptl-detail-section"><header><span>WHAT THE BUYER RECEIVES</span><h2>A readable evidence trail, not a black box.</h2><p>Each important finding keeps the exact claim, supporting and contradicting evidence, uncertainty, verdict, human decision, and monitored follow-up together.</p></header></section>
 
@@ -85,7 +85,7 @@ export default function TrustCenter() {
       <article><span>03</span><h3>No timeless claims.</h3><p>Important findings are monitored for seven days because evidence can change after the initial review.</p></article>
     </section>
 
-    <section className="ptl-detail-cta"><div><span>Buyer boundary</span><h2>Know exactly what you are paying for.</h2><p>Up to 25 outputs or claims, highest-risk findings deep-verified, human approval, proof/report delivery, and a seven-day watch.</p></div><a href="/audit/#audit-intake">Start Fact Audit <span>↗</span></a></section>
+    <section className="ptl-detail-cta"><div><span>Buyer boundary</span><h2>Know exactly what you are paying for.</h2><p>Up to 25 outputs or claims, highest-risk findings deep-verified, human approval, proof/report delivery, and a seven-day watch.</p></div><div className="ptl-detail-actions"><a className="primary" href="/audit/#audit-intake">START FACT AUDIT <span>↗</span></a><a href="/audit/sample/">VIEW SAMPLE</a></div></section>
 
     <p className="ptl-detail-note">ProofTTL does not replace legal, medical, financial, regulatory, accounting, or other professional judgment.</p>
   </>
