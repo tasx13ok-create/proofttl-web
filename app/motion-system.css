@@ -1,0 +1,200 @@
+/* ProofTTL motion layer — authored to feel like Jitter/ReactBits without runtime animation dependencies. */
+
+.ptl-ai-home{
+  --ptl-pointer-x:50vw;
+  --ptl-pointer-y:24vh;
+  --ptl-pointer-nx:0;
+  --ptl-pointer-ny:0;
+  isolation:isolate;
+}
+
+.ptl-ai-home:before{
+  z-index:0;
+  background:
+    radial-gradient(720px 520px at var(--ptl-pointer-x) var(--ptl-pointer-y),rgba(168,199,250,.095),transparent 68%),
+    radial-gradient(520px 360px at calc(var(--ptl-pointer-x) + 10vw) calc(var(--ptl-pointer-y) - 8vh),rgba(199,181,232,.055),transparent 70%),
+    radial-gradient(900px 500px at 62% 8%,rgba(120,150,205,.045),transparent 68%);
+  transition:opacity .25s ease;
+}
+
+.ptl-ai-home:after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  opacity:.18;
+  background-image:
+    linear-gradient(rgba(255,255,255,.014) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
+  background-size:54px 54px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.85),transparent 82%);
+  -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.85),transparent 82%);
+  transform:translate3d(calc(var(--ptl-pointer-nx) * -7px),calc(var(--ptl-pointer-ny) * -7px),0);
+  transition:transform .12s linear;
+}
+
+.ptl-ai-shell,
+.ptl-ai-main,
+.ptl-ai-sidebar{position:relative;z-index:1}
+
+.ptl-ai-hero{position:relative}
+.ptl-ai-hero:before{
+  content:"";
+  position:absolute;
+  width:620px;
+  height:620px;
+  left:38%;
+  top:2%;
+  z-index:-1;
+  border-radius:50%;
+  pointer-events:none;
+  opacity:.55;
+  background:radial-gradient(circle,rgba(168,199,250,.07),rgba(183,167,226,.025) 38%,transparent 70%);
+  filter:blur(10px);
+  transform:translate3d(calc(var(--ptl-pointer-nx) * 18px),calc(var(--ptl-pointer-ny) * 14px),0) scale(1.02);
+  transition:transform .14s linear,opacity .25s ease;
+}
+
+.ptl-ai-hero h1 em{
+  background-size:180% 100%;
+  animation:ptl-chroma-drift 8s ease-in-out infinite alternate;
+}
+
+.ptl-ai-composer,
+.ptl-ai-workspace,
+.ptl-ai-bento article,
+.ptl-home-risk-grid article,
+.ptl-home-verdict-grid article,
+.ptl-home-delivery-card,
+.ptl-ai-offer{
+  position:relative;
+  isolation:isolate;
+}
+
+.ptl-ai-composer:before,
+.ptl-ai-workspace:before,
+.ptl-ai-bento article:before,
+.ptl-home-risk-grid article:before,
+.ptl-home-verdict-grid article:before,
+.ptl-home-delivery-card:before,
+.ptl-ai-offer:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  border-radius:inherit;
+  pointer-events:none;
+  opacity:0;
+  background:radial-gradient(360px circle at var(--ptl-local-x,50%) var(--ptl-local-y,50%),rgba(168,199,250,.105),rgba(199,181,232,.035) 40%,transparent 72%);
+  transition:opacity .22s ease;
+}
+
+.ptl-motion-surface:hover:before{opacity:1}
+
+.ptl-motion-surface{
+  --ptl-tilt-x:0deg;
+  --ptl-tilt-y:0deg;
+  transform:perspective(1100px) rotateX(var(--ptl-tilt-x)) rotateY(var(--ptl-tilt-y)) translateZ(0);
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+
+.ptl-ai-composer.ptl-motion-surface:hover{
+  border-color:rgba(168,199,250,.2);
+  box-shadow:0 26px 72px rgba(0,0,0,.26),0 0 0 1px rgba(168,199,250,.025),inset 0 1px rgba(255,255,255,.055);
+}
+
+.ptl-ai-workspace.ptl-motion-surface:hover,
+.ptl-home-delivery-card.ptl-motion-surface:hover,
+.ptl-ai-offer.ptl-motion-surface:hover{
+  border-color:rgba(168,199,250,.14);
+  box-shadow:0 28px 82px rgba(0,0,0,.19),0 0 42px rgba(128,158,215,.025);
+}
+
+.ptl-ai-workspace:after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:-20%;
+  height:24%;
+  pointer-events:none;
+  opacity:.22;
+  background:linear-gradient(to bottom,transparent,rgba(168,199,250,.10),rgba(255,255,255,.025),transparent);
+  animation:ptl-verification-scan 7.5s cubic-bezier(.2,.7,.2,1) infinite;
+}
+
+.ptl-ai-status i,
+.ptl-live-dot{
+  box-shadow:0 0 0 0 rgba(140,207,174,.2);
+  animation:ptl-status-pulse 2.8s ease-out infinite;
+}
+
+.ptl-ai-verdict-orb{
+  box-shadow:0 0 0 1px rgba(233,154,159,.045),0 0 35px rgba(233,154,159,.035);
+  animation:ptl-orb-breathe 3.6s ease-in-out infinite;
+}
+
+.ptl-ai-shortcuts>a,
+.ptl-home-trust-links a,
+.ptl-home-inline-link,
+.ptl-ai-offer-actions>a{
+  position:relative;
+  overflow:hidden;
+}
+
+.ptl-ai-shortcuts>a:after,
+.ptl-ai-offer-actions>a:after{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  pointer-events:none;
+  background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.08) 45%,transparent 70%);
+  transform:translateX(-130%);
+  transition:transform .55s var(--ptl-spring);
+}
+
+.ptl-ai-shortcuts>a:hover:after,
+.ptl-ai-offer-actions>a:hover:after{transform:translateX(130%)}
+
+@keyframes ptl-chroma-drift{
+  from{background-position:0% 50%}
+  to{background-position:100% 50%}
+}
+
+@keyframes ptl-verification-scan{
+  0%,14%{transform:translateY(-150%);opacity:0}
+  22%{opacity:.24}
+  55%{opacity:.17}
+  72%,100%{transform:translateY(620%);opacity:0}
+}
+
+@keyframes ptl-status-pulse{
+  0%{box-shadow:0 0 0 0 rgba(140,207,174,.20)}
+  70%,100%{box-shadow:0 0 0 8px rgba(140,207,174,0)}
+}
+
+@keyframes ptl-orb-breathe{
+  0%,100%{transform:scale(1);filter:brightness(1)}
+  50%{transform:scale(1.045);filter:brightness(1.08)}
+}
+
+@media (hover:none),(pointer:coarse){
+  .ptl-motion-surface{transform:none!important}
+  .ptl-ai-home:after{transform:none}
+  .ptl-ai-hero:before{transform:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .ptl-ai-home *,
+  .ptl-ai-home *:before,
+  .ptl-ai-home *:after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+    transition-duration:.001ms!important;
+  }
+  .ptl-motion-surface{transform:none!important}
+  .ptl-ai-home:after,.ptl-ai-hero:before{transform:none!important}
+}
