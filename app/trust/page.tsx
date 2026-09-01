@@ -3,12 +3,12 @@ import TrustCenter from '../../components/TrustCenter'
 
 export const metadata: Metadata = {
   title: 'Trust Center',
-  description: 'ProofTTL payment, account-security, monitoring, signing, and delivery boundaries for the source-backed claim verification service.',
+  description: 'ProofTTL payment, account-security, seven-day monitoring, human approval, and delivery boundaries for the $1,500 Fact Audit.',
   alternates: { canonical: '/trust/' },
   robots: { index: true, follow: true },
   openGraph: {
     title: 'ProofTTL Trust Center',
-    description: 'See how ProofTTL handles scope-before-payment, Stripe-backed checkout, account security, signed Fact Leases, monitoring, and service limitations.',
+    description: 'See how ProofTTL handles scope-before-payment, Stripe-backed checkout, account security, human-approved proof/report delivery, seven-day monitoring, and service limitations.',
     url: '/trust/',
     type: 'website',
   },
