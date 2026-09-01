@@ -28,7 +28,6 @@ export default function TrustCenter() {
   const [health, setHealth] = useState<Section>(empty)
   const [auth, setAuth] = useState<Section>(empty)
   const [monitoring, setMonitoring] = useState<Section>(empty)
-  const [signing, setSigning] = useState<Section>(empty)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -65,24 +64,14 @@ export default function TrustCenter() {
     read('/monitor/status').then((body) => {
       const last = body?.last_run || {}
       setMonitoring({ status: body?.enabled === true ? 'ready' : 'locked', rows: [
-        ['Automatic monitoring', body?.enabled ? 'ACTIVE' : 'LIMITED'],
+        ['Audit monitoring', body?.enabled ? 'ACTIVE' : 'LIMITED'],
         ['Schedule', String(body?.schedule || '—')],
         ['Last completed run', String(last?.finished_at || last?.started_at || 'NO PERSISTED RUN YET')],
-        ['Claims checked', String(last?.checked ?? '—')],
-        ['Revoked', String(last?.revoked ?? '—')],
+        ['Findings checked', String(last?.checked ?? '—')],
+        ['Changes detected', String(last?.revoked ?? '—')],
         ['Errors', String(last?.errors ?? '—')],
       ] })
     }).catch((error) => setMonitoring({ status: 'error', rows: [['Status', error instanceof Error ? error.message : 'Unavailable']] }))
-
-    read('/.well-known/proofttl-keys.json').then((body) => {
-      const key = Array.isArray(body?.keys) ? body.keys[0] : null
-      setSigning({ status: body?.signing_enabled === true ? 'ready' : 'locked', rows: [
-        ['Signed Fact Leases', body?.signing_enabled ? 'ENABLED' : 'LIMITED'],
-        ['Algorithm', String(key?.crv || '—')],
-        ['Key ID', String(key?.kid || '—')],
-        ['Published verification keys', String(Array.isArray(body?.keys) ? body.keys.length : 0)],
-      ] })
-    }).catch((error) => setSigning({ status: 'error', rows: [['Status', error instanceof Error ? error.message : 'Unavailable']] }))
 
     return () => controller.abort()
   }, [])
@@ -95,15 +84,13 @@ export default function TrustCenter() {
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
         <a className="button button-primary" href="/audit/#audit-intake">START FACT AUDIT →</a>
         <a className="button button-secondary" href="/audit/sample/">VIEW SAMPLE</a>
-        <a className="text-link" href="/verify-lease.html">VERIFY A FACT LEASE →</a>
       </div>
     </section>
 
     <div className="pricing-cards">
       <Card title="VERIFICATION SERVICE" data={health} />
       <Card title="CUSTOMER ACCOUNT SECURITY" data={auth} />
-      <Card title="FACT LEASE MONITORING" data={monitoring} />
-      <Card title="CRYPTOGRAPHIC SIGNING" data={signing} />
+      <Card title="SEVEN-DAY WATCH" data={monitoring} />
     </div>
 
     <section className="console-panel wide">
@@ -122,9 +109,9 @@ export default function TrustCenter() {
     </section>
 
     <section className="console-panel wide">
-      <p className="app-kicker">TECHNICAL PROTOCOL BOUNDARY</p>
-      <h2>Developer infrastructure is separate from the human audit checkout.</h2>
-      <p className="app-copy">ProofTTL also maintains technical verification infrastructure for developer workflows. Those protocol experiments are separate from the commercial Fact Audit and do not process the human service payment. Fact Audit payments use the live Stripe-backed scope-first flow described above.</p>
+      <p className="app-kicker">WHAT THE BUYER RECEIVES</p>
+      <h2>A scoped evidence trail, human-approved report, and monitored findings.</h2>
+      <p className="app-copy">The Fact Audit keeps the claim, examined evidence, contradiction pass, verdict, repair guidance, and proof/report delivery together. Important findings stay under watch for seven days and receive a final re-read.</p>
     </section>
   </div>
 }
