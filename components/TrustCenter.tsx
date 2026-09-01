@@ -6,25 +6,22 @@ import { PROOFTTL_API_URL } from '../lib/proofttl-assistant'
 type Status = 'loading' | 'ready' | 'locked' | 'error'
 type Section = { status: Status; rows: Array<[string, string]> }
 
-function statusText(status: Status) {
-  if (status === 'loading') return 'CHECKING…'
-  if (status === 'ready') return 'READY'
-  if (status === 'locked') return 'LIMITED'
-  return 'UNAVAILABLE'
+function label(status: Status) {
+  if (status === 'loading') return 'Checking'
+  if (status === 'ready') return 'Operational'
+  if (status === 'locked') return 'Limited'
+  return 'Unavailable'
 }
 
-function Card({ title, data }: { title: string; data: Section }) {
-  return <section className="console-panel">
-    <p className="app-kicker">{title}</p>
-    <h2>{statusText(data.status)}</h2>
-    <div className="app-table" style={{ marginTop: 12 }}>
-      {data.rows.map(([label, value]) => <div className="app-table-row" key={label}><span>{label}</span><span>{value}</span></div>)}
-    </div>
-  </section>
+function LiveCard({ title, subtitle, data }: { title: string; subtitle: string; data: Section }) {
+  return <article className={`ptl-trust-live-card ${data.status}`}>
+    <div className="ptl-trust-live-head"><div><span>{title}</span><p>{subtitle}</p></div><strong><i/>{label(data.status)}</strong></div>
+    <div className="ptl-trust-live-rows">{data.rows.map(([name,value]) => <div key={name}><span>{name}</span><strong>{value}</strong></div>)}</div>
+  </article>
 }
 
 export default function TrustCenter() {
-  const empty: Section = { status: 'loading', rows: [] }
+  const empty: Section = { status: 'loading', rows: [['Status','Checking live service…']] }
   const [health, setHealth] = useState<Section>(empty)
   const [auth, setAuth] = useState<Section>(empty)
   const [monitoring, setMonitoring] = useState<Section>(empty)
@@ -38,80 +35,56 @@ export default function TrustCenter() {
       return body
     }
 
-    read('/health').then((body) => setHealth({
-      status: body?.ok === true ? 'ready' : 'locked',
-      rows: [
-        ['Verification service', body?.ok === true ? 'AVAILABLE' : 'LIMITED'],
-        ['Service', String(body?.service || 'ProofTTL')],
-        ['Version', String(body?.version || '—')],
-        ['Evidence storage', body?.storage ? 'BOUND' : 'UNAVAILABLE'],
-        ['Verification AI', body?.ai ? 'BOUND' : 'UNAVAILABLE'],
-      ],
-    })).catch((error) => setHealth({ status: 'error', rows: [['Status', error instanceof Error ? error.message : 'Unavailable']] }))
+    read('/health').then((body) => setHealth({ status: body?.ok === true ? 'ready' : 'locked', rows: [
+      ['Verification service', body?.ok === true ? 'Available' : 'Limited'],
+      ['Evidence storage', body?.storage ? 'Bound' : 'Unavailable'],
+      ['Verification AI', body?.ai ? 'Bound' : 'Unavailable'],
+      ['Version', String(body?.version || '—')],
+    ] })).catch((error) => setHealth({ status:'error', rows:[['Status', error instanceof Error ? error.message : 'Unavailable']] }))
 
     read('/.well-known/proofttl-auth.json').then((body) => {
       const ready = Boolean(body?.configured && body?.security?.secure_http_only_sessions && body?.security?.csrf_protection)
       setAuth({ status: ready ? 'ready' : 'locked', rows: [
-        ['Customer accounts', body?.configured ? 'AVAILABLE' : 'LIMITED'],
-        ['Google sign-in', body?.sign_in?.google ? 'AVAILABLE' : 'UNAVAILABLE'],
-        ['GitHub sign-in', body?.sign_in?.github ? 'AVAILABLE' : 'UNAVAILABLE'],
-        ['Passkeys', body?.sign_in?.passkey ? 'AVAILABLE' : 'UNAVAILABLE'],
-        ['HttpOnly sessions', body?.security?.secure_http_only_sessions ? 'YES' : 'NO'],
-        ['CSRF protection', body?.security?.csrf_protection ? 'YES' : 'NO'],
+        ['Customer accounts', body?.configured ? 'Available' : 'Limited'],
+        ['Google sign-in', body?.sign_in?.google ? 'Available' : 'Unavailable'],
+        ['GitHub sign-in', body?.sign_in?.github ? 'Available' : 'Unavailable'],
+        ['Passkeys', body?.sign_in?.passkey ? 'Available' : 'Unavailable'],
+        ['HttpOnly sessions', body?.security?.secure_http_only_sessions ? 'Yes' : 'No'],
+        ['CSRF protection', body?.security?.csrf_protection ? 'Yes' : 'No'],
       ] })
-    }).catch((error) => setAuth({ status: 'error', rows: [['Status', error instanceof Error ? error.message : 'Unavailable']] }))
+    }).catch((error) => setAuth({ status:'error', rows:[['Status', error instanceof Error ? error.message : 'Unavailable']] }))
 
     read('/monitor/status').then((body) => {
       const last = body?.last_run || {}
       setMonitoring({ status: body?.enabled === true ? 'ready' : 'locked', rows: [
-        ['Audit monitoring', body?.enabled ? 'ACTIVE' : 'LIMITED'],
+        ['Audit monitoring', body?.enabled ? 'Active' : 'Limited'],
         ['Schedule', String(body?.schedule || '—')],
-        ['Last completed run', String(last?.finished_at || last?.started_at || 'NO PERSISTED RUN YET')],
+        ['Last completed run', String(last?.finished_at || last?.started_at || 'No persisted run yet')],
         ['Findings checked', String(last?.checked ?? '—')],
         ['Changes detected', String(last?.revoked ?? '—')],
-        ['Errors', String(last?.errors ?? '—')],
       ] })
-    }).catch((error) => setMonitoring({ status: 'error', rows: [['Status', error instanceof Error ? error.message : 'Unavailable']] }))
+    }).catch((error) => setMonitoring({ status:'error', rows:[['Status', error instanceof Error ? error.message : 'Unavailable']] }))
 
     return () => controller.abort()
   }, [])
 
-  return <div style={{ display: 'grid', gap: 18 }}>
-    <section className="onboarding-card" style={{ padding: 26 }}>
-      <p className="app-kicker">PROOFTTL / TRUST CENTER</p>
-      <h1 className="app-title">Know what you are paying for before you pay.</h1>
-      <p className="app-copy">ProofTTL sells one launch offer: a fixed-price <strong>$1,500 Fact Audit</strong> for 10–25 real outputs or consequential claims, with deep verification of the highest-risk findings. Scope is confirmed before a Stripe payment request is created. Card details are handled by Stripe rather than stored by ProofTTL. Customer-facing findings require human approval before publication.</p>
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
-        <a className="button button-primary" href="/audit/#audit-intake">START FACT AUDIT →</a>
-        <a className="button button-secondary" href="/audit/sample/">VIEW SAMPLE</a>
-      </div>
+  return <>
+    <section className="ptl-trust-live-grid">
+      <LiveCard title="Verification service" subtitle="Core evidence and model bindings" data={health}/>
+      <LiveCard title="Account security" subtitle="Authentication and session controls" data={auth}/>
+      <LiveCard title="Seven-day watch" subtitle="Monitoring status for important findings" data={monitoring}/>
     </section>
 
-    <div className="pricing-cards">
-      <Card title="VERIFICATION SERVICE" data={health} />
-      <Card title="CUSTOMER ACCOUNT SECURITY" data={auth} />
-      <Card title="SEVEN-DAY WATCH" data={monitoring} />
-    </div>
+    <section className="ptl-detail-section"><header><span>Payment boundary</span><h2>Scope first. Payment second.</h2><p>The commercial flow is intentionally boring where money is involved.</p></header><div className="ptl-boundary-list"><article><strong>Intake</strong><p>No card required. Send the real outputs first.</p></article><article><strong>Scope</strong><p>ProofTTL confirms fit and scope before creating the payment request.</p></article><article><strong>Payment</strong><p>$1,500 fixed scope. Card details are handled by Stripe rather than stored by ProofTTL.</p></article><article><strong>Publication</strong><p>Customer-facing findings require explicit human approval.</p></article></div></section>
 
-    <section className="console-panel wide">
-      <p className="app-kicker">PAYMENT + DELIVERY BOUNDARY</p>
-      <h2>No surprise charge and no invented certainty.</h2>
-      <div className="app-table" style={{ marginTop: 12 }}>
-        <div className="app-table-row"><span>Intake</span><span>NO CARD REQUIRED</span></div>
-        <div className="app-table-row"><span>Scope</span><span>CONFIRMED BEFORE PAYMENT REQUEST</span></div>
-        <div className="app-table-row"><span>Fact Audit price</span><span>$1,500 FIXED SCOPE</span></div>
-        <div className="app-table-row"><span>Payment processing</span><span>STRIPE-HOSTED / TOKENIZED</span></div>
-        <div className="app-table-row"><span>Claim verdicts</span><span>SUPPORTED / CONTRADICTED / UNKNOWN</span></div>
-        <div className="app-table-row"><span>Monitoring</span><span>7 DAYS FOR IMPORTANT FINDINGS + FINAL RE-READ</span></div>
-        <div className="app-table-row"><span>Publication</span><span>HUMAN APPROVAL REQUIRED</span></div>
-        <div className="app-table-row"><span>Professional advice</span><span>NOT LEGAL, MEDICAL, FINANCIAL, OR REGULATORY ADVICE</span></div>
-      </div>
+    <section className="ptl-trust-principles">
+      <article><span>01</span><h3>No invented certainty.</h3><p>SUPPORTED, CONTRADICTED, and UNKNOWN stay distinct. Incomplete evidence is allowed to remain incomplete.</p></article>
+      <article><span>02</span><h3>No invisible publication.</h3><p>Automation may assemble evidence. A human controls the customer-facing finding.</p></article>
+      <article><span>03</span><h3>No timeless claims.</h3><p>Important findings are monitored for seven days because evidence can change after the initial review.</p></article>
     </section>
 
-    <section className="console-panel wide">
-      <p className="app-kicker">WHAT THE BUYER RECEIVES</p>
-      <h2>A scoped evidence trail, human-approved report, and monitored findings.</h2>
-      <p className="app-copy">The Fact Audit keeps the claim, examined evidence, contradiction pass, verdict, repair guidance, and proof/report delivery together. Important findings stay under watch for seven days and receive a final re-read.</p>
-    </section>
-  </div>
+    <section className="ptl-detail-cta"><div><span>Buyer boundary</span><h2>Know exactly what you are paying for.</h2><p>Up to 25 outputs or claims, highest-risk findings deep-verified, human approval, proof/report delivery, and a seven-day watch.</p></div><a href="/audit/#audit-intake">Start Fact Audit <span>↗</span></a></section>
+
+    <p className="ptl-detail-note">ProofTTL does not replace legal, medical, financial, regulatory, accounting, or other professional judgment.</p>
+  </>
 }
