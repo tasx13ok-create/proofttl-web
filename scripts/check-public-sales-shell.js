@@ -92,6 +92,8 @@ const retiredOfferFragments = [
   'VERIFY THESE 3 CLAIMS',
   'Claim Stress Test payment',
   'Full Verification Audit',
+  'Fact Lease',
+  'fact-leases',
 ]
 
 async function exists(file) {
@@ -149,6 +151,7 @@ const discoveryFiles = [
   'out/llms-full.txt',
   'out/.well-known/proofttl.json',
   'out/.well-known/proofttl-intents.json',
+  'package.json',
 ]
 for (const file of discoveryFiles) {
   if (!(await exists(file))) throw new Error(`Machine discovery surface missing: ${file}`)
