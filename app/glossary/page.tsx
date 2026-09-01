@@ -5,7 +5,11 @@ const SITE_URL = 'https://proofttl-web.vercel.app'
 const TERMS = [
   {
     term: 'ProofTTL',
-    definition: 'A source-backed claim verification and fact-checking service that checks specific factual claims against public evidence and returns explicit verdicts, evidence, and signed Fact Leases.',
+    definition: 'A source-backed claim verification and fact-checking service whose commercial launch product is the $1,500 Fact Audit.',
+  },
+  {
+    term: 'Fact Audit',
+    definition: 'ProofTTL’s $1,500 fixed-scope engagement for 10–25 real outputs or factual claims, including consequence ranking, deep verification of the highest-risk findings, human approval before customer-facing publication, proof/report delivery, and a seven-day watch on important findings.',
   },
   {
     term: 'Claim verification',
@@ -16,8 +20,8 @@ const TERMS = [
     definition: 'Fact checking in which the result remains attached to inspectable source evidence instead of returning only a detached score or unsupported answer.',
   },
   {
-    term: 'Fact Lease',
-    definition: 'A signed ProofTTL record that keeps a factual claim tied to the source observation, evidence, verdict, and time context used for verification. It records what examined evidence supported at a point in time and is not a guarantee of permanent truth.',
+    term: 'Consequence ranking',
+    definition: 'Prioritizing submitted outputs or claims by the damage they could cause if wrong so the highest-risk findings receive the deepest verification effort.',
   },
   {
     term: 'SUPPORTED',
@@ -32,12 +36,16 @@ const TERMS = [
     definition: 'A ProofTTL verdict meaning the examined evidence is insufficient to justify SUPPORTED or CONTRADICTED. ProofTTL preserves uncertainty rather than forcing a binary result.',
   },
   {
-    term: 'Claim Stress Test',
-    definition: 'ProofTTL’s $129 one-time verification service for 3–5 high-stakes factual claims, targeting a 48-hour turnaround after payment and scope confirmation.',
+    term: 'Contradiction pass',
+    definition: 'A separate challenge to the evidence set before a finding is finalized, intended to surface evidence that weakens or negates the preliminary conclusion.',
   },
   {
-    term: 'Full Verification Audit',
-    definition: 'ProofTTL’s $500 one-time verification service for 10–25 claims, targeting a 3–5 business-day turnaround and including 7 days of monitoring for the scoped claims.',
+    term: 'Human approval',
+    definition: 'The launch workflow requirement that customer-facing findings are reviewed and approved by a human before publication or delivery as final findings.',
+  },
+  {
+    term: 'Seven-day watch',
+    definition: 'Monitoring applied to important Fact Audit findings for seven days, followed by a final reread so time-sensitive evidence is not silently treated as permanent.',
   },
   {
     term: 'AI claim verification',
@@ -45,13 +53,13 @@ const TERMS = [
   },
   {
     term: 'Scope before payment',
-    definition: 'ProofTTL’s commercial process in which the submitted claim set is reviewed and confirmed before a Stripe payment request is created.',
+    definition: 'ProofTTL’s commercial process in which the submitted claim set is reviewed and confirmed before the exact $1,500 Stripe payment request is created.',
   },
 ]
 
 export const metadata: Metadata = {
-  title: 'Glossary — Claim Verification, Fact Leases & AI Fact-Checking',
-  description: 'Canonical definitions for ProofTTL, claim verification, source-backed fact checking, Fact Leases, SUPPORTED, CONTRADICTED, UNKNOWN, AI claim verification, and paid audit services.',
+  title: 'Glossary — Fact Audits, Claim Verification & AI Fact-Checking',
+  description: 'Canonical definitions for ProofTTL, the $1,500 Fact Audit, consequence ranking, source-backed fact checking, verdicts, human approval, seven-day monitoring, and scope-before-payment.',
   alternates: { canonical: '/glossary/' },
   robots: { index: true, follow: true },
 }
@@ -61,7 +69,7 @@ export default function GlossaryPage() {
     '@context': 'https://schema.org',
     '@type': 'DefinedTermSet',
     '@id': `${SITE_URL}/glossary/#terms`,
-    name: 'ProofTTL Claim Verification Glossary',
+    name: 'ProofTTL Fact Audit Glossary',
     url: `${SITE_URL}/glossary/`,
     hasDefinedTerm: TERMS.map((item) => ({
       '@type': 'DefinedTerm',
@@ -78,8 +86,8 @@ export default function GlossaryPage() {
         <div className="audit-sales-card">
           <header className="audit-sales-hero">
             <p className="app-kicker">PROOFTTL / GLOSSARY</p>
-            <h1 className="app-title">Canonical definitions for the ProofTTL verification system.</h1>
-            <p className="app-copy">A plain-language reference for buyers, researchers, search engines, AI systems, and anyone trying to understand exactly what ProofTTL means by a claim, verdict, or Fact Lease.</p>
+            <h1 className="app-title">Canonical definitions for the ProofTTL Fact Audit.</h1>
+            <p className="app-copy">A plain-language reference for buyers, researchers, search engines, and AI systems trying to understand exactly what ProofTTL means by an audit, claim, verdict, approval boundary, or monitoring window.</p>
           </header>
 
           <section style={{ display: 'grid', gap: 0, marginTop: 20 }}>
@@ -92,7 +100,7 @@ export default function GlossaryPage() {
           </section>
 
           <div className="hero-actions" style={{ marginTop: 22 }}>
-            <a className="button button-primary" href="/audit/#audit-intake">START CLAIM VERIFICATION — $129</a>
+            <a className="button button-primary" href="/audit/#audit-intake">START FACT AUDIT — $1,500</a>
             <a className="button button-secondary" href="/machine-definition/">MACHINE DEFINITION</a>
             <a className="button button-secondary" href="/faq/">FAQ</a>
           </div>
