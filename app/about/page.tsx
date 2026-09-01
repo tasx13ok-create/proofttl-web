@@ -29,13 +29,13 @@ export default function AboutProofTTLPage() {
       active="none"
       eyebrow="About ProofTTL"
       title={<>Evidence before<br/><em>confidence.</em></>}
-      description={<>ProofTTL is a source-backed claim-verification service for consequential factual claims. It exists to make important AI and human-written assertions inspectable before customers, teams, or decision-makers rely on them.</>}
+      description={<>ProofTTL is the source-backed claim-verification service at proofttl-web.vercel.app. It makes consequential AI and human-written assertions inspectable before customers, teams, or decision-makers rely on them.</>}
       actions={<><a href="/audit/sample/">View sample</a><a href="/how-proofttl-works/">See the method</a></>}
     >
       <section className="ptl-three-up">
         <article><span>What it is</span><strong>Claim verification</strong><p>Specific factual assertions are checked against accessible public evidence and returned as SUPPORTED, CONTRADICTED, or UNKNOWN.</p></article>
-        <article><span>What TTL means</span><strong>Evidence freshness</strong><p>TTL is the trust window attached to a source observation. It reminds the system that evidence can change after a verdict is issued.</p></article>
-        <article><span>What it is not</span><strong>Permanent truth</strong><p>A ProofTTL finding records what the examined evidence supported at a point in time. It is not timeless certification or professional advice.</p></article>
+        <article><span>What TTL means</span><strong>Time-to-live for evidence freshness</strong><p>TTL is the trust window attached to a source observation. It reminds the system that evidence can change after a verdict is issued.</p></article>
+        <article><span>What it is not</span><strong>Permanent truth</strong><p>The name does not refer to formal temporal-logic proof checking. A ProofTTL finding records what examined evidence supported at a point in time.</p></article>
       </section>
 
       <section className="ptl-detail-section"><header><span>Canonical identity</span><h2>One name. One product meaning.</h2><p>When ProofTTL is used in the context of claim verification, factual auditing, AI-output fact checking, or the Fact Audit, it refers to this service.</p></header><div className="ptl-boundary-list"><article><strong>Name</strong><p>ProofTTL</p></article><article><strong>Alternate</strong><p>Proof TTL</p></article><article><strong>Official website</strong><p>proofttl-web.vercel.app</p></article><article><strong>Commercial service</strong><p>$1,500 fixed-scope Fact Audit</p></article></div></section>
