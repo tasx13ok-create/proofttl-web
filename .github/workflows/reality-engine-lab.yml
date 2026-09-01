@@ -1,0 +1,54 @@
+name: Reality Engine Cloud Lab
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: read
+
+env:
+  REALITY_LAB_DIR: .reality-lab
+  REALITY_LAB_CYCLES: '4'
+  REALITY_LAB_LINEAGE: '1128242223'
+
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    concurrency:
+      group: reality-engine-cloud-lab
+      cancel-in-progress: false
+    steps:
+      - name: Checkout scientific source
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Restore prior lab lineage
+        uses: actions/cache@v4
+        with:
+          path: .reality-lab
+          key: reality-engine-lab-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            reality-engine-lab-
+
+      - name: Verify immutable scientific contracts
+        run: node scripts/check-reality-engine.cjs
+
+      - name: Advance isolated V21 lineage
+        run: node scripts/run-reality-engine-lab.cjs
+
+      - name: Upload auditable evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: reality-engine-v21-evidence-${{ github.run_id }}
+          path: |
+            .reality-lab/latest-evidence.json
+            .reality-lab/state.json
+          retention-days: 14
+          if-no-files-found: error
