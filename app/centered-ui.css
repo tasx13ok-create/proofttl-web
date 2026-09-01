@@ -1,0 +1,242 @@
+/* ProofTTL global alignment layer.
+   Loaded last so every current page/extension inherits one centered visual system. */
+
+:root {
+  --centered-content-max: 760px;
+}
+
+/* Primary page copy and section framing */
+.hero-copy,
+.section-heading,
+.final-cta,
+.audit-sales-hero,
+.audit-offer-summary,
+.audit-sales-proof,
+.audit-sales-steps,
+.audit-intake-clean,
+.audit-faq-list,
+.onboarding-card,
+.app-card,
+.app-panel,
+.workspace-panel,
+.workspace-card,
+.settings-card,
+.security-card,
+.assistant-card,
+.chat-card,
+.account-card,
+.status-card,
+.result-card,
+.proof-card,
+.verify-card,
+.lease-card,
+.pricing-cards article,
+.steps article,
+article {
+  text-align: center;
+}
+
+.hero-copy,
+.section-heading,
+.audit-sales-hero > *,
+.audit-offer-summary > *,
+.audit-intake-clean > *,
+.final-cta > * {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-lede,
+.section-lede,
+.large-copy,
+.audit-sales-hero > .app-copy,
+.pricing-cards p,
+.steps p,
+.lease-claim,
+article > p,
+article > small {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Boxed content: center the copy without disturbing grid sizing. */
+:where(
+  [class*='card'],
+  [class*='panel'],
+  [class*='tile'],
+  [class*='box'],
+  [class*='badge'],
+  [class*='pill'],
+  [class*='chip'],
+  [class*='note'],
+  [class*='result'],
+  [class*='summary'],
+  [class*='status'],
+  [class*='offer'],
+  [class*='plan'],
+  [class*='step']
+) :where(h1, h2, h3, h4, h5, h6, p, small, strong, span, code, dt, dd, label) {
+  text-align: center;
+}
+
+/* Buttons, tabs, badges and compact controls should be geometrically centered. */
+:where(
+  .button,
+  button,
+  [role='button'],
+  [role='tab'],
+  .valid-pill,
+  .plan-label,
+  .app-kicker,
+  .product-nav-workspace,
+  .audit-sales-trustline span,
+  .hero-notes span
+) {
+  text-align: center;
+  justify-content: center;
+}
+
+/* Public navigation and menus */
+.product-nav-primary,
+.product-nav-actions,
+.product-nav-menu,
+.footer,
+.footer > div,
+.hero-actions,
+.audit-sales-actions,
+.audit-sales-trustline,
+.hero-notes,
+.status-line {
+  justify-content: center;
+  text-align: center;
+}
+
+.product-nav-menu a,
+.product-nav-primary a,
+.footer a,
+.text-link {
+  text-align: center;
+}
+
+/* Homepage verification graphic */
+.visual-header,
+.visual-footer,
+.pipeline-node,
+.pipeline-node code,
+.lease-top,
+.lease-meta,
+.lease-signature,
+.fact-list div {
+  text-align: center;
+}
+
+.pipeline-node {
+  justify-items: center;
+}
+
+.pipeline-node code {
+  width: 100%;
+}
+
+.lease-top,
+.lease-signature {
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.signature-seal {
+  margin-left: 0;
+}
+
+.fact-list div {
+  align-items: center;
+}
+
+/* Form chrome and values: centered consistently on all intake/account surfaces. */
+:where(.audit-clean-form, .app-form, form) label {
+  text-align: center;
+}
+
+:where(input, select, textarea) {
+  text-align: center;
+}
+
+:where(input, textarea)::placeholder {
+  text-align: center;
+}
+
+/* Tables/status rows should center each cell while preserving wrapping. */
+.app-table-row,
+[class*='table-row'],
+[class*='status-row'],
+[class*='result-row'] {
+  text-align: center;
+  align-items: center;
+}
+
+.app-table-row > *,
+[class*='table-row'] > *,
+[class*='status-row'] > *,
+[class*='result-row'] > * {
+  text-align: center;
+  justify-self: center;
+}
+
+/* Prevent centered copy from touching box edges. */
+:where(
+  article,
+  [class*='card'],
+  [class*='panel'],
+  [class*='tile'],
+  [class*='box'],
+  [class*='note'],
+  [class*='result'],
+  [class*='summary']
+) {
+  overflow-wrap: anywhere;
+}
+
+/* Narrow screens: retain centering and give every boxed surface safe breathing room. */
+@media (max-width: 860px) {
+  .hero-copy,
+  .section-heading,
+  .final-cta,
+  .audit-sales-hero,
+  .audit-intake-clean,
+  article,
+  [class*='card'],
+  [class*='panel'] {
+    text-align: center;
+  }
+
+  .hero-actions,
+  .audit-sales-actions,
+  .audit-sales-trustline,
+  .hero-notes,
+  .footer,
+  .footer > div {
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 540px) {
+  :where(
+    article,
+    [class*='card'],
+    [class*='panel'],
+    [class*='tile'],
+    [class*='box']
+  ) {
+    background-clip: padding-box;
+  }
+
+  .product-nav-menu a,
+  .button,
+  button,
+  input,
+  select,
+  textarea {
+    text-align: center;
+  }
+}
