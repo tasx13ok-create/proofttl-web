@@ -29,7 +29,7 @@ export default function SampleAuditPage() {
     eyebrow="Sample finding · PTTL-DEMO-PX-20260818-001"
     title={<>A believable claim.<br/><em>Then the contradiction.</em></>}
     description={<>This sample reviews six time-sensitive statements in public Perplexity documentation. Five survive. One fails only after two current first-party pages are compared.</>}
-    actions={<><a className="primary" href="/audit/#audit-intake">Start the $1,500 Fact Audit <span>↗</span></a><a href="/how-proofttl-works/">See the method</a></>}
+    actions={<a href="/how-proofttl-works/">See the method</a>}
   >
     <section className="ptl-finding-hero">
       <div className="ptl-finding-meta"><span>Claim PX-006</span><span>Observed Aug 18, 2026</span><span>High consequence</span></div>
@@ -50,7 +50,7 @@ export default function SampleAuditPage() {
 
     <section className="ptl-detail-section"><header><span>Source index</span><h2>Every source remains inspectable.</h2></header><div className="ptl-source-list">{sources.map(([id,title,href]) => <a key={id} href={href} target="_blank" rel="noreferrer"><span>{id}</span><strong>{title}</strong><b>↗</b></a>)}</div></section>
 
-    <section className="ptl-detail-cta"><div><span>Put your own outputs under pressure</span><h2>Up to 25 real outputs. Fixed $1,500 scope.</h2><p>Consequence ranking, deep verification of the highest-risk findings, human approval, proof/report delivery, and a seven-day watch.</p></div><a href="/audit/#audit-intake">Start Fact Audit <span>↗</span></a></section>
+    <section className="ptl-detail-cta"><div><span>Fact Audit scope</span><h2>Up to 25 real outputs. Fixed $1,500 scope.</h2><p>Consequence ranking, deep verification of the highest-risk findings, human approval, proof/report delivery, and a seven-day watch.</p></div></section>
 
     <p className="ptl-detail-note">Public demonstration only. This is not a commissioned audit of Perplexity, an endorsement, an accusation, or legal, financial, medical, regulatory, certification, or compliance advice.</p>
   </ProductDetailShell>
