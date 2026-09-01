@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: pageTitle,
     description: intent.description,
     alternates: { canonical: `/services/${intent.slug}/` },
-    keywords: [intent.eyebrow.toLowerCase(), 'claim verification service', 'fact checking service', 'source-backed verification', 'ProofTTL', 'factual claim audit'],
+    keywords: [intent.eyebrow.toLowerCase(), 'claim verification service', 'fact checking service', 'source-backed verification', 'ProofTTL', 'Fact Audit'],
     robots: { index: true, follow: true },
     openGraph: {
       title: `${pageTitle} | ProofTTL`,
@@ -57,8 +57,7 @@ export default async function ServiceIntentPage({ params }: PageProps) {
         provider: { '@id': `${SITE_URL}/#organization` },
         areaServed: 'Worldwide',
         offers: [
-          { '@type': 'Offer', name: 'ProofTTL Claim Stress Test', price: '129', priceCurrency: 'USD', url: `${SITE_URL}/audit/#audit-intake`, availability: 'https://schema.org/InStock' },
-          { '@type': 'Offer', name: 'ProofTTL Full Verification Audit', price: '500', priceCurrency: 'USD', url: `${SITE_URL}/audit/#audit-intake`, availability: 'https://schema.org/InStock' },
+          { '@type': 'Offer', name: 'ProofTTL Fact Audit', price: '1500', priceCurrency: 'USD', url: `${SITE_URL}/audit/#audit-intake`, availability: 'https://schema.org/InStock' },
         ],
       },
       {
@@ -91,9 +90,9 @@ export default async function ServiceIntentPage({ params }: PageProps) {
           <h1>{intent.heading}</h1>
           <p className={styles.lede}>{intent.lede}</p>
         </div>
-        <aside className={styles.card} aria-label="ProofTTL verification service pricing">
-          <span className={styles.cardLabel}>START SMALL / UPGRADE LATER</span>
-          <code>{`$129 CLAIM STRESS TEST\n3–5 high-stakes claims\n48-hour turnaround\n\n$500 FULL VERIFICATION AUDIT\n10–25 claims\n3–5 business days\n7-day monitoring\n\n$129 is credited if you upgrade.`}</code>
+        <aside className={styles.card} aria-label="ProofTTL Fact Audit pricing">
+          <span className={styles.cardLabel}>ONE LAUNCH ENGAGEMENT</span>
+          <code>{`$1,500 FACT AUDIT\n10–25 outputs or claims\nhighest-risk findings verified deeply\nhuman approval before publication\n7-day watch on important findings\n\nscope confirmed before payment`}</code>
         </aside>
       </section>
 
@@ -117,11 +116,11 @@ export default async function ServiceIntentPage({ params }: PageProps) {
 
         <div className={styles.cta}>
           <div>
-            <h2>Submit the claims before you submit your card.</h2>
-            <p>ProofTTL reviews the exact scope first. Payment is requested only after the claim set, price, and turnaround are confirmed.</p>
+            <h2>Submit the real outputs before you pay.</h2>
+            <p>ProofTTL reviews the exact scope first. The fixed $1,500 payment request is created only after the claim set and engagement scope are confirmed.</p>
           </div>
           <div className={styles.actions}>
-            <a className={styles.primary} href="/audit/#audit-intake">Start for $129</a>
+            <a className={styles.primary} href="/audit/#audit-intake">Start Fact Audit</a>
             <a className={styles.secondary} href="/audit/sample/">See sample audit</a>
           </div>
         </div>
@@ -141,7 +140,7 @@ export default async function ServiceIntentPage({ params }: PageProps) {
           <div className={styles.relatedHeading}>
             <div>
               <p className={styles.eyebrow}>RELATED VERIFICATION NEEDS</p>
-              <h2 id="related-services-heading">More ways teams use ProofTTL.</h2>
+              <h2 id="related-services-heading">More ways teams use the Fact Audit.</h2>
             </div>
             <a href="/services/">View all services →</a>
           </div>
@@ -158,7 +157,7 @@ export default async function ServiceIntentPage({ params }: PageProps) {
       </section>
 
       <footer className={`${styles.shell} ${styles.footer}`}>
-        ProofTTL · source-backed claim verification · explicit evidence · scope before payment
+        ProofTTL · $1,500 Fact Audit · source-backed claim verification · scope before payment
       </footer>
     </main>
   )
