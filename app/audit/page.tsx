@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import AuditIntakeForm from '../../components/AuditIntakeForm'
+import SharedProductHeader from '../../components/SharedProductHeader'
 
 const SITE_URL = 'https://proofttl-web.vercel.app'
 const AUDIT_FAQ = [
@@ -25,6 +26,7 @@ export default function AuditPage() {
 
   return <main className="app-page audit-sales-page">
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+    <SharedProductHeader />
     <section className="onboarding-wrap"><div className="audit-sales-card">
       <header className="audit-sales-hero">
         <p className="app-kicker">ADVERSARIAL FACT AUDIT</p>
