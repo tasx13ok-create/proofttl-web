@@ -1,11 +1,16 @@
 /* ProofTTL motion layer — authored to feel like Jitter/ReactBits without runtime animation dependencies. */
 
+/* The homepage owns its own product shell. Never stack the global public nav above it. */
+body:has(.ptl-ai-home) > .product-nav{display:none!important}
+
 .ptl-ai-home{
   --ptl-pointer-x:50vw;
   --ptl-pointer-y:24vh;
   --ptl-pointer-nx:0;
   --ptl-pointer-ny:0;
   isolation:isolate;
+  min-height:100svh;
+  overflow-x:clip;
 }
 
 .ptl-ai-home:before{
@@ -38,6 +43,18 @@
 .ptl-ai-main,
 .ptl-ai-sidebar{position:relative;z-index:1}
 
+.ptl-shared-header{
+  position:sticky;
+  top:0;
+  z-index:30;
+  backdrop-filter:blur(22px) saturate(120%);
+  -webkit-backdrop-filter:blur(22px) saturate(120%);
+}
+
+.ptl-shared-audit-cta{
+  box-shadow:0 10px 34px rgba(0,0,0,.24),0 0 0 1px rgba(168,199,250,.08);
+}
+
 .ptl-ai-hero{position:relative}
 .ptl-ai-hero:before{
   content:"";
@@ -60,6 +77,19 @@
   background-size:180% 100%;
   animation:ptl-chroma-drift 8s ease-in-out infinite alternate;
 }
+
+.ptl-ai-composer{
+  cursor:pointer;
+  box-shadow:0 30px 90px rgba(0,0,0,.24),0 0 0 1px rgba(168,199,250,.025);
+}
+.ptl-ai-composer:focus-within,
+.ptl-ai-composer[data-keyboard-focus="true"]{
+  outline:2px solid rgba(168,199,250,.55);
+  outline-offset:4px;
+}
+.ptl-ai-composer-input{cursor:text}
+.ptl-ai-composer-input span{transition:color .18s ease}
+.ptl-ai-composer:hover .ptl-ai-composer-input span{color:rgba(235,240,248,.92)}
 
 .ptl-ai-composer,
 .ptl-ai-workspace,
@@ -178,6 +208,16 @@
 @keyframes ptl-orb-breathe{
   0%,100%{transform:scale(1);filter:brightness(1)}
   50%{transform:scale(1.045);filter:brightness(1.08)}
+}
+
+@media (max-width:760px){
+  .ptl-shared-header{top:0}
+  .ptl-ai-hero:before{width:420px;height:420px;left:18%;top:0;opacity:.42}
+  .ptl-ai-composer{box-shadow:0 22px 58px rgba(0,0,0,.2)}
+  .ptl-ai-home .ptl-ai-section,
+  .ptl-ai-home .ptl-ai-workspace,
+  .ptl-ai-home .ptl-ai-offer{max-width:100%;min-width:0}
+  .ptl-ai-home h1,.ptl-ai-home h2,.ptl-ai-home h3,.ptl-ai-home p,.ptl-ai-home span,.ptl-ai-home strong{overflow-wrap:anywhere}
 }
 
 @media (hover:none),(pointer:coarse){
