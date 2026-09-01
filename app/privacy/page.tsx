@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import ProductDetailShell from '../../components/ProductDetailShell'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -8,72 +9,29 @@ export const metadata: Metadata = {
 }
 
 export default function PrivacyPage() {
-  return (
-    <main className="app-page audit-sales-page">
-      <section className="onboarding-wrap">
-        <article className="audit-sales-card">
-          <header className="audit-sales-hero">
-            <p className="app-kicker">PROOFTTL / PRIVACY</p>
-            <h1 className="app-title">Privacy Policy</h1>
-            <p className="app-copy">Effective August 21, 2026. This page describes the information ProofTTL handles when you use the website, customer account, verification services, and related product surfaces.</p>
-          </header>
+  return <ProductDetailShell
+    active="none"
+    eyebrow="Privacy · Effective August 21, 2026"
+    title={<>Private information<br/><em>stays on the private path.</em></>}
+    description={<>This policy describes the information ProofTTL handles when you use the website, customer account, verification services, and related product surfaces.</>}
+    actions={<><a href="/trust/">Trust Center</a><a href="/support/">Support</a></>}
+  >
+    <section className="ptl-three-up">
+      <article><span>What you provide</span><strong>Account + verification data</strong><p>Name, email, company or project details, URLs, factual claims, verification context, deadlines, support messages, and other information you intentionally submit.</p></article>
+      <article><span>Payments</span><strong>Stripe handles card details</strong><p>ProofTTL receives payment status and transaction identifiers needed to connect a payment to the scoped request, not your raw full card number through its audit forms.</p></article>
+      <article><span>Local browser state</span><strong>Drafts can stay local</strong><p>Unfinished audit intake state may be saved in browser storage so signing in does not erase work. Clearing site data removes locally stored values.</p></article>
+    </section>
 
-          <section className="audit-sales-proof">
-            <article><p className="app-kicker">WHAT YOU PROVIDE</p><h2>Account and verification information.</h2><p className="app-copy">ProofTTL may receive your name, email address, account-provider profile data, company or project name, website or document URLs, factual claims, verification context, deadlines, support messages, and other information you intentionally submit.</p></article>
-            <article><p className="app-kicker">PAYMENTS</p><h2>Stripe handles payment-card details.</h2><p className="app-copy">When a scoped paid service is approved, checkout is handled by Stripe. ProofTTL receives payment status and transaction identifiers needed to connect the payment to the scoped request; ProofTTL does not intentionally collect or store your full payment-card number through its own audit forms.</p></article>
-          </section>
+    <section className="ptl-detail-section"><header><span>How information is used</span><h2>Only for operating, protecting, and improving the service.</h2></header><div className="ptl-boundary-list"><article><strong>Accounts</strong><p>Authenticate users and protect customer-only product surfaces.</p></article><article><strong>Verification work</strong><p>Review, scope, perform, deliver, and support verification requests.</p></article><article><strong>Customer state</strong><p>Connect audit, payment, fulfillment, and delivery state to the correct account.</p></article><article><strong>Security</strong><p>Prevent fraud, abuse, unauthorized access, and investigate incidents.</p></article><article><strong>Reliability</strong><p>Measure failures, debug product behavior, and improve ProofTTL.</p></article><article><strong>Legal obligations</strong><p>Retain or process records where reasonably necessary to comply with applicable requirements.</p></article></div></section>
 
-          <section style={{ marginTop: 28 }}>
-            <p className="app-kicker">HOW INFORMATION IS USED</p>
-            <ul className="audit-clean-list">
-              <li>Authenticate accounts and protect customer-only product surfaces.</li>
-              <li>Review, scope, perform, deliver, and support verification work.</li>
-              <li>Connect an audit request, payment state, and delivery state to the correct customer account.</li>
-              <li>Operate product features such as L.O.V.E., account preferences, tasks, files, automations, and usage limits when those features are used.</li>
-              <li>Prevent fraud, abuse, unauthorized access, and security incidents.</li>
-              <li>Measure reliability, debug failures, and improve ProofTTL.</li>
-              <li>Comply with applicable legal obligations.</li>
-            </ul>
-          </section>
+    <section className="ptl-detail-section"><header><span>Service providers</span><h2>Infrastructure providers process data only where the product needs them.</h2><p>Depending on the feature used, information may pass through providers supporting hosting, runtime infrastructure, authentication, payment processing, source verification, or sign-in.</p></header><div className="ptl-three-up"><article><span>Infrastructure</span><strong>Vercel + Cloudflare</strong><p>Hosting, edge/runtime, and related delivery infrastructure.</p></article><article><span>Payments</span><strong>Stripe</strong><p>Checkout and payment processing after scope confirmation.</p></article><article><span>Identity</span><strong>Enabled sign-in providers</strong><p>Providers such as GitHub, Google, or Discord process sign-in under their own terms and policies.</p></article></div></section>
 
-          <section style={{ marginTop: 28 }}>
-            <p className="app-kicker">LOCAL BROWSER STORAGE</p>
-            <h2>Some draft state stays in your browser.</h2>
-            <p className="app-copy">The audit intake can save an unfinished draft in local browser storage so signing in does not erase your work. ProofTTL also uses browser storage where needed for product state and return-to-page behavior. Clearing site data in your browser removes locally stored values.</p>
-          </section>
+    <section className="ptl-detail-section"><header><span>Logs, security, and retention</span><h2>Operational records exist because the service has to be accountable.</h2><p>ProofTTL may retain security, request, payment-state, verification, and operational records as reasonably necessary to provide the service, protect accounts, investigate abuse, preserve audit history, resolve disputes, or satisfy legal requirements.</p></header></section>
 
-          <section style={{ marginTop: 28 }}>
-            <p className="app-kicker">SERVICE PROVIDERS</p>
-            <h2>ProofTTL relies on infrastructure and identity providers.</h2>
-            <p className="app-copy">Depending on the feature you use, information may be processed by providers that support hosting, edge/runtime infrastructure, authentication, payment processing, source verification, or account sign-in. Current product infrastructure includes Vercel, Cloudflare, Stripe, and enabled sign-in providers such as GitHub, Google, or Discord. Those providers process information under their own terms and privacy policies.</p>
-          </section>
+    <section className="ptl-support-warning"><div><span>Do not submit</span><h2>Passwords, secret keys, auth tokens, or full payment-card details.</h2></div><p>Never place credentials, private keys, authentication secrets, or raw full payment-card data into claim text, audit context, or support messages.</p></section>
 
-          <section style={{ marginTop: 28 }}>
-            <p className="app-kicker">LOGS, SECURITY, AND RETENTION</p>
-            <p className="app-copy">ProofTTL may keep security, request, payment-state, verification, and operational records for as long as reasonably necessary to provide the service, protect accounts, investigate abuse, preserve audit history, resolve disputes, or satisfy legal requirements. No internet service can promise absolute security, but ProofTTL uses access controls, server-side credentials, authenticated customer routes, and other technical safeguards intended to reduce risk.</p>
-          </section>
+    <section className="ptl-detail-section"><header><span>Your choices</span><h2>You control local state and account access.</h2></header><div className="ptl-boundary-list"><article><strong>Sign out</strong><p>You can sign out of your ProofTTL account at any time.</p></article><article><strong>Clear local data</strong><p>Browser-saved drafts and site state can be removed through your browser.</p></article><article><strong>Account data questions</strong><p>Use Support for correction or deletion requests. Some records may need to be retained for security, contractual, payment, or legal reasons.</p></article><article><strong>Advertising</strong><p>ProofTTL does not currently load third-party advertising on the public product or documentation experience.</p></article></div></section>
 
-          <section style={{ marginTop: 28 }}>
-            <p className="app-kicker">ADVERTISING</p>
-            <p className="app-copy">ProofTTL does not currently load third-party advertising on the public product or documentation experience. If that changes, this policy and the product configuration should be updated before advertising is enabled.</p>
-          </section>
-
-          <section style={{ marginTop: 28 }}>
-            <p className="app-kicker">YOUR CHOICES</p>
-            <ul className="audit-clean-list">
-              <li>You can sign out of your ProofTTL account at any time.</li>
-              <li>You can clear locally saved browser drafts and site data through your browser.</li>
-              <li>You can use ProofTTL support to ask about account data, correction, or deletion requests. Some records may need to be retained for security, payment, contractual, or legal reasons.</li>
-            </ul>
-          </section>
-
-          <section className="audit-offer-summary" style={{ marginTop: 28 }}>
-            <div><span>DO NOT SUBMIT</span><strong>Passwords or secret keys</strong><small>Never place credentials, private keys, authentication secrets, or full payment-card details into claim text or support messages.</small></div>
-            <div><span>SUPPORT</span><strong>Questions about privacy?</strong><small>Use the ProofTTL support page and keep private account or payment details out of public GitHub issues.</small></div>
-            <p><a className="text-link" href="/support/">OPEN SUPPORT →</a> &nbsp; <a className="text-link" href="/terms/">TERMS OF SERVICE →</a></p>
-          </section>
-        </article>
-      </section>
-    </main>
-  )
+    <p className="ptl-detail-note">No internet service can promise absolute security. ProofTTL uses access controls, server-side credentials, authenticated customer routes, and other safeguards intended to reduce risk.</p>
+  </ProductDetailShell>
 }
