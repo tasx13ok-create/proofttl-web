@@ -77,6 +77,8 @@ export default function TrustCenter() {
 
     <section className="ptl-detail-section"><header><span>PAYMENT + DELIVERY BOUNDARY</span><h2>Scope first. Payment second.</h2><p>The commercial flow is intentionally boring where money is involved.</p></header><div className="ptl-boundary-list"><article><strong>Intake</strong><p>No card required. Send the real outputs first.</p></article><article><strong>Scope</strong><p>ProofTTL confirms fit and scope before creating the payment request.</p></article><article><strong>Payment</strong><p>$1,500 fixed scope. Card details are handled by Stripe rather than stored by ProofTTL.</p></article><article><strong>Publication</strong><p>Customer-facing findings require explicit human approval.</p></article></div></section>
 
+    <section className="ptl-detail-section"><header><span>WHAT THE BUYER RECEIVES</span><h2>A readable evidence trail, not a black box.</h2><p>Each important finding keeps the exact claim, supporting and contradicting evidence, uncertainty, verdict, human decision, and monitored follow-up together.</p></header></section>
+
     <section className="ptl-trust-principles">
       <article><span>01</span><h3>No invented certainty.</h3><p>SUPPORTED, CONTRADICTED, and UNKNOWN stay distinct. Incomplete evidence is allowed to remain incomplete.</p></article>
       <article><span>02</span><h3>No invisible publication.</h3><p>Automation may assemble evidence. A human controls the customer-facing finding.</p></article>
