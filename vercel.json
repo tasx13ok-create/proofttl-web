@@ -45,7 +45,7 @@
   "routes": [
     { "src": "^/google057072aa15e009ed\\.html$", "dest": "/api/google-site-verification" },
     { "src": "^/(studio|work|files|automations|money|connections|worlds|cinematics)(?:/.*)?$", "status": 308, "headers": { "Location": "/audit/", "X-Robots-Tag": "noindex, nofollow" } },
-    { "src": "^/(reality-engine|edon-bootstrap|edon-live)(?:/.*)?$", "status": 308, "headers": { "Location": "/audit/", "X-Robots-Tag": "noindex, nofollow" } },
+    { "src": "^/(edon-bootstrap|edon-live)(?:/.*)?$", "status": 308, "headers": { "Location": "/audit/", "X-Robots-Tag": "noindex, nofollow" } },
     { "src": "^/cinematics-runtime\\.js$", "status": 308, "headers": { "Location": "/audit/", "X-Robots-Tag": "noindex, nofollow" } },
     { "src": "^/preflight/?$", "status": 308, "headers": { "Location": "/stress-test/" } },
     { "src": "^/api/auth/(?<authpath>.*)$", "dest": "/api/auth-proxy.js?path=$authpath" },
