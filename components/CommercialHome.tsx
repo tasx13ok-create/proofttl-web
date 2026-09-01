@@ -1,82 +1,13 @@
 export default function CommercialHome() {
   return <main className="ptl-home ptl-ai-home" id="top">
     <section className="ptl-ai-shell shell">
-      <aside className="ptl-ai-sidebar" aria-label="ProofTTL quick access">
-        <a className="ptl-ai-mark" href="#top" aria-label="ProofTTL home"><img src="/proofttl-mark.svg" alt="" /></a>
-        <nav>
-          <a className="active" href="#top"><b>⌁</b><span>Verify</span></a>
-          <a href="/audit/sample/"><b>◈</b><span>Sample</span></a>
-          <a href="/how-proofttl-works/"><b>◎</b><span>Method</span></a>
-          <a href="/trust/"><b>◇</b><span>Trust</span></a>
-        </nav>
-        <a className="ptl-ai-help" href="/support/"><b>?</b><span>Support</span></a>
-      </aside>
-
+      <aside className="ptl-ai-sidebar" aria-label="ProofTTL quick access"><a className="ptl-ai-mark" href="#top" aria-label="ProofTTL home"><img src="/proofttl-mark.svg" alt="" /></a><nav><a className="active" href="#top"><b>⌁</b><span>Verify</span></a><a href="/audit/sample/"><b>◈</b><span>Sample</span></a><a href="/how-proofttl-works/"><b>◎</b><span>Method</span></a><a href="/trust/"><b>◇</b><span>Trust</span></a></nav><a className="ptl-ai-help" href="/support/"><b>?</b><span>Support</span></a></aside>
       <div className="ptl-ai-main">
-        <header className="ptl-ai-topbar">
-          <div><span className="ptl-live-dot"/><strong>ProofTTL</strong><small>Verification intelligence</small></div>
-          <div className="ptl-ai-top-actions"><a href="/audit/sample/">View proof</a><a className="ptl-ai-top-cta" href="/audit/#audit-intake">Start verification <span>↗</span></a></div>
-        </header>
-
-        <section className="ptl-ai-hero">
-          <div className="ptl-ai-hero-copy">
-            <div className="ptl-ai-eyebrow"><span>✦</span> Fact Audit · accepting intakes</div>
-            <h1>Know what’s true<br/><em>before it matters.</em></h1>
-            <p>Drop in the AI outputs your users actually see. ProofTTL isolates the claims, finds authoritative evidence, tests both sides, and returns a human-approved record you can defend.</p>
-          </div>
-
-          <div className="ptl-ai-composer" role="group" aria-label="Start a ProofTTL verification">
-            <div className="ptl-ai-composer-input"><span>Paste an output, claim, or source to verify…</span></div>
-            <div className="ptl-ai-composer-tools"><div><button type="button" aria-label="Attach evidence">＋</button><span>Up to 25 outputs</span></div><a href="/audit/#audit-intake" aria-label="Start Fact Audit">↑</a></div>
-          </div>
-
-          <div className="ptl-ai-shortcuts">
-            <a href="/audit/#audit-intake"><span>⌁</span><div><strong>Audit outputs</strong><small>Start with real AI answers</small></div></a>
-            <a href="/audit/sample/"><span>◈</span><div><strong>Inspect proof</strong><small>See a finished finding</small></div></a>
-            <a href="/how-proofttl-works/"><span>◎</span><div><strong>See the method</strong><small>Evidence → verdict → watch</small></div></a>
-          </div>
-
-          <div className="ptl-hero-trust">
-            <span>UP TO 25 OUTPUTS</span><span>SCOPE CONFIRMED BEFORE PAYMENT</span><span>HUMAN APPROVAL</span><span>7-DAY WATCH</span>
-          </div>
-        </section>
-
-        <section className="ptl-ai-workspace" aria-label="Verification workspace preview">
-          <div className="ptl-ai-workspace-head"><div><span>Live workspace</span><strong>One claim. Every side of the evidence.</strong></div><div className="ptl-ai-status"><i/> Verification ready</div></div>
-          <div className="ptl-ai-workspace-grid">
-            <div className="ptl-ai-claim-panel">
-              <div className="ptl-ai-panel-label"><span>01</span> Claim</div>
-              <blockquote>“The reviewed assertion remains supported by current authoritative guidance.”</blockquote>
-              <div className="ptl-ai-risk"><span>Consequence</span><strong>High</strong><small>Customer-facing factual output</small></div>
-            </div>
-            <div className="ptl-ai-evidence-panel">
-              <div className="ptl-ai-panel-label"><span>02</span> Evidence</div>
-              <article><i className="for"/><div><small>FOR</small><strong>Primary source supports part of the assertion</strong><span>Authoritative · current</span></div></article>
-              <article><i className="against"/><div><small>AGAINST</small><strong>Current guidance conflicts with the claim as written</strong><span>Primary source · newer</span></div></article>
-            </div>
-            <div className="ptl-ai-verdict-panel">
-              <div className="ptl-ai-panel-label"><span>03</span> Verdict</div>
-              <div className="ptl-ai-verdict-orb">×</div>
-              <strong>CONTRADICTED</strong><p>The strongest current source conflicts with the scoped claim.</p>
-              <div className="ptl-ai-human">✓ Human approval required</div>
-            </div>
-          </div>
-        </section>
-
-        <section className="ptl-ai-section">
-          <div className="ptl-ai-section-title"><span>What you get</span><h2>Verification that reads like an answer,<br/>not an audit spreadsheet.</h2><p>Fast to understand. Deep enough to inspect. Conservative when evidence runs out.</p></div>
-          <div className="ptl-ai-bento">
-            <article className="wide"><div className="ptl-ai-card-glow"/><span>Evidence intelligence</span><h3>Sources arranged around the exact claim.</h3><p>ProofTTL preserves what supports the assertion, what contradicts it, source authority, freshness, and uncertainty in one readable evidence chain.</p><div className="ptl-ai-mini-sources"><i/><i/><i/><b>+12</b></div></article>
-            <article><span>Verdict discipline</span><h3>UNKNOWN is a feature.</h3><p>No evidence theater. If the contradiction pass is incomplete or support is weak, confidence is withheld.</p><strong className="ptl-ai-unknown">UNKNOWN</strong></article>
-            <article><span>Human gate</span><h3>Nothing important auto-publishes.</h3><p>Automation assembles the case. A human controls the customer-facing finding.</p><div className="ptl-ai-approval"><i>✓</i><span>Ready for review</span></div></article>
-          </div>
-        </section>
-
-        <section className="ptl-ai-offer">
-          <div><span>ProofTTL Fact Audit</span><h2>$1,500</h2><p>One fixed-scope audit · up to 25 real outputs · highest-risk findings deep-verified · seven-day watch.</p></div>
-          <div className="ptl-ai-offer-actions"><a href="/audit/#audit-intake">Start Fact Audit <span>↗</span></a><a href="/audit/sample/">View sample</a><small>No subscription. No raw card number is stored by ProofTTL; payment is handled through Stripe after scope confirmation.</small></div>
-        </section>
-
+        <header className="ptl-ai-topbar"><div><span className="ptl-live-dot"/><strong>ProofTTL</strong><small>Verification intelligence</small></div><div className="ptl-ai-top-actions"><a href="/audit/sample/">View proof</a><a className="ptl-ai-top-cta" href="/audit/#audit-intake">Start verification <span>↗</span></a></div></header>
+        <section className="ptl-ai-hero"><div className="ptl-ai-hero-copy"><div className="ptl-ai-eyebrow"><span>✦</span> Fact Audit · accepting intakes</div><h1>Know what’s true<br/><em>before it matters.</em></h1><p>Find the expensive wrong answer before your customer does. Drop in the AI outputs your users actually see. ProofTTL isolates the claims, finds authoritative evidence, tests both sides, and returns a human-approved record you can defend.</p></div><div className="ptl-ai-composer" role="group" aria-label="Start a ProofTTL verification"><div className="ptl-ai-composer-input"><span>Paste an output, claim, or source to verify…</span></div><div className="ptl-ai-composer-tools"><div><button type="button" aria-label="Attach evidence">＋</button><span>Up to 25 outputs</span></div><a href="/audit/#audit-intake" aria-label="Start Fact Audit">↑</a></div></div><div className="ptl-ai-shortcuts"><a href="/audit/#audit-intake"><span>⌁</span><div><strong>Audit outputs</strong><small>Start with real AI answers</small></div></a><a href="/audit/sample/"><span>◈</span><div><strong>Inspect proof</strong><small>See a finished finding</small></div></a><a href="/how-proofttl-works/"><span>◎</span><div><strong>See the method</strong><small>Evidence → verdict → watch</small></div></a></div><div className="ptl-hero-trust"><span>UP TO 25 OUTPUTS</span><span>SCOPE CONFIRMED BEFORE PAYMENT</span><span>HUMAN APPROVAL</span><span>7-DAY WATCH</span></div></section>
+        <section className="ptl-ai-workspace" aria-label="Verification workspace preview"><div className="ptl-ai-workspace-head"><div><span>Live workspace</span><strong>One claim. Every side of the evidence.</strong></div><div className="ptl-ai-status"><i/> Verification ready</div></div><div className="ptl-ai-workspace-grid"><div className="ptl-ai-claim-panel"><div className="ptl-ai-panel-label"><span>01</span> Claim</div><blockquote>“The reviewed assertion remains supported by current authoritative guidance.”</blockquote><div className="ptl-ai-risk"><span>Consequence</span><strong>High</strong><small>Customer-facing factual output</small></div></div><div className="ptl-ai-evidence-panel"><div className="ptl-ai-panel-label"><span>02</span> Evidence</div><article><i className="for"/><div><small>FOR</small><strong>Primary source supports part of the assertion</strong><span>Authoritative · current</span></div></article><article><i className="against"/><div><small>AGAINST</small><strong>Current guidance conflicts with the claim as written</strong><span>Primary source · newer</span></div></article></div><div className="ptl-ai-verdict-panel"><div className="ptl-ai-panel-label"><span>03</span> Verdict</div><div className="ptl-ai-verdict-orb">×</div><strong>CONTRADICTED</strong><p>The strongest current source conflicts with the scoped claim.</p><div className="ptl-ai-human">✓ Human approval required</div></div></div></section>
+        <section className="ptl-ai-section"><div className="ptl-ai-section-title"><span>What you get</span><h2>Verification that reads like an answer,<br/>not an audit spreadsheet.</h2><p>Fast to understand. Deep enough to inspect. Conservative when evidence runs out.</p></div><div className="ptl-ai-bento"><article className="wide"><div className="ptl-ai-card-glow"/><span>Evidence intelligence</span><h3>Sources arranged around the exact claim.</h3><p>ProofTTL preserves what supports the assertion, what contradicts it, source authority, freshness, and uncertainty in one readable evidence chain.</p><div className="ptl-ai-mini-sources"><i/><i/><i/><b>+12</b></div></article><article><span>Verdict discipline</span><h3>UNKNOWN is a feature.</h3><p>No evidence theater. If the contradiction pass is incomplete or support is weak, confidence is withheld.</p><strong className="ptl-ai-unknown">UNKNOWN</strong></article><article><span>Human gate</span><h3>Nothing important auto-publishes.</h3><p>Automation assembles the case. A human controls the customer-facing finding.</p><div className="ptl-ai-approval"><i>✓</i><span>Ready for review</span></div></article></div></section>
+        <section className="ptl-ai-offer"><div><span>ProofTTL Fact Audit</span><h2>$1,500</h2><p>One fixed-scope audit · up to 25 real outputs · highest-risk findings deep-verified · seven-day watch.</p></div><div className="ptl-ai-offer-actions"><a href="/audit/#audit-intake">Start Fact Audit <span>↗</span></a><a href="/audit/sample/">View sample</a><small>No subscription. No raw card number is stored by ProofTTL; payment is handled through Stripe after scope confirmation.</small></div></section>
         <footer className="ptl-ai-footer"><img src="/proofttl-lockup.svg" alt="ProofTTL"/><span>Evidence before confidence.</span><nav><a href="/about/">About</a><a href="/trust/">Trust</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav></footer>
       </div>
     </section>
