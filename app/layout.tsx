@@ -30,6 +30,7 @@ import './centered-ui.css'
 import './detail-pages.css'
 import './shared-product-header.css'
 import './motion-system.css'
+import './launch-visual.css'
 
 const SITE_URL = 'https://proofttl-web.vercel.app'
 const GITHUB_PROFILE = 'https://github.com/tasx13ok-create'
