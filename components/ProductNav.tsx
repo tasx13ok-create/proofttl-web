@@ -24,22 +24,12 @@ const APP_SECONDARY = [
 ] as const
 
 const PUBLIC_PRIMARY = [
-  { href: '/audit/', label: 'Verification' },
-  { href: '/services/', label: 'Services' },
-  { href: '/audit/sample/', label: 'Sample' },
-  { href: '/how-proofttl-works/', label: 'How it works' },
+  { href: '/status/', label: 'Audit Status' },
+  { href: '/terms/', label: 'Legal' },
+  { href: '/support/', label: 'Support' },
 ] as const
 
-const PUBLIC_SECONDARY = [
-  { href: '/ai-fact-checker/', label: 'AI Fact Checker' },
-  { href: '/about/', label: 'About' },
-  { href: '/trust/', label: 'Trust' },
-  { href: '/support/', label: 'Support' },
-  { href: '/status/', label: 'Status' },
-  { href: '/faq/', label: 'FAQ' },
-  { href: '/privacy/', label: 'Privacy' },
-  { href: '/terms/', label: 'Terms' },
-] as const
+const PUBLIC_SECONDARY: ReadonlyArray<{ href: string; label: string }> = []
 
 type SessionUser = { name?: string | null; email?: string | null; image?: string | null }
 type Quota = { plan?: string; membership_status?: string; limit?: number | null; used?: number | null; remaining?: number | null; reset?: string; unlimited?: boolean }
@@ -146,12 +136,12 @@ export default function ProductNav() {
           <img className="product-brand-lockup-image" src="/proofttl-lockup.svg" alt="ProofTTL" />
         </a>
 
-        <nav className="product-nav-primary" aria-label={publicMode ? 'ProofTTL services' : 'Product'}>
+        <nav className="product-nav-primary" aria-label={publicMode ? 'ProofTTL public navigation' : 'Product'}>
           {primaryLinks.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}
         </nav>
 
         <div className="product-nav-actions">
-          <div className="product-nav-more"><button type="button" aria-haspopup="true">More</button><div className="product-nav-menu">{secondaryLinks.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}{!publicMode && <><a href="/how-proofttl-works/">How it works</a><a href="/faq/">FAQ</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/status/">Status</a><a href="/support/">Support</a></>}</div></div>
+          {!publicMode && <div className="product-nav-more"><button type="button" aria-haspopup="true">More</button><div className="product-nav-menu">{secondaryLinks.map((item) => <a key={item.href} href={item.href} className={active(pathname, item.href) ? 'active' : ''}>{item.label}</a>)}<><a href="/how-proofttl-works/">How it works</a><a href="/faq/">FAQ</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/status/">Status</a><a href="/support/">Support</a></></div></div>}
 
           {!accountLoading && user ? (
             <div className="product-account" ref={accountRef}>
@@ -178,11 +168,9 @@ export default function ProductNav() {
                 </div>
               </div>
             </div>
-          ) : !accountLoading ? <a className="product-nav-signin" href={signInHref(signInTarget)}>Sign in</a> : <span className="product-account-loading" aria-hidden="true" />}
+          ) : !accountLoading ? <a className="product-nav-signin" href={signInHref(signInTarget)}>Log in</a> : <span className="product-account-loading" aria-hidden="true" />}
 
-          {publicMode && pathname !== '/'
-            ? <a className="product-nav-workspace" href="/audit/#audit-intake">Start verification <span>→</span></a>
-            : !publicMode ? <a className="product-nav-workspace" href="/workspace/">Open Workspace <span>→</span></a> : null}
+          {!publicMode && <a className="product-nav-workspace" href="/workspace/">Open Workspace <span>→</span></a>}
         </div>
       </div>
     </header>
