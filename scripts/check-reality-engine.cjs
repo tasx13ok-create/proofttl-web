@@ -3,7 +3,7 @@ const fs=require('fs'),path=require('path'),vm=require('vm'),root=path.resolve(_
 const files=['public/reality-engine/ontology-engine-v2.js','public/reality-engine/ontology-engine-v3.js','public/reality-engine/ontology-engine-v4.js','public/reality-engine/ontology-engine-v5.js','public/reality-engine/ontology-engine-v6.js','public/reality-engine/ontology-engine-v7b.js','public/reality-engine/ontology-engine-v8.js','public/reality-engine/ontology-engine-v9.js','public/reality-engine/ontology-engine-v10.js','public/reality-engine/ontology-engine-v11.js','public/reality-engine/ontology-engine-v12.js','public/reality-engine/ontology-engine-v13.js','public/reality-engine/ontology-engine-v14.js','public/reality-engine/ontology-engine-v15.js','public/reality-engine/ontology-engine-v16.js','public/reality-engine/ontology-engine-v17.js','public/reality-engine/ontology-engine-v18.js','public/reality-engine/ontology-engine-v19.js','public/reality-engine/ontology-engine-v20.js','public/reality-engine/ontology-engine-v21.js']
 const ctx={console,setTimeout,clearTimeout,Math,Date,JSON,Array,Object,Number,String,Boolean,Map,Set,Uint32Array};ctx.globalThis=ctx;ctx.self=ctx;vm.createContext(ctx)
 for(const rel of files){const file=path.join(root,rel);if(!fs.existsSync(file))throw new Error(`Reality Engine asset missing: ${rel}`);vm.runInContext(fs.readFileSync(file,'utf8'),ctx,{filename:rel,timeout:15000})}
-const E=ctx.OntologyEngineV21;if(!E)throw new Error('OntologyEngineV21 did not boot');if(E.VERSION!=='3.0.0-alpha')throw new Error(`Unexpected Reality Engine version: ${E.VERSION}`)
+const E=ctx.OntologyEngineV21;if(!E)throw new Error('OntologyEngineV21 did not boot');if(E.VERSION!=='3.0.1-alpha')throw new Error(`Unexpected Reality Engine version: ${E.VERSION}`)
 const tests=E.selfTest(),failed=tests.filter(t=>!t.pass);for(const t of tests)console.log(`${t.pass?'PASS':'FAIL'} Reality Engine: ${t.name} — ${t.detail}`);if(failed.length)throw new Error(`${failed.length} Reality Engine self-test(s) failed`)
 if(!E.__v7||E.__v7.LANGUAGE_NULL_COUNT!==256)throw new Error('Language Court contract missing')
 if(!E.__v8||E.__v8.POPULATION!==6)throw new Error('Scientist Ecology contract missing')
@@ -19,7 +19,7 @@ if(!E.__v17||E.__v17.ACTIONS.length!==6)throw new Error('Sequential intervention
 if(!E.__v18||E.__v18.MAX_SCHEDULES!==18||E.__v18.TRIGGER_CADENCE!==6)throw new Error('Sequential Experiment Forge contract missing')
 if(!E.__v19||E.__v19.MIN_SUPPORT!==2||E.__v19.GENERATION_CADENCE!==6)throw new Error('Intervention Language contract missing')
 if(!E.__v20||E.__v20.HOLDOUT_MIN!==8||Math.abs(E.__v20.TRUST_MARGIN-.03)>1e-12)throw new Error('Matched Theory Court contract missing')
-if(!E.__v21||E.__v21.MIN_PAIRS!==16||E.__v21.DECISION_PAIRS!==24||E.__v21.MAX_PAIRS!==48||Math.abs(E.__v21.PRACTICAL_EDGE-.25)>1e-12)throw new Error('Research Method Court contract missing')
+if(!E.__v21||E.__v21.MIN_PAIRS!==16||E.__v21.DECISION_PAIRS!==24||E.__v21.MAX_PAIRS!==48||Math.abs(E.__v21.PRACTICAL_EDGE-.25)>1e-12||E.__v21.SCORE_VERSION!==2)throw new Error('Research Method Court contract missing')
 if(E.seedOntology().length!==4)throw new Error('Seed ontology contract changed unexpectedly')
 const worker=fs.readFileSync(path.join(root,'public/reality-engine/ontology-worker-v2.js'),'utf8')
 if(!worker.includes("const E=self.OntologyEngineV21")||!worker.includes("engineVersion:E.VERSION")||!worker.includes("engineLayer:'V21'"))throw new Error('Worker version truth contract missing')
