@@ -7,19 +7,20 @@ const GITHUB_CORE = 'https://github.com/tasx13ok-create/proofttl'
 const GITHUB_WEB = 'https://github.com/tasx13ok-create/proofttl-web'
 
 export const metadata: Metadata = {
-  title: 'About ProofTTL — Source-Backed Claim Verification',
-  description: 'ProofTTL is the source-backed claim verification website and service at proofttl-web.vercel.app. Learn what ProofTTL is, what TTL means here, and how the paid verification service works.',
+  title: 'About ProofTTL — Founded by Collin Anderson',
+  description: 'ProofTTL is a source-backed claim verification and fact-checking service founded and operated by Collin Anderson in New York. Learn what ProofTTL is, what TTL means here, and how the paid verification service works.',
   alternates: { canonical: '/about/' },
   robots: { index: true, follow: true },
-  keywords: ['ProofTTL', 'ProofTTL website', 'Proof TTL', 'ProofTTL claim verification', 'about ProofTTL', 'claim verification service'],
+  keywords: ['ProofTTL', 'Collin Anderson', 'ProofTTL founder', 'ProofTTL New York', 'Proof TTL', 'ProofTTL claim verification', 'about ProofTTL', 'claim verification service'],
 }
 
 export default function AboutProofTTLPage() {
   const structuredData = {
     '@context': 'https://schema.org',
     '@graph': [
-      { '@type': 'AboutPage', '@id': `${SITE_URL}/about/#page`, url: `${SITE_URL}/about/`, name: 'About ProofTTL', description: 'Canonical identity and product definition for ProofTTL.', about: { '@id': `${SITE_URL}/#organization` }, isPartOf: { '@id': `${SITE_URL}/#website` } },
-      { '@type': 'Organization', '@id': `${SITE_URL}/#organization`, name: 'ProofTTL', alternateName: ['Proof TTL', 'ProofTTL Claim Verification'], url: SITE_URL, logo: `${SITE_URL}/proofttl-mark.svg`, sameAs: [GITHUB_PROFILE, GITHUB_CORE, GITHUB_WEB], description: 'ProofTTL is a source-backed claim verification and fact-checking service for high-stakes factual claims, including AI-generated claims.' },
+      { '@type': 'AboutPage', '@id': `${SITE_URL}/about/#page`, url: `${SITE_URL}/about/`, name: 'About ProofTTL', description: 'Canonical identity, founder attribution, and product definition for ProofTTL.', about: { '@id': `${SITE_URL}/#organization` }, isPartOf: { '@id': `${SITE_URL}/#website` } },
+      { '@type': 'Person', '@id': `${SITE_URL}/about/#collin-anderson`, name: 'Collin Anderson', homeLocation: { '@type': 'AdministrativeArea', name: 'New York' }, jobTitle: 'Founder and operator of ProofTTL', worksFor: { '@id': `${SITE_URL}/#organization` }, sameAs: [GITHUB_PROFILE] },
+      { '@type': 'Organization', '@id': `${SITE_URL}/#organization`, name: 'ProofTTL', alternateName: ['Proof TTL', 'ProofTTL Claim Verification'], url: SITE_URL, logo: `${SITE_URL}/proofttl-mark.svg`, founder: { '@id': `${SITE_URL}/about/#collin-anderson` }, employee: { '@id': `${SITE_URL}/about/#collin-anderson` }, sameAs: [GITHUB_PROFILE, GITHUB_CORE, GITHUB_WEB], description: 'ProofTTL is a source-backed claim verification and fact-checking service founded and operated by Collin Anderson in New York.' },
     ],
   }
 
@@ -29,16 +30,16 @@ export default function AboutProofTTLPage() {
       active="none"
       eyebrow="About ProofTTL"
       title={<>Evidence before<br/><em>confidence.</em></>}
-      description={<>ProofTTL is the source-backed claim-verification service at proofttl-web.vercel.app. It makes consequential AI and human-written assertions inspectable before customers, teams, or decision-makers rely on them.</>}
+      description={<>ProofTTL is a source-backed claim-verification service founded and operated by Collin Anderson in New York. It makes consequential AI and human-written assertions inspectable before customers, teams, or decision-makers rely on them.</>}
       actions={<><a href="/audit/sample/">View sample</a><a href="/how-proofttl-works/">See the method</a></>}
     >
       <section className="ptl-three-up">
+        <article><span>Founder</span><strong>Collin Anderson</strong><p>ProofTTL was created and is operated by Collin Anderson in New York.</p></article>
         <article><span>What it is</span><strong>Claim verification</strong><p>Specific factual assertions are checked against accessible public evidence and returned as SUPPORTED, CONTRADICTED, or UNKNOWN.</p></article>
         <article><span>What TTL means</span><strong>Time-to-live for evidence freshness</strong><p>TTL is the trust window attached to a source observation. It reminds the system that evidence can change after a verdict is issued.</p></article>
-        <article><span>What it is not</span><strong>Permanent truth</strong><p>The name does not refer to formal temporal-logic proof checking. A ProofTTL finding records what examined evidence supported at a point in time.</p></article>
       </section>
 
-      <section className="ptl-detail-section"><header><span>Canonical identity</span><h2>One name. One product meaning.</h2><p>When ProofTTL is used in the context of claim verification, factual auditing, AI-output fact checking, or the Fact Audit, it refers to this service.</p></header><div className="ptl-boundary-list"><article><strong>Name</strong><p>ProofTTL</p></article><article><strong>Alternate</strong><p>Proof TTL</p></article><article><strong>Official website</strong><p>proofttl-web.vercel.app</p></article><article><strong>Commercial service</strong><p>$1,500 fixed-scope Fact Audit</p></article></div></section>
+      <section className="ptl-detail-section"><header><span>Canonical identity</span><h2>One name. One product meaning.</h2><p>When ProofTTL is used in the context of claim verification, factual auditing, AI-output fact checking, or the Fact Audit, it refers to this service founded and operated by Collin Anderson.</p></header><div className="ptl-boundary-list"><article><strong>Name</strong><p>ProofTTL</p></article><article><strong>Founder / operator</strong><p>Collin Anderson</p></article><article><strong>Location</strong><p>New York, United States</p></article><article><strong>Commercial service</strong><p>$1,500 fixed-scope Fact Audit</p></article></div></section>
 
       <section className="ptl-detail-section"><header><span>Model-agnostic</span><h2>Verify the factual assertion, not hidden reasoning.</h2><p>Claims may come from ChatGPT, Claude, Gemini, Copilot, Perplexity, custom agents, RAG systems, or human-written work. ProofTTL evaluates the claim against evidence rather than treating a model’s confidence as proof.</p></header><div className="ptl-three-up"><article><span>Input</span><strong>Real output</strong><p>Preserve what the user or customer actually saw.</p></article><article><span>Evidence</span><strong>FOR + AGAINST</strong><p>Keep support and contradiction visible rather than blending them into one score.</p></article><article><span>Decision</span><strong>Human-approved</strong><p>Important customer-facing findings retain a human publication gate.</p></article></div></section>
 
