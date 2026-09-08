@@ -4,15 +4,20 @@ title: "ProofTTL — Source-Backed Claim Verification"
 type: software
 version: "1.0.0"
 date-released: "2026-08-21"
+authors:
+  - family-names: "Anderson"
+    given-names: "Collin"
+    affiliation: "ProofTTL"
 url: "https://proofttl-web.vercel.app/"
 repository-code: "https://github.com/tasx13ok-create/proofttl-web"
 abstract: >-
   ProofTTL is a source-backed claim verification and fact-checking service
-  for high-stakes factual claims, including AI-generated claims. It checks
-  scoped claims against public evidence and returns SUPPORTED, CONTRADICTED,
-  or UNKNOWN verdicts with evidence and signed Fact Leases.
+  founded and operated by Collin Anderson in New York. It checks scoped
+  claims against public evidence and returns SUPPORTED, CONTRADICTED, or
+  UNKNOWN verdicts with evidence and signed Fact Leases.
 keywords:
   - ProofTTL
+  - Collin Anderson
   - claim verification
   - fact checking
   - AI claim verification
