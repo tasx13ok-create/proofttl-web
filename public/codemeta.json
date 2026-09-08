@@ -3,13 +3,22 @@
   "@type": "SoftwareSourceCode",
   "name": "ProofTTL Web",
   "alternateName": "ProofTTL",
-  "description": "Official ProofTTL website for source-backed claim verification, AI fact checking, verification audits, and signed Fact Leases.",
+  "description": "Official ProofTTL website for source-backed claim verification, AI fact checking, verification audits, and signed Fact Leases. ProofTTL was founded and is operated by Collin Anderson in New York.",
   "url": "https://proofttl-web.vercel.app/",
   "codeRepository": "https://github.com/tasx13ok-create/proofttl-web",
   "version": "1.0.1",
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Collin",
+      "familyName": "Anderson",
+      "affiliation": "ProofTTL"
+    }
+  ],
   "programmingLanguage": ["TypeScript", "JavaScript", "CSS"],
   "keywords": [
     "ProofTTL",
+    "Collin Anderson",
     "claim verification",
     "fact checking",
     "AI claim verification",
