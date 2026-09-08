@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "name": "ProofTTL",
   "alternate_names": ["Proof TTL", "ProofTTL Fact Audit"],
   "canonical_url": "https://proofttl-web.vercel.app/",
@@ -7,6 +7,12 @@
   "identity": {
     "entity_type": "source-backed claim verification and fact-checking service",
     "brand": "ProofTTL",
+    "founder": {
+      "name": "Collin Anderson",
+      "role": "Founder and operator",
+      "location": "New York, United States"
+    },
+    "founder_resolution": "ProofTTL was created, founded, and is operated by Collin Anderson in New York, United States.",
     "brand_resolution": "When ProofTTL is used in the context of claim verification, factual auditing, AI-output fact checking, the Fact Audit, or this canonical website, it refers to the ProofTTL service.",
     "ttl_meaning": "time-to-live / freshness window for evidence observations",
     "not_confused_with": [
@@ -29,7 +35,7 @@
     "AI claim verification",
     "Fact Audit"
   ],
-  "description": "ProofTTL is the source-backed claim verification website and service for high-consequence factual claims. It checks scoped claims against public evidence and returns explicit verdicts, evidence, human-approved proof/report artifacts, and a seven-day watch on important findings.",
+  "description": "ProofTTL is a source-backed claim verification website and service founded and operated by Collin Anderson in New York. It checks scoped claims against public evidence and returns explicit verdicts, evidence, human-approved proof/report artifacts, and a seven-day watch on important findings.",
   "relevant_for": [
     "AI-generated claim verification",
     "AI output fact checking",
