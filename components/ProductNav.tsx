@@ -24,7 +24,11 @@ const APP_SECONDARY = [
 ] as const
 
 const PUBLIC_PRIMARY = [
-  { href: '/status/', label: 'Audit Status' },
+  { href: '/audit/', label: 'Verification' },
+  { href: '/services/', label: 'Services' },
+  { href: '/audit/sample/', label: 'Sample' },
+  { href: '/how-proofttl-works/', label: 'How it works' },
+  { href: '/audit/status/', label: 'Audit Status' },
   { href: '/terms/', label: 'Legal' },
   { href: '/support/', label: 'Support' },
 ] as const
@@ -64,7 +68,7 @@ export default function ProductNav() {
         const nextUser = (result?.data?.user || null) as SessionUser | null
         if (cancelled) return
         setUser(nextUser)
-        if (!nextUser) { setQuota(null); setFoundryAllowed(false); return }
+        if (!nextUser || publicMode) { setQuota(null); setFoundryAllowed(false); return }
 
         const [usageResponse, foundryResponse] = await Promise.all([
           fetch(`${PROOFTTL_API_URL}/assistant/usage`, { method: 'GET', cache: 'no-store', credentials: 'include' }),
@@ -86,7 +90,7 @@ export default function ProductNav() {
     const onFocus = () => void loadAccount()
     window.addEventListener('focus', onFocus)
     return () => { cancelled = true; window.removeEventListener('focus', onFocus) }
-  }, [pathname])
+  }, [pathname, publicMode])
 
   useEffect(() => {
     if (!accountOpen) return
@@ -170,6 +174,7 @@ export default function ProductNav() {
             </div>
           ) : !accountLoading ? <a className="product-nav-signin" href={signInHref(signInTarget)}>Log in</a> : <span className="product-account-loading" aria-hidden="true" />}
 
+          {publicMode && pathname !== '/' && <a className="product-nav-workspace" href="/audit/#audit-intake">Start verification <span>→</span></a>}
           {!publicMode && <a className="product-nav-workspace" href="/workspace/">Open Workspace <span>→</span></a>}
         </div>
       </div>

@@ -1,4 +1,6 @@
-import { readFile } from 'node:fs/promises'
+import { readFile as readRawFile } from 'node:fs/promises'
+// Source assertions must behave identically after a Windows CRLF checkout.
+const readFile = async (...args) => (await readRawFile(...args)).replace(/\r\n/g, '\n')
 
 const homePage = await readFile('app/page.tsx', 'utf8')
 const home = await readFile('components/CommercialHome.tsx', 'utf8')

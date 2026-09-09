@@ -52,6 +52,8 @@ for (const forbidden of ['OPEN WORKSPACE', 'VOICE PIPELINE', 'Studio cloud', 'Is
 const buyerPages = [
   'out/index.html',
   'out/about/index.html',
+  'out/login/index.html',
+  'out/two-factor/index.html',
   'out/audit/index.html',
   'out/audit/sample/index.html',
   'out/stress-test/index.html',
