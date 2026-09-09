@@ -14,6 +14,9 @@ type StatusResponse = {
   scope?: { summary?: string; price_usd?: number; prior_credit_usd?: number; amount_due_usd?: number; turnaround?: string; scoped_at_ms?: number } | null
   payment?: { provider?: string | null; state?: string; amount_due_usd?: number | null; url?: string | null; paid_at_ms?: number | null }
   fulfilled_at_ms?: number | null
+  human_review?: { approved?: boolean }
+  delivery?: { delivered?: boolean; report_url?: string | null; report_sha256?: string | null }
+  watch?: { state?: string; ends_at_ms?: number | null; duration_days?: number }
   error?: string
 }
 
@@ -48,7 +51,7 @@ export default function AuditStatusLookup() {
       savedEmail = saved.email || ''
       setEmail(savedEmail)
       paidReturn = params.get('paid') === '1'
-      if (paidReturn) setReturnMessage('Payment submitted. ProofTTL is confirming the Stripe webhook now.')
+      if (paidReturn) setReturnMessage('Checking the stored Stripe payment confirmation. The checkout return alone does not confirm payment.')
       else if (params.get('cancelled') === '1') setReturnMessage('Checkout was cancelled. Your approved scope remains stored and can be paid later while checkout is valid.')
     } catch {}
 
@@ -136,7 +139,7 @@ export default function AuditStatusLookup() {
         setResult(body)
         if (attempt < 3) await new Promise<void>((resolve) => window.setTimeout(resolve, 1500))
       }
-      setReturnMessage('Stripe checkout returned successfully. Payment confirmation is still processing; ProofTTL will keep the approved request stored.')
+      setReturnMessage('Payment is not yet confirmed. Do not pay again if Stripe already accepted your payment. Check status again or contact support with your request reference.')
     } finally {
       setLoading(false)
     }
@@ -184,6 +187,10 @@ export default function AuditStatusLookup() {
           {result.status === 'scoped' && <p className="app-note">Your scope is approved. ProofTTL has not created checkout yet, so no payment is currently due.</p>}
           {result.status === 'paid' && <p className="app-note">Stripe payment is recorded. Fulfillment is now the active step.</p>}
           {result.status === 'fulfilled' && <p className="app-note">This request is marked fulfilled.</p>}
+          {result.human_review?.approved && <p className="app-note">Findings approved by a human reviewer.</p>}
+          {result.delivery?.delivered && result.delivery.report_url && <p className="app-note"><a href={result.delivery.report_url} rel="noreferrer">OPEN YOUR AUDIT REPORT →</a></p>}
+          {result.watch?.state === 'active' && result.watch.ends_at_ms && <p className="app-note">Seven-day watch active through {new Date(result.watch.ends_at_ms).toLocaleString()}. ProofTTL watches the agreed important findings.</p>}
+          {result.watch?.state === 'complete' && <p className="app-note">The seven-day watch period is complete.</p>}
         </div>
       )}
     </div>

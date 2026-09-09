@@ -28,8 +28,8 @@ export default function SampleAuditPage() {
     active="sample"
     eyebrow="Sample finding · PTTL-DEMO-PX-20260818-001"
     title={<>A believable claim.<br/><em>Then the contradiction.</em></>}
-    description={<>This sample reviews six time-sensitive statements in public Perplexity documentation. Five survive. One fails only after two current first-party pages are compared.</>}
-    actions={<a href="/how-proofttl-works/">See the method</a>}
+    description={<>This historical demonstration presents six statements as recorded on August 18, 2026. It is not a current check of Perplexity pricing or model availability. The linked pages may have changed since that observation.</>}
+    actions={<><a href="/how-proofttl-works/">See the method</a><a href="/samples/proofttl-pricing-audit.md">Read our September 9 self-audit</a></>}
   >
     <section className="ptl-finding-hero">
       <div className="ptl-finding-meta"><span>Claim PX-006</span><span>Observed Aug 18, 2026</span><span>High consequence</span></div>

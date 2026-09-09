@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useEffect, useMemo, useState, type PointerEvent } from 'react'
+import { FormEvent, useEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
 import { authClient, PROOFTTL_API_URL, rememberAuthReturn, signInHref } from '../lib/proofttl-auth'
 
 const AUDIT_STORAGE_KEY = 'proofttl:last-audit-request'
@@ -31,6 +31,7 @@ export default function AuditIntakeForm() {
   const [authState, setAuthState] = useState<AuthState>('checking')
   const [accountEmail, setAccountEmail] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const submittingRef = useRef(false)
   const [result, setResult] = useState<IntakeResponse | null>(null)
   const offer = useMemo(() => offerCopy.full_audit, [])
 
@@ -80,7 +81,9 @@ export default function AuditIntakeForm() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (submitting) return
+    if (submittingRef.current) return
+    submittingRef.current = true
+    setSubmitting(true)
 
     // Capture all event-backed values before the first await. React only guarantees
     // currentTarget while the event callback is actively dispatching.
@@ -90,7 +93,7 @@ export default function AuditIntakeForm() {
     setResult(null)
     persistDraft()
     const verifiedEmail = await requireSession()
-    if (!verifiedEmail) return
+    if (!verifiedEmail) { submittingRef.current = false; setSubmitting(false); return }
 
     setSubmitting(true)
     const controller = new AbortController()
@@ -118,6 +121,7 @@ export default function AuditIntakeForm() {
     } finally {
       window.clearTimeout(timeout)
       setSubmitting(false)
+      submittingRef.current = false
     }
   }
 
