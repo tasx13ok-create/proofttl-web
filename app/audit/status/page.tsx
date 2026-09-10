@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function AuditStatusPage() {
   return (
-    <main className="app-page audit-status-page">
+    <main className="app-page audit-status-page buyer-polish">
       <SharedProductHeader />
       <section className="onboarding-wrap">
         <AuditStatusLookup />

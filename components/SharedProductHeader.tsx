@@ -42,6 +42,11 @@ export default function SharedProductHeader({
       <img src="/proofttl-mark.svg" alt="" />
       <strong>ProofTTL</strong>
     </a>
+    <nav className="ptl-buyer-nav" aria-label="Buyer navigation">
+      <a href="/audit/">The audit</a>
+      <a href="/audit/sample/">Sample</a>
+      <a href="/audit/status/">Your audit</a>
+    </nav>
     <div className="ptl-shared-header-actions">
       <span>Fact Audit</span>
       {cta || <a className="ptl-shared-audit-cta" href={auditHref} aria-label={auditAriaLabel}>{auditLabel} <b>↗</b></a>}

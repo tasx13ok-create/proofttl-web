@@ -11,7 +11,7 @@ type Props = {
 }
 
 export default function ProductDetailShell({ active, eyebrow, title, description, children, actions }: Props) {
-  return <main className="ptl-detail-page">
+  return <main className={`ptl-detail-page${active === 'sample' ? ' buyer-polish' : ''}`}>
     <section className="ptl-detail-shell">
       <aside className="ptl-detail-sidebar" aria-label="ProofTTL navigation">
         <a className="ptl-detail-mark" href="/" aria-label="ProofTTL home"><img src="/proofttl-mark.svg" alt="" /></a>

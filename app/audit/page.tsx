@@ -24,7 +24,7 @@ export default function AuditPage() {
     { '@type': 'FAQPage', '@id': `${SITE_URL}/audit/#faq`, mainEntity: AUDIT_FAQ.map((item) => ({ '@type': 'Question', name: item.question, acceptedAnswer: { '@type': 'Answer', text: item.answer } })) },
   ] }
 
-  return <main className="app-page audit-sales-page">
+  return <main className="app-page audit-sales-page buyer-polish">
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
     <SharedProductHeader />
     <section className="onboarding-wrap"><div className="audit-sales-card">
