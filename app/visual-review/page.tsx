@@ -10,7 +10,7 @@ export default function VisualReview() {
     fetch(path).then(response => {
       if (!response.ok) throw new Error('Page failed: ' + response.status)
       return response.text()
-    }).then(value => { if(active) setHtml(value) }).catch(reason => setError(String(reason)))
+    }).then(value => { if(active) setHtml(value.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')) }).catch(reason => setError(String(reason)))
     return () => { active = false }
   }, [path])
   return <main style={{padding:20,background:'#20232c',minHeight:'100vh'}}>
