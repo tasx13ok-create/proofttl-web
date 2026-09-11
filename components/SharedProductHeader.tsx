@@ -39,8 +39,8 @@ export default function SharedProductHeader({
 
   return <header className={`ptl-shared-header${hidden ? ' is-hidden' : ''}`}>
     <a className="ptl-shared-brand" href="/" aria-label="ProofTTL home">
-      <img src="/proofttl-mark.svg" alt="" />
-      <strong>ProofTTL</strong>
+      <img src="/proofttl-glass-logo.png" alt="ProofTTL" />
+      
     </a>
     <nav className="ptl-buyer-nav" aria-label="Buyer navigation">
       <a href="/audit/">The audit</a>
@@ -49,7 +49,7 @@ export default function SharedProductHeader({
     </nav>
     <div className="ptl-shared-header-actions">
       <span>Fact Audit</span>
-      {cta || <a className="ptl-shared-audit-cta" href={auditHref} aria-label={auditAriaLabel}>{auditLabel} <b>↗</b></a>}
+      {cta || <a className="ptl-shared-audit-cta" href={auditHref} aria-label={auditAriaLabel}>{auditLabel} <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg></a>}
     </div>
   </header>
 }
