@@ -2,297 +2,310 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-type Point3D = readonly [number, number, number]
-
-const OUTER_POINTS: Point3D[] = [
-  [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
-  [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1],
+const MODES = [
+  { name: 'The claim', title: 'Start with the exact assertion.', copy: 'Preserve the words, context, and consequence of being wrong.' },
+  { name: 'The evidence', title: 'Examine both sides.', copy: 'Keep supporting sources and contradicting evidence in the same view.' },
+  { name: 'The verdict', title: 'Leave room for unknown.', copy: 'Supported, contradicted, or unknown. A human approves the finding.' },
 ]
 
-const INNER_POINTS: Point3D[] = [
-  [0, -1.42, 0], [1.42, 0, 0], [0, 1.42, 0], [-1.42, 0, 0],
-  [0, 0, -1.42], [0, 0, 1.42],
-]
-
-const EDGES: ReadonlyArray<readonly [number, number]> = [
-  [0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4],
-  [0, 4], [1, 5], [2, 6], [3, 7],
-  [8, 9], [9, 10], [10, 11], [11, 8], [8, 12], [9, 12], [10, 12], [11, 12],
-  [8, 13], [9, 13], [10, 13], [11, 13],
-]
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value))
+// A real-time, procedurally modelled 3D sculpture. It illustrates the method;
+// it does not display a live audit, a customer record, or product telemetry.
+const VERTEX = `attribute vec2 position;
+void main(){gl_Position=vec4(position,0.0,1.0);}`
+const FRAGMENT = `precision highp float;
+uniform vec2 resolution;
+uniform vec2 pointer;
+uniform float time;
+uniform float phase;
+uniform float scroll;
+mat2 rot(float a){return mat2(cos(a),-sin(a),sin(a),cos(a));}
+float torus(vec3 p,float r,float tube){return length(vec2(length(p.xy)-r,p.z))-tube;}
+vec2 scene(vec3 p){
+  p.xz=rot(time*.17+pointer.x*.65+scroll*.7)*p.xz;
+  p.yz=rot(-.3+pointer.y*.38+phase*.2)*p.yz;
+  vec3 core=p;
+  core.xy=rot(.6+time*.1)*core.xy;
+  core.yz=rot(.5)*core.yz;
+  float crystal=(abs(core.x)+abs(core.y)+abs(core.z)-.92)*.57735-.055;
+  vec2 result=vec2(crystal,0.0);
+  vec3 a=p;a.yz=rot(.62)*a.yz;
+  float d=torus(a,1.08,.115);
+  if(d<result.x)result=vec2(d,1.0);
+  vec3 b=p;b.xz=rot(1.12+phase*.18)*b.xz;b.xy=rot(-.5)*b.xy;
+  d=torus(b,1.32,.072);
+  if(d<result.x)result=vec2(d,2.0);
+  vec3 c=p;c.yz=rot(1.56)*c.yz;c.xz=rot(.52)*c.xz;
+  d=torus(c,1.51,.036);
+  if(d<result.x)result=vec2(d,3.0);
+  return result;
 }
-
-function rotate([x, y, z]: Point3D, rx: number, ry: number, rz: number): Point3D {
-  const cosX = Math.cos(rx)
-  const sinX = Math.sin(rx)
-  const cosY = Math.cos(ry)
-  const sinY = Math.sin(ry)
-  const cosZ = Math.cos(rz)
-  const sinZ = Math.sin(rz)
-  const y1 = y * cosX - z * sinX
-  const z1 = y * sinX + z * cosX
-  const x2 = x * cosY + z1 * sinY
-  const z2 = -x * sinY + z1 * cosY
-  return [x2 * cosZ - y1 * sinZ, x2 * sinZ + y1 * cosZ, z2]
+vec3 normalAt(vec3 p){
+  vec2 e=vec2(.0015,0.0);
+  return normalize(vec3(scene(p+e.xyy).x-scene(p-e.xyy).x,scene(p+e.yxy).x-scene(p-e.yxy).x,scene(p+e.yyx).x-scene(p-e.yyx).x));
 }
+void main(){
+  vec2 uv=(gl_FragCoord.xy*2.0-resolution)/resolution.y;
+  vec3 ro=vec3(0.,0.,4.8);
+  vec3 rd=normalize(vec3(uv,-2.35));
+  float travel=0.;vec2 hit=vec2(1.);bool found=false;
+  for(int i=0;i<72;i++){
+    hit=scene(ro+rd*travel);
+    if(hit.x<.002){found=true;break;}
+    travel+=hit.x*.85;
+    if(travel>8.)break;
+  }
+  if(!found){gl_FragColor=vec4(0.);return;}
+  vec3 p=ro+rd*travel;
+  vec3 n=normalAt(p);
+  vec3 light=normalize(vec3(-.7,1.1,1.6));
+  vec3 fill=normalize(vec3(1.2,-.4,.6));
+  float diffuse=max(dot(n,light),0.);
+  float rim=pow(1.-max(dot(n,-rd),0.),2.4);
+  vec3 reflected=reflect(rd,n);
+  float studio=pow(max(dot(reflected,normalize(vec3(-.8,1.,1.5))),0.),20.);
+  float stripe=pow(.5+.5*sin(reflected.y*8.+reflected.x*3.),8.);
+  vec3 base=vec3(.48,.6,.91);
+  if(hit.y>.5)base=vec3(.64,.58,.96);
+  if(hit.y>1.5)base=vec3(.34,.81,.76);
+  if(hit.y>2.5)base=vec3(.71,.78,.96);
+  vec3 color=base*(.16+diffuse*.68+max(dot(n,fill),0.)*.3);
+  color+=vec3(.85,.91,1.)*(studio*1.6+stripe*.35+rim*.5);
+  color+=vec3(.2,.4,.75)*max(-n.y,0.)*.2;
+  color=pow(color,vec3(.86));
+  gl_FragColor=vec4(color,1.);
+}`
 
 export default function ReactiveProofStage() {
   const [paused, setPaused] = useState(false)
+  const [mode, setMode] = useState(0)
   const stageRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const cursorRef = useRef<HTMLDivElement>(null)
+  const controls = useRef({ paused: false, mode: 0 })
+  useEffect(() => { controls.current = { paused, mode } }, [paused, mode])
 
   useEffect(() => {
     const stage = stageRef.current
     const canvas = canvasRef.current
-    if (!stage || !canvas) return
-
-    const context = canvas.getContext('2d')
-    if (!context) return
-
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)')
     const cursor = cursorRef.current
-    const cursorDots = cursor ? Array.from(cursor.querySelectorAll<HTMLElement>('i')) : []
-    const pointer = { x: 0, y: 0, targetX: 0, targetY: 0 }
-    const trail = cursorDots.map(() => ({ x: window.innerWidth / 2, y: window.innerHeight / 2 }))
-
-    let width = 1
-    let height = 1
-    let pixelRatio = 1
-    let frame = 0
-    let visible = !document.hidden
+    if (!stage || !canvas) return
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)')
+    const dots = cursor ? Array.from(cursor.querySelectorAll<HTMLElement>('i')) : []
+    const trail = dots.map(() => ({ x: 0, y: 0 }))
+    const aim = { x: 0, y: 0, tx: 0, ty: 0 }
     let inView = true
+    let frame = 0
+    let last = 0
+    let clock = 0
+    let phase = 0
+    let travel = 0
     let cursorUntil = 0
-    let scrollProgress = 0
-    let lastTime = performance.now()
+    let dragging = false
+    let dragX = 0
+    let lastPaused = false
+    let dirty = true
+    let renderer: WebGLRenderingContext | null = null
+    try { renderer = canvas.getContext('webgl', { alpha: true, antialias: false, depth: false, powerPreference: 'low-power' }) } catch { /* CSS sculpture remains visible. */ }
+    const gl = renderer
+    let program: WebGLProgram | null = null
+    let buffer: WebGLBuffer | null = null
+    const shaders: WebGLShader[] = []
+    let uniforms: Record<string, WebGLUniformLocation | null> = {}
 
-    const schedule = () => {
-      if (visible && !frame) frame = window.requestAnimationFrame(draw)
-    }
-
-    const resize = () => {
-      const rect = stage.getBoundingClientRect()
-      width = Math.max(1, rect.width)
-      height = Math.max(1, rect.height)
-      pixelRatio = Math.min(window.devicePixelRatio || 1, 1.6)
-      canvas.width = Math.round(width * pixelRatio)
-      canvas.height = Math.round(height * pixelRatio)
-      canvas.style.width = `${width}px`
-      canvas.style.height = `${height}px`
-      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
-      schedule()
-    }
-
-    const updateScroll = () => {
-      if (reducedMotion.matches || paused) return
-      const rect = stage.getBoundingClientRect()
-      const travel = window.innerHeight + rect.height
-      scrollProgress = clamp((window.innerHeight - rect.top) / Math.max(travel, 1), 0, 1)
-      stage.style.setProperty('--proof-scroll', scrollProgress.toFixed(4))
-    }
-
-    const updatePointer = (event: PointerEvent) => {
-      if (reducedMotion.matches || paused) return
-      const rect = stage.getBoundingClientRect()
-      pointer.targetX = clamp(((event.clientX - rect.left) / Math.max(rect.width, 1) - 0.5) * 2, -1, 1)
-      pointer.targetY = clamp(((event.clientY - rect.top) / Math.max(rect.height, 1) - 0.5) * 2, -1, 1)
-      stage.style.setProperty('--proof-x', `${((pointer.targetX + 1) * 50).toFixed(2)}%`)
-      stage.style.setProperty('--proof-y', `${((pointer.targetY + 1) * 50).toFixed(2)}%`)
-      stage.style.setProperty('--proof-tilt-x', `${(-pointer.targetY * 1.4).toFixed(3)}deg`)
-      stage.style.setProperty('--proof-tilt-y', `${(pointer.targetX * 1.8).toFixed(3)}deg`)
-      stage.style.setProperty('--proof-grid-x', `${(-pointer.targetX * 8).toFixed(2)}px`)
-    }
-
-    const updateCursorTarget = (event: PointerEvent) => {
-      if (!finePointer.matches || reducedMotion.matches || paused || !cursor) return
-      if (cursor.dataset.visible !== 'true') trail.forEach((point) => {
-        point.x = event.clientX
-        point.y = event.clientY
-      })
-      cursorUntil = performance.now() + 700
-      schedule()
-      trail[0].x = event.clientX
-      trail[0].y = event.clientY
-      cursor.dataset.visible = 'true'
-      cursor.dataset.pressed = event.buttons ? 'true' : 'false'
-    }
-
-    const hideCursor = () => {
-      if (cursor) cursor.dataset.visible = 'false'
-    }
-
-    const project = (point: Point3D, rx: number, ry: number, rz: number, scale: number) => {
-      const [x, y, z] = rotate(point, rx, ry, rz)
-      const perspective = 4.6 / (5.2 - z)
-      return {
-        x: width * 0.5 + x * scale * perspective,
-        y: height * 0.47 + y * scale * perspective,
-        z,
-        perspective,
+    if (gl) {
+      const compile = (type: number, source: string) => {
+        const shader = gl.createShader(type)
+        if (!shader) return null
+        gl.shaderSource(shader, source)
+        gl.compileShader(shader)
+        shaders.push(shader)
+        return gl.getShaderParameter(shader, gl.COMPILE_STATUS) ? shader : null
       }
-    }
-
-    const draw = (now: number) => {
-      frame = 0
-      const still = reducedMotion.matches || paused
-      if (inView) {
-      const delta = Math.min(48, now - lastTime)
-      lastTime = now
-      pointer.x += (pointer.targetX - pointer.x) * Math.min(1, delta * 0.0048)
-      pointer.y += (pointer.targetY - pointer.y) * Math.min(1, delta * 0.0048)
-
-      context.clearRect(0, 0, width, height)
-      const t = still ? 0.55 : now * 0.00022
-      const rx = -0.32 + (still ? 0 : pointer.y * 0.24 + scrollProgress * 0.5)
-      const ry = 0.68 + t + (still ? 0 : pointer.x * 0.42 + scrollProgress * 1.2)
-      const rz = 0.08 + Math.sin(t * 0.8) * 0.08
-      const scale = Math.min(width, height) * 0.34
-      const points = [...OUTER_POINTS, ...INNER_POINTS].map((point) => project(point, rx, ry, rz, scale))
-
-      const glow = context.createRadialGradient(width * 0.52, height * 0.47, 10, width * 0.52, height * 0.47, scale * 1.65)
-      glow.addColorStop(0, 'rgba(181,205,255,0.11)')
-      glow.addColorStop(0.45, 'rgba(132,155,220,0.045)')
-      glow.addColorStop(1, 'rgba(9,13,21,0)')
-      context.fillStyle = glow
-      context.fillRect(0, 0, width, height)
-
-      context.save()
-      context.globalCompositeOperation = 'lighter'
-      EDGES.forEach(([a, b], index) => {
-        const from = points[a]
-        const to = points[b]
-        const depth = clamp(((from.z + to.z) / 2 + 1.8) / 3.6, 0.15, 1)
-        context.beginPath()
-        context.moveTo(from.x, from.y)
-        context.lineTo(to.x, to.y)
-        context.strokeStyle = index < 12
-          ? `rgba(181,205,255,${0.12 + depth * 0.36})`
-          : `rgba(226,232,255,${0.08 + depth * 0.26})`
-        context.lineWidth = index < 12 ? 1 : 0.72
-        context.stroke()
-      })
-
-      points.forEach((point, index) => {
-        const radius = (index < 8 ? 2.2 : 1.7) * point.perspective
-        context.beginPath()
-        context.arc(point.x, point.y, radius + 3.2, 0, Math.PI * 2)
-        context.fillStyle = 'rgba(181,205,255,0.035)'
-        context.fill()
-        context.beginPath()
-        context.arc(point.x, point.y, Math.max(1.1, radius), 0, Math.PI * 2)
-        context.fillStyle = point.z > 0 ? 'rgba(232,239,255,0.82)' : 'rgba(143,167,220,0.45)'
-        context.fill()
-      })
-
-      for (let ring = 0; ring < 3; ring += 1) {
-        const phase = t * (0.7 + ring * 0.16) + ring * 2.1
-        const orbitRadius = scale * (0.82 + ring * 0.19)
-        const ox = width * 0.5 + Math.cos(phase) * orbitRadius
-        const oy = height * 0.47 + Math.sin(phase * 1.23) * orbitRadius * 0.34
-        context.beginPath()
-        context.arc(ox, oy, 1.9 + ring * 0.3, 0, Math.PI * 2)
-        context.fillStyle = ring === 1 ? 'rgba(221,177,255,0.78)' : 'rgba(181,205,255,0.78)'
-        context.shadowBlur = 16
-        context.shadowColor = context.fillStyle
-        context.fill()
-      }
-      context.restore()
-      stage.dataset.canvasReady = 'true'
-      }
-
-      if (cursor && finePointer.matches && !still) {
-        for (let index = 1; index < trail.length; index += 1) {
-          const leader = trail[index - 1]
-          const dot = trail[index]
-          const ease = Math.max(0.08, 0.34 - index * 0.035)
-          dot.x += (leader.x - dot.x) * ease
-          dot.y += (leader.y - dot.y) * ease
+      const vertex = compile(gl.VERTEX_SHADER, VERTEX)
+      const fragment = compile(gl.FRAGMENT_SHADER, FRAGMENT)
+      if (vertex && fragment) {
+        program = gl.createProgram()
+        if (program) {
+          gl.attachShader(program, vertex)
+          gl.attachShader(program, fragment)
+          gl.linkProgram(program)
+          if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            gl.deleteProgram(program)
+            program = null
+          }
         }
-        cursorDots.forEach((dot, index) => {
-          const position = trail[index]
-          dot.style.transform = `translate3d(${position.x}px,${position.y}px,0) translate(-50%,-50%) scale(${1 - index * 0.1})`
-        })
       }
-
-      if (visible && !still && (inView || now < cursorUntil)) schedule()
-    }
-
-    const onVisibility = () => {
-      visible = !document.hidden
-      if (visible) {
-        lastTime = performance.now()
-        schedule()
-      } else {
-        window.cancelAnimationFrame(frame)
-        frame = 0
-        hideCursor()
+      if (program) {
+        gl.useProgram(program)
+        buffer = gl.createBuffer()
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]), gl.STATIC_DRAW)
+        const position = gl.getAttribLocation(program, 'position')
+        gl.enableVertexAttribArray(position)
+        gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0)
+        uniforms = Object.fromEntries(['resolution','pointer','time','phase','scroll'].map(name => [name, gl.getUniformLocation(program!, name)]))
       }
     }
-    const onPreference = () => {
-      hideCursor()
+
+    const hideCursor = () => { if (cursor) cursor.dataset.visible = 'false' }
+    const schedule = () => { if (!document.hidden && !frame) frame = requestAnimationFrame(draw) }
+    const resize = () => {
+      // Capped drawing resolution keeps the shader inexpensive on phones.
+      const box = canvas.getBoundingClientRect()
+      const ratio = Math.min(window.devicePixelRatio || 1, 1.25, 760 / Math.max(box.width, box.height))
+      canvas.width = Math.max(1, Math.round(box.width * ratio))
+      canvas.height = Math.max(1, Math.round(box.height * ratio))
+      gl?.viewport(0, 0, canvas.width, canvas.height)
+      dirty = true
       schedule()
     }
-    const resetPointer = () => {
-      pointer.targetX = 0
-      pointer.targetY = 0
-      stage.style.setProperty('--proof-tilt-x', '0deg')
-      stage.style.setProperty('--proof-tilt-y', '0deg')
+    const onScroll = () => {
+      const box = stage.getBoundingClientRect()
+      travel = Math.max(-1, Math.min(1, -box.top / window.innerHeight))
+      dirty = true
+      schedule()
+    }
+    const onStageMove = (event: PointerEvent) => {
+      if (reduced.matches || controls.current.paused) return
+      const box = stage.getBoundingClientRect()
+      if (event.pointerType === 'touch') {
+        if (!dragging) return
+        aim.tx += (event.clientX - dragX) / 150
+        dragX = event.clientX
+      } else {
+        aim.tx = ((event.clientX - box.left) / box.width - .5) * 2
+        aim.ty = ((event.clientY - box.top) / box.height - .5) * 2
+      }
+      stage.style.setProperty('--proof-x', `${(event.clientX - box.left) / box.width * 100}%`)
+      stage.style.setProperty('--proof-y', `${(event.clientY - box.top) / box.height * 100}%`)
+      dirty = true
+      schedule()
+    }
+    const onDown = (event: PointerEvent) => { dragging = true; dragX = event.clientX }
+    const onUp = () => { dragging = false }
+    const onLeave = () => { dragging = false; aim.tx = 0; aim.ty = 0; schedule() }
+    const onCursor = (event: PointerEvent) => {
+      if (!fine.matches || reduced.matches || controls.current.paused || !cursor) { hideCursor(); return }
+      if (cursor.dataset.visible !== 'true') trail.forEach(p => { p.x = event.clientX; p.y = event.clientY })
+      trail[0] = { x: event.clientX, y: event.clientY }
+      cursor.dataset.visible = 'true'
+      cursor.dataset.active = String(Boolean((event.target as Element)?.closest('a,button')))
+      cursorUntil = performance.now() + 650
+      schedule()
+    }
+    function draw(now: number) {
+      if (!stage || !canvas) return
+      frame = 0
+      if (document.hidden) return
+      const still = reduced.matches || controls.current.paused
+      const step = Math.min(now - (last || now), 50)
+      if (step < 30 && last && !dirty) { schedule(); return }
+      last = now
+      if (!still) clock += step / 1000
+      if (still !== lastPaused) { hideCursor(); dirty = true; lastPaused = still }
+      const targetPhase = controls.current.mode
+      phase = still ? targetPhase : phase + (targetPhase - phase) * .085
+      if (!still) {
+        aim.x += (aim.tx - aim.x) * .09
+        aim.y += (aim.ty - aim.y) * .09
+      }
+      if (inView && (dirty || !still)) {
+        if (gl && program && !gl.isContextLost()) {
+          gl.uniform2f(uniforms.resolution, canvas.width, canvas.height)
+          gl.uniform2f(uniforms.pointer, aim.x, aim.y)
+          gl.uniform1f(uniforms.time, clock)
+          gl.uniform1f(uniforms.phase, phase)
+          gl.uniform1f(uniforms.scroll, reduced.matches ? 0 : travel)
+          gl.drawArrays(gl.TRIANGLES, 0, 6)
+          stage.dataset.renderer = 'webgl'
+        }
+        stage.style.setProperty('--proof-turn', `${aim.x * 18 + phase * 22}deg`)
+        dirty = false
+      }
+      if (cursor && fine.matches && !still && now < cursorUntil) {
+        for (let i = 1; i < trail.length; i++) {
+          trail[i].x += (trail[i - 1].x - trail[i].x) * .4
+          trail[i].y += (trail[i - 1].y - trail[i].y) * .4
+        }
+        dots.forEach((dot, i) => { dot.style.transform = `translate3d(${trail[i].x}px,${trail[i].y}px,0) translate(-50%,-50%) scale(${1 - i * .12})` })
+      } else hideCursor()
+      if (inView && !still || now < cursorUntil || Math.abs(phase - targetPhase) > .002) schedule()
+    }
+    const onVisibility = () => {
+      hideCursor()
+      if (document.hidden) { cancelAnimationFrame(frame); frame = 0 }
+      else { last = 0; dirty = true; schedule() }
+    }
+    const onPreference = () => { hideCursor(); dirty = true; schedule() }
+    const onContextLost = (event: Event) => {
+      event.preventDefault()
+      stage.dataset.renderer = 'fallback'
     }
     const intersection = new IntersectionObserver(([entry]) => {
       inView = entry.isIntersecting
       stage.dataset.inView = String(inView)
-      if (inView) schedule()
+      if (inView) { dirty = true; schedule() }
     })
-    intersection.observe(stage)
-    reducedMotion.addEventListener('change', onPreference)
-    finePointer.addEventListener('change', onPreference)
-    stage.addEventListener('pointerleave', resetPointer)
     const observer = new ResizeObserver(resize)
+    // React controls can wake a paused/offscreen renderer without a polling loop.
+    const mutations = new MutationObserver(() => { dirty = true; schedule() })
+    mutations.observe(stage, { attributes: true, attributeFilter: ['data-paused','data-mode'] })
+    intersection.observe(stage)
     observer.observe(stage)
-    resize()
-    updateScroll()
-    window.addEventListener('scroll', updateScroll, { passive: true })
-    stage.addEventListener('pointermove', updatePointer, { passive: true })
-    window.addEventListener('pointermove', updateCursorTarget, { passive: true })
+    reduced.addEventListener('change', onPreference)
+    fine.addEventListener('change', onPreference)
+    stage.addEventListener('pointermove', onStageMove, { passive: true })
+    stage.addEventListener('pointerdown', onDown, { passive: true })
+    stage.addEventListener('pointerup', onUp)
+    stage.addEventListener('pointercancel', onUp)
+    stage.addEventListener('pointerleave', onLeave)
+    canvas.addEventListener('webglcontextlost', onContextLost)
+    window.addEventListener('pointermove', onCursor, { passive: true })
+    window.addEventListener('scroll', onScroll, { passive: true })
     document.documentElement.addEventListener('mouseleave', hideCursor)
     document.addEventListener('visibilitychange', onVisibility)
-    schedule()
-
+    resize()
+    onScroll()
     return () => {
-      observer.disconnect()
+      cancelAnimationFrame(frame)
+      hideCursor()
       intersection.disconnect()
-      reducedMotion.removeEventListener('change', onPreference)
-      finePointer.removeEventListener('change', onPreference)
-      stage.removeEventListener('pointerleave', resetPointer)
-      window.removeEventListener('scroll', updateScroll)
-      stage.removeEventListener('pointermove', updatePointer)
-      window.removeEventListener('pointermove', updateCursorTarget)
+      observer.disconnect()
+      mutations.disconnect()
+      reduced.removeEventListener('change', onPreference)
+      fine.removeEventListener('change', onPreference)
+      stage.removeEventListener('pointermove', onStageMove)
+      stage.removeEventListener('pointerdown', onDown)
+      stage.removeEventListener('pointerup', onUp)
+      stage.removeEventListener('pointercancel', onUp)
+      stage.removeEventListener('pointerleave', onLeave)
+      canvas.removeEventListener('webglcontextlost', onContextLost)
+      window.removeEventListener('pointermove', onCursor)
+      window.removeEventListener('scroll', onScroll)
       document.documentElement.removeEventListener('mouseleave', hideCursor)
       document.removeEventListener('visibilitychange', onVisibility)
-      if (frame) window.cancelAnimationFrame(frame)
+      if (gl) {
+        if (buffer) gl.deleteBuffer(buffer)
+        if (program) gl.deleteProgram(program)
+        shaders.forEach(shader => gl.deleteShader(shader))
+      }
     }
-  }, [paused])
+  }, [])
 
-  return (
-    <>
-      <div className="ptl-proof-stage" ref={stageRef} data-paused={paused} aria-label="Interactive claim, evidence, and verdict model">
-        <canvas ref={canvasRef} aria-hidden="true" />
-        <div className="ptl-proof-fallback" aria-hidden="true"><i /><i /><i /></div>
-        <div className="ptl-proof-orbit ptl-proof-orbit-a" aria-hidden="true" />
-        <div className="ptl-proof-orbit ptl-proof-orbit-b" aria-hidden="true" />
-        <div className="ptl-proof-stage-head"><span>METHOD VISUALIZATION</span><button type="button" onClick={() => setPaused(!paused)} aria-pressed={paused} aria-label={paused ? "Resume visual motion" : "Pause visual motion"}>{paused ? "PLAY ↗" : "PAUSE Ⅱ"}</button></div>
-        <div className="ptl-proof-stage-labels" aria-hidden="true">
-          <span>01 · CLAIM</span><span>02 · EVIDENCE</span><span>03 · VERDICT</span>
-        </div>
-        <div className="ptl-proof-stage-foot"><span>SUPPORTED</span><span>CONTRADICTED</span><span>UNKNOWN</span></div>
+  return <>
+    <div className="ptl-proof-stage" ref={stageRef} data-paused={paused} data-mode={mode} aria-label="Interactive 3D illustration of the verification method">
+      <div className="ptl-proof-aura" aria-hidden="true" />
+      <div className="ptl-proof-sculpture" aria-hidden="true"><i/><i/><i/><b/></div>
+      <canvas ref={canvasRef} aria-hidden="true" />
+      <div className="ptl-proof-stage-head"><span><i/> THE VERIFICATION METHOD</span><button type="button" onClick={() => setPaused(value => !value)} aria-pressed={paused} aria-label={paused ? 'Resume visual motion' : 'Pause visual motion'}>{paused ? 'Play ↗' : 'Pause Ⅱ'}</button></div>
+      <div className="ptl-proof-coordinate" aria-hidden="true"><span>CLAIM</span><span>EVIDENCE</span><span>HUMAN REVIEW</span></div>
+      <div className="ptl-proof-stage-foot">
+        <span className="ptl-proof-interaction-hint">Move to explore · swipe on touch</span>
+        <div className="ptl-proof-mode-controls" role="group" aria-label="Explore the verification method">{MODES.map((item, index) => <button key={item.name} type="button" aria-pressed={mode === index} onClick={() => setMode(index)}><span>0{index + 1}</span>{item.name}</button>)}</div>
+        <div className="ptl-proof-mode-copy" aria-live="polite" aria-atomic="true"><strong>{MODES[mode].title}</strong><p>{MODES[mode].copy}</p></div>
       </div>
-      <div className="ptl-cursor-tracer" ref={cursorRef} data-visible="false" aria-hidden="true">
-        {Array.from({ length: 7 }, (_, index) => <i key={index} />)}
-      </div>
-    </>
-  )
+    </div>
+    <div className="ptl-cursor-tracer" ref={cursorRef} data-visible="false" aria-hidden="true">{Array.from({ length: 7 }, (_, i) => <i key={i}/>)}</div>
+  </>
 }
