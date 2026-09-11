@@ -115,7 +115,6 @@
     .trace { position:fixed; top:0; left:0; z-index:50; pointer-events:none; width:28px; height:28px; margin:-14px 0 0 -14px; border:1px solid #d8e6ef70; border-radius:50%; opacity:0; transition:opacity .2s,width .3s,height .3s,margin .3s; mix-blend-mode:screen; }
     .trace.over { width:44px; height:44px; margin:-22px 0 0 -22px; border-color:#ffffff90; }
     .trace::after { content:''; position:absolute; width:3px; height:3px; top:50%; left:50%; transform:translate(-50%,-50%); background:white; border-radius:50%; }
-    body[data-paused="true"] .glass::before { animation-play-state:paused; }
     @media(min-width:1600px) { .copy { grid-column:1/6; } .right .copy { grid-column:8/13; } }
     @media(max-width:1000px) { .chapter { padding-inline:4vw; } .frame { gap:16px; } .copy { padding:30px; } h1 { font-size:clamp(42px,5.7vw,58px); } .nav-links { gap:18px; } }
     @media(max-width:767px) {
@@ -160,7 +159,6 @@
   <div class="scene-tools glass" aria-label="Scene controls">
     <button class="tool" id="interact" aria-pressed="false" aria-controls="interaction">Explore 3D</button>
     <button class="tool tool-icon" id="reset" aria-label="Reset sculpture rotation">↺</button>
-    <button class="tool tool-icon" id="pause" aria-label="Pause ambient animation" aria-pressed="false">Ⅱ</button>
   </div>
   <main id="main">
     <section class="chapter hero" id="top" aria-labelledby="hero-title">
@@ -233,7 +231,7 @@
     const smooth = t => t*t*(3-2*t);
     const media = matchMedia('(prefers-reduced-motion: reduce)');
     const coarse = matchMedia('(pointer: coarse)');
-    const state = { w:innerWidth,h:innerHeight,dpr:1,mobile:innerWidth<768,reduced:media.matches,paused:false,time:0,scroll:0,yaw:0,pitch:0,vy:0,vp:0,zoom:1,drag:false,px:0,py:0,tx:0,ty:0 };
+    const state = { w:innerWidth,h:innerHeight,dpr:1,mobile:innerWidth<768,reduced:false,paused:false,time:0,scroll:0,yaw:0,pitch:0,vy:0,vp:0,zoom:1,drag:false,px:0,py:0,tx:0,ty:0 };
     const pose = { side:1,z:7.8,fov:34,turn:-.5,tilt:.35,spread:.19,roll:0 };
     const poses = [
       {side:1,z:7.8,fov:34,turn:-.5,tilt:.35,spread:.19,roll:0},
@@ -244,8 +242,7 @@
     ];
     const fallback=$('#fallback'),gpu=$('#gpu'),ctx=fallback.getContext('2d');
     const zone=$('#interaction'),trace=$('#trace'),progress=$('#progress');
-    const pauseButton=$('#pause'),interactButton=$('#interact');
-    let motionOverride=null;
+    const interactButton=$('#interact');
     let web=null,raf=0,last=0,dirty=true,timeline=null,gsapReady=false,disposed=false;
     let traceX=-100,traceY=-100,mouseX=-100,mouseY=-100,traceVisible=false;
     let points=[],lastPointer=null,gesture=new Map(),pinchDistance=0,qualityFrames=0,qualityTime=0;
@@ -276,20 +273,14 @@
     function scrollUpdate() {
       const main=$('#main'),range=Math.max(1,main.offsetHeight-state.h);
       state.scroll=clamp(scrollY/range,0,1);progress.style.transform=`scaleX(${state.scroll})`;
-      if(!gsapReady||state.reduced)fallbackPose();
+      if(!gsapReady)fallbackPose();
       dirty=true;
     }
     function fallbackPose() {
-      const p=state.reduced?0:state.scroll*4,i=Math.min(3,Math.floor(p)),t=smooth(p-i);
+      const p=state.scroll*4,i=Math.min(3,Math.floor(p)),t=smooth(p-i);
       Object.keys(pose).forEach(k=>pose[k]=mix(poses[i][k],poses[i+1][k],t));
     }
-    function updateMotionUI() {
-      document.body.dataset.paused=String(state.paused||state.reduced);document.body.dataset.reduced=String(state.reduced);
-      pauseButton.setAttribute('aria-pressed',String(state.paused||state.reduced));
-      pauseButton.setAttribute('aria-label',state.reduced?'Enable animation':state.paused?'Resume ambient animation':'Pause ambient animation');
-      pauseButton.textContent=state.paused||state.reduced?'▶':'Ⅱ';pauseButton.disabled=false;
-    }
-    on(pauseButton,'click',()=>{if(state.reduced){motionOverride=true;state.reduced=false;state.paused=false;configureScroll();}else state.paused=!state.paused;updateMotionUI();dirty=true;});
+    function updateMotionUI() { document.body.dataset.reduced='false'; }
     const reset=()=>{state.yaw=state.pitch=state.vy=state.vp=0;state.zoom=1;dirty=true;};
     on($('#reset'),'click',reset);
     on(interactButton,'click',()=>{
@@ -329,7 +320,7 @@
     on(zone,'pointerup',release);on(zone,'pointercancel',release);on(zone,'lostpointercapture',()=>{state.drag=false;gesture.clear();lastPointer=null;zone.classList.remove('is-dragging');});
     on(window,'pointermove',e=>{
       state.tx=e.clientX/state.w*2-1;state.ty=1-e.clientY/state.h*2;mouseX=e.clientX;mouseY=e.clientY;
-      if(!coarse.matches&&!state.reduced){traceVisible=true;trace.classList.toggle('over',!!e.target.closest('a,button'));}
+      if(!coarse.matches){traceVisible=true;trace.classList.toggle('over',!!e.target.closest('a,button'));}
       const panel=e.target.closest('.glass');if(panel){const r=panel.getBoundingClientRect();panel.style.setProperty('--gx',`${(e.clientX-r.left)/r.width*100}%`);panel.style.setProperty('--gy',`${(e.clientY-r.top)/r.height*100}%`);}
       dirty=true;
     },{passive:true});
@@ -354,7 +345,7 @@
       const project=p=>{const q=rotate(p,pitch,yaw,pose.roll),d=6.8/(6.8+q[2]);return [cx+q[0]*scale*d,cy+q[1]*scale*d,q[2],d];};
       const light=ctx.createRadialGradient(cx,cy,0,cx,cy,scale*3);light.addColorStop(0,'#17212a75');light.addColorStop(1,'#07080900');ctx.fillStyle=light;ctx.fillRect(0,0,w,h);
       for(let i=0;i<(state.mobile?480:1100);i++){
-        const p=points[i],q=project([p[0],p[1],p[2]]),dx=q[0]-mouseX,dy=q[1]-mouseY,d=Math.hypot(dx,dy),force=state.reduced?0:Math.max(0,1-d/110)*12;
+        const p=points[i],q=project([p[0],p[1],p[2]]),dx=q[0]-mouseX,dy=q[1]-mouseY,d=Math.hypot(dx,dy),force=Math.max(0,1-d/110)*12;
         ctx.fillStyle=`rgba(196,208,216,${.10+p[3]*.25})`;ctx.beginPath();ctx.arc(q[0]+dx/(d||1)*force,q[1]+dy/(d||1)*force,.35+p[3]*.65,0,Math.PI*2);ctx.fill();
       }
       const faces=[];
@@ -375,7 +366,7 @@
     function loadScript(url){return new Promise((resolve,reject)=>{const s=document.createElement('script');let done=false;const timer=setTimeout(()=>{if(!done){done=true;reject(new Error('CDN timeout'));}},12000);s.src=url;s.async=true;s.onload=()=>{if(!done){done=true;clearTimeout(timer);resolve();}};s.onerror=()=>{if(!done){done=true;clearTimeout(timer);reject(new Error('CDN unavailable'));}};document.head.append(s);});}
     function configureScroll(){
       timeline?.scrollTrigger?.kill();timeline?.kill();timeline=null;gsapReady=false;
-      if(state.reduced||!window.gsap||!window.ScrollTrigger){fallbackPose();return;}
+      if(!window.gsap||!window.ScrollTrigger){fallbackPose();return;}
       gsap.registerPlugin(ScrollTrigger);Object.assign(pose,poses[0]);
       timeline=gsap.timeline({scrollTrigger:{trigger:'#main',start:'top top',end:'bottom bottom',scrub:1.15,invalidateOnRefresh:true}});
       poses.slice(1).forEach(p=>timeline.to(pose,{...p,duration:1,ease:'sine.inOut'}));
@@ -451,10 +442,10 @@
           const worldH=2*Math.tan(camera.fov*Math.PI/360)*camera.position.z;
           root.position.set(state.mobile?0:pose.side*worldH*camera.aspect*.235,state.mobile?worldH*.23:0,0);
           root.scale.setScalar(state.mobile?.78:1);
-          root.rotation.set(pose.tilt+state.pitch+Math.sin(state.time*.7)*.10+(state.reduced?0:state.py*.10),pose.turn+state.yaw+state.time*.18+(state.reduced?0:state.px*.04),0);
+          root.rotation.set(pose.tilt+state.pitch+Math.sin(state.time*.7)*.10+state.py*.10,pose.turn+state.yaw+state.time*.18+state.px*.04,0);
           bands.forEach((b,i)=>{b.position.y=(i-2)*(pose.spread+Math.sin(state.time*1.1)*.025);});
           core.rotation.set(state.time*.07,state.time*.18,Math.PI/4);
-          uniforms.uTime.value=state.time;pu.uTime.value=state.time;pu.uPointer.value.set(state.px,state.py);pu.uDpr.value=state.dpr;pu.uMotion.value=state.reduced?0:1;
+          uniforms.uTime.value=state.time;pu.uTime.value=state.time;pu.uPointer.value.set(state.px,state.py);pu.uDpr.value=state.dpr;pu.uMotion.value=1;
           renderer.render(scene,camera);
         }
         const dispose=()=>{scene.traverse(o=>{o.geometry?.dispose();if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose());}});renderer.dispose();};
@@ -468,11 +459,11 @@
     function frame(now){
       if(disposed||document.hidden)return;
       const dt=Math.min((now-(last||now))/1000,.05);last=now;
-      const active=!state.paused&&!state.reduced;
+      const active=true;
       if(active)state.time+=dt;
       if(!state.drag&&active){state.yaw+=state.vy*dt;state.pitch=clamp(state.pitch+state.vp*dt,-.8,.8);state.vy*=Math.exp(-4.8*dt);state.vp*=Math.exp(-6*dt);}
       state.px+=(state.tx-state.px)*(1-Math.exp(-5*dt));state.py+=(state.ty-state.py)*(1-Math.exp(-5*dt));
-      if(!state.reduced&&!coarse.matches){traceX+=(mouseX-traceX)*.19;traceY+=(mouseY-traceY)*.19;trace.style.transform=`translate3d(${traceX}px,${traceY}px,0)`;trace.style.opacity=traceVisible?'1':'0';}else trace.style.opacity='0';
+      if(!coarse.matches){traceX+=(mouseX-traceX)*.19;traceY+=(mouseY-traceY)*.19;trace.style.transform=`translate3d(${traceX}px,${traceY}px,0)`;trace.style.opacity=traceVisible?'1':'0';}else trace.style.opacity='0';
       zone.dataset.rotation=(pose.turn+state.yaw+state.time*.18).toFixed(3);zone.dataset.phase=state.scroll.toFixed(3);
       zone.style.left=state.mobile?'6%':`${30+pose.side*23.5}%`;
       if(active||dirty||state.drag||gsapReady){
@@ -485,7 +476,6 @@
     }
     on(window,'resize',()=>{resize();scrollUpdate();});
     on(window,'scroll',scrollUpdate,{passive:true});
-    on(media,'change',e=>{state.reduced=motionOverride===true?false:e.matches;state.vy=state.vp=0;updateMotionUI();configureScroll();dirty=true;});
     on(document,'visibilitychange',()=>{cancelAnimationFrame(raf);last=0;if(!document.hidden){dirty=true;raf=requestAnimationFrame(frame);}});
     // Suspend for the back-forward cache; release GPU resources on a real unload.
     on(window,'pagehide',e=>{cancelAnimationFrame(raf);if(e.persisted)return;disposed=true;timeline?.scrollTrigger?.kill();timeline?.kill();web?.dispose();cleanups.splice(0).forEach(fn=>fn());});
