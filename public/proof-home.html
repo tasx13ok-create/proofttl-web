@@ -17,6 +17,9 @@
   <script async src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.13/dist/index.global.js"></script>
   <style>
     @property --edge-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+    body:has(#cinematic-home) { background:#070809!important; padding:0!important; }
+    body:has(#cinematic-home)::before,body:has(#cinematic-home)::after,body:has(#cinematic-home) .product-nav { display:none!important; }
+    #cinematic-home { position:relative; overflow:clip; }
     :root { --bg:#070809; --ink:#f0f0e9; --muted:#a9acae; --line:#ffffff20; --ease:cubic-bezier(.16,1,.3,1); }
     *,*::before,*::after { box-sizing:border-box; }
     html { scroll-behavior:smooth; scroll-padding-top:100px; background:var(--bg); }
@@ -152,7 +155,7 @@
       <div class="flex items-center gap-3"><a class="nav-action" href="#offer">Fact Audit ↗</a><button class="menu-toggle" id="menu-toggle" aria-label="Open navigation" aria-controls="mobile-menu" aria-expanded="false">☰</button></div>
     </nav>
   </div>
-  <nav class="mobile-menu glass" id="mobile-menu" aria-label="Mobile navigation" hidden><a href="#method">The method</a><a href="#evidence">The evidence</a><a href="#trust">Human approval</a><a href="#offer">Fact Audit · $1,500</a><a href="https://proofttl-web.vercel.app/audit/status/">Audit status ↗</a></nav>
+  <nav class="mobile-menu glass" id="mobile-menu" aria-label="Mobile navigation" hidden><a href="#method">The method</a><a href="#evidence">The evidence</a><a href="#trust">Human approval</a><a href="#offer">Fact Audit · $1,500</a><a href="/audit/status/">Audit status ↗</a></nav>
   <div id="interaction" tabindex="0" role="group" aria-label="Interactive ProofTTL sculpture. Drag horizontally or use arrow keys to rotate. Home resets the view."></div>
   <div class="scene-tools glass" aria-label="Scene controls">
     <button class="tool" id="interact" aria-pressed="false" aria-controls="interaction">Explore 3D</button>
@@ -165,7 +168,7 @@
         <p class="eyebrow">Source-backed claim verification</p>
         <h1 id="hero-title">Find the expensive <span class="dim">wrong answer.</span></h1>
         <p class="lede">Before it reaches your customer. ProofTTL audits high-consequence AI outputs and factual claims against authoritative evidence.</p>
-        <div class="hero-actions"><a class="primary" href="https://proofttl-web.vercel.app/audit/#audit-intake">Start the $1,500 Fact Audit <span aria-hidden="true">↗</span></a><a class="text-link" href="#method">Follow the evidence <span aria-hidden="true">↓</span></a></div>
+        <div class="hero-actions"><a class="primary" href="/audit/#audit-intake">Start the $1,500 Fact Audit <span aria-hidden="true">↗</span></a><a class="text-link" href="#method">Follow the evidence <span aria-hidden="true">↓</span></a></div>
         <div class="assurance"><span>Up to 25 outputs</span><span>Human approval</span><span>Scope before payment</span></div>
       </div></div>
       <p class="scene-label glass">The Truth Engine / Drag to explore</p>
@@ -193,7 +196,7 @@
           <div class="finding-row"><p class="mini-label">Evidence against</p><p>Newer authoritative guidance conflicts with the wording of the claim.</p></div>
         </div>
         <p class="sample-note">Structure illustration only. This is not a completed customer audit.</p>
-        <a class="text-link" href="https://proofttl-web.vercel.app/audit/sample/">Inspect the sample report <span aria-hidden="true">↗</span></a>
+        <a class="text-link" href="/audit/sample/">Inspect the sample report <span aria-hidden="true">↗</span></a>
       </div></div>
     </section>
     <section class="chapter right" id="trust" aria-labelledby="trust-title">
@@ -215,12 +218,12 @@
         <div class="price"><strong>$1,500</strong><span>USD / FIXED SCOPE</span></div>
         <p class="lede">Up to 25 real AI outputs or factual claims. Scope is confirmed with you before payment.</p>
         <ul class="includes"><li>Consequence ranking and claim decomposition</li><li>Source-backed evidence for and against</li><li>Explicit verdicts and preserved uncertainty</li><li>Human-approved findings and corrected outputs</li><li>Seven-day watch on important findings</li></ul>
-        <a class="primary" href="https://proofttl-web.vercel.app/audit/#audit-intake">Start your Fact Audit <span aria-hidden="true">↗</span></a>
+        <a class="primary" href="/audit/">Start your Fact Audit <span aria-hidden="true">↗</span></a>
         <p class="payment-note">Payment is handled through Stripe after scope confirmation. No raw card number is stored by ProofTTL.</p>
       </div></div>
     </section>
   </main>
-  <footer><div class="footer-inner glass"><div><a class="brand" href="#top">ProofTTL</a><p class="footer-copy">Source-backed verification. Evidence before confidence.</p></div><nav class="footer-links" aria-label="Footer navigation"><a href="https://proofttl-web.vercel.app/audit/status/">Audit status</a><a href="https://proofttl-web.vercel.app/how-proofttl-works/">Technology</a><a href="https://proofttl-web.vercel.app/support/">Support</a><a href="https://proofttl-web.vercel.app/privacy/">Privacy</a><a href="https://proofttl-web.vercel.app/terms/">Terms</a></nav></div></footer>
+  <footer><div class="footer-inner glass"><div><a class="brand" href="#top">ProofTTL</a><p class="footer-copy">Source-backed verification. Evidence before confidence.</p></div><nav class="footer-links" aria-label="Footer navigation"><a href="/audit/status/">Audit status</a><a href="/how-proofttl-works/">Technology</a><a href="/support/">Support</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav></div></footer>
   <script>
   (() => {
     'use strict';

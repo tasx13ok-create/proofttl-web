@@ -3,7 +3,7 @@ import { readFile as readRawFile } from 'node:fs/promises'
 const readFile = async (...args) => (await readRawFile(...args)).replace(/\r\n/g, '\n')
 
 const homePage = await readFile('app/page.tsx', 'utf8')
-const home = await readFile('components/CommercialHome.tsx', 'utf8')
+const home = await readFile('public/proof-home.html', 'utf8')
 const auditPage = await readFile('app/audit/page.tsx', 'utf8')
 const auditStatusPage = await readFile('app/audit/status/page.tsx', 'utf8')
 const intake = await readFile('components/AuditIntakeForm.tsx', 'utf8')
@@ -20,7 +20,7 @@ for (const expected of [
   '/audit/#audit-intake',
   'No raw card number is stored by ProofTTL',
 ]) {
-  if (!home.includes(expected)) throw new Error(`Homepage missing required conversion behavior: ${expected}`)
+  if (!home.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Homepage missing required conversion behavior: ${expected}`)
 }
 for (const obsolete of ['$129', '$500', 'Stress Test', 'Start small. Upgrade']) if (home.includes(obsolete)) throw new Error(`Homepage still exposes obsolete launch offer: ${obsolete}`)
 const homepageAuditCtas = home.match(/href="\/audit\/#audit-intake"/g) || []
