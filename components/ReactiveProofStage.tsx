@@ -108,6 +108,7 @@ export default function ReactiveProofStage() {
     let renderer: WebGLRenderingContext | null = null
     try { renderer = canvas.getContext('webgl', { alpha: true, antialias: false, depth: false, powerPreference: 'low-power' }) } catch { /* CSS sculpture remains visible. */ }
     const gl = renderer
+    stage.dataset.renderer = gl ? 'initializing' : 'css-fallback'
     let program: WebGLProgram | null = null
     let buffer: WebGLBuffer | null = null
     const shaders: WebGLShader[] = []
@@ -120,7 +121,12 @@ export default function ReactiveProofStage() {
         gl.shaderSource(shader, source)
         gl.compileShader(shader)
         shaders.push(shader)
-        return gl.getShaderParameter(shader, gl.COMPILE_STATUS) ? shader : null
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          stage.dataset.renderer = 'css-fallback'
+          stage.dataset.renderError = gl.getShaderInfoLog(shader) || 'Shader unavailable'
+          return null
+        }
+        return shader
       }
       const vertex = compile(gl.VERTEX_SHADER, VERTEX)
       const fragment = compile(gl.FRAGMENT_SHADER, FRAGMENT)
@@ -221,6 +227,7 @@ export default function ReactiveProofStage() {
           stage.dataset.renderer = 'webgl'
         }
         stage.style.setProperty('--proof-turn', `${aim.x * 18 + phase * 22}deg`)
+        stage.style.setProperty('--proof-orbit', `${clock * 7}deg`)
         dirty = false
       }
       if (cursor && fine.matches && !still && now < cursorUntil) {
