@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 
 const MODES = [
-  { name: 'The claim', title: 'Start with the exact assertion.', copy: 'Preserve the words, context, and consequence of being wrong.' },
-  { name: 'The evidence', title: 'Examine both sides.', copy: 'Keep supporting sources and contradicting evidence in the same view.' },
-  { name: 'The verdict', title: 'Leave room for unknown.', copy: 'Supported, contradicted, or unknown. A human approves the finding.' },
+  { name: 'Claim', title: 'Start with the exact assertion.', copy: 'Preserve the words, context, and consequence of being wrong.' },
+  { name: 'Evidence', title: 'Examine both sides.', copy: 'Keep supporting sources and contradicting evidence in the same view.' },
+  { name: 'Verdict', title: 'Leave room for unknown.', copy: 'Supported, contradicted, or unknown. A human approves the finding.' },
 ]
 
 // A real-time, procedurally modelled 3D sculpture. It illustrates the method;
@@ -167,6 +167,7 @@ export default function ReactiveProofStage() {
       schedule()
     }
     const onScroll = () => {
+      if (reduced.matches || controls.current.paused) return
       const box = stage.getBoundingClientRect()
       travel = Math.max(-1, Math.min(1, -box.top / window.innerHeight))
       dirty = true
@@ -226,7 +227,7 @@ export default function ReactiveProofStage() {
           gl.drawArrays(gl.TRIANGLES, 0, 6)
           stage.dataset.renderer = 'webgl'
         }
-        stage.style.setProperty('--proof-turn', `${aim.x * 18 + phase * 22}deg`)
+        stage.style.setProperty('--proof-turn', `${aim.x * 18 + phase * 22 + (reduced.matches ? 0 : travel * 25)}deg`)
         stage.style.setProperty('--proof-orbit', `${clock * 7}deg`)
         dirty = false
       }
