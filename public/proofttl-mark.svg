@@ -1,34 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
-  <title id="title">ProofTTL</title>
-  <desc id="desc">ProofTTL geometric verification mark</desc>
+  <title id="title">ProofTTL symbol</title>
+  <desc id="desc">A silver proof loop with an integrated verification mark</desc>
   <defs>
-    <linearGradient id="bg" x1="24" y1="18" x2="226" y2="238" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#081527"/>
-      <stop offset="0.52" stop-color="#050812"/>
-      <stop offset="1" stop-color="#09051A"/>
+    <linearGradient id="silver" x1="35" y1="22" x2="210" y2="232" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/><stop offset=".22" stop-color="#d5e0e6"/><stop offset=".5" stop-color="#7e929f"/><stop offset=".72" stop-color="#f5f8fa"/><stop offset="1" stop-color="#aebcc4"/>
     </linearGradient>
-    <linearGradient id="edge" x1="48" y1="38" x2="208" y2="218" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#EAFBFF"/>
-      <stop offset="0.22" stop-color="#4FD7FF"/>
-      <stop offset="0.58" stop-color="#1677FF"/>
-      <stop offset="1" stop-color="#743CFF"/>
+    <linearGradient id="shine" x1="62" y1="56" x2="204" y2="192" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff" stop-opacity=".95"/><stop offset=".5" stop-color="#cbd9e1" stop-opacity=".45"/><stop offset="1" stop-color="#ffffff" stop-opacity=".9"/>
     </linearGradient>
-    <linearGradient id="metal" x1="74" y1="58" x2="174" y2="194" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFFFFF"/>
-      <stop offset="0.38" stop-color="#DCE7F3"/>
-      <stop offset="0.7" stop-color="#87A7C7"/>
-      <stop offset="1" stop-color="#F7FBFF"/>
-    </linearGradient>
-    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="5" result="blur"/>
-      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.08 0 0 0 0 0.52 0 0 0 0 1 0 0 0 .65 0"/>
-      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    <filter id="glow" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
-  <rect x="8" y="8" width="240" height="240" rx="54" fill="url(#bg)" stroke="#27415F" stroke-width="3"/>
-  <path d="M128 34 205 78v92l-77 44-77-44V78l77-44Z" fill="none" stroke="url(#edge)" stroke-width="9" stroke-linejoin="round" filter="url(#glow)"/>
-  <path d="M78 79h60c31 0 50 15 50 40 0 24-18 39-48 39h-20v37L87 213V113h53c10 0 16-5 16-13 0-8-6-12-16-12H78V79Z" fill="url(#metal)"/>
-  <path d="M119 114h26c13 0 20 5 20 14s-7 14-20 14h-26v-28Z" fill="#07101D"/>
-  <path d="M28 174c44 28 106 34 168 5 16-7 27-16 34-26" fill="none" stroke="url(#edge)" stroke-width="5" stroke-linecap="round" opacity=".9"/>
-  <circle cx="224" cy="157" r="6" fill="#DDF9FF" filter="url(#glow)"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+    <path d="M70 66c18-25 62-35 94-17 29 16 43 50 31 78-10 24-35 40-61 39-31-1-57-20-65-48-6-20-2-38 10-52Z" stroke="#b9cbd5" stroke-opacity=".2" stroke-width="24"/>
+    <path d="M70 66c18-25 62-35 94-17 29 16 43 50 31 78-10 24-35 40-61 39-31-1-57-20-65-48-6-20-2-38 10-52Z" stroke="url(#silver)" stroke-width="15"/>
+    <path d="M83 77c15-17 43-25 66-15 21 9 33 31 29 51-4 22-24 38-47 38-21 0-40-13-47-33-6-16-3-30  -1-41Z" stroke="#f7fbfd" stroke-opacity=".34" stroke-width="3"/>
+    <path d="M93 137 112 155 166 93" stroke="url(#shine)" stroke-width="17"/>
+    <path d="M94 137 112 153 164 94" stroke="#ffffff" stroke-opacity=".72" stroke-width="3"/>
+  </g>
+  <circle cx="166" cy="93" r="5" fill="#fff" opacity=".85" filter="url(#glow)"/>
 </svg>
