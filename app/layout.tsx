@@ -132,6 +132,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className="dark">
       <head>
+        <link rel="icon" href="/proofttl-mark.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/proofttl-mark.svg" />
         <link rel="me" href={GITHUB_PROFILE} />
         <link rel="alternate" type="application/json" href="/.well-known/proofttl.json" title="ProofTTL service manifest" />
         <link rel="alternate" type="application/atom+xml" href="/feed.xml" title="ProofTTL updates" />
