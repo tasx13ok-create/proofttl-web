@@ -142,7 +142,6 @@
   </style>
 </head>
 <body>
-  <a class="skip" href="#main">Skip to content</a>
   <div id="world" aria-hidden="true"><canvas id="fallback"></canvas><canvas id="gpu"></canvas></div>
   <div class="vignette" aria-hidden="true"></div>
   <div class="progress" id="progress" aria-hidden="true"></div>
@@ -156,10 +155,6 @@
   </div>
   <nav class="mobile-menu glass" id="mobile-menu" aria-label="Mobile navigation" hidden><a href="#method">The method</a><a href="#evidence">The evidence</a><a href="#trust">Human approval</a><a href="#offer">Fact Audit · $1,500</a><a href="/audit/status/">Audit status ↗</a></nav>
   <div id="interaction" tabindex="0" role="group" aria-label="Interactive ProofTTL sculpture. Drag horizontally or use arrow keys to rotate. Home resets the view."></div>
-  <div class="scene-tools glass" aria-label="Scene controls">
-    <button class="tool" id="interact" aria-pressed="false" aria-controls="interaction">Explore 3D</button>
-    <button class="tool tool-icon" id="reset" aria-label="Reset sculpture rotation">↺</button>
-  </div>
   <main id="main">
     <section class="chapter hero" id="top" aria-labelledby="hero-title">
       <div class="frame"><div class="copy glass">
@@ -242,7 +237,6 @@
     ];
     const fallback=$('#fallback'),gpu=$('#gpu'),ctx=fallback.getContext('2d');
     const zone=$('#interaction'),trace=$('#trace'),progress=$('#progress');
-    const interactButton=$('#interact');
     let web=null,raf=0,last=0,dirty=true,timeline=null,gsapReady=false,disposed=false;
     let traceX=-100,traceY=-100,mouseX=-100,mouseY=-100,traceVisible=false;
     let points=[],lastPointer=null,gesture=new Map(),pinchDistance=0,qualityFrames=0,qualityTime=0;
@@ -282,18 +276,12 @@
     }
     function updateMotionUI() { document.body.dataset.reduced='false'; }
     const reset=()=>{state.yaw=state.pitch=state.vy=state.vp=0;state.zoom=1;dirty=true;};
-    on($('#reset'),'click',reset);
-    on(interactButton,'click',()=>{
-      const active=interactButton.getAttribute('aria-pressed')!=='true';
-      interactButton.setAttribute('aria-pressed',String(active));interactButton.textContent=active?'Done':'Explore 3D';zone.dataset.interact=String(active);if(active)zone.focus({preventScroll:true});
-    });
     on(zone,'keydown',e=>{
-      if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','Escape'].includes(e.key))return;
+      if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home'].includes(e.key))return;
       e.preventDefault();state.vy=state.vp=0;
       if(e.key==='Home')reset();
       if(e.key==='ArrowLeft')state.yaw-=.15;if(e.key==='ArrowRight')state.yaw+=.15;
       if(e.key==='ArrowUp')state.pitch=clamp(state.pitch-.12,-.8,.8);if(e.key==='ArrowDown')state.pitch=clamp(state.pitch+.12,-.8,.8);
-      if(e.key==='Escape'){zone.dataset.interact='false';interactButton.setAttribute('aria-pressed','false');interactButton.textContent='Explore 3D';interactButton.focus();}
       dirty=true;
     });
     on(zone,'pointerdown',e=>{
