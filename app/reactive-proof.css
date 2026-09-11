@@ -46,10 +46,10 @@
 .ptl-proof-stage button:focus-visible{outline:2px solid #d8deff;outline-offset:3px}
 
 /* An independent fallback keeps the visual intact without WebGL or JavaScript. */
-.ptl-proof-sculpture{position:absolute;left:18%;top:16%;width:64%;aspect-ratio:1;perspective:650px;transform:rotateY(var(--proof-turn));transform-style:preserve-3d;z-index:1}
-.ptl-proof-sculpture i{position:absolute;inset:6%;border:12px solid #bfb4ee;border-radius:50%;box-shadow:inset 2px 1px 6px #fff,2px 3px 20px #a4a6f850;transform:rotateX(58deg) rotateZ(-28deg)}
-.ptl-proof-sculpture i:nth-child(2){inset:0;border-width:7px;border-color:#a2e0d4;transform:rotateY(67deg) rotateZ(20deg)}
-.ptl-proof-sculpture i:nth-child(3){inset:-8%;border-width:2px;border-color:#b9cefa;transform:rotateX(75deg) rotateZ(45deg)}
+.ptl-proof-sculpture{position:absolute;left:50%;top:calc(50% - 78px);width:min(64%,330px);aspect-ratio:1;perspective:650px;transform:translate(-50%,-50%) rotateY(var(--proof-turn));transform-style:preserve-3d;z-index:1}
+.ptl-proof-sculpture i{position:absolute;inset:6%;border:12px solid #bfb4ee;border-radius:50%;box-shadow:inset 2px 1px 6px #fff,2px 3px 20px #a4a6f850;transform:rotateX(58deg) rotateZ(calc(-28deg + var(--proof-orbit,0deg)))}
+.ptl-proof-sculpture i:nth-child(2){inset:0;border-width:7px;border-color:#a2e0d4;transform:rotateY(67deg) rotateZ(calc(20deg - var(--proof-orbit,0deg)))}
+.ptl-proof-sculpture i:nth-child(3){inset:-8%;border-width:2px;border-color:#b9cefa;transform:rotateX(75deg) rotateZ(calc(45deg + var(--proof-orbit,0deg)))}
 .ptl-proof-sculpture b{position:absolute;inset:30%;border-radius:30%;transform:rotate(45deg);background:linear-gradient(135deg,#fff,#a5bbff 26%,#61689d 53%,#d5c5ff 75%,#53628b);box-shadow:0 0 50px #a8c2ff33}
 .ptl-proof-stage[data-renderer="webgl"] .ptl-proof-sculpture{visibility:hidden}
 
@@ -104,7 +104,7 @@
 @media(hover:none),(pointer:coarse){.ptl-cursor-tracer{display:none}}
 @media(prefers-reduced-motion:reduce){
  .ptl-proof-aura{animation:none}
- .ptl-proof-sculpture{transform:none}
+ .ptl-proof-sculpture{transform:translate(-50%,-50%)}
  .ptl-cursor-tracer{display:none}
  .ptl-motion-ready [data-ptl-reveal]{opacity:1;transform:none;transition:none}
  .ptl-proof-mode-controls button{transition:none}
