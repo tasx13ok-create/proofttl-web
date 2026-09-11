@@ -67,6 +67,37 @@ export default function HomepageControlBridge() {
 
     surfaces.forEach((surface) => surface.classList.add('ptl-motion-surface'))
 
+    const revealTargets = Array.from(document.querySelectorAll<HTMLElement>([
+      '.ptl-ai-workspace',
+      '.ptl-ai-section-title',
+      '.ptl-ai-bento article',
+      '.ptl-home-risk-grid article',
+      '.ptl-home-method-list article',
+      '.ptl-home-verdict-grid article',
+      '.ptl-home-delivery-card',
+      '.ptl-home-trust-row article',
+      '.ptl-ai-offer',
+    ].join(',')))
+
+    revealTargets.forEach((target, index) => {
+      target.dataset.ptlReveal = String((index % 3) + 1)
+    })
+    root.classList.add('ptl-motion-ready')
+
+    let revealObserver: IntersectionObserver | null = null
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      revealTargets.forEach((target) => target.classList.add('is-visible'))
+    } else {
+      revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return
+          entry.target.classList.add('is-visible')
+          revealObserver?.unobserve(entry.target)
+        })
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' })
+      revealTargets.forEach((target) => revealObserver?.observe(target))
+    }
+
     let frame = 0
     let pointerX = window.innerWidth * 0.5
     let pointerY = window.innerHeight * 0.24
@@ -125,6 +156,12 @@ export default function HomepageControlBridge() {
       composer?.removeEventListener('keydown', onComposerKeyDown)
       window.removeEventListener('pointermove', onPointerMove)
       surfaceCleanups.forEach((cleanup) => cleanup())
+      revealObserver?.disconnect()
+      revealTargets.forEach((target) => {
+        target.classList.remove('is-visible')
+        delete target.dataset.ptlReveal
+      })
+      root.classList.remove('ptl-motion-ready')
       if (frame) window.cancelAnimationFrame(frame)
     }
   }, [])
