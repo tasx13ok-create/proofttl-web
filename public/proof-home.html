@@ -39,6 +39,10 @@
     .skip:focus { transform:translateY(0); }
     #world { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
     #world canvas { position:absolute; inset:0; width:100%; height:100%; display:block; }
+    .symbol-stage { position:fixed; z-index:2; left:73.5%; top:50%; width:min(29vw,420px); aspect-ratio:1; pointer-events:none; transform:translate(-50%,-50%); mix-blend-mode:screen; opacity:.42; transition:left 1.2s var(--ease),top .8s var(--ease),opacity .5s; }
+    .symbol-stage svg { width:100%; height:100%; overflow:visible; filter:drop-shadow(0 0 18px #c9e7ff35); }
+    .symbol-stage path { fill:none; stroke:#dceaf1; stroke-width:1.4; vector-effect:non-scaling-stroke; stroke-linecap:round; stroke-linejoin:round; }
+    .symbol-stage .symbol-aura { stroke:#91c9e8; stroke-width:16; opacity:.07; filter:blur(10px); }
     #gpu { opacity:0; transition:opacity .7s; }
     .vignette { position:fixed; inset:0; z-index:1; pointer-events:none; background:linear-gradient(180deg,#07080925,transparent 25%,transparent 78%,#07080980); }
     .glass { --edge-angle:0deg; --gx:50%; --gy:30%; position:relative; isolation:isolate; border:1px solid #ffffff17; background:linear-gradient(135deg,#191b1ee6,#0b0d10b8); -webkit-backdrop-filter:blur(22px) saturate(115%); backdrop-filter:blur(22px) saturate(115%); box-shadow:inset 0 1px #ffffff08,0 28px 80px #00000030; }
@@ -143,6 +147,7 @@
       .hero-actions { gap:16px; margin-top:26px; } .primary { width:100%; justify-content:space-between; padding:16px 20px; font-size:12px; } .text-link { font-size:11px; }
       .assurance { font-size:8px; margin-top:24px; padding-top:16px; gap:6px 12px; }
       .scene-label { display:none; } .scene-tools { right:12px; bottom:12px; } .tool { font-size:10px; height:34px; min-width:34px; padding-inline:10px; }
+      .symbol-stage { left:50%; top:27%; width:min(72vw,360px); opacity:.34; }
       .tool-icon { font-size:15px; padding:0; } #interaction { left:6%!important; top:10%!important; width:88%; height:39%; }
       .trace { display:none; } footer { padding:0 18px 88px; } .footer-inner { padding:25px; flex-direction:column; align-items:flex-start; gap:22px; }
       .method-list li { padding:17px 0; } .method-list h3 { font-size:16px; } .method-list p { font-size:12px; }
@@ -159,6 +164,7 @@
 </head>
 <body>
   <div id="world" aria-hidden="true"><canvas id="fallback"></canvas><canvas id="gpu"></canvas></div>
+  <div class="symbol-stage" id="symbol-stage" aria-hidden="true"><svg viewBox="-1.2 -1.2 2.4 2.4"><path class="symbol-aura" id="symbol-aura"></path><path id="symbol-path"></path></svg></div>
   <div class="vignette" aria-hidden="true"></div>
   <div class="progress" id="progress" aria-hidden="true"></div>
   <div class="trace" id="trace" aria-hidden="true"></div>
@@ -259,12 +265,29 @@
     ];
     const fallback=$('#fallback'),gpu=$('#gpu'),ctx=fallback.getContext('2d');
     const zone=$('#interaction'),trace=$('#trace'),progress=$('#progress');
+    const symbolStage=$('#symbol-stage'),symbolPath=$('#symbol-path'),symbolAura=$('#symbol-aura');
     const bubble=$('#page-bubble'),bubbleFrame=$('#bubble-frame'),bubbleClose=$('#bubble-close');
     let web=null,raf=0,last=0,dirty=true,timeline=null,gsapReady=false,disposed=false;
     let traceX=-100,traceY=-100,mouseX=-100,mouseY=-100,traceVisible=false;
     let points=[],lastPointer=null,gesture=new Map(),pinchDistance=0,qualityFrames=0,qualityTime=0;
     const cleanups=[];
     const on=(target,event,fn,options)=>{target.addEventListener(event,fn,options);cleanups.push(()=>target.removeEventListener(event,fn,options));};
+    const symbolShapes=[
+      Array.from({length:32},(_,i)=>{const t=i/32*Math.PI*2;return [Math.cos(t)*.78,Math.sin(t)*.78];}),
+      Array.from({length:32},(_,i)=>{const t=i/31*Math.PI*4;return [Math.cos(t)*(.38+.34*i/31),Math.sin(t)*(.38+.34*i/31)];}),
+      Array.from({length:32},(_,i)=>{const t=i/32*Math.PI*2;const a=Math.abs(Math.cos(t))>.5?.72/.95: .72;return [Math.sign(Math.cos(t))*a,Math.sign(Math.sin(t))*a];}),
+      Array.from({length:32},(_,i)=>{const t=i/31;return t<.28?[-.72+t*1.25,-.55+t*1.55]:t<.52?[-.37+(t-.28)*2.9, -.12+(t-.28)*.7]:t<.76?[.32-(t-.52)*2.1,.05+(t-.52)*2.0]:[.5-(t-.76)*4.7,.53-(t-.76)*1.7];}),
+      Array.from({length:32},(_,i)=>{const t=i/32*Math.PI*2;return [Math.cos(t)*.78,Math.sin(t)*.78];})
+    ];
+    let symbolPoints=symbolShapes[0].map(p=>p.slice());
+    const symbolPathData=pts=>`M ${pts.map((p,i)=>`${i?'L':' '}${p[0].toFixed(3)} ${p[1].toFixed(3)}`).join(' ')} Z`;
+    function updateSymbol(){
+      const progress=state.scroll*4,index=Math.min(3,Math.floor(progress)),t=smooth(progress-index),next=symbolShapes[index+1];
+      symbolPoints=symbolPoints.map((p,i)=>[mix(p[0],mix(symbolShapes[index][i][0],next[i][0],t),.14),mix(p[1],mix(symbolShapes[index][i][1],next[i][1],t),.14)]);
+      const d=symbolPathData(symbolPoints);symbolPath.setAttribute('d',d);symbolAura.setAttribute('d',d);
+      symbolStage.style.left=state.mobile?'50%':`${50+pose.side*23.5}%`;symbolStage.style.top=state.mobile?'27%':'50%';
+      symbolStage.style.transform=`translate(-50%,-50%) rotate(${(pose.turn+state.time*.06)*18}deg) scale(${1+Math.sin(state.time*.65)*.035})`;
+    }
     let bubbleTimer=0;
     function closeBubble(){
       if(bubble.hidden)return;
@@ -500,6 +523,7 @@
       if(!coarse.matches){traceX+=(mouseX-traceX)*.19;traceY+=(mouseY-traceY)*.19;trace.style.transform=`translate3d(${traceX}px,${traceY}px,0)`;trace.style.opacity=traceVisible?'1':'0';}else trace.style.opacity='0';
       zone.dataset.rotation=(pose.turn+state.yaw+state.time*.18).toFixed(3);zone.dataset.phase=state.scroll.toFixed(3);
       zone.style.left=state.mobile?'6%':`${30+pose.side*23.5}%`;
+      updateSymbol();
       if(active||dirty||state.drag||gsapReady){
         if(web){try{web.draw();}catch(e){web.dispose();web=null;gpu.style.opacity='0';fallback.style.visibility='visible';}}
         if(!web)drawFallback();dirty=false;
@@ -514,7 +538,7 @@
     // Suspend for the back-forward cache; release GPU resources on a real unload.
     on(window,'pagehide',e=>{cancelAnimationFrame(raf);if(e.persisted)return;disposed=true;timeline?.scrollTrigger?.kill();timeline?.kill();web?.dispose();cleanups.splice(0).forEach(fn=>fn());});
     on(window,'pageshow',e=>{if(e.persisted){last=0;dirty=true;cancelAnimationFrame(raf);raf=requestAnimationFrame(frame);}});
-    resize();scrollUpdate();updateMotionUI();drawFallback();document.body.dataset.renderer='canvas';document.body.dataset.motionVersion='2';raf=requestAnimationFrame(frame);startWebGL().catch(()=>{document.body.dataset.renderer='canvas';});
+    resize();scrollUpdate();updateMotionUI();updateSymbol();drawFallback();document.body.dataset.renderer='canvas';document.body.dataset.motionVersion='2';raf=requestAnimationFrame(frame);startWebGL().catch(()=>{document.body.dataset.renderer='canvas';});
   })();
   </script>
 </body>
