@@ -23,6 +23,7 @@ function hasIndependentScroll(target: EventTarget | null, direction: number) {
 
 export default function SmoothPageMotion() {
   useEffect(() => {
+    if (window.location.pathname === '/') return
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
     const coarsePointer = window.matchMedia('(pointer: coarse)')
     if (reducedMotion.matches || coarsePointer.matches) return
