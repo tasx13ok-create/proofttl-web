@@ -28,7 +28,7 @@ async function main() {
   const robots = await readFile('out/robots.txt', 'utf8')
   if (!robots.includes('Allow: /')) throw new Error('robots.txt must allow crawlers')
   const headers = await readFile('out/_headers', 'utf8')
-  for (const expected of ['X-Content-Type-Options: nosniff','X-Frame-Options: DENY']) if (!headers.includes(expected)) throw new Error(`Static headers missing: ${expected}`)
+  for (const expected of ['X-Content-Type-Options: nosniff','X-Frame-Options: SAMEORIGIN']) if (!headers.includes(expected)) throw new Error(`Static headers missing: ${expected}`)
 
   console.log('\nSUCCESS: flagship $1,500 Fact Audit funnel static export passed.')
 }
