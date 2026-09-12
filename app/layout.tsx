@@ -33,6 +33,8 @@ import './motion-system.css'
 import './launch-visual.css'
 import './reactive-proof.css'
 import './glass-continuation.css'
+import '../public/cinematic-pages.css'
+import CinematicPageShell from '../components/CinematicPageShell'
 
 const SITE_URL = 'https://proofttl-web.vercel.app'
 const GITHUB_PROFILE = 'https://github.com/tasx13ok-create'
@@ -147,7 +149,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <HomepageControlBridge />
         <ProtocolNetworkStrip />
         <ProductNav />
-        {children}
+        <CinematicPageShell>{children}</CinematicPageShell>
         <ProofTTLAds />
         <AppOnlyChatBar />
       </body>
