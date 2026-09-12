@@ -1,57 +1,45 @@
 import ProductDetailShell from '../../../components/ProductDetailShell'
 
 export const metadata = {
-  title: 'Sample Verification Audit',
-  description: 'Inspect a public ProofTTL verification sample showing source-backed verdicts, documentation drift, uncertainty handling, and the evidence behind each claim.',
+  title: 'Sample Verification Audit — Evidence Behind a Stale Price',
+  description: 'Inspect a ProofTTL self-audit with immutable repository evidence, a narrow verdict, recommended repair, and explicit limitations.',
   alternates: { canonical: '/audit/sample/' },
-  openGraph: { title: 'ProofTTL Sample Verification Audit', description: 'See how ProofTTL pressure-tests time-sensitive claims against public primary sources before you buy.', url: '/audit/sample/', type: 'article' },
 }
 
-const claims = [
-  ['PX-001', 'Perplexity Max costs $200/month or $2,000/year on the web app.', 'SUPPORTED', 'MEDIUM'],
-  ['PX-002', 'Perplexity Enterprise Pro costs $40 per active seat per month or $400 per year.', 'SUPPORTED', 'HIGH'],
-  ['PX-003', 'Perplexity Enterprise Max costs $325 per active seat per month or $3,250 per year.', 'SUPPORTED', 'HIGH'],
-  ['PX-004', "Perplexity's current Max Search-model roster includes GPT-5.6 Sol and Claude Opus 5.", 'SUPPORTED', 'HIGH'],
-  ['PX-005', "Perplexity's current Pro and Max Search-model roster includes Gemini 3.1 Pro.", 'SUPPORTED', 'HIGH'],
-  ['PX-006', "Perplexity's documentation is fully synchronized on which advanced models Max users can access.", 'CONTRADICTED', 'HIGH'],
-] as const
-
+const base = 'https://github.com/tasx13ok-create/proofttl/blob/fc8bb7b5762cacb708225ae7ca7fb88e7ca37c09/'
 const sources = [
-  ['S1', 'Perplexity Max — Help Center', 'https://www.perplexity.ai/help-center/en/articles/11680686-perplexity-max'],
-  ['S2', 'Enterprise Pricing and Billing FAQ', 'https://www.perplexity.ai/help-center/en/articles/10352986-enterprise-pricing-and-billing-frequently-asked-questions'],
-  ['S3', 'Advanced AI models included in subscription', 'https://www.perplexity.ai/help-center/en/articles/10354919-what-advanced-ai-models-are-included-in-my-subscription'],
-  ['S4', 'What is Perplexity Pro?', 'https://www.perplexity.ai/help-center/en/articles/9385876-what-is-perplexity-pro'],
+  ['S1', 'README — the retired price', 'README.md'],
+  ['S2', 'Intake — the $1,500 offer', 'src/audit-intake.js'],
+  ['S3', 'Scope approval — exact price enforcement', 'src/audit-sales.js'],
+  ['S4', 'Stripe — checkout amount validation', 'src/stripe-payments.js'],
 ] as const
 
 export default function SampleAuditPage() {
   return <ProductDetailShell
     active="sample"
-    eyebrow="Sample finding · PTTL-DEMO-PX-20260818-001"
-    title={<>A believable claim.<br/><em>Then the contradiction.</em></>}
-    description={<>This historical demonstration presents six statements as recorded on August 18, 2026. It is not a current check of Perplexity pricing or model availability. The linked pages may have changed since that observation.</>}
-    actions={<><a href="/how-proofttl-works/">See the method</a><a href="/samples/proofttl-pricing-audit.md">Read our September 9 self-audit</a></>}
+    eyebrow="Public demonstration · Self-audit · September 9, 2026"
+    title={<>A stale price.<br/><em>A source-backed correction.</em></>}
+    description={<>A real discrepancy in ProofTTL's own repository: the README advertised a retired price while the commercial code enforced $1,500. This self-audit demonstrates the evidence and reasoning format. It is not commissioned customer work or independent certification.</>}
+    actions={<><a href="/audit/#audit-intake">Start your Fact Audit</a><a href="/samples/proofttl-pricing-audit.md">Read the complete evidence record</a></>}
   >
     <section className="ptl-finding-hero">
-      <div className="ptl-finding-meta"><span>Claim PX-006</span><span>Observed Aug 18, 2026</span><span>High consequence</span></div>
-      <blockquote>“Perplexity&apos;s documentation is fully synchronized on which advanced models Max users can access.”</blockquote>
-      <p>The important word is <strong>fully</strong>. ProofTTL keeps the proposition intact instead of quietly weakening it until the evidence fits.</p>
+      <div className="ptl-finding-meta"><span>Finding · Pricing drift</span><span>Recorded Sep 9, 2026</span><span>Commercial consequence</span></div>
+      <blockquote>“The current ProofTTL full audit costs $500.”</blockquote>
+      <p><strong>Scope:</strong> the repository at commit <code>fc8bb7b</code> and the buyer-facing offer recorded in the self-audit. This finding evaluates the advertised commercial price, not historical customer transactions.</p>
     </section>
-
     <section className="ptl-evidence-compare">
-      <article className="support"><div className="ptl-evidence-label"><i/> Evidence for</div><h2>S3 looks clean on its own.</h2><p>The current advanced-model page explicitly lists model availability and notes that availability can change. Examined alone, the documentation appears internally consistent.</p><span className="source-chip">S3 · first-party · current</span></article>
-      <article className="against"><div className="ptl-evidence-label"><i/> Contradiction pass</div><h2>S4 breaks the universal claim.</h2><p>Another current first-party help article references a different set of Max model examples. Both pages can exist while “fully synchronized” is false.</p><span className="source-chip">S4 · first-party · current</span></article>
+      <article className="support"><div className="ptl-evidence-label">Evidence for</div><h2>The README says $500.</h2><p>S1 lists a “$500 Full Verification Audit.” Someone relying on that document could quote the retired offer.</p><a className="source-chip" href={base + 'README.md'} target="_blank" rel="noreferrer">S1 · immutable repository snapshot ↗</a></article>
+      <article className="against"><div className="ptl-evidence-label">Evidence against</div><h2>The commercial code enforces $1,500.</h2><p>S2 sets the offer at 1500 USD. S3 rejects a different scoped price. S4 validates the checkout total against the same amount.</p><a className="source-chip" href={base + 'src/stripe-payments.js'} target="_blank" rel="noreferrer">S4 · immutable repository snapshot ↗</a></article>
     </section>
-
-    <section className="ptl-verdict-card contradicted"><div><span>Verdict</span><strong>CONTRADICTED</strong></div><p>The inspected documentation is not fully synchronized. The verdict is intentionally narrow: it does not imply the product is defective or that every help page is stale.</p><div className="ptl-verdict-foot"><span>Exact claim preserved</span><span>Contradiction retained</span><span>Human-readable scope</span></div></section>
-
-    <section className="ptl-detail-section"><header><span>Audit overview</span><h2>Six claims. One material break.</h2><p>The table is secondary. The finding stays primary.</p></header><div className="ptl-claim-list">{claims.map(([id, claim, verdict, risk]) => <article key={id}><div><small>{id} · {risk}</small><strong>{claim}</strong></div><span className={verdict === 'SUPPORTED' ? 'supported' : 'contradicted'}>{verdict}</span></article>)}</div></section>
-
-    <section className="ptl-detail-section"><header><span>Why TTL matters</span><h2>Supported is not permanently true.</h2><p>Pricing, model rosters, limits, policies, and capabilities can change after a check. ProofTTL records the evidence-access date and knows when a claim deserves another look.</p></header><div className="ptl-three-up"><article><span>Observed</span><strong>Aug 18, 2026</strong><p>Point-in-time evidence.</p></article><article><span>Volatility</span><strong>High</strong><p>Pricing and model availability move quickly.</p></article><article><span>Recheck when</span><strong>Source changes</strong><p>A cited page changes, disappears, or is superseded.</p></article></div></section>
-
-    <section className="ptl-detail-section"><header><span>Source index</span><h2>Every source remains inspectable.</h2></header><div className="ptl-source-list">{sources.map(([id,title,href]) => <a key={id} href={href} target="_blank" rel="noreferrer"><span>{id}</span><strong>{title}</strong><b>↗</b></a>)}</div></section>
-
-    <section className="ptl-detail-cta"><div><span>Fact Audit scope</span><h2>Up to 25 real outputs. Fixed $1,500 scope.</h2><p>Consequence ranking, deep verification of the highest-risk findings, human approval, proof/report delivery, and a seven-day watch.</p></div></section>
-
-    <p className="ptl-detail-note">Public demonstration only. This is not a commissioned audit of Perplexity, an endorsement, an accusation, or legal, financial, medical, regulatory, certification, or compliance advice.</p>
+    <section className="ptl-verdict-card contradicted"><div><span>Scoped verdict</span><strong>CONTRADICTED</strong></div><p>The $500 claim conflicts with the active commercial code and buyer-facing offer examined. The evidence establishes documentation drift; it does not establish that any customer was charged incorrectly.</p><div className="ptl-verdict-foot"><span>Exact claim preserved</span><span>Conflicting evidence retained</span><span>Limits explicit</span></div></section>
+    <section className="ptl-detail-section"><header><span>Consequence and repair</span><h2>Fix the quote before it reaches a buyer.</h2></header><div className="ptl-three-up">
+      <article><span>Consequence</span><strong>Conflicting prices</strong><p>An owner could send an obsolete quote, or a buyer could encounter contradictory amounts. No lost customer or revenue is claimed.</p></article>
+      <article><span>Recommended repair</span><strong>Align the active offer</strong><p>Update current documentation and outreach to $1,500. Preserve historical records and never silently change a customer's payment amount.</p></article>
+      <article><span>Corrected wording</span><strong>$1,500 Fact Audit</strong><p>Up to 25 outputs or claims, with scope confirmed before payment. Deep verification focuses on the highest-risk findings.</p></article>
+    </div></section>
+    <section className="ptl-detail-section"><header><span>Uncertainty stays visible</span><h2>What this sample does not prove.</h2><p>Source inspection and mocked Stripe tests do not verify every live checkout or historical transaction. No charge was created for this sample. No independent human certification was issued.</p><p>Owner editorial review is required before presenting this as a human-approved commercial deliverable. A purchased audit's findings require explicit human approval before customer-facing delivery.</p></header></section>
+    <section className="ptl-detail-section"><header><span>Source index</span><h2>Open the exact evidence.</h2><p>These links pin the repository to the examined commit, so later edits cannot silently change the cited evidence.</p></header><div className="ptl-source-list">{sources.map(([id,title,path]) => <a key={id} href={base + path} target="_blank" rel="noreferrer"><span>{id}</span><strong>{title}</strong><b>↗</b></a>)}</div></section>
+    <section className="ptl-detail-section"><header><span>Freshness</span><h2>Recheck before the next quote.</h2><p>The commit evidence is immutable. The live offer is time-sensitive: recheck after pricing or deployment changes. This sample is a single finding, not a completed 25-output audit or evidence that a seven-day watch has been performed.</p></header></section>
+    <section className="ptl-detail-cta"><div><span>Apply this process to your outputs</span><h2>Up to 25 real outputs. Fixed $1,500 scope.</h2><p>Consequence ranking, deep verification of the highest-risk findings, human approval, report delivery, and a seven-day watch on agreed important findings.</p><a className="button button-primary" href="/audit/#audit-intake">Start your Fact Audit →</a></div></section>
   </ProductDetailShell>
 }

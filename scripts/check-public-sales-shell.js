@@ -141,6 +141,13 @@ async function checkInternalLinks(file) {
 
 function assertNoRetiredOffer(file, body) {
   for (const fragment of retiredOfferFragments) {
+    // This sample audits the retired price; its quote must remain exact.
+    if (file === 'out/audit/sample/index.html' && ['$500', 'Full Verification Audit'].includes(fragment)) {
+      for (const evidence of ['CONTRADICTED', 'fc8bb7b5762cacb708225ae7ca7fb88e7ca37c09', 'Fixed $1,500 scope.', 'self-audit']) {
+        if (!body.includes(evidence)) throw new Error(`Sample lost its historical evidence or current offer: ${evidence}`)
+      }
+      continue
+    }
     if (body.includes(fragment)) throw new Error(`${file} leaked retired ProofTTL offer copy: ${fragment}`)
   }
 }

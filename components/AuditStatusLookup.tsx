@@ -3,6 +3,8 @@
 import { FormEvent, useEffect, useRef, useState } from 'react'
 import { authClient, PROOFTTL_API_URL, rememberAuthReturn, signInHref } from '../lib/proofttl-auth'
 
+import { withDeadline } from '../lib/request-deadline'
+
 const AUDIT_STORAGE_KEY = 'proofttl:last-audit-request'
 
 type AuthState = 'checking' | 'signed_in' | 'signed_out' | 'error'
@@ -56,7 +58,7 @@ export default function AuditStatusLookup() {
     } catch {}
 
     let cancelled = false
-    void authClient.getSession().then(async (session) => {
+    void withDeadline(authClient.getSession(), 8000, 'Session check timed out.').then(async (session) => {
       if (cancelled) return
       const user = session?.data?.user
       if (!user) {
@@ -94,9 +96,11 @@ export default function AuditStatusLookup() {
   async function lookup(id: string, mail: string, quiet = false): Promise<StatusResponse | null> {
     if (!quiet) setLoading(true)
     if (!quiet) setResult(null)
+    const controller = new AbortController()
+    const timeout = window.setTimeout(() => controller.abort(), 20000)
     try {
       const response = await fetch(`${PROOFTTL_API_URL}/audit/intake/status`, {
-        method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' },
+        method: 'POST', credentials: 'include', signal: controller.signal, headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ audit_intake_id: id.trim(), email: mail.trim() }),
       })
       const body = await response.json().catch(() => ({})) as StatusResponse
@@ -117,6 +121,7 @@ export default function AuditStatusLookup() {
       if (!quiet) setResult(failed)
       return failed
     } finally {
+      window.clearTimeout(timeout)
       if (!quiet) setLoading(false)
     }
   }
@@ -128,7 +133,8 @@ export default function AuditStatusLookup() {
       for (let attempt = 0; attempt < 4; attempt += 1) {
         const body = await lookup(id, mail, true)
         if (!body || body.error) {
-          if (attempt === 3 && body?.error) setResult(body)
+          if (body?.error) setResult(body)
+          setReturnMessage('Payment confirmation could not be checked. Do not pay again if Stripe already accepted payment. Retry status or contact support.')
           return
         }
         if (body.status === 'paid' || body.status === 'fulfilled' || body.payment?.state === 'paid') {
@@ -182,7 +188,7 @@ export default function AuditStatusLookup() {
             {result.scope?.turnaround && <div className="app-table-row"><span>Turnaround</span><span>{result.scope.turnaround}</span><span>SET</span></div>}
             <div className="app-table-row"><span>Payment</span><span>{result.payment?.provider === 'stripe' ? 'Secure Stripe Checkout' : String(result.payment?.state || 'not_requested').replaceAll('_', ' ')}</span><span>{result.payment?.state === 'paid' ? '✓' : result.payment?.amount_due_usd ? `$${result.payment.amount_due_usd.toLocaleString('en-US')}` : '—'}</span></div>
           </div>
-          {result.payment?.state === 'ready' && result.payment.url && <div className="hero-actions" style={{ marginTop: 18 }}><a className="button button-primary" href={result.payment.url} rel="noreferrer">PAY ${(result.payment.amount_due_usd || result.scope?.amount_due_usd || 0).toLocaleString('en-US')} SECURELY →</a></div>}
+          {result.payment?.state === 'ready' && result.payment.url && <div className="hero-actions" style={{ marginTop: 18 }}><a className="button button-primary" href={result.payment.url} target="_top" rel="noreferrer">PAY ${(result.payment.amount_due_usd || result.scope?.amount_due_usd || 0).toLocaleString('en-US')} SECURELY →</a></div>}
           {result.status === 'received' && <p className="app-note">Your request is stored. The next checkpoint is scope review; payment is not due yet.</p>}
           {result.status === 'scoped' && <p className="app-note">Your scope is approved. ProofTTL has not created checkout yet, so no payment is currently due.</p>}
           {result.status === 'paid' && <p className="app-note">Stripe payment is recorded. Fulfillment is now the active step.</p>}

@@ -140,5 +140,14 @@ export async function signInWithProvider(provider: SocialProvider, returnTo?: st
     ? `${window.location.origin}${target}`
     : `${PROOFTTL_WEB_ORIGIN}${target}`
 
-  return authClient.signIn.social({ provider, callbackURL })
+  // OAuth providers refuse to load inside an iframe. Keep the glass login UI,
+  // then navigate the browser itself when the buyer selects their provider.
+  const embedded = typeof window !== 'undefined' && window.self !== window.top
+  const result = await authClient.signIn.social({ provider, callbackURL, disableRedirect: embedded })
+  if (embedded && !result.error && result.data?.url) {
+    const destination = new URL(result.data.url)
+    if (destination.protocol !== 'https:') throw new Error('Invalid sign-in destination.')
+    window.top!.location.assign(destination.href)
+  }
+  return result
 }
