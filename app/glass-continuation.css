@@ -25,4 +25,4 @@
 @keyframes glass-arrive{from{opacity:0;transform:translateY(24px);filter:blur(5px)}to{opacity:1;transform:none;filter:blur(0)}}
 @keyframes glass-atmosphere{to{transform:translate3d(4%,3%,0) rotate(8deg)}}
 @media(max-width:700px){.ptl-detail-page{padding:100px 18px 24px!important}.ptl-detail-hero{padding:32px 22px!important;border-radius:28px}.ptl-detail-content article{padding:22px!important}.ptl-shared-header{padding:8px 14px!important}.ptl-shared-brand img{width:120px!important;height:36px!important}.ptl-shared-header-actions>span{display:none}.ptl-detail-footer{display:flex;flex-direction:column;align-items:flex-start;gap:20px}.ptl-detail-footer nav{flex-wrap:wrap}.ptl-three-up{grid-template-columns:1fr!important}}
-@media(prefers-reduced-motion:reduce){*,*::before{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media(prefers-reduced-motion:reduce){body:not(:has(#cinematic-home)):not(:has(.cinematic-page)) :is(*,*::before){animation-duration:.01ms!important;transition-duration:.01ms!important}}

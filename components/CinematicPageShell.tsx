@@ -36,7 +36,13 @@ export default function CinematicPageShell({ children }: { children: ReactNode }
     }
     const close = (e: KeyboardEvent) => { if (e.key === 'Escape') { setOpen(false); toggle.current?.focus() } }
     const outside = (e: PointerEvent) => { if (!nav.current?.contains(e.target as Node)) setOpen(false) }
-    const onScroll = () => setScrolled(window.scrollY > 72)
+    let previousY = window.scrollY
+    const onScroll = () => {
+      const y = window.scrollY, delta = y - previousY
+      if (y < 72 || delta < -3) setScrolled(false)
+      else if (delta > 3) setScrolled(true)
+      previousY = y
+    }
     window.addEventListener('pointermove', move, { passive: true })
     window.addEventListener('scroll', schedule, { passive: true })
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -56,7 +62,7 @@ export default function CinematicPageShell({ children }: { children: ReactNode }
   return <div className="cinematic-page" data-page={pathname}>
     <iframe key={pathname} ref={scene} className="cinematic-page-scene" srcDoc={`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#070809}canvas{position:absolute;inset:0;width:100%;height:100%}#gpu{opacity:0;transition:opacity 1s}</style></head><body data-route="${encodeURIComponent(pathname)}"><canvas id="fallback"></canvas><canvas id="gpu"></canvas><script type="module" src="/page-scene.js"></script></body></html>`} title="Decorative silver sculpture" aria-hidden="true" tabIndex={-1} />
     <div className="cinematic-page-shade" aria-hidden="true" />
-    <nav className={`cinematic-island${scrolled ? ' is-scrolled' : ''}`} aria-label="Primary navigation" ref={nav}>
+    <nav className={`cinematic-island${scrolled && !open ? ' is-scrolled' : ''}`} aria-label="Primary navigation" ref={nav}>
       <a href="/" className="cinematic-wordmark" aria-label="ProofTTL home"><img src="/proofttl-glass-logo.png" alt="ProofTTL" width="145" height="44" /></a>
       <div className="cinematic-island-links"><a href="/how-proofttl-works/">The method</a><a href="/audit/sample/">The evidence</a><a href="/trust/">Human approval</a></div>
       <a className="cinematic-audit-link" href="/audit/#audit-intake">Fact Audit <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg></a>

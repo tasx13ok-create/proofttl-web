@@ -181,6 +181,16 @@
 .mobile-menu{display:block;visibility:hidden;opacity:0;transform:translateY(-16px) scale(.94);filter:blur(8px);transform-origin:top right;transition:opacity .5s,transform .7s cubic-bezier(.22,1,.36,1),filter .5s,visibility .7s;pointer-events:none}
 .mobile-menu.is-open{visibility:visible;opacity:1;transform:none;filter:blur(0);pointer-events:auto}
 @media(max-width:600px){.glass-logo{width:125px;height:38px}.menu-toggle{display:flex}}
+
+    /* Close control is a sibling of the clipped, animated panel. */
+    .page-bubble .bubble-host{position:relative;width:min(1120px,100%);height:min(78svh,780px);max-height:calc(100svh - 140px);min-height:0}
+    .page-bubble .bubble-shell{width:100%;height:100%;min-height:0}
+    .page-bubble .bubble-close{position:absolute;top:-54px;right:0;width:44px;height:44px;z-index:5;display:grid;place-items:center;margin:0;line-height:1;box-shadow:0 8px 26px #0008;opacity:1}
+    .nav-wrap{transition:translate .55s cubic-bezier(.22,1,.36,1),opacity .45s ease;opacity:1;translate:0 0}
+    .nav-wrap.is-scrolled{translate:0 -110px;opacity:0;pointer-events:none}
+    .nav-wrap.is-scrolled .nav{pointer-events:none}
+    body.bubble-active>.nav-wrap,body.bubble-active #cinematic-home>.nav-wrap{opacity:0;pointer-events:none}
+    @media(max-width:700px){.page-bubble .bubble-host{height:calc(100svh - 150px);max-height:none}.page-bubble .bubble-close{top:-54px;right:0}}
 </style>
 </head>
 <body>
@@ -261,10 +271,12 @@
   </main>
   <footer><div class="footer-inner glass"><div><a class="brand" href="#top"><img class="glass-logo" src="/proofttl-glass-logo.png" alt="ProofTTL" /></a><p class="footer-copy">Source-backed verification. Evidence before confidence.</p></div><nav class="footer-links" aria-label="Footer navigation"><a href="/audit/status/">Audit status</a><a href="/how-proofttl-works/">Technology</a><a href="/support/">Support</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav></div></footer>
   <div class="page-bubble" id="page-bubble" hidden aria-hidden="true">
-    <section class="bubble-shell glass" role="dialog" aria-modal="true" aria-label="ProofTTL page">
+    <div class="bubble-host">
       <button class="bubble-close" id="bubble-close" type="button" aria-label="Close page">×</button>
+    <section class="bubble-shell glass" role="dialog" aria-modal="true" aria-label="ProofTTL page">
       <iframe class="bubble-frame" id="bubble-frame" title="ProofTTL page" loading="eager"></iframe>
     </section>
+    </div>
   </div>
   <script>
   (() => {
@@ -355,7 +367,12 @@
       if(web){web.renderer.setPixelRatio(state.dpr);web.renderer.setSize(state.w,state.h,false);web.camera.aspect=state.w/state.h;web.camera.updateProjectionMatrix();web.particles.geometry.setDrawRange(0,state.mobile?5000:18000);}
       dirty=true;
     }
+    let previousNavY=0;
     function scrollUpdate() {
+      const navY=window.scrollY,navDelta=navY-previousNavY;
+      if(navY<72||navDelta< -3)$('.nav-wrap').classList.remove('is-scrolled');
+      else if(navDelta>3&&menuButton.getAttribute('aria-expanded')!=='true')$('.nav-wrap').classList.add('is-scrolled');
+      previousNavY=navY;
       const main=$('#main'),range=Math.max(1,main.offsetHeight-state.h);
       state.scroll=clamp(scrollY/range,0,1);progress.style.transform=`scaleX(${state.scroll})`;
       if(!gsapReady)fallbackPose();

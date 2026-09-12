@@ -62,7 +62,7 @@ async function start(){
     web.draw();if(shaderFailed)throw Error('Shader unavailable');gpu.style.opacity='1';document.body.dataset.renderer='webgl';
   }catch{web?.dispose();web=null;gpu.style.opacity='0';document.body.dataset.renderer='canvas';}
 }
-function frame(now){if(disposed||document.hidden)return;const dt=Math.min((now-(last||now))/1000,.05);last=now;if(!reduced.matches)time+=dt;px+=(tx-px)*.035;py+=(ty-py)*.035;depth+=(scroll-depth)*.035;if(web){try{web.draw()}catch{web.dispose();web=null;gpu.style.opacity='0'}}if(!web)drawFallback();raf=requestAnimationFrame(frame)}
+function frame(now){if(disposed||document.hidden)return;const dt=Math.min((now-(last||now))/1000,.05);last=now;time+=dt;px+=(tx-px)*.035;py+=(ty-py)*.035;depth+=(scroll-depth)*.035;if(web){try{web.draw()}catch{web.dispose();web=null;gpu.style.opacity='0'}}if(!web)drawFallback();raf=requestAnimationFrame(frame)}
 addEventListener('message',e=>{if(e.origin!==new URL(document.baseURI).origin||e.source!==parent||e.data?.type!=='proof-scene')return;tx=Number(e.data.x)||0;ty=Number(e.data.y)||0;scroll=Number(e.data.scroll)||0});
 addEventListener('resize',size);
 gpu.addEventListener('webglcontextlost',e=>{e.preventDefault();web?.dispose();web=null;gpu.style.opacity='0'});
