@@ -142,7 +142,7 @@
     .chapter { transition:opacity .8s ease,filter .8s ease; }
     .chapter:not(.hero) { opacity:.72; filter:saturate(.82); }
     .chapter:not(.hero).in-view { opacity:1; filter:saturate(1); }
-    .bubble-close { position:absolute; z-index:2; top:14px; right:14px; width:42px; height:42px; border:1px solid #ffffff2a; border-radius:50%; background:#0b0e12d9; color:#e9edf0; font-size:22px; line-height:1; backdrop-filter:blur(16px); transition:transform .3s var(--ease),background .25s; }
+    .bubble-close { position:fixed; z-index:90; top:calc(50% - min(43vh,430px) - 18px); right:calc(50% - min(560px,50vw) - 18px); width:42px; height:42px; border:1px solid #ffffff2a; border-radius:50%; background:#0b0e12d9; color:#e9edf0; font-size:22px; line-height:1; backdrop-filter:blur(16px); transition:transform .3s var(--ease),background .25s; }
     .bubble-close:hover { transform:rotate(90deg) scale(1.06); background:#ffffff1d; }
     body.bubble-active { overflow:hidden; }
     @media(min-width:1600px) { .copy { grid-column:1/6; } .right .copy { grid-column:8/13; } }
