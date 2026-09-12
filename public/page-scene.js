@@ -1,5 +1,5 @@
 // Procedural route sculptures: no models, textures, images, or paid services.
-const route = decodeURIComponent(location.hash.slice(1) || '/about/');
+const route = decodeURIComponent(document.body.dataset.route || location.hash.slice(1) || '/about/');
 const seed = [...route].reduce((h, c) => ((h * 31 + c.charCodeAt(0)) >>> 0), 7);
 const name = route.includes('privacy') || route.includes('trust') ? 'shield'
   : route.includes('login') || route.includes('two-factor') ? 'keyhole'
@@ -63,7 +63,7 @@ async function start(){
   }catch{web?.dispose();web=null;gpu.style.opacity='0';document.body.dataset.renderer='canvas';}
 }
 function frame(now){if(disposed||document.hidden)return;const dt=Math.min((now-(last||now))/1000,.05);last=now;if(!reduced.matches)time+=dt;px+=(tx-px)*.035;py+=(ty-py)*.035;depth+=(scroll-depth)*.035;if(web){try{web.draw()}catch{web.dispose();web=null;gpu.style.opacity='0'}}if(!web)drawFallback();raf=requestAnimationFrame(frame)}
-addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==parent||e.data?.type!=='proof-scene')return;tx=Number(e.data.x)||0;ty=Number(e.data.y)||0;scroll=Number(e.data.scroll)||0});
+addEventListener('message',e=>{if(e.origin!==new URL(document.baseURI).origin||e.source!==parent||e.data?.type!=='proof-scene')return;tx=Number(e.data.x)||0;ty=Number(e.data.y)||0;scroll=Number(e.data.scroll)||0});
 addEventListener('resize',size);
 gpu.addEventListener('webglcontextlost',e=>{e.preventDefault();web?.dispose();web=null;gpu.style.opacity='0'});
 document.addEventListener('visibilitychange',()=>{cancelAnimationFrame(raf);last=0;if(!document.hidden)raf=requestAnimationFrame(frame)});

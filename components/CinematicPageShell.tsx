@@ -50,7 +50,7 @@ export default function CinematicPageShell({ children }: { children: ReactNode }
 
   if (home) return children
   return <div className="cinematic-page" data-page={pathname}>
-    <iframe key={pathname} ref={scene} className="cinematic-page-scene" src={`/page-scene.html#${encodeURIComponent(pathname)}`} title="Decorative silver sculpture" aria-hidden="true" tabIndex={-1} />
+    <iframe key={pathname} ref={scene} className="cinematic-page-scene" srcDoc={`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#070809}canvas{position:absolute;inset:0;width:100%;height:100%}#gpu{opacity:0;transition:opacity 1s}</style></head><body data-route="${encodeURIComponent(pathname)}"><canvas id="fallback"></canvas><canvas id="gpu"></canvas><script type="module" src="/page-scene.js"></script></body></html>`} title="Decorative silver sculpture" aria-hidden="true" tabIndex={-1} />
     <div className="cinematic-page-shade" aria-hidden="true" />
     <nav className="cinematic-island" aria-label="Primary navigation" ref={nav}>
       <a href="/" className="cinematic-wordmark" aria-label="ProofTTL home"><img src="/proofttl-glass-logo.png" alt="ProofTTL" width="145" height="44" /></a>
