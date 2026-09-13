@@ -3,3 +3,10 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(self), geolocation=()
   X-Frame-Options: SAMEORIGIN
+
+/owner/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: private, no-store
+/audit/report/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: private, no-store

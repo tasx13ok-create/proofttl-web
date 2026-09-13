@@ -18,6 +18,7 @@ function apply(preferences: Preferences | null) {
 
 export default function AccountPreferenceBridge() {
   useEffect(() => {
+    if (window.location.pathname.startsWith('/owner')) return
     let cancelled = false
     let controller: AbortController | null = null
 

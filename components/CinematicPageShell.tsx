@@ -13,7 +13,7 @@ const links = [
 
 export default function CinematicPageShell({ children }: { children: ReactNode }) {
   const pathname = usePathname() || '/'
-  const home = pathname === '/'
+  const home = pathname === '/' || pathname === '/owner/' || pathname === '/owner'
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const scene = useRef<HTMLIFrameElement>(null)

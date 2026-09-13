@@ -8,6 +8,10 @@ const ALLOWED_PATHS = [
   /^\.well-known\/proofttl-auth\.json$/,
   /^account\/(?:preferences|audits)$/i,
   /^audit\/intake(?:\/status)?$/,
+  /^audit\/report\/ati_[a-f0-9]{32}$/,
+  /^owner\/(?:overview|intakes|tasks)$/,
+  /^owner\/tasks\/[a-f0-9-]{36}$/,
+  /^owner\/intakes\/ati_[a-f0-9]{32}(?:\/(?:scope|checkout|approve|deliver|cancel|notes|report))?$/,
 ]
 
 function copyRequestHeaders(request) {

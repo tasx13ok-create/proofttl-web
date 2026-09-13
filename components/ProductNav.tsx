@@ -61,6 +61,7 @@ export default function ProductNav() {
 
   useEffect(() => {
     setSignInTarget(`${window.location.pathname}${window.location.search}${window.location.hash}`)
+    if (pathname === '/owner/' || pathname === '/owner') return
     let cancelled = false
     async function loadAccount() {
       try {
@@ -132,6 +133,8 @@ export default function ProductNav() {
     setAccountOpen(false)
     window.location.assign(signInHref(returnTo))
   }
+
+  if (pathname === '/owner/' || pathname === '/owner') return null
 
   return (
     <header className="product-nav" data-product-nav data-nav-mode={publicMode ? 'public' : 'app'}>
