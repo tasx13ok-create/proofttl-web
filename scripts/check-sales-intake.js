@@ -12,19 +12,21 @@ const nav = await readFile('components/ProductNav.tsx', 'utf8')
 
 for (const expected of [
   'Find the expensive wrong answer',
-  'Start the $1,500 Fact Audit',
-  'UP TO 25 OUTPUTS',
-  'HUMAN APPROVAL',
+  'Run 5 claims · $299',
+  'UP TO 5 CLAIMS',
+  '24-HOUR TURNAROUND',
+  'NO ACCOUNT REQUIRED',
+  'HUMAN-REVIEWED',
+  'Full $1,500 Fact Audit',
   '/audit/sample/',
-  'SCOPE CONFIRMED BEFORE PAYMENT',
-  '/audit/#audit-intake',
-  'No raw card number is stored by ProofTTL',
+  'https://buy.stripe.com/6oUcMY7DgbQD2es0C99EI01',
 ]) {
   if (!home.toLowerCase().includes(expected.toLowerCase())) throw new Error(`Homepage missing required conversion behavior: ${expected}`)
 }
 for (const obsolete of ['$129', '$500', 'Stress Test', 'Start small. Upgrade']) if (home.includes(obsolete)) throw new Error(`Homepage still exposes obsolete launch offer: ${obsolete}`)
-const homepageAuditCtas = home.match(/href="\/audit\/#audit-intake"/g) || []
-if (homepageAuditCtas.length !== 1) throw new Error(`Homepage must expose exactly one primary audit-start CTA, found ${homepageAuditCtas.length}`)
+const homepageRapidCtas = home.match(/href="https:\/\/buy\.stripe\.com\/6oUcMY7DgbQD2es0C99EI01"/g) || []
+if (homepageRapidCtas.length < 1) throw new Error('Homepage must expose at least one direct Rapid Claim Check checkout CTA')
+if (!home.includes('href="/audit/"')) throw new Error('Homepage must retain a direct path to the full Fact Audit')
 if (!nav.includes("publicMode && pathname !== '/'")) throw new Error('Public navigation must suppress its audit-start CTA on the homepage to avoid competing conversion actions')
 
 for (const expected of ["alternates: { canonical: '/' }", 'CommercialHome']) {
@@ -120,4 +122,4 @@ if (status.includes(".catch(() => {\n      if (!cancelled) setAuthReady(true)"))
 if (!nav.includes('Log out / Switch account')) throw new Error('Signed-in navigation must expose Log out / Switch account')
 if (!nav.includes('signInHref(returnTo)')) throw new Error('Account switching must preserve the current return location')
 
-console.log('SUCCESS: ProofTTL authenticated $1,500 Fact Audit funnel passed saved-draft, sign-in-gate, non-stranding submit, single-homepage-CTA, return-to-page, secure-status, buyer-focused homepage, canonical metadata, human-approval, and scope-before-payment checks.')
+console.log('SUCCESS: ProofTTL Rapid Claim Check front door and authenticated $1,500 Fact Audit funnel passed conversion, saved-draft, sign-in-gate, non-stranding submit, secure-status, buyer-focused homepage, canonical metadata, human-approval, and scope-before-payment checks.')

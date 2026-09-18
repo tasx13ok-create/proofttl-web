@@ -41,6 +41,16 @@ export default function AuditPage() {
         <p>Built for teams shipping AI answers where a confidently wrong output is expensive, visible, or hard to defend.</p>
       </div>
 
+      <section className="audit-sales-proof" aria-label="Rapid Claim Check">
+        <div className="audit-sample-card">
+          <p className="app-kicker">START SMALLER — NO ACCOUNT REQUIRED</p>
+          <h2 style={{ margin: '0 0 10px', fontSize: 'clamp(22px,3vw,30px)' }}>$299 Rapid Claim Check</h2>
+          <p className="app-copy">Need proof before a full engagement? Send up to five public, redacted, or de-identified factual claims. ProofTTL returns human-reviewed evidence for and against each claim within 24 hours.</p>
+          <a className="button button-primary" href="https://buy.stripe.com/6oUcMY7DgbQD2es0C99EI01">BUY RAPID CLAIM CHECK →</a>
+          <p className="app-note" style={{ marginTop: 10 }}>One-time purchase · no ProofTTL login · no subscription. The $1,500 Fact Audit below remains the deeper 25-claim engagement.</p>
+        </div>
+      </section>
+
       <AuditIntakeForm />
 
       <section className="audit-sales-proof">
