@@ -13,7 +13,7 @@ async function main() {
   const packageJson = JSON.parse(await readFile('package.json', 'utf8'))
   if (packageJson.version !== '1.0.1') throw new Error(`ProofTTL web release version must be 1.0.1, got ${packageJson.version}`)
 
-  const homepage = await expect('out/index.html', ['ProofTTL','Find the expensive wrong answer','Start the $1,500 Fact Audit','up to 25 outputs','human approval'], 'Homepage')
+  const homepage = await expect('out/index.html', ['ProofTTL','Find the expensive wrong answer','Rapid Claim Check','$299','24-hour turnaround','Full $1,500 Fact Audit','human-reviewed'], 'Homepage')
   for (const obsolete of ['$129','$500']) if (homepage.includes(obsolete)) throw new Error(`Homepage still exposes obsolete launch pricing: ${obsolete}`)
   if (homepage.includes('TESTNET PREVIEW')) throw new Error('Homepage leaked protocol preview messaging into the commercial funnel')
 
@@ -30,7 +30,7 @@ async function main() {
   const headers = await readFile('out/_headers', 'utf8')
   for (const expected of ['X-Content-Type-Options: nosniff','X-Frame-Options: SAMEORIGIN']) if (!headers.includes(expected)) throw new Error(`Static headers missing: ${expected}`)
 
-  console.log('\nSUCCESS: flagship $1,500 Fact Audit funnel static export passed.')
+  console.log('\nSUCCESS: Rapid Claim Check front door + $1,500 Fact Audit funnel static export passed.')
 }
 
 main().catch((error) => { console.error('\nSTATIC EXPORT CHECK FAILED:', error.message || error); process.exitCode = 1 })
