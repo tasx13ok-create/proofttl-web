@@ -5,7 +5,7 @@ const engineFiles=['ontology-engine-v2.js','ontology-engine-v3.js','ontology-eng
 const ctx={console,setTimeout,clearTimeout,Math,Date,JSON,Array,Object,Number,String,Boolean,Map,Set,Uint32Array};ctx.globalThis=ctx;ctx.self=ctx;vm.createContext(ctx)
 for(const name of engineFiles){const file=path.join(root,'public/reality-engine',name);vm.runInContext(fs.readFileSync(file,'utf8'),ctx,{filename:name,timeout:15000})}
 const E=ctx.OntologyEngineV21
-if(!E||E.VERSION!=='3.0.0-alpha')throw new Error('Reality Engine V21 failed to boot in cloud lab')
+if(!E||E.VERSION!=='3.0.1-alpha')throw new Error(`Reality Engine V21 failed to boot in cloud lab (expected 3.0.1-alpha, got ${E?.VERSION||'missing'})`)
 const outDir=path.resolve(process.env.REALITY_LAB_DIR||path.join(root,'.reality-lab'))
 const statePath=path.join(outDir,'state.json'),evidencePath=path.join(outDir,'latest-evidence.json')
 const cycles=Math.max(0,Math.min(8,Number(process.env.REALITY_LAB_CYCLES??4)||0))
