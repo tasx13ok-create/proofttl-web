@@ -22,6 +22,6 @@ assert.equal(destination,'https://accounts.google.com/o/oauth2/auth')
 window.self=window.top; destination=undefined
 await context.exports.signInWithProvider('google','https://untrusted.example/')
 assert.equal(options.disableRedirect,false)
-assert.equal(options.callbackURL,'https://proofttl.test/workspace/')
+assert.equal(options.callbackURL,'https://proofttl.test/audit/status/')
 assert.equal(destination,undefined)
 console.log('PASS: bounded session recovery, embedded OAuth browser navigation, normal redirects, and external return rejection.')
