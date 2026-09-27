@@ -1,5 +1,6 @@
 https://proofttl-web.vercel.app/
 https://proofttl-web.vercel.app/about/
+https://proofttl-web.vercel.app/ai-fact-checker/
 https://proofttl-web.vercel.app/audit/
 https://proofttl-web.vercel.app/audit/sample/
 https://proofttl-web.vercel.app/services/
@@ -28,4 +29,3 @@ https://proofttl-web.vercel.app/solutions/stale-data-detection/
 https://proofttl-web.vercel.app/solutions/evidence-verification-api/
 https://proofttl-web.vercel.app/solutions/x402-verification-api/
 https://proofttl-web.vercel.app/solutions/fact-leases/
-https://proofttl-web.vercel.app/verify-lease.html
