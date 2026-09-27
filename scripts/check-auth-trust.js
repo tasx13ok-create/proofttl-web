@@ -79,6 +79,7 @@ if (login.includes('type="password"')) throw new Error('Password field must not 
 if (auth.includes('baseURL: PROOFTTL_API_URL')) throw new Error('Browser auth regressed to cross-site Worker origin')
 if (auth.includes("fallback = '/workspace/'") || auth.includes("currentReturnTo('/workspace/')") || auth.includes("resolveAuthReturn('/workspace/')")) throw new Error('Legacy workspace auth fallback returned')
 if (!cinematicShell.includes("href === '/login/' ? signInHref(pathname) : href")) throw new Error('Public dropdown login must preserve the current page')
+if (!cinematicShell.includes('authClient.getSession()') || !cinematicShell.includes('authClient.signOut()') || !cinematicShell.includes('Log out')) throw new Error('Public dropdown must switch between login and logout from the live session')
 if (proxy.includes('x-proofttl-auth-path') || proxy.includes('auth_proxy_path_missing')) throw new Error('Auth proxy diagnostic output must not ship')
 if (/Domain=proofttl\.tasx13ok\.workers\.dev/i.test(proxy) && !proxy.includes('replace')) throw new Error('Auth proxy contains a hard-coded upstream cookie domain without normalization')
 
