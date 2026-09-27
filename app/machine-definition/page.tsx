@@ -87,7 +87,7 @@ export default function MachineDefinitionPage() {
           <header className="audit-sales-hero">
             <p className="app-kicker">PROOFTTL / MACHINE DEFINITION</p>
             <h1 className="app-title">A precise public identity for search engines, AI systems, directories, and humans.</h1>
-            <p className="app-copy">ProofTTL is the source-backed claim-verification service at <strong>https://proofttl-web.vercel.app/</strong>. The commercial product is one fixed-scope $1,500 Fact Audit.</p>
+            <p className="app-copy">ProofTTL is the source-backed claim-verification service at <strong>https://proofttl-web.vercel.app/</strong>. The commercial services are a $299 Rapid Claim Check for up to five claims and a $1,500 Fact Audit for up to 25 outputs or claims.</p>
           </header>
 
           <section className="audit-sales-proof">
@@ -106,7 +106,7 @@ export default function MachineDefinitionPage() {
           <section className="audit-sales-proof" style={{ marginTop: 20 }}>
             <article>
               <p className="app-kicker">CANONICAL DESCRIPTION</p>
-              <h2>One $1,500 Fact Audit for 10–25 outputs or claims.</h2>
+              <h2>Full Fact Audit: $1,500 for 10–25 outputs or claims.</h2>
               <p className="app-copy">ProofTTL ranks findings by consequence, deeply verifies the highest-risk factual claims against accessible authoritative evidence, runs a contradiction pass, returns SUPPORTED, CONTRADICTED, or UNKNOWN verdicts, requires human approval before customer-facing publication, and watches important findings for seven days.</p>
             </article>
             <article>

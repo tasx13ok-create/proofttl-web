@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     default: 'ProofTTL — Adversarial Fact Audits for High-Consequence AI',
     template: '%s | ProofTTL',
   },
-  description: 'ProofTTL runs $1,500 fixed-scope Fact Audits on up to 25 real AI outputs or factual claims, ranking consequence, checking authoritative evidence, preserving uncertainty, and requiring human approval before customer-facing findings.',
+  description: 'ProofTTL checks consequential claims against source evidence. Start with a $299 Rapid Claim Check for up to five claims or a $1,500 Fact Audit for up to 25 outputs, with human-reviewed findings.',
   keywords: [
     'ProofTTL', 'Proof TTL', 'Fact Audit', 'AI fact audit', 'AI claim verification',
     'AI output fact checking', 'AI hallucination checking', 'source-backed verification',
