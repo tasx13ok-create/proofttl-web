@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
+import { signInHref } from '../lib/proofttl-auth'
 
 const links = [
   ['The audit', '/audit/'], ['Sample report', '/audit/sample/'],
@@ -68,7 +69,10 @@ export default function CinematicPageShell({ children }: { children: ReactNode }
       <a className="cinematic-audit-link" href="/audit/#audit-intake">Fact Audit <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg></a>
       <button ref={toggle} type="button" className="cinematic-menu-toggle" aria-label={open ? 'Close navigation' : 'Open navigation'} aria-expanded={open} aria-controls="cinematic-page-menu" onClick={() => setOpen(!open)}><span /><span /><span /></button>
       <div id="cinematic-page-menu" className={`cinematic-page-menu${open ? ' is-open' : ''}`} inert={!open}>
-        {links.map(([label, href]) => <a key={href} href={href} aria-current={pathname === href ? 'page' : undefined}>{label}<span aria-hidden="true">→</span></a>)}
+        {links.map(([label, href]) => {
+          const target = href === '/login/' ? signInHref(pathname) : href
+          return <a key={href} href={target} aria-current={pathname === href ? 'page' : undefined}>{label}<span aria-hidden="true">→</span></a>
+        })}
       </div>
     </nav>
     <div className="cinematic-page-content">{children}</div>
