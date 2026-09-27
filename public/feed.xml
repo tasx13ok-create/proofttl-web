@@ -5,6 +5,7 @@
   <subtitle>Canonical public updates for ProofTTL source-backed claim verification, AI fact checking, Rapid Claim Checks, and Fact Audits.</subtitle>
   <link rel="self" href="https://proofttl-web.vercel.app/feed.xml" />
   <link rel="alternate" href="https://proofttl-web.vercel.app/" />
+  <link rel="hub" href="https://pubsubhubbub.appspot.com/" />
   <updated>2026-09-26T23:30:00Z</updated>
   <author><name>ProofTTL</name><uri>https://proofttl-web.vercel.app/</uri></author>
 
@@ -46,6 +47,14 @@
     <link href="https://proofttl-web.vercel.app/services/" />
     <updated>2026-09-26T23:30:00Z</updated>
     <summary>Source-backed verification for AI-generated claims, pre-publication fact checking, marketing claims, research, websites, startups, and selected public due-diligence claims.</summary>
+  </entry>
+
+  <entry>
+    <id>https://proofttl-web.vercel.app/services/ai-claim-verification/</id>
+    <title>AI Claim Verification Service — ProofTTL</title>
+    <link href="https://proofttl-web.vercel.app/services/ai-claim-verification/" />
+    <updated>2026-09-26T23:30:00Z</updated>
+    <summary>Verify consequential factual claims produced by AI systems against public evidence with human-reviewed SUPPORTED, CONTRADICTED, or UNKNOWN findings.</summary>
   </entry>
 
   <entry>
