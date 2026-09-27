@@ -21,11 +21,13 @@ ProofTTL checks specific factual claims — including claims produced by ChatGPT
 
 ## Human verification service
 
-The commercial service is one scope-first launch offer rather than instant checkout:
+The commercial service has two offers:
+
+- **$299 Rapid Claim Check** — up to five public, redacted, or de-identified claims, evidence supporting and challenging each claim, human-reviewed results, and a 24-hour turnaround. No ProofTTL account or subscription is required. Stripe checkout: https://buy.stripe.com/6oUcMY7DgbQD2es0C99EI01 . After payment, ProofTTL emails the buyer to collect the claims and source context. This is an email intake workflow; do not describe it as automated fulfillment.
 
 - **$1,500 Fact Audit** — submit 10–25 real AI outputs or consequential claims. ProofTTL ranks findings by consequence, deep-verifies the highest-risk findings against authoritative evidence, prepares proof/report deliverables, requires human approval before customer-facing publication, and monitors important findings for seven days followed by a final re-read.
-- Scope is confirmed before payment. No card is required to submit an intake; ProofTTL reviews the exact claim set before creating the Stripe payment request.
-- The fixed commercial price is **$1,500**. Retired pilot and upgrade offers are no longer part of the live product.
+- For the full Fact Audit, scope is confirmed before payment. No card is required to submit an intake; ProofTTL reviews the exact claim set before creating the Stripe payment request.
+- The full Fact Audit fixed price is **$1,500**. Retired pilot and upgrade offers are no longer part of the live product.
 
 Good use cases include AI-output fact checking, pre-publication review, marketing claim verification, startup/pitch claims, research claims, website claim audits, product and competitor claims, market statistics, and selected public due-diligence claims.
 

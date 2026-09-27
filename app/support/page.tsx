@@ -3,12 +3,13 @@ import ProductDetailShell from '../../components/ProductDetailShell'
 
 export const metadata: Metadata = {
   title: 'Support',
-  description: 'Get help with a ProofTTL Fact Audit, payment status, account access, or public website issue without exposing private customer information publicly.',
+  description: 'Get help with a ProofTTL Rapid Claim Check, Fact Audit, payment status, account access, or public website issue without exposing private customer information publicly.',
   alternates: { canonical: '/support/' },
   robots: { index: true, follow: true },
 }
 
 const routes = [
+  ['00', 'Rapid Claim Check · no account required', 'After your $299 purchase, look for the ProofTTL intake email at the address used for checkout, including your spam folder. Reply to that email with your claims or questions. Full Fact Audit status is a separate signed-in workflow.', '#rapid-help', 'Rapid Check next steps'],
   ['01', 'Existing Fact Audit', 'Check ownership, payment, fulfillment, and delivery state in the signed-in audit status flow.', '/audit/status/', 'Open private status'],
   ['02', 'Before you buy', 'Review the method and scope before using the audit control in the header.', '/how-proofttl-works/', 'Review the method'],
   ['03', 'Account or security', 'Use the private account path first. Do not place cookies, tokens, identifiers, or private customer material in public channels.', '/trust/', 'Review trust boundary'],
@@ -24,6 +25,8 @@ export default function SupportPage() {
       description={<>ProofTTL routes customer, payment, and account questions through private product flows. Public channels are reserved for reproducible website defects that can be described without exposing customer information.</>}
       actions={<a className="primary" href="/audit/status/">Check my audit <span>↗</span></a>}
     >
+      <section id="rapid-help" className="ptl-detail-section" aria-labelledby="rapid-help-title"><header><span>Rapid Claim Check · $299</span><h2 id="rapid-help-title">Your next step after checkout.</h2><p>ProofTTL emails you to collect up to five public, redacted, or de-identified claims. Use the email address you entered at Stripe checkout; a ProofTTL account is not required.</p></header><div className="ptl-three-up"><article><span>01 · Prepare</span><strong>Keep the exact wording</strong><p>List up to five factual claims, where you plan to use them, and any relevant public source links. Remove personal details and confidential material.</p></article><article><span>02 · Submit</span><strong>Reply to your intake email</strong><p>Check your inbox and spam folder for the ProofTTL intake message. Send your claims and context in that thread.</p></article><article><span>03 · Follow up</span><strong>Keep the same email thread</strong><p>Use the existing ProofTTL intake thread for questions about the check. A second purchase is not a support request. Never post your receipt or claims in public GitHub issues.</p></article></div></section>
+
       <section className="ptl-support-router" aria-label="Support routes">
         {routes.map(([number,title,copy,href,label]) => <article key={number}>
           <span>{number}</span>
@@ -36,7 +39,7 @@ export default function SupportPage() {
 
       <section className="ptl-support-warning"><div><span>Never post publicly</span><h2>Card details, session cookies, auth tokens, private claims, or customer documents.</h2></div><p>A public bug report should contain only the minimum reproduction needed to explain a public website defect. Remove identifiers, screenshots with customer data, payment references, and private source material before posting.</p></section>
 
-      <section className="ptl-detail-section"><header><span>Fastest path</span><h2>Start where the problem actually lives.</h2></header><div className="ptl-boundary-list"><article><strong>Payment or delivery question</strong><p>Open the private audit status page first.</p></article><article><strong>New Fact Audit</strong><p>Use the single audit control in the top-right header after reviewing scope.</p></article><article><strong>Security or account question</strong><p>Review the Trust Center and use the signed-in account flow.</p></article><article><strong>Public site defect</strong><p>Use GitHub only after stripping all private information.</p></article></div></section>
+      <section className="ptl-detail-section"><header><span>Fastest path</span><h2>Start where the problem actually lives.</h2></header><div className="ptl-boundary-list"><article><strong>Payment or delivery question</strong><p>For a Rapid Claim Check, reply in your ProofTTL intake email thread. For a full Fact Audit, open the private audit status page.</p></article><article><strong>New Fact Audit</strong><p>Use the single audit control in the top-right header after reviewing scope.</p></article><article><strong>Security or account question</strong><p>Review the Trust Center and use the signed-in account flow.</p></article><article><strong>Public site defect</strong><p>Use GitHub only after stripping all private information.</p></article></div></section>
 
       <section className="ptl-detail-cta"><div><span>Need customer help now?</span><h2>Open your private Fact Audit status.</h2><p>Keep the request, payment state, and delivery information tied to the signed-in account instead of moving it into a public support channel.</p></div><a href="/audit/status/">Check audit status <span>↗</span></a></section>
     </ProductDetailShell>

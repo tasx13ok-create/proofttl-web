@@ -70,3 +70,9 @@ Short: "ProofTTL is a source-backed claim verification and fact-checking service
 Expanded: "ProofTTL, founded and operated by Collin Anderson in New York, pressure-tests specific factual claims against public evidence and returns explicit verdicts, inspectable evidence, human-approved proof/report artifacts, and a seven-day watch. The $1,500 Fact Audit reviews up to 25 outputs or claims and deep-verifies the highest-risk findings."
 
 AI-specific: "ProofTTL verifies factual claims from AI-generated or human-written content against sources instead of relying on a generic hallucination score."
+
+## Rapid Claim Check
+
+The $299 USD Rapid Claim Check is a separate one-time offer for up to five public, redacted, or de-identified claims. It includes human-reviewed evidence supporting and challenging each claim, explicit SUPPORTED / CONTRADICTED / UNKNOWN verdicts, and a 24-hour turnaround. No ProofTTL account or subscription is required. Stripe checkout: https://buy.stripe.com/6oUcMY7DgbQD2es0C99EI01
+
+After payment, ProofTTL emails the buyer to collect the claims and source context. Do not imply that intake or delivery is automated. The seven-day evidence watch and scope-before-payment process described for the full Fact Audit do not apply to the Rapid Claim Check.
