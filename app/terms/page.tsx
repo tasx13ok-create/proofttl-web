@@ -3,7 +3,7 @@ import ProductDetailShell from '../../components/ProductDetailShell'
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
-  description: 'Terms governing use of ProofTTL and the $1,500 source-backed Fact Audit service.',
+  description: 'Terms governing use of ProofTTL and the $299 Rapid Claim Check and $1,500 source-backed Fact Audit service.',
   alternates: { canonical: '/terms/' },
   robots: { index: true, follow: true },
 }
@@ -11,24 +11,26 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return <ProductDetailShell
     active="none"
-    eyebrow="Terms · Effective August 31, 2026"
+    eyebrow="Terms · Effective September 26, 2026"
     title={<>Clear scope.<br/><em>Clear boundaries.</em></>}
-    description={<>These terms govern use of ProofTTL, including customer accounts, the Fact Audit service, technical product surfaces, and related verification work.</>}
+    description={<>These terms govern use of ProofTTL, including customer accounts, the Rapid Claim Check, the Fact Audit service, technical product surfaces, and related verification work.</>}
     actions={<><a href="/privacy/">Privacy</a><a href="/support/">Support</a></>}
   >
     <section className="ptl-three-up">
       <article><span>The service</span><strong>Scoped factual verification</strong><p>ProofTTL may return SUPPORTED, CONTRADICTED, or UNKNOWN verdicts, source evidence, reports, and signed proof records tied to the examined evidence and time context.</p></article>
-      <article><span>Paid work</span><strong>Scope before payment</strong><p>Submitting an intake does not itself create a paid engagement. ProofTTL confirms the requested scope before checkout exists.</p></article>
+      <article><span>Paid work</span><strong>Two payment flows</strong><p>The $299 Rapid Claim Check uses direct Stripe checkout followed by email intake. For the $1,500 Fact Audit, submitting an intake does not itself create a paid engagement; scope is confirmed before checkout.</p></article>
       <article><span>Professional boundary</span><strong>No outcome guarantee</strong><p>ProofTTL is not legal, medical, financial, regulatory, accounting, certification, or other professional advice.</p></article>
     </section>
 
-    <section className="ptl-detail-section"><header><span>Fact Audit scope</span><h2>One fixed launch offer.</h2><p>The standard Fact Audit is $1,500 USD for a confirmed fixed scope covering 10–25 real AI outputs or consequential factual claims.</p></header><div className="ptl-boundary-list"><article><strong>Consequence ranking</strong><p>Claims are ordered by damage-if-wrong so verification effort follows risk.</p></article><article><strong>Deep verification</strong><p>The highest-risk findings receive the deepest evidence review.</p></article><article><strong>Human approval</strong><p>Customer-facing findings require human approval before publication.</p></article><article><strong>Monitoring</strong><p>Important findings receive a seven-day watch and final reread.</p></article></div></section>
+    <section className="ptl-detail-section"><header><span>Fact Audit scope</span><h2>Full Fact Audit.</h2><p>The standard Fact Audit is $1,500 USD for a confirmed fixed scope covering 10–25 real AI outputs or consequential factual claims.</p></header><div className="ptl-boundary-list"><article><strong>Consequence ranking</strong><p>Claims are ordered by damage-if-wrong so verification effort follows risk.</p></article><article><strong>Deep verification</strong><p>The highest-risk findings receive the deepest evidence review.</p></article><article><strong>Human approval</strong><p>Customer-facing findings require human approval before publication.</p></article><article><strong>Monitoring</strong><p>Important findings receive a seven-day watch and final reread.</p></article></div></section>
+
+    <section className="ptl-detail-section"><header><span>Rapid Claim Check scope</span><h2>Up to five claims. $299 one-time.</h2><p>The Rapid Claim Check covers up to five public, redacted, or de-identified factual claims. It includes human-reviewed evidence supporting and challenging each claim, explicit verdicts, and suggested wording where warranted. No ProofTTL account or subscription is required. The seven-day watch is included only with the full Fact Audit.</p><p>After checkout, send your claims and relevant source context through the ProofTTL intake email thread or contact <a href="mailto:ProofTTL.Support@gmail.com">ProofTTL.Support@gmail.com</a> from the address used to pay. The advertised turnaround is 24 hours; verification requires the claim text and relevant context.</p></header></section>
 
     <section className="ptl-detail-section"><header><span>Your responsibilities</span><h2>Use the service without creating new risk.</h2></header><div className="ptl-boundary-list"><article><strong>Rights to submit</strong><p>Provide claim text, output, and context you have the right to submit.</p></article><article><strong>No abuse</strong><p>Do not use ProofTTL to violate law, privacy rights, intellectual-property rights, security controls, or third-party terms.</p></article><article><strong>No secrets</strong><p>Do not submit passwords, private keys, authentication secrets, malware, or raw full payment-card data.</p></article><article><strong>Context matters</strong><p>Review delivered verification results in context before relying on them for consequential decisions.</p></article></div></section>
 
-    <section className="ptl-detail-section"><header><span>Pricing + payment</span><h2>$1,500 after scope confirmation.</h2><p>A customer is charged only after scope is confirmed and checkout is created. Payment processing is handled by the provider shown at checkout; ProofTTL does not store raw card details.</p></header></section>
+    <section className="ptl-detail-section"><header><span>Pricing + payment</span><h2>Pay for the selected service.</h2><p>The Rapid Claim Check costs $299 through direct Stripe checkout. The full Fact Audit costs $1,500 after scope confirmation. Payment processing is handled by the provider shown at checkout; ProofTTL does not store raw card details.</p></header></section>
 
-    <section className="ptl-detail-section"><header><span>Cancellation, refunds, and scope changes</span><h2>The approved engagement controls.</h2><p>Any cancellation, refund, or scope-change terms communicated in the approved scope or payment flow apply to that engagement. If no special term is stated, contact ProofTTL support as soon as possible.</p></header></section>
+    <section className="ptl-detail-section"><header><span>Cancellation, refunds, and scope changes</span><h2>The approved engagement controls.</h2><p>Any cancellation, refund, or scope-change terms communicated in the approved scope or payment flow apply to that engagement. If no special term is stated, contact ProofTTL support at <a href="mailto:ProofTTL.Support@gmail.com">ProofTTL.Support@gmail.com</a> as soon as possible.</p></header></section>
 
     <section className="ptl-detail-section"><header><span>Public sources + third parties</span><h2>Evidence can change outside ProofTTL.</h2><p>Verification quality depends on the accessibility, accuracy, completeness, and freshness of evidence available for the scoped claim. Third-party sites, APIs, identity providers, payment providers, and source publishers remain outside ProofTTL&apos;s control.</p></header><div className="ptl-three-up"><article><span>Source changes</span><strong>Pages can move</strong><p>A source can change, disappear, correct itself, or be superseded after a finding is issued.</p></article><article><span>Proof records</span><strong>Signing is not truth</strong><p>Cryptographic signing can establish that ProofTTL issued a particular record without making the underlying proposition permanently true.</p></article><article><span>Availability</span><strong>Active development</strong><p>Features, limits, providers, and technical surfaces may change as ProofTTL evolves.</p></article></div></section>
 
