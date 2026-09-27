@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import Script from 'next/script'
 import ProofTTLAds from '../components/ProofTTLAds'
 import AppOnlyChatBar from '../components/AppOnlyChatBar'
 import AccountPreferenceBridge from '../components/AccountPreferenceBridge'
@@ -157,6 +158,20 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <link rel="help" href="/faq/" />
       </head>
       <body>
+        <Script id="metricool-tracker" strategy="afterInteractive">{`
+          function loadScript(a){
+            var b=document.getElementsByTagName("head")[0],
+                c=document.createElement("script");
+            c.type="text/javascript";
+            c.src="https://tracker.metricool.com/resources/be.js";
+            c.onreadystatechange=a;
+            c.onload=a;
+            b.appendChild(c);
+          }
+          loadScript(function(){
+            beTracker.t({hash:"80167ea667199b7837c7778a06883922"});
+          });
+        `}</Script>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <SmoothPageMotion />
         <AccountPreferenceBridge />
