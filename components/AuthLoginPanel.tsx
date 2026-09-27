@@ -24,10 +24,10 @@ export default function AuthLoginPanel() {
   const [loadState, setLoadState] = useState<LoadState>('loading')
   const [busy, setBusy] = useState<string | null>(null)
   const [message, setMessage] = useState('')
-  const [returnTo, setReturnTo] = useState('/workspace/')
+  const [returnTo, setReturnTo] = useState('/audit/status/')
 
   useEffect(() => {
-    const target = resolveAuthReturn('/workspace/')
+    const target = resolveAuthReturn('/audit/status/')
     setReturnTo(target)
     let cancelled = false
 
