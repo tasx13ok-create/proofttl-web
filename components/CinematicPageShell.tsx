@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
-import { signInHref } from '../lib/proofttl-auth'
+import { authClient, signInHref } from '../lib/proofttl-auth'
 
 const links = [
   ['The audit', '/audit/'], ['Sample report', '/audit/sample/'],
@@ -17,9 +17,41 @@ export default function CinematicPageShell({ children }: { children: ReactNode }
   const home = pathname === '/' || pathname === '/owner/' || pathname === '/owner'
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [loggedIn, setLoggedIn] = useState(false)
   const scene = useRef<HTMLIFrameElement>(null)
   const toggle = useRef<HTMLButtonElement>(null)
   const nav = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    if (home) return
+    let cancelled = false
+
+    const syncSession = async () => {
+      try {
+        const result = await authClient.getSession()
+        if (!cancelled) setLoggedIn(Boolean(result?.data?.user))
+      } catch {
+        if (!cancelled) setLoggedIn(false)
+      }
+    }
+
+    void syncSession()
+    window.addEventListener('focus', syncSession)
+    return () => {
+      cancelled = true
+      window.removeEventListener('focus', syncSession)
+    }
+  }, [home])
+
+  async function logOut() {
+    try {
+      const result = await authClient.signOut()
+      if (result?.error) return
+      setLoggedIn(false)
+      setOpen(false)
+      window.location.replace(pathname)
+    } catch {}
+  }
 
   useEffect(() => {
     setOpen(false)
@@ -70,6 +102,9 @@ export default function CinematicPageShell({ children }: { children: ReactNode }
       <button ref={toggle} type="button" className="cinematic-menu-toggle" aria-label={open ? 'Close navigation' : 'Open navigation'} aria-expanded={open} aria-controls="cinematic-page-menu" onClick={() => setOpen(!open)}><span /><span /><span /></button>
       <div id="cinematic-page-menu" className={`cinematic-page-menu${open ? ' is-open' : ''}`} inert={!open}>
         {links.map(([label, href]) => {
+          if (href === '/login/' && loggedIn) {
+            return <button key={href} type="button" className="cinematic-page-menu-action" onClick={() => void logOut()}>Log out<span aria-hidden="true">→</span></button>
+          }
           const target = href === '/login/' ? signInHref(pathname) : href
           return <a key={href} href={target} aria-current={pathname === href ? 'page' : undefined}>{label}<span aria-hidden="true">→</span></a>
         })}
