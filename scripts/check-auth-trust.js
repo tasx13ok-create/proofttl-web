@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises'
 const login = await readFile('components/AuthLoginPanel.tsx', 'utf8')
 const trust = await readFile('components/TrustCenter.tsx', 'utf8')
 const auth = await readFile('lib/proofttl-auth.ts', 'utf8')
+const cinematicShell = await readFile('components/CinematicPageShell.tsx', 'utf8')
 const vercel = await readFile('vercel.json', 'utf8')
 const proxy = await readFile('api/auth-proxy.js', 'utf8')
 
@@ -76,6 +77,8 @@ for (const expected of [
 if (vercel.includes('https://proofttl.tasx13ok.workers.dev/api/auth/:path*')) throw new Error('Legacy external auth rewrite must not shadow the first-party auth function')
 if (login.includes('type="password"')) throw new Error('Password field must not appear in ProofTTL login')
 if (auth.includes('baseURL: PROOFTTL_API_URL')) throw new Error('Browser auth regressed to cross-site Worker origin')
+if (auth.includes("fallback = '/workspace/'") || auth.includes("currentReturnTo('/workspace/')") || auth.includes("resolveAuthReturn('/workspace/')")) throw new Error('Legacy workspace auth fallback returned')
+if (!cinematicShell.includes("href === '/login/' ? signInHref(pathname) : href")) throw new Error('Public dropdown login must preserve the current page')
 if (proxy.includes('x-proofttl-auth-path') || proxy.includes('auth_proxy_path_missing')) throw new Error('Auth proxy diagnostic output must not ship')
 if (/Domain=proofttl\.tasx13ok\.workers\.dev/i.test(proxy) && !proxy.includes('replace')) throw new Error('Auth proxy contains a hard-coded upstream cookie domain without normalization')
 
