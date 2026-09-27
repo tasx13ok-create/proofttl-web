@@ -131,7 +131,7 @@ Payment status must come from Stripe, not a pasted receipt or URL parameter. Nev
 Record per channel: qualified visits, checkout starts if available, purchases verified in Stripe, intake completed, delivery completed, fulfillment hours, actual tool cost, and refunds. Use actual counts; unknown is not zero.
 
 ## Outstanding release work
-- Confirm an owned support mailbox for buyers who never receive intake.
+- Support mailbox confirmed by the owner: ProofTTL.Support@gmail.com. Website contact links added; sending and receiving mail have not been tested.
 - Verify the actual post-payment email path and delivery using an authorized test workflow.
 - Clarify what starts the 24-hour turnaround consistently across checkout and site.
 - Review the terms page's old single-offer language.
