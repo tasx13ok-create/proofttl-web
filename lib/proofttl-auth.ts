@@ -54,7 +54,7 @@ export const authClient = createAuthClient({
     twoFactorClient({
       onTwoFactorRedirect() {
         if (typeof window !== 'undefined') {
-          const returnTo = currentReturnTo('/workspace/')
+          const returnTo = currentReturnTo('/audit/status/')
           rememberAuthReturn(returnTo)
           window.location.assign(`/two-factor/?returnTo=${encodeURIComponent(returnTo)}`)
         }
@@ -86,7 +86,7 @@ export async function fetchAuthDiscovery(signal?: AbortSignal): Promise<ProofTTL
 
 export type SocialProvider = 'github' | 'google' | 'discord'
 
-function safeLocalReturn(value: string | null | undefined, fallback = '/workspace/') {
+function safeLocalReturn(value: string | null | undefined, fallback = '/audit/status/') {
   const raw = String(value || '').trim()
   if (!raw) return fallback
   try {
@@ -101,20 +101,20 @@ function safeLocalReturn(value: string | null | undefined, fallback = '/workspac
   }
 }
 
-export function currentReturnTo(fallback = '/workspace/') {
+export function currentReturnTo(fallback = '/audit/status/') {
   if (typeof window === 'undefined') return fallback
   return safeLocalReturn(`${window.location.pathname}${window.location.search}${window.location.hash}`, fallback)
 }
 
 export function rememberAuthReturn(returnTo?: string) {
-  const target = safeLocalReturn(returnTo || currentReturnTo('/workspace/'), '/workspace/')
+  const target = safeLocalReturn(returnTo || currentReturnTo('/audit/status/'), '/audit/status/')
   if (typeof window !== 'undefined') {
     try { window.localStorage.setItem(AUTH_RETURN_KEY, target) } catch {}
   }
   return target
 }
 
-export function resolveAuthReturn(fallback = '/workspace/') {
+export function resolveAuthReturn(fallback = '/audit/status/') {
   if (typeof window === 'undefined') return fallback
   let candidate = ''
   try {
@@ -130,12 +130,12 @@ export function clearAuthReturn() {
 }
 
 export function signInHref(returnTo?: string) {
-  const target = safeLocalReturn(returnTo || currentReturnTo('/workspace/'), '/workspace/')
+  const target = safeLocalReturn(returnTo || currentReturnTo('/audit/status/'), '/audit/status/')
   return `/login/?returnTo=${encodeURIComponent(target)}`
 }
 
 export async function signInWithProvider(provider: SocialProvider, returnTo?: string) {
-  const target = rememberAuthReturn(returnTo || resolveAuthReturn('/workspace/'))
+  const target = rememberAuthReturn(returnTo || resolveAuthReturn('/audit/status/'))
   const callbackURL = typeof window !== 'undefined'
     ? `${window.location.origin}${target}`
     : `${PROOFTTL_WEB_ORIGIN}${target}`
