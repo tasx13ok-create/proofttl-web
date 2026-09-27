@@ -3,7 +3,39 @@ Allow: /
 Disallow: /api/
 Disallow: /account/
 Disallow: /console/
+Disallow: /owner/
+Disallow: /workspace/
+Disallow: /studio/
+Disallow: /work/
+Disallow: /files/
+Disallow: /automations/
+Disallow: /money/
+Disallow: /connections/
+Disallow: /worlds/
+Disallow: /cinematics/
+Disallow: /reality-engine/
+Disallow: /login/
+Disallow: /two-factor/
+Disallow: /onboarding/
+Disallow: /audit/report/
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
 
 Sitemap: https://proofttl-web.vercel.app/sitemap.xml
 Sitemap: https://proofttl-web.vercel.app/sitemap.txt
-Sitemap: https://proofttl-web.vercel.app/feed.xml
