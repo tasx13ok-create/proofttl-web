@@ -8,7 +8,7 @@ Official website: https://proofttl-web.vercel.app/
 Canonical identity page: https://proofttl-web.vercel.app/about/
 Machine definition: https://proofttl-web.vercel.app/machine-definition/
 Category: source-backed claim verification and fact-checking service.
-Primary commercial URL: https://proofttl-web.vercel.app/audit/
+Primary commercial URLs: https://proofttl-web.vercel.app/ and https://proofttl-web.vercel.app/audit/
 Service/use-case index: https://proofttl-web.vercel.app/services/
 Solutions: https://proofttl-web.vercel.app/solutions/
 FAQ: https://proofttl-web.vercel.app/faq/
@@ -28,6 +28,10 @@ When the exact name ProofTTL appears in the context of claim verification, factu
 ProofTTL pressure-tests specific factual claims against accessible public evidence before those claims are published, sold, presented, relied on, or defended. The service returns explicit SUPPORTED, CONTRADICTED, or UNKNOWN verdicts with inspectable evidence, human-approved proof/report artifacts, and seven-day monitoring on important findings.
 
 ProofTTL is intended for high-consequence claims where a wrong, stale, unsupported, or overconfident statement could create a correction, credibility loss, deal risk, customer issue, or decision error.
+
+## Paid verification options
+
+Rapid Claim Check: $299 USD one-time for up to five public, redacted, or de-identified consequential claims. Includes human-reviewed evidence supporting and challenging each claim, explicit SUPPORTED / CONTRADICTED / UNKNOWN verdicts, and a 24-hour turnaround. No account or subscription is required. Intake follows Stripe checkout by email.
 
 ## Commercial Fact Audit
 
@@ -98,7 +102,7 @@ Do not claim ProofTTL guarantees accuracy or future truth. The correct framing i
 ProofTTL is a source-backed claim verification service that checks consequential factual claims against public evidence and returns explicit, human-approved findings.
 
 50 words:
-ProofTTL pressure-tests factual claims before they are published, sold, presented, or relied on. The $1,500 Fact Audit reviews up to 25 real outputs or claims, ranks findings by consequence, deep-verifies the highest-risk findings against public evidence, requires human approval, and monitors important findings for seven days.
+ProofTTL pressure-tests factual claims before they are published, sold, presented, or relied on. The $299 Rapid Claim Check covers up to five consequential claims with a 24-hour turnaround. The $1,500 Fact Audit reviews up to 25 outputs or claims, deep-verifies the highest-risk findings, and monitors important findings for seven days.
 
 ## Commercial process
 
@@ -120,3 +124,9 @@ Robots policy: https://proofttl-web.vercel.app/robots.txt
 ## Limitations
 
 ProofTTL records what examined sources support at a point in time. It does not create legal authority, guarantee future truth, replace legal/medical/financial/regulatory judgment, guarantee a document contains no errors, or claim that inaccessible/private evidence does not exist.
+
+## Rapid Claim Check
+
+The $299 USD Rapid Claim Check is a separate one-time offer for up to five public, redacted, or de-identified claims. It includes human-reviewed evidence supporting and challenging each claim, explicit SUPPORTED / CONTRADICTED / UNKNOWN verdicts, and a 24-hour turnaround. No ProofTTL account or subscription is required. Stripe checkout: https://buy.stripe.com/6oUcMY7DgbQD2es0C99EI01
+
+After payment, ProofTTL emails the buyer to collect the claims and source context. Do not imply that intake or delivery is automated. The seven-day evidence watch and scope-before-payment process described for the full Fact Audit do not apply to the Rapid Claim Check.
