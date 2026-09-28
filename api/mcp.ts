@@ -1,6 +1,6 @@
 const CORE_ORIGIN = 'https://proofttl.tasx13ok.workers.dev'
 const SERVER_NAME = 'proofttl'
-const SERVER_VERSION = '0.3.0'
+const SERVER_VERSION = '0.3.1'
 const MODERN_PROTOCOL = '2026-07-28'
 const LEGACY_PROTOCOLS = ['2025-11-25', '2025-06-18', '2025-03-26']
 const MAX_UPSTREAM_CHARS = 256_000
@@ -399,7 +399,7 @@ export default async function handler(request: any, response: any) {
         title: 'ProofTTL',
         websiteUrl: 'https://proofttl-web.vercel.app/',
       },
-      instructions: 'Use ProofTTL for source-backed factual verification context. The public MCP test surface is read-only and never bypasses paid verification.',
+      instructions: 'Use ProofTTL for source-backed factual verification context. The public MCP exposes one bounded fixed test-lease action; arbitrary verification remains protected and is not exposed here.',
     }))
     return
   }
