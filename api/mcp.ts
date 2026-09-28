@@ -292,7 +292,7 @@ export default async function handler(request: any, response: any) {
     sendJson(response, 405, {
       error: 'method_not_allowed',
       message: 'ProofTTL MCP uses Streamable HTTP over POST at this URL.',
-      endpoint: 'https://proofttl-web.vercel.app/api/mcp',
+      endpoint: 'https://proofttl-web.vercel.app/api/mcp/',
     })
     return
   }
