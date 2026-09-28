@@ -11,7 +11,9 @@ This endpoint exposes a deliberately constrained subset of ProofTTL over Model C
 - `proofttl_status` — reads the live ProofTTL core `/health` response.
 - `proofttl_capabilities` — reads the live ProofTTL capability registry.
 - `proofttl_get_fact_lease` — reads an existing public Fact Lease by ID.
-- `proofttl_service_info` — returns canonical ProofTTL service identity, commercial entry points, and product boundaries.\n- `proofttl_create_test_fact_lease` — creates or reuses a real five-minute Fact Lease for the fixed `Example Domain` / `https://example.com` fixture.
+- `proofttl_service_info` — returns canonical ProofTTL service identity, commercial entry points, and product boundaries.
+- `proofttl_create_test_fact_lease` — creates or reuses a real five-minute Fact Lease for the fixed `Example Domain` / `https://example.com` fixture.
+- `proofttl_fact_lease_roundtrip_test` — creates/reuses the bounded test lease, immediately retrieves that exact lease, verifies the lease IDs match, and returns both complete payloads plus diagnostic checks.
 
 The public MCP does **not** proxy arbitrary `POST /verify`. Technical verification remains protected by the existing x402 gate. The only mutation is the bounded fixed test fixture, which reuses an active lease during its five-minute TTL. It does not create audit intakes, access private reports, charge cards, or mutate accounts.
 
@@ -25,6 +27,14 @@ The endpoint supports:
 - Streamable HTTP over `POST /api/mcp/`.
 
 The implementation is dependency-free so it can ship with the existing locked frontend dependency graph.
+
+## Toolset release contract
+
+The MCP server has a separate `SERVER_VERSION` and `TOOLSET_VERSION`. Any added, removed, renamed, or materially changed action must bump the MCP server/toolset version, keep existing actions backward-compatible where possible, and pass both the build-time contract check and the production live smoke test.
+
+Modern discovery and `tools/list` advertise a zero-second tool-list TTL plus explicit toolset metadata. Responses also expose `X-ProofTTL-MCP-Version` and `X-ProofTTL-Toolset-Version` diagnostic headers.
+
+Client-side action snapshots are outside the server's control. If a client freezes approved tool definitions, operators must refresh/re-scan the app's actions after a toolset change. The production smoke test verifies the server itself independently so a stale client snapshot cannot be mistaken for a failed deployment.
 
 ## Security posture
 
