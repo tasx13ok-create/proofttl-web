@@ -38,6 +38,15 @@ jobs:
           tools="$(request '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}')"
           echo "$tools" | jq -e '[.result.tools[].name] | index("proofttl_status") != null' >/dev/null
           echo "$tools" | jq -e '[.result.tools[].name] | index("proofttl_get_fact_lease") != null' >/dev/null
+          echo "$tools" | jq -e '[.result.tools[].name] | index("proofttl_create_test_fact_lease") != null' >/dev/null
+
+          test_lease="$(request '{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"proofttl_create_test_fact_lease","arguments":{}}}')"
+          echo "$test_lease" | jq -e '.result.isError == false' >/dev/null
+          lease_id="$(echo "$test_lease" | jq -r '.result.structuredContent.lease_id // empty')"
+          test -n "$lease_id"
+          get_payload="$(jq -nc --arg lease_id "$lease_id" '{jsonrpc:"2.0",id:6,method:"tools/call",params:{name:"proofttl_get_fact_lease",arguments:{lease_id:$lease_id}}}')"
+          fetched_lease="$(request "$get_payload")"
+          echo "$fetched_lease" | jq -e --arg lease_id "$lease_id" '.result.isError == false and .result.structuredContent.lease_id == $lease_id' >/dev/null
 
           status="$(request '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"proofttl_status","arguments":{}}}')"
           echo "$status" | jq -e '.result.isError == false' >/dev/null
