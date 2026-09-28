@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Wait for branch preview and test MCP
+      - name: Test public production MCP
         shell: bash
         run: |
           set -euo pipefail
-          URL="https://proofttl-web.vercel.app/api/mcp"
+          URL="https://proofttl-web.vercel.app/api/mcp/"
 
           request() {
             curl --fail-with-body --silent --show-error               -X POST "$URL"               -H 'content-type: application/json'               -H 'accept: application/json'               --data "$1"
