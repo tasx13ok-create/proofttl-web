@@ -1,6 +1,7 @@
 const CORE_ORIGIN = 'https://proofttl.tasx13ok.workers.dev'
 const SERVER_NAME = 'proofttl'
-const SERVER_VERSION = '0.3.1'
+const SERVER_VERSION = '0.4.0'
+const TOOLSET_VERSION = '4'
 const MODERN_PROTOCOL = '2026-07-28'
 const LEGACY_PROTOCOLS = ['2025-11-25', '2025-06-18', '2025-03-26']
 const MAX_UPSTREAM_CHARS = 256_000
@@ -51,6 +52,13 @@ const tools = [
     name: 'proofttl_create_test_fact_lease',
     title: 'Create ProofTTL test Fact Lease',
     description: 'Create or reuse a real ProofTTL Fact Lease for the fixed Example Domain test fixture. This is only for end-to-end MCP testing and does not expose arbitrary unpaid verification.',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
+  },
+  {
+    name: 'proofttl_fact_lease_roundtrip_test',
+    title: 'Run ProofTTL Fact Lease round-trip test',
+    description: 'Run the bounded Example Domain Fact Lease integration test end to end: create or reuse the test lease, retrieve that exact lease, verify the IDs match, and return both full payloads plus diagnostic checks.',
     inputSchema: { type: 'object', properties: {}, additionalProperties: false },
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
   },
@@ -132,6 +140,8 @@ function serverMeta(): JsonObject {
       title: 'ProofTTL',
       websiteUrl: 'https://proofttl-web.vercel.app/',
       description: 'Source-backed claim verification and expiring Fact Leases.',
+      toolsetVersion: TOOLSET_VERSION,
+      toolNames: tools.map((tool) => tool.name),
     },
   }
 }
@@ -249,6 +259,12 @@ function serviceInfo() {
       services: 'https://proofttl-web.vercel.app/services/',
       sample_report: 'https://proofttl-web.vercel.app/audit/sample/',
     },
+    mcp: {
+      server_version: SERVER_VERSION,
+      toolset_version: TOOLSET_VERSION,
+      tools: tools.map((tool) => tool.name),
+      canonical_endpoint: 'https://proofttl-web.vercel.app/api/mcp/',
+    },
     boundaries: [
       'This public MCP test surface is read-only except for one bounded fixed test-lease action.',
       'The fixed test action can only verify the Example Domain fixture and does not expose arbitrary unpaid POST /verify.',
@@ -265,6 +281,61 @@ async function callTool(name: string, args: unknown, modern: boolean): Promise<J
     const upstream = await postCore('/mcp/test-lease')
     if (!upstream.ok) return toolFailure('UPSTREAM_UNAVAILABLE', 'ProofTTL could not create the bounded test Fact Lease.', modern, { status: upstream.status, upstream: upstream.data })
     return toolSuccess(upstream.data, modern)
+  }
+
+  if (name === 'proofttl_fact_lease_roundtrip_test') {
+    const created = await postCore('/mcp/test-lease')
+    if (!created.ok) {
+      return toolFailure('ROUNDTRIP_CREATE_FAILED', 'ProofTTL could not create the bounded test Fact Lease.', modern, {
+        status: created.status,
+        upstream: created.data,
+      })
+    }
+
+    const createdLease = created.data && typeof created.data === 'object'
+      ? created.data as Record<string, unknown>
+      : null
+    const leaseId = createdLease?.lease_id
+    if (!validLeaseId(leaseId)) {
+      return toolFailure('ROUNDTRIP_INVALID_CREATE_RESPONSE', 'The test-lease endpoint returned no valid lease_id.', modern, {
+        upstream: created.data,
+      })
+    }
+
+    const retrieved = await fetchCore(`/lease/${encodeURIComponent(leaseId)}`)
+    if (!retrieved.ok) {
+      return toolFailure('ROUNDTRIP_RETRIEVE_FAILED', 'The test Fact Lease was created but could not be retrieved.', modern, {
+        lease_id: leaseId,
+        status: retrieved.status,
+        upstream: retrieved.data,
+      })
+    }
+
+    const retrievedLease = retrieved.data && typeof retrieved.data === 'object'
+      ? retrieved.data as Record<string, unknown>
+      : null
+    const idsMatch = retrievedLease?.lease_id === leaseId
+    if (!idsMatch) {
+      return toolFailure('ROUNDTRIP_ID_MISMATCH', 'The retrieved Fact Lease did not match the lease that was created.', modern, {
+        expected_lease_id: leaseId,
+        retrieved_lease_id: retrievedLease?.lease_id ?? null,
+      })
+    }
+
+    return toolSuccess({
+      ok: true,
+      test: 'fact_lease_roundtrip',
+      server_version: SERVER_VERSION,
+      toolset_version: TOOLSET_VERSION,
+      lease_id: leaseId,
+      checks: {
+        created: true,
+        retrieved: true,
+        lease_ids_match: true,
+      },
+      created: created.data,
+      retrieved: retrieved.data,
+    }, modern)
   }
 
   if (name === 'proofttl_status') {
@@ -308,6 +379,9 @@ function validateModernHeaders(request: any, body: any): string | null {
 export default async function handler(request: any, response: any) {
   response.setHeader('access-control-allow-methods', 'POST, OPTIONS')
   response.setHeader('access-control-allow-headers', 'content-type, accept, authorization, mcp-protocol-version, mcp-method, mcp-name')
+  response.setHeader('access-control-expose-headers', 'x-proofttl-mcp-version, x-proofttl-toolset-version')
+  response.setHeader('x-proofttl-mcp-version', SERVER_VERSION)
+  response.setHeader('x-proofttl-toolset-version', TOOLSET_VERSION)
   response.setHeader('vary', 'Origin')
 
   if (request.method === 'OPTIONS') {
@@ -380,8 +454,10 @@ export default async function handler(request: any, response: any) {
     sendJson(response, 200, rpcResult(id, complete({
       supportedVersions: [MODERN_PROTOCOL],
       capabilities: { tools: {} },
-      instructions: 'Use ProofTTL for source-backed factual verification context. The MCP exposes one bounded fixed test-lease action for end-to-end testing; arbitrary verification remains x402-protected.',
-      ttlMs: 60_000,
+      instructions: 'Use ProofTTL for source-backed factual verification context. The MCP exposes bounded Fact Lease integration-test actions; arbitrary verification remains x402-protected.',
+      toolsetVersion: TOOLSET_VERSION,
+      toolNames: tools.map((tool) => tool.name),
+      ttlMs: 0,
       cacheScope: 'public',
     }, true)))
     return
@@ -412,7 +488,7 @@ export default async function handler(request: any, response: any) {
   if (body.method === 'tools/list') {
     sendJson(response, 200, rpcResult(id, complete({
       tools: [...tools],
-      ...(modern ? { ttlMs: 60_000, cacheScope: 'public' } : {}),
+      ...(modern ? { toolsetVersion: TOOLSET_VERSION, ttlMs: 0, cacheScope: 'public' } : {}),
     }, modern)))
     return
   }
