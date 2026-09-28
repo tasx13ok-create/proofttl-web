@@ -25,7 +25,7 @@
   "scripts": {
     "dev": "vite",
     "build": "next build",
-    "postbuild": "node scripts/check-buyer-recovery.mjs && node scripts/check-static-export.js && node scripts/check-discovery-identity.js && node scripts/check-assistant-session.js && node scripts/check-sales-intake.js && node scripts/check-auth-trust.js && node scripts/check-product-1000.js && node scripts/check-public-sales-shell.js && node scripts/check-mobile-sales-layout.js && node scripts/check-reality-engine.cjs",
+    "postbuild": "node scripts/check-buyer-recovery.mjs && node scripts/check-static-export.js && node scripts/check-discovery-identity.js && node scripts/check-assistant-session.js && node scripts/check-sales-intake.js && node scripts/check-auth-trust.js && node scripts/check-product-1000.js && node scripts/check-public-sales-shell.js && node scripts/check-mobile-sales-layout.js && node scripts/check-reality-engine.cjs && npm run check:mcp",
     "start": "npx serve out",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run build",
@@ -34,7 +34,8 @@
     "check:discovery": "node scripts/check-discovery-identity.js",
     "check:reality": "node scripts/check-reality-engine.cjs",
     "discovery:indexnow": "node scripts/indexnow-submit.js",
-    "discovery:websub": "node scripts/websub-publish.js"
+    "discovery:websub": "node scripts/websub-publish.js",
+    "check:mcp": "node scripts/check-mcp-contract.mjs"
   },
   "dependencies": {
     "@better-auth/core": "1.6.25",
