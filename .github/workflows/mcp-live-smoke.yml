@@ -27,6 +27,7 @@ jobs:
           for i in {1..24}; do
             if out="$(request '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"github-smoke","version":"1.0"}}}' 2>/tmp/mcp-curl.err)"; then
               echo "$out" | jq -e '.result.serverInfo.name == "proofttl"' >/dev/null
+              echo "$out" | jq -e '.result.serverInfo.version == "0.4.0"' >/dev/null
               ready=1
               break
             fi
@@ -39,6 +40,7 @@ jobs:
           echo "$tools" | jq -e '[.result.tools[].name] | index("proofttl_status") != null' >/dev/null
           echo "$tools" | jq -e '[.result.tools[].name] | index("proofttl_get_fact_lease") != null' >/dev/null
           echo "$tools" | jq -e '[.result.tools[].name] | index("proofttl_create_test_fact_lease") != null' >/dev/null
+          echo "$tools" | jq -e '[.result.tools[].name] | index("proofttl_fact_lease_roundtrip_test") != null' >/dev/null
 
           test_lease="$(request '{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"proofttl_create_test_fact_lease","arguments":{}}}')"
           echo "$test_lease" | jq -e '.result.isError == false' >/dev/null
@@ -48,6 +50,13 @@ jobs:
           fetched_lease="$(request "$get_payload")"
           echo "$fetched_lease" | jq -e --arg lease_id "$lease_id" '.result.isError == false and .result.structuredContent.lease_id == $lease_id' >/dev/null
 
+          roundtrip="$(request '{"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"proofttl_fact_lease_roundtrip_test","arguments":{}}}')"
+          echo "$roundtrip" | jq -e '.result.isError == false' >/dev/null
+          echo "$roundtrip" | jq -e '.result.structuredContent.ok == true' >/dev/null
+          echo "$roundtrip" | jq -e '.result.structuredContent.checks.created == true and .result.structuredContent.checks.retrieved == true and .result.structuredContent.checks.lease_ids_match == true' >/dev/null
+          echo "$roundtrip" | jq -e '.result.structuredContent.created.lease_id == .result.structuredContent.retrieved.lease_id' >/dev/null
+          echo "$roundtrip" | jq -e '.result.structuredContent.server_version == "0.4.0" and .result.structuredContent.toolset_version == "4"' >/dev/null
+
           status="$(request '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"proofttl_status","arguments":{}}}')"
           echo "$status" | jq -e '.result.isError == false' >/dev/null
           echo "$status" | jq -e '.result.structuredContent.service == "proofttl"' >/dev/null
@@ -55,4 +64,7 @@ jobs:
 
           modern="$(curl --fail-with-body --silent --show-error             -X POST "$URL"             -H 'content-type: application/json'             -H 'accept: application/json'             -H 'MCP-Protocol-Version: 2026-07-28'             -H 'Mcp-Method: server/discover'             --data '{"jsonrpc":"2.0","id":4,"method":"server/discover","params":{"_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientInfo":{"name":"github-smoke","version":"1.0"},"io.modelcontextprotocol/clientCapabilities":{}}}}')"
           echo "$modern" | jq -e '.result.supportedVersions | index("2026-07-28") != null' >/dev/null
+          echo "$modern" | jq -e '.result.toolsetVersion == "4"' >/dev/null
+          echo "$modern" | jq -e '.result.toolNames | index("proofttl_fact_lease_roundtrip_test") != null' >/dev/null
+          echo "$modern" | jq -e '.result.ttlMs == 0' >/dev/null
           echo "ProofTTL MCP live preview smoke passed."
