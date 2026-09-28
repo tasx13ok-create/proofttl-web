@@ -16,7 +16,7 @@ jobs:
         shell: bash
         run: |
           set -u
-          URL="https://proofttl-web.vercel.app/api/mcp"
+          URL="https://proofttl-web.vercel.app/api/mcp/"
           echo '=== initialize ==='
           curl -i --silent --show-error -X POST "$URL" -H 'content-type: application/json' -H 'accept: application/json' --data '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"github-diagnostic","version":"1.0"}}}'
           echo
