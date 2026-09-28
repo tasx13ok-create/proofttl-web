@@ -1,6 +1,6 @@
 const CORE_ORIGIN = 'https://proofttl.tasx13ok.workers.dev'
 const SERVER_NAME = 'proofttl'
-const SERVER_VERSION = '0.1.0'
+const SERVER_VERSION = '0.2.0'
 const MODERN_PROTOCOL = '2026-07-28'
 const LEGACY_PROTOCOLS = ['2025-11-25', '2025-06-18', '2025-03-26']
 const MAX_UPSTREAM_CHARS = 256_000
@@ -46,6 +46,13 @@ const tools = [
       additionalProperties: false,
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    name: 'proofttl_create_test_fact_lease',
+    title: 'Create ProofTTL test Fact Lease',
+    description: 'Create or reuse a real ProofTTL Fact Lease for the fixed Example Domain test fixture. This is only for end-to-end MCP testing and does not expose arbitrary unpaid verification.',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
   },
   {
     name: 'proofttl_service_info',
@@ -191,6 +198,28 @@ async function fetchCore(path: string): Promise<{ ok: boolean; status: number; d
   }
 }
 
+async function postCore(path: string): Promise<{ ok: boolean; status: number; data: unknown }> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 15_000)
+  try {
+    const upstream = await fetch(`${CORE_ORIGIN}${path}`, {
+      method: 'POST',
+      headers: { accept: 'application/json' },
+      redirect: 'error',
+      signal: controller.signal,
+    })
+    const text = await upstream.text()
+    if (text.length > MAX_UPSTREAM_CHARS) return { ok: false, status: 502, data: { error: 'UPSTREAM_RESPONSE_TOO_LARGE' } }
+    let data: unknown
+    try { data = text ? JSON.parse(text) : null } catch { data = { error: 'UPSTREAM_INVALID_JSON' } }
+    return { ok: upstream.ok, status: upstream.status, data }
+  } catch {
+    return { ok: false, status: 502, data: { error: 'UPSTREAM_UNAVAILABLE' } }
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
 function toolSuccess(data: unknown, modern: boolean): JsonObject {
   const text = JSON.stringify(data, null, 2)
   return complete({
@@ -221,8 +250,8 @@ function serviceInfo() {
       sample_report: 'https://proofttl-web.vercel.app/audit/sample/',
     },
     boundaries: [
-      'This public MCP test surface is read-only.',
-      'It does not bypass ProofTTL x402 payment on POST /verify.',
+      'This public MCP test surface is read-only except for one bounded fixed test-lease action.',
+      'The fixed test action can only verify the Example Domain fixture and does not expose arbitrary unpaid POST /verify.',
       'It does not create audit intakes, charge cards, access private reports, or mutate accounts.',
       'ProofTTL records what examined evidence supports at a point in time; it is not a permanent-truth oracle.',
     ],
@@ -231,6 +260,12 @@ function serviceInfo() {
 
 async function callTool(name: string, args: unknown, modern: boolean): Promise<JsonObject> {
   if (name === 'proofttl_service_info') return toolSuccess(serviceInfo(), modern)
+
+  if (name === 'proofttl_create_test_fact_lease') {
+    const upstream = await postCore('/mcp/test-lease')
+    if (!upstream.ok) return toolFailure('UPSTREAM_UNAVAILABLE', 'ProofTTL could not create the bounded test Fact Lease.', modern, { status: upstream.status, upstream: upstream.data })
+    return toolSuccess(upstream.data, modern)
+  }
 
   if (name === 'proofttl_status') {
     const upstream = await fetchCore('/health')
@@ -345,7 +380,7 @@ export default async function handler(request: any, response: any) {
     sendJson(response, 200, rpcResult(id, complete({
       supportedVersions: [MODERN_PROTOCOL],
       capabilities: { tools: {} },
-      instructions: 'Use ProofTTL for source-backed factual verification context. The public MCP test surface is read-only and never bypasses paid verification.',
+      instructions: 'Use ProofTTL for source-backed factual verification context. The MCP exposes one bounded fixed test-lease action for end-to-end testing; arbitrary verification remains x402-protected.',
       ttlMs: 60_000,
       cacheScope: 'public',
     }, true)))

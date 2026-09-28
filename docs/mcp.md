@@ -4,16 +4,16 @@ Public test endpoint:
 
 `https://proofttl-web.vercel.app/api/mcp/`
 
-This endpoint exposes a deliberately read-only subset of ProofTTL over Model Context Protocol (MCP). It exists so MCP clients can inspect ProofTTL, read live capability/status information, and retrieve an existing public Fact Lease without creating paid work or mutating customer data.
+This endpoint exposes a deliberately constrained subset of ProofTTL over Model Context Protocol (MCP). It exists so MCP clients can inspect ProofTTL, read live capability/status information, retrieve public Fact Leases, and create one fixed Example Domain test lease for end-to-end connector testing.
 
 ## Tools
 
 - `proofttl_status` — reads the live ProofTTL core `/health` response.
 - `proofttl_capabilities` — reads the live ProofTTL capability registry.
 - `proofttl_get_fact_lease` — reads an existing public Fact Lease by ID.
-- `proofttl_service_info` — returns canonical ProofTTL service identity, commercial entry points, and product boundaries.
+- `proofttl_service_info` — returns canonical ProofTTL service identity, commercial entry points, and product boundaries.\n- `proofttl_create_test_fact_lease` — creates or reuses a real five-minute Fact Lease for the fixed `Example Domain` / `https://example.com` fixture.
 
-The public MCP does **not** proxy `POST /verify`. Technical verification remains protected by the existing x402 gate. It also does not create audit intakes, access private reports, charge cards, or mutate accounts.
+The public MCP does **not** proxy arbitrary `POST /verify`. Technical verification remains protected by the existing x402 gate. The only mutation is the bounded fixed test fixture, which reuses an active lease during its five-minute TTL. It does not create audit intakes, access private reports, charge cards, or mutate accounts.
 
 ## Protocol compatibility
 
@@ -32,7 +32,7 @@ The public test surface uses a fixed upstream origin:
 
 `https://proofttl.tasx13ok.workers.dev`
 
-It never accepts an arbitrary upstream URL. Fact Lease identifiers are restricted to a bounded non-path character set. Upstream calls are GET-only, time-bounded, response-bounded, and use manual error handling without exposing stack traces or secrets.
+It never accepts an arbitrary upstream URL. Fact Lease identifiers are restricted to a bounded non-path character set. Normal upstream reads are GET-only. The fixed test-lease tool makes one POST to the hard-coded `/mcp/test-lease` backend route; it accepts no arbitrary claim or source URL. All upstream calls are time-bounded, response-bounded, and use manual error handling without exposing stack traces or secrets.
 
 Requests are body-size limited and use a best-effort in-process per-IP rate limit. Browser origins, when present, are allowlisted. Server-to-server MCP clients normally send no Origin header.
 
