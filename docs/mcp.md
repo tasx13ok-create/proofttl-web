@@ -2,7 +2,7 @@
 
 Public test endpoint:
 
-`https://proofttl-web.vercel.app/api/mcp`
+`https://proofttl-web.vercel.app/api/mcp/`
 
 This endpoint exposes a deliberately read-only subset of ProofTTL over Model Context Protocol (MCP). It exists so MCP clients can inspect ProofTTL, read live capability/status information, and retrieve an existing public Fact Lease without creating paid work or mutating customer data.
 
@@ -22,7 +22,7 @@ The endpoint supports:
 - legacy MCP initialization through `initialize` for 2025-era clients;
 - stateless `2026-07-28` discovery through `server/discover`;
 - `tools/list`, `tools/call`, empty resource/prompt listings, and legacy `ping`;
-- Streamable HTTP over `POST /api/mcp`.
+- Streamable HTTP over `POST /api/mcp/`.
 
 The implementation is dependency-free so it can ship with the existing locked frontend dependency graph.
 
@@ -43,7 +43,7 @@ The in-process rate limiter is not a substitute for a platform-level Vercel Fire
 ## Legacy smoke test
 
 ```bash
-curl -sS https://proofttl-web.vercel.app/api/mcp \
+curl -sS https://proofttl-web.vercel.app/api/mcp/ \
   -H 'content-type: application/json' \
   -H 'accept: application/json' \
   --data '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"curl","version":"1.0"}}}'
@@ -52,7 +52,7 @@ curl -sS https://proofttl-web.vercel.app/api/mcp \
 List tools:
 
 ```bash
-curl -sS https://proofttl-web.vercel.app/api/mcp \
+curl -sS https://proofttl-web.vercel.app/api/mcp/ \
   -H 'content-type: application/json' \
   -H 'accept: application/json' \
   --data '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}'
@@ -61,7 +61,7 @@ curl -sS https://proofttl-web.vercel.app/api/mcp \
 Call live ProofTTL status:
 
 ```bash
-curl -sS https://proofttl-web.vercel.app/api/mcp \
+curl -sS https://proofttl-web.vercel.app/api/mcp/ \
   -H 'content-type: application/json' \
   -H 'accept: application/json' \
   --data '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"proofttl_status","arguments":{}}}'
@@ -70,7 +70,7 @@ curl -sS https://proofttl-web.vercel.app/api/mcp \
 ## Modern 2026-07-28 discovery
 
 ```bash
-curl -sS https://proofttl-web.vercel.app/api/mcp \
+curl -sS https://proofttl-web.vercel.app/api/mcp/ \
   -H 'content-type: application/json' \
   -H 'accept: application/json' \
   -H 'MCP-Protocol-Version: 2026-07-28' \
