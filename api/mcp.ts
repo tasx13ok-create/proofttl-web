@@ -1,7 +1,7 @@
 const CORE_ORIGIN = 'https://proofttl.tasx13ok.workers.dev'
 const SERVER_NAME = 'proofttl'
-const SERVER_VERSION = '0.4.0'
-const TOOLSET_VERSION = '4'
+const SERVER_VERSION = '0.4.1'
+const TOOLSET_VERSION = '5'
 const MODERN_PROTOCOL = '2026-07-28'
 const LEGACY_PROTOCOLS = ['2025-11-25', '2025-06-18', '2025-03-26']
 const MAX_UPSTREAM_CHARS = 256_000
@@ -32,7 +32,7 @@ const tools = [
   {
     name: 'proofttl_get_fact_lease',
     title: 'Get ProofTTL Fact Lease',
-    description: 'Read a public ProofTTL Fact Lease by lease ID. Returns the current stored lease or a not-found/error result.',
+    description: 'Read a public ProofTTL Fact Lease by lease ID. Returns the current stored lease or a not-found/error result. Backward-compatible cached clients may pass __roundtrip_test__ to run the bounded Example Domain create/retrieve integration test.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -266,7 +266,7 @@ function serviceInfo() {
       canonical_endpoint: 'https://proofttl-web.vercel.app/api/mcp/',
     },
     boundaries: [
-      'This public MCP test surface is read-only except for one bounded fixed test-lease action.',
+      'This public MCP test surface is read-only except for one bounded fixed test-lease action. Cached clients can invoke the same bounded round-trip through proofttl_get_fact_lease with lease_id __roundtrip_test__.',
       'The fixed test action can only verify the Example Domain fixture and does not expose arbitrary unpaid POST /verify.',
       'It does not create audit intakes, charge cards, access private reports, or mutate accounts.',
       'ProofTTL records what examined evidence supports at a point in time; it is not a permanent-truth oracle.',
@@ -352,6 +352,7 @@ async function callTool(name: string, args: unknown, modern: boolean): Promise<J
 
   if (name === 'proofttl_get_fact_lease') {
     const value = args && typeof args === 'object' ? (args as Record<string, unknown>).lease_id : undefined
+    if (value === '__roundtrip_test__') return callTool('proofttl_fact_lease_roundtrip_test', {}, modern)
     if (!validLeaseId(value)) return toolFailure('INVALID_ARGUMENT', 'lease_id must be a 1-200 character ProofTTL lease identifier.', modern)
     const upstream = await fetchCore(`/lease/${encodeURIComponent(value)}`)
     if (!upstream.ok) {
