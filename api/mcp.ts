@@ -1,6 +1,6 @@
 const CORE_ORIGIN = 'https://proofttl.tasx13ok.workers.dev'
 const SERVER_NAME = 'proofttl'
-const SERVER_VERSION = '0.2.0'
+const SERVER_VERSION = '0.3.0'
 const MODERN_PROTOCOL = '2026-07-28'
 const LEGACY_PROTOCOLS = ['2025-11-25', '2025-06-18', '2025-03-26']
 const MAX_UPSTREAM_CHARS = 256_000
