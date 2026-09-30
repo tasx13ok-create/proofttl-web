@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-30T15:32:11.628Z",
+  "generatedAt": "2026-09-30T23:54:20.483Z",
   "mode": "deterministic",
   "revenueCents": 0,
   "spendCents": 0,
@@ -11,16 +11,6 @@
       "score": 58,
       "signal": "direct problem/request signal; requires buyer validation",
       "offer": "focused template/checklist",
-      "price": 5,
-      "status": "draft"
-    },
-    {
-      "id": "49896742",
-      "title": "Is there a lanscaping tool which can take photos of my garden and make 3D model?",
-      "url": "https://news.ycombinator.com/item?id=49896742",
-      "score": 55,
-      "signal": "direct problem/request signal; requires buyer validation",
-      "offer": "buyer guide / workflow blueprint",
       "price": 5,
       "status": "draft"
     },
