@@ -1,7 +1,128 @@
 {
-  "generatedAt": "2026-09-30T15:28:16.643Z",
+  "generatedAt": "2026-09-30T15:29:36.124Z",
   "mode": "deterministic",
   "revenueCents": 0,
   "spendCents": 0,
-  "candidates": []
+  "candidates": [
+    {
+      "id": "49896742",
+      "title": "Is there a lanscaping tool which can take photos of my garden and make 3D model?",
+      "url": "https://news.ycombinator.com/item?id=49896742",
+      "score": 55,
+      "signal": "direct Ask HN problem signal; still requires buyer validation",
+      "offer": "developer reference/checker",
+      "price": 7,
+      "status": "draft"
+    },
+    {
+      "id": "49884087",
+      "title": "Ask HN: How do you get your first users for an MVP?",
+      "url": "https://news.ycombinator.com/item?id=49884087",
+      "score": 46,
+      "signal": "direct Ask HN problem signal; still requires buyer validation",
+      "offer": "focused template/checklist",
+      "price": 5,
+      "status": "draft"
+    },
+    {
+      "id": "49907601",
+      "title": "Muse.ai gets me kicked off fb marketplace",
+      "url": "https://news.ycombinator.com/item?id=49907601",
+      "score": 44,
+      "signal": "direct Ask HN problem signal; still requires buyer validation",
+      "offer": "AI workflow/checklist micro-kit",
+      "price": 5,
+      "status": "draft"
+    },
+    {
+      "id": "49906174",
+      "title": "Ask HN: How will the AI endgame play out?",
+      "url": "https://news.ycombinator.com/item?id=49906174",
+      "score": 44,
+      "signal": "direct Ask HN problem signal; still requires buyer validation",
+      "offer": "AI workflow/checklist micro-kit",
+      "price": 5,
+      "status": "draft"
+    },
+    {
+      "id": "49873913",
+      "title": "Management is forcing us to use AI",
+      "url": "https://news.ycombinator.com/item?id=49873913",
+      "score": 44,
+      "signal": "direct Ask HN problem signal; still requires buyer validation",
+      "offer": "AI workflow/checklist micro-kit",
+      "price": 5,
+      "status": "draft"
+    },
+    {
+      "id": "49841605",
+      "title": "Tell HN: OpenAI $500 ProMax plan listed in API",
+      "url": "https://news.ycombinator.com/item?id=49841605",
+      "score": 44,
+      "signal": "direct Ask HN problem signal; still requires buyer validation",
+      "offer": "AI workflow/checklist micro-kit",
+      "price": 5,
+      "status": "draft"
+    },
+    {
+      "id": "49893157",
+      "title": "Ask HN: What are you reading?",
+      "url": "https://news.ycombinator.com/item?id=49893157",
+      "score": 35,
+      "signal": "direct Ask HN problem signal; still requires buyer validation",
+      "offer": "focused template/checklist",
+      "price": 5,
+      "status": "draft"
+    },
+    {
+      "id": "49906563",
+      "title": "Ask HN: What are you reading to your kids?",
+      "url": "https://news.ycombinator.com/item?id=49906563",
+      "score": 35,
+      "signal": "direct Ask HN problem signal; still requires buyer validation",
+      "offer": "focused template/checklist",
+      "price": 5,
+      "status": "draft"
+    },
+    {
+      "id": "49848955",
+      "title": "Ask HN: Who's still keeping a DOS machine up because the business depends on it?",
+      "url": "https://news.ycombinator.com/item?id=49848955",
+      "score": 35,
+      "signal": "direct Ask HN problem signal; still requires buyer validation",
+      "offer": "focused template/checklist",
+      "price": 5,
+      "status": "draft"
+    },
+    {
+      "id": "49898465",
+      "title": "Ask HN: OpenSEO inspiration for other tools, asking for opinion",
+      "url": "https://news.ycombinator.com/item?id=49898465",
+      "score": 35,
+      "signal": "direct Ask HN problem signal; still requires buyer validation",
+      "offer": "focused template/checklist",
+      "price": 5,
+      "status": "draft"
+    },
+    {
+      "id": "49893201",
+      "title": "Google now ships \"ads\" with their Android system update?",
+      "url": "https://news.ycombinator.com/item?id=49893201",
+      "score": 35,
+      "signal": "direct Ask HN problem signal; still requires buyer validation",
+      "offer": "focused template/checklist",
+      "price": 5,
+      "status": "draft"
+    },
+    {
+      "id": "49871556",
+      "title": "Ask HN: What are people doing with their OpenClaw set ups now?",
+      "url": "https://news.ycombinator.com/item?id=49871556",
+      "score": 35,
+      "signal": "direct Ask HN problem signal; still requires buyer validation",
+      "offer": "focused template/checklist",
+      "price": 5,
+      "status": "draft"
+    }
+  ]
 }
