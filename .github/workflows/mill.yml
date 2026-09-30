@@ -2,6 +2,10 @@ name: MILL opportunity loop
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/mill-loop.mjs'
+      - '.github/workflows/mill.yml'
   schedule:
     - cron: '17 */6 * * *'
 
