@@ -2,7 +2,7 @@
   "name": "proofttl-web",
   "version": "1.0.1",
   "private": true,
-  "description": "Official ProofTTL website for source-backed claim verification: a $299 Rapid Claim Check for up to six claims and a $1,500 Fact Audit for up to 25 outputs.",
+  "description": "Official ProofTTL website for source-backed claim verification: a $299 Rapid Claim Check for up to five claims and a $1,500 Fact Audit for up to 25 outputs.",
   "homepage": "https://proofttl-web.vercel.app/",
   "repository": {
     "type": "git",
