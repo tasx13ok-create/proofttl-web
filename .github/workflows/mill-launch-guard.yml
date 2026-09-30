@@ -1,0 +1,18 @@
+name: MILL launch guard
+
+on:
+  pull_request:
+    paths:
+      - 'app/kits/release-gate/**'
+      - 'scripts/check-mill-launch.mjs'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/check-mill-launch.mjs
