@@ -12,8 +12,8 @@ const nav = await readFile('components/ProductNav.tsx', 'utf8')
 
 for (const expected of [
   'Find the expensive wrong answer',
-  'Run 5 claims · $299',
-  'UP TO 5 CLAIMS',
+  'Run 6 claims · $299',
+  'UP TO 6 CLAIMS',
   '24-HOUR TURNAROUND',
   'NO ACCOUNT REQUIRED',
   'HUMAN-REVIEWED',
