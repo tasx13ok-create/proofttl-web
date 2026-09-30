@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     default: 'ProofTTL — Source-Backed AI Claim Verification',
     template: '%s | ProofTTL',
   },
-  description: 'ProofTTL checks consequential claims against source evidence. Start with a $299 Rapid Claim Check for up to six claims or a $1,500 Fact Audit for up to 25 outputs, with human-reviewed findings.',
+  description: 'ProofTTL checks consequential claims against source evidence. Start with a $299 Rapid Claim Check for up to five claims or a $1,500 Fact Audit for up to 25 outputs, with human-reviewed findings.',
   keywords: [
     'ProofTTL', 'Proof TTL', 'AI fact checker', 'Rapid Claim Check', 'Fact Audit', 'AI fact audit', 'AI claim verification',
     'AI output fact checking', 'AI hallucination checking', 'source-backed verification',
@@ -118,14 +118,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         '@type': 'Service', '@id': `${SITE_URL}/#rapid-claim-check-service`,
         name: 'ProofTTL Rapid Claim Check', serviceType: 'Source-backed claim verification',
         url: SITE_URL, areaServed: 'Worldwide', provider: { '@id': `${SITE_URL}/#organization` },
-        description: 'A one-time human-reviewed check of up to six public, redacted, or de-identified consequential claims with supporting and challenging evidence, explicit verdicts, and a 24-hour turnaround.',
+        description: 'A one-time human-reviewed check of up to five public, redacted, or de-identified consequential claims with supporting and challenging evidence, explicit verdicts, and a 24-hour turnaround.',
         offers: [{ '@id': `${SITE_URL}/#rapid-claim-check-offer` }],
       },
       {
         '@type': 'Offer', '@id': `${SITE_URL}/#rapid-claim-check-offer`,
         name: 'ProofTTL Rapid Claim Check', url: 'https://buy.stripe.com/6oUcMY7DgbQD2es0C99EI01',
         price: '299', priceCurrency: 'USD', availability: 'https://schema.org/InStock',
-        description: 'One-time human-reviewed verification of up to six public, redacted, or de-identified consequential claims with evidence supporting and challenging each claim and explicit SUPPORTED, CONTRADICTED, or UNKNOWN verdicts.',
+        description: 'One-time human-reviewed verification of up to five public, redacted, or de-identified consequential claims with evidence supporting and challenging each claim and explicit SUPPORTED, CONTRADICTED, or UNKNOWN verdicts.',
         itemOffered: { '@id': `${SITE_URL}/#rapid-claim-check-service` },
       },
       {
