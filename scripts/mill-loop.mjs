@@ -3,21 +3,49 @@ import fs from 'node:fs/promises'
 const STATE_PATH = new URL('../public/mill-state.json', import.meta.url)
 const HN = 'https://hacker-news.firebaseio.com/v0'
 
-function scoreTitle(title = '', source = '') {
+const phraseSignals = [
+  'how do', 'how can', 'looking for', 'recommend', 'alternative',
+  'need a', 'is there a', 'best way', 'tool for', 'tool which',
+  'what do you use', 'first users', 'depends on it'
+]
+
+const painSignals = /\b(problem|pain|slow|expensive|manual|broken|difficult|hard|annoying|frustrating|forcing|forced|stuck|replace|migrate|migration|depends)\b/i
+const techSignals = /\b(ai|agent|llm|automation|workflow|verify|audit|developer|api|data|security|saas|software|tool|3d|model)\b/i
+
+function hasPhraseSignal(title = '') {
   const t = title.toLowerCase()
-  let score = source === 'ask' ? 35 : 20
-  const strong = ['how do', 'how can', 'looking for', 'recommend', 'alternative', 'need a', 'is there a', 'best way', 'tool for', 'what do you use']
-  for (const phrase of strong) if (t.includes(phrase)) score += 11
-  if (/\b(ai|agent|llm|automation|workflow|verify|audit|developer|api|data|security|saas|software|tool)\b/.test(t)) score += 9
-  if (/\b(problem|pain|slow|expensive|manual|broken|difficult|hard|annoying|frustrating)\b/.test(t)) score += 7
+  return phraseSignals.some(phrase => t.includes(phrase))
+}
+
+function hasCommercialSignal(title = '') {
+  return hasPhraseSignal(title) || painSignals.test(title)
+}
+
+function scoreTitle(title = '', source = '') {
+  let score = source === 'ask' ? 30 : 18
+  if (hasPhraseSignal(title)) score += 16
+  if (techSignals.test(title)) score += 9
+  if (painSignals.test(title)) score += 12
   return Math.min(score, 100)
 }
 
+function hasWord(title, word) {
+  return new RegExp(`\\b${word}\\b`, 'i').test(title)
+}
+
 function offerFor(title = '') {
-  const t = title.toLowerCase()
-  if (t.includes('agent') || t.includes('ai') || t.includes('llm')) return ['AI workflow/checklist micro-kit', 5]
-  if (t.includes('api') || t.includes('developer') || t.includes('software')) return ['developer reference/checker', 7]
-  if (t.includes('security') || t.includes('verify') || t.includes('audit')) return ['verification checklist', 9]
+  if (hasWord(title, 'agent') || hasWord(title, 'ai') || hasWord(title, 'llm')) {
+    return ['AI workflow/checklist micro-kit', 5]
+  }
+  if (hasWord(title, 'api') || hasWord(title, 'developer') || hasWord(title, 'software')) {
+    return ['developer reference/checker', 7]
+  }
+  if (hasWord(title, 'security') || hasWord(title, 'verify') || hasWord(title, 'audit')) {
+    return ['verification checklist', 9]
+  }
+  if (hasWord(title, '3d') || hasWord(title, 'model')) {
+    return ['buyer guide / workflow blueprint', 5]
+  }
   return ['focused template/checklist', 5]
 }
 
@@ -32,7 +60,7 @@ async function fetchIds(name, limit) {
 
 async function fetchCandidateItems() {
   const [askIds, topIds] = await Promise.all([
-    fetchIds('askstories', 70),
+    fetchIds('askstories', 80),
     fetchIds('topstories', 35),
   ])
 
@@ -62,7 +90,7 @@ async function maybeAskClaude(candidates) {
     temperature: 0,
     messages: [{
       role: 'user',
-      content: `You are MILL's opportunity judge. Rank these public demand signals for a tiny, ethical, automatically fulfilled digital product. Reject spam, deception, regulated/high-risk offers, and anything needing invented credentials. Prefer a concrete pain point over general news. Return strict JSON array only with at most 8 objects: {"id","score","signal","offer","price","status"}. status must be "draft". Candidates:\n${JSON.stringify(candidates)}`
+      content: `You are MILL's opportunity judge. Rank these public demand signals for a tiny, ethical, automatically fulfilled digital product. Reject general discussion with no concrete problem, spam, deception, regulated/high-risk offers, and anything needing invented credentials. Prefer a painful repeated task or explicit request for a tool/workflow. Return strict JSON array only with at most 8 objects: {"id","score","signal","offer","price","status"}. status must be "draft". Candidates:\n${JSON.stringify(candidates)}`
     }]
   }
 
@@ -92,6 +120,7 @@ async function maybeAskClaude(candidates) {
 async function main() {
   const items = await fetchCandidateItems()
   const ranked = items
+    .filter(item => hasCommercialSignal(item.title))
     .map(item => {
       const [offer, price] = offerFor(item.title)
       const score = scoreTitle(item.title, item.millSource)
@@ -101,16 +130,16 @@ async function main() {
         url: item.url || `https://news.ycombinator.com/item?id=${item.id}`,
         score,
         signal: item.millSource === 'ask'
-          ? 'direct Ask HN problem signal; still requires buyer validation'
-          : (score >= 60 ? 'strong problem/buyer-intent language' : 'possible demand signal; requires validation'),
+          ? 'direct problem/request signal; requires buyer validation'
+          : 'public problem signal; requires buyer validation',
         offer,
         price,
         status: 'draft',
       }
     })
-    .filter(x => x.score >= 35)
+    .filter(x => x.score >= 42)
     .sort((a, b) => b.score - a.score)
-    .slice(0, 12)
+    .slice(0, 10)
 
   const judged = await maybeAskClaude(ranked)
   let existing = { revenueCents: 0, spendCents: 0 }
