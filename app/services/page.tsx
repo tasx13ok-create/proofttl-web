@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: 'ProofTTL verifies AI-generated claims, marketing claims, research claims, startup claims, website claims, and other high-stakes factual assertions against public primary sources.',
   alternates: { canonical: '/services/' },
   keywords: ['claim verification service', 'fact checking service', 'AI claim verification', 'AI fact checking', 'source-backed fact checking', 'factual claim audit', 'pre-publication fact checking'],
-  openGraph: { title: 'ProofTTL Claim Verification & Fact-Checking Services', description: 'Start with a $299 Rapid Claim Check for up to five claims, or choose a $1,500 Fact Audit for up to 25 outputs. Human-reviewed findings with source evidence.', url: '/services/', type: 'website' },
+  openGraph: { title: 'ProofTTL Claim Verification & Fact-Checking Services', description: 'Start with a $299 Rapid Claim Check for up to six claims, or choose a $1,500 Fact Audit for up to 25 outputs. Human-reviewed findings with source evidence.', url: '/services/', type: 'website' },
 }
 
 export default function ServicesPage() {
