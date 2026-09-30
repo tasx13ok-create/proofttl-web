@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import styles from './page.module.css'
 
-const CHECKOUT_URL = '__CHECKOUT_URL__'
+const CHECKOUT_URL = 'https://buy.stripe.com/7sYfZa6zc6wjbP270x9EI03'
 const RAPID_CHECK = 'https://buy.stripe.com/6oUcMY7DgbQD2es0C99EI01'
 
 const sample = `ROLE: Contradiction Hunter
