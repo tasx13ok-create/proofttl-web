@@ -3,28 +3,51 @@ import fs from 'node:fs/promises'
 const STATE_PATH = new URL('../public/mill-state.json', import.meta.url)
 const HN = 'https://hacker-news.firebaseio.com/v0'
 
-function scoreTitle(title = '') {
+function scoreTitle(title = '', source = '') {
   const t = title.toLowerCase()
-  let score = 20
-  const strong = ['ask hn', 'how do', 'how can', 'looking for', 'recommend', 'alternative', 'need a', 'is there a', 'best way', 'tool for']
+  let score = source === 'ask' ? 35 : 20
+  const strong = ['how do', 'how can', 'looking for', 'recommend', 'alternative', 'need a', 'is there a', 'best way', 'tool for', 'what do you use']
   for (const phrase of strong) if (t.includes(phrase)) score += 11
-  if (/\b(ai|agent|llm|automation|workflow|verify|audit|developer|api|data|security)\b/.test(t)) score += 9
-  if (/\b(problem|pain|slow|expensive|manual|broken|difficult|hard)\b/.test(t)) score += 7
+  if (/\b(ai|agent|llm|automation|workflow|verify|audit|developer|api|data|security|saas|software|tool)\b/.test(t)) score += 9
+  if (/\b(problem|pain|slow|expensive|manual|broken|difficult|hard|annoying|frustrating)\b/.test(t)) score += 7
   return Math.min(score, 100)
 }
 
 function offerFor(title = '') {
   const t = title.toLowerCase()
   if (t.includes('agent') || t.includes('ai') || t.includes('llm')) return ['AI workflow/checklist micro-kit', 5]
-  if (t.includes('api') || t.includes('developer')) return ['developer reference/checker', 7]
-  if (t.includes('security') || t.includes('verify')) return ['verification checklist', 9]
+  if (t.includes('api') || t.includes('developer') || t.includes('software')) return ['developer reference/checker', 7]
+  if (t.includes('security') || t.includes('verify') || t.includes('audit')) return ['verification checklist', 9]
   return ['focused template/checklist', 5]
 }
 
+async function fetchIds(name, limit) {
+  try {
+    const ids = await fetch(`${HN}/${name}.json`).then(r => r.json())
+    return Array.isArray(ids) ? ids.slice(0, limit) : []
+  } catch {
+    return []
+  }
+}
+
 async function fetchCandidateItems() {
-  const ids = await fetch(`${HN}/topstories.json`).then(r => r.json())
-  const sample = ids.slice(0, 70)
-  const items = await Promise.all(sample.map(id => fetch(`${HN}/item/${id}.json`).then(r => r.json()).catch(() => null)))
+  const [askIds, topIds] = await Promise.all([
+    fetchIds('askstories', 70),
+    fetchIds('topstories', 35),
+  ])
+
+  const sourceById = new Map()
+  for (const id of askIds) sourceById.set(id, 'ask')
+  for (const id of topIds) if (!sourceById.has(id)) sourceById.set(id, 'top')
+
+  const ids = [...sourceById.keys()]
+  const items = await Promise.all(ids.map(id =>
+    fetch(`${HN}/item/${id}.json`)
+      .then(r => r.json())
+      .then(item => item ? { ...item, millSource: sourceById.get(id) } : null)
+      .catch(() => null)
+  ))
+
   return items.filter(Boolean).filter(x => x.type === 'story' && x.title)
 }
 
@@ -39,7 +62,7 @@ async function maybeAskClaude(candidates) {
     temperature: 0,
     messages: [{
       role: 'user',
-      content: `You are MILL's opportunity judge. Rank these public demand signals for a tiny, ethical, automatically fulfilled digital product. Reject spam, deception, regulated/high-risk offers, and anything needing invented credentials. Return strict JSON array only with at most 8 objects: {"id","score","signal","offer","price","status"}. status must be "draft". Candidates:\n${JSON.stringify(candidates)}`
+      content: `You are MILL's opportunity judge. Rank these public demand signals for a tiny, ethical, automatically fulfilled digital product. Reject spam, deception, regulated/high-risk offers, and anything needing invented credentials. Prefer a concrete pain point over general news. Return strict JSON array only with at most 8 objects: {"id","score","signal","offer","price","status"}. status must be "draft". Candidates:\n${JSON.stringify(candidates)}`
     }]
   }
 
@@ -71,19 +94,21 @@ async function main() {
   const ranked = items
     .map(item => {
       const [offer, price] = offerFor(item.title)
-      const score = scoreTitle(item.title)
+      const score = scoreTitle(item.title, item.millSource)
       return {
         id: String(item.id),
         title: item.title,
         url: item.url || `https://news.ycombinator.com/item?id=${item.id}`,
         score,
-        signal: score >= 60 ? 'strong problem/buyer-intent language' : 'possible demand signal; requires validation',
+        signal: item.millSource === 'ask'
+          ? 'direct Ask HN problem signal; still requires buyer validation'
+          : (score >= 60 ? 'strong problem/buyer-intent language' : 'possible demand signal; requires validation'),
         offer,
         price,
         status: 'draft',
       }
     })
-    .filter(x => x.score >= 42)
+    .filter(x => x.score >= 35)
     .sort((a, b) => b.score - a.score)
     .slice(0, 12)
 
