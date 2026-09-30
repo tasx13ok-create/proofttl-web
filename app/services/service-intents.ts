@@ -20,11 +20,11 @@ export type ServiceIntent = {
 const factAuditFaq: ServiceFaq[] = [
   {
     question: 'What does ProofTTL cost?',
-    answer: 'Start with the $299 one-time Rapid Claim Check for up to six public, redacted, or de-identified claims, with human-reviewed results and a 24-hour turnaround. No ProofTTL account is required. For deeper review, the $1,500 Fact Audit covers up to 25 real outputs or claims; scope is confirmed before its payment request is created.',
+    answer: 'Start with the $299 one-time Rapid Claim Check for up to five public, redacted, or de-identified claims, with human-reviewed results and a 24-hour turnaround. No ProofTTL account is required. For deeper review, the $1,500 Fact Audit covers up to 25 real outputs or claims; scope is confirmed before its payment request is created.',
   },
   {
     question: 'How do I send my claims?',
-    answer: 'For the Rapid Claim Check, pay through Stripe, then reply to the ProofTTL intake email with up to six public, redacted, or de-identified claims and relevant source context. If the intake email is missing, contact ProofTTL.Support@gmail.com from your checkout email address. For the full Fact Audit, submit your outputs first; ProofTTL confirms scope before requesting payment. Findings require human approval before delivery.',
+    answer: 'For the Rapid Claim Check, pay through Stripe, then reply to the ProofTTL intake email with up to five public, redacted, or de-identified claims and relevant source context. If the intake email is missing, contact ProofTTL.Support@gmail.com from your checkout email address. For the full Fact Audit, submit your outputs first; ProofTTL confirms scope before requesting payment. Findings require human approval before delivery.',
   },
   {
     question: 'Does the audit include monitoring?',
