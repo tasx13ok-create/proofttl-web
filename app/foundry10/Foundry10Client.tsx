@@ -105,6 +105,10 @@ export default function Foundry10Client(){
   const [error,setError]=useState('')
   const [busy,setBusy]=useState(false)
   const [view,setView]=useState<'control'|'office'|'pipeline'|'audit'>('control')
+  const [econExperiment,setEconExperiment]=useState('')
+  const [econRevenue,setEconRevenue]=useState('')
+  const [econCost,setEconCost]=useState('')
+  const [econChannel,setEconChannel]=useState('operator')
 
   useEffect(()=>{const k=localStorage.getItem(KEY_STORAGE)||''; if(k){setKey(k); load(k)}},[])
 
@@ -120,6 +124,15 @@ export default function Foundry10Client(){
   async function action(path:string,body:any={}){
     setBusy(true);setError('')
     try{await callApi(key,path,{method:'POST',body:JSON.stringify(body)});await load()}catch(e:any){setError(e.message)}finally{setBusy(false)}
+  }
+
+  async function recordEconomics(){
+    if(!econExperiment) return setError('Choose an experiment.')
+    const revenue=Math.round(Number(econRevenue||0)*100)
+    const cost=Math.round(Number(econCost||0)*100)
+    if(!Number.isFinite(revenue)||!Number.isFinite(cost)||revenue<0||cost<0) return setError('Revenue and cost must be non-negative numbers.')
+    await action('/revenue',{experiment_id:econExperiment,revenue_cents:revenue,cost_cents:cost,channel:econChannel||'operator'})
+    setEconRevenue('');setEconCost('')
   }
 
   if(!key || !state){
@@ -201,6 +214,20 @@ export default function Foundry10Client(){
           <label>Revenue goal<input type="number" value={s.revenue_goal_cents/100} min="0" onChange={e=>action('/controls',{revenue_goal_cents:Math.round(Number(e.target.value)*100)})}/></label>
           <label>Risk tolerance<input type="range" min="0" max="10" value={s.risk_tolerance} onChange={e=>action('/controls',{risk_tolerance:Number(e.target.value)})}/><b>{s.risk_tolerance}/10</b></label>
           <div><span>Hard rule</span><p>No paid expansion until actual revenue exists. Current reinvestment ceiling: <b>{money(s.reinvestment_cap_cents)}</b>.</p></div>
+        </div>
+        <div className={styles.economicsEntry}>
+          <div>
+            <span className={styles.eyebrow}>REALIZED ECONOMICS ENTRY</span>
+            <p>Record only money that actually happened. This writes an immutable economics event and refreshes the reinvestment governor.</p>
+          </div>
+          <select value={econExperiment} onChange={e=>setEconExperiment(e.target.value)}>
+            <option value="">Choose experiment…</option>
+            {state.experiments.map(e=><option key={e.id} value={e.id}>{e.title}</option>)}
+          </select>
+          <input inputMode="decimal" value={econRevenue} onChange={e=>setEconRevenue(e.target.value)} placeholder="Revenue $" />
+          <input inputMode="decimal" value={econCost} onChange={e=>setEconCost(e.target.value)} placeholder="Cost $" />
+          <input value={econChannel} onChange={e=>setEconChannel(e.target.value)} placeholder="Channel" />
+          <button onClick={recordEconomics} disabled={busy||!econExperiment}>Record</button>
         </div>
       </section>
     </>}
