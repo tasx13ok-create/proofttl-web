@@ -412,6 +412,10 @@
       "dest": "/api/runtime-proxy.js?path=$runtimepath"
     },
     {
+      "src": "^/foundry-offer/(?<offerslug>[a-z0-9-]+)/?$",
+      "dest": "/api/foundry-offer.js?slug=$offerslug"
+    },
+    {
       "src": "^/api/foundry10/(?<f10path>.*)$",
       "dest": "/api/foundry10-proxy.js?path=$f10path"
     },
@@ -450,6 +454,9 @@
     },
     "api/foundry10-proxy.js": {
       "maxDuration": 30
+    },
+    "api/foundry-offer.js": {
+      "maxDuration": 15
     }
   }
 }
