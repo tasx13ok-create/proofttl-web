@@ -621,7 +621,26 @@ async function tick(supabase: any) {
             title: exp.title,
             price_cents: exp.price_cents,
             monetization_method: exp.monetization_method,
-            note: "Approval allows the workflow to proceed to distribution planning. It does not create a Stripe link or publish externally."
+            note: "Approval accepts the drafted public offer. Payment-link creation remains a separate approval."
+          }
+        });
+        approvalCreated = true;
+      }
+    } else if (task.task_type === "distribution") {
+      nextTaskState = "reviewing";
+      nextExperimentStatus = ["launched","tracking","scaling"].includes(exp.status) ? exp.status : "tracking";
+      const { data: existingApproval } = await supabase.from("f10_approvals")
+        .select("id").eq("task_id", task.id).eq("status", "pending").maybeSingle();
+      if (!existingApproval) {
+        await supabase.from("f10_approvals").insert({
+          task_id: task.id,
+          experiment_id: exp.id,
+          approval_type: "outbound_message",
+          request_payload: {
+            title: exp.title,
+            checkout_url: exp.checkout_url,
+            artifact_id: artifact?.id || null,
+            note: "Approval authorizes one compliant distribution test only. It does not authorize spam, bulk DMs, or fake engagement."
           }
         });
         approvalCreated = true;
@@ -638,7 +657,7 @@ async function tick(supabase: any) {
 
   if (artifact && finalDecision === "advance") {
     await supabase.from("f10_artifacts").update({
-      status: task.task_type === "listing" ? "reviewed" : "approved",
+      status: (task.task_type === "listing" || task.task_type === "distribution") ? "reviewed" : "approved",
       reviewed_by_agent_id: task.important ? secondary.id : primary.id,
       updated_at: new Date().toISOString()
     }).eq("id", artifact.id);
@@ -692,7 +711,7 @@ Deno.serve(async (req: Request) => {
     const path = markerIndex >= 0 ? (url.pathname.slice(markerIndex + marker.length) || "/") : url.pathname;
 
     if (req.method === "GET" && path === "/health") {
-      return json({ ok: true, service: "foundry10-api", version: 10 });
+      return json({ ok: true, service: "foundry10-api", version: 11 });
     }
 
     if (req.method === "GET" && path.startsWith("/public-offer/")) {
@@ -733,6 +752,48 @@ Deno.serve(async (req: Request) => {
           checkout_url: exp.checkout_url,
           listing,
           product,
+        }
+      });
+    }
+
+    if (req.method === "GET" && path.startsWith("/delivery/")) {
+      const slug = path.slice("/delivery/".length);
+      const token = url.searchParams.get("access") || "";
+      if (!/^[a-z0-9-]{3,120}$/.test(slug) || token.length < 32 || token.length > 256) {
+        return json({ error: "not found" }, 404);
+      }
+
+      const tokenHash = await sha256(token);
+      const { data: exp, error: expError } = await supabase
+        .from("f10_experiments")
+        .select("id,slug,title,status,delivery_token_hash,checkout_url")
+        .eq("slug", slug)
+        .in("status", ["launched","tracking","scaling"])
+        .not("checkout_url", "is", null)
+        .maybeSingle();
+      if (expError) throw expError;
+      if (!exp || !exp.delivery_token_hash || exp.delivery_token_hash !== tokenHash) {
+        return json({ error: "not found" }, 404);
+      }
+
+      const { data: artifact, error: artifactError } = await supabase
+        .from("f10_artifacts")
+        .select("content,created_at")
+        .eq("experiment_id", exp.id)
+        .eq("artifact_type", "product")
+        .eq("status", "approved")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (artifactError) throw artifactError;
+      if (!artifact) return json({ error: "not found" }, 404);
+
+      return json({
+        product: {
+          slug: exp.slug,
+          title: exp.title,
+          content: artifact.content,
+          delivered_at: new Date().toISOString(),
         }
       });
     }
@@ -806,31 +867,93 @@ Deno.serve(async (req: Request) => {
             status: "approved", updated_at: new Date().toISOString()
           }).eq("task_id", task.id).eq("artifact_type", "listing");
 
-          const { data: existingDistribution } = await supabase.from("f10_tasks")
+          const { data: existingPaymentApproval } = await supabase.from("f10_approvals")
             .select("id").eq("experiment_id", approval.experiment_id)
-            .eq("task_type", "distribution").neq("state", "killed").limit(1).maybeSingle();
-          if (!existingDistribution) {
+            .eq("approval_type", "payment_link")
+            .in("status", ["pending","approved"]).limit(1).maybeSingle();
+          if (!existingPaymentApproval) {
+            await supabase.from("f10_approvals").insert({
+              experiment_id: approval.experiment_id,
+              approval_type: "payment_link",
+              request_payload: {
+                title: exp.title,
+                price_cents: exp.price_cents,
+                listing_task_id: task.id,
+                note: "Approval authorizes creation of one Stripe Payment Link and buyer delivery token for this experiment."
+              }
+            });
+          }
+        }
+
+        if (body.status === "approved" && task.task_type === "distribution") {
+          const { data: exp, error: expErr } = await supabase.from("f10_experiments")
+            .select("*").eq("id", approval.experiment_id).single();
+          if (expErr) throw expErr;
+          await supabase.from("f10_artifacts").update({
+            status: "approved", updated_at: new Date().toISOString()
+          }).eq("task_id", task.id).eq("artifact_type", "distribution");
+          await supabase.from("f10_experiments").update({
+            status: "tracking", updated_at: new Date().toISOString()
+          }).eq("id", approval.experiment_id);
+
+          const { data: existingAnalytics } = await supabase.from("f10_tasks")
+            .select("id").eq("experiment_id", approval.experiment_id)
+            .eq("task_type", "analytics").neq("state", "killed").limit(1).maybeSingle();
+          if (!existingAnalytics) {
             await supabase.from("f10_tasks").insert({
               experiment_id: approval.experiment_id,
-              title: "Plan compliant distribution: " + exp.title,
-              task_type: "distribution",
+              title: "Track traffic, conversions, revenue, and cost: " + exp.title,
+              task_type: "analytics",
               state: "queued",
-              priority: 7,
+              priority: 6,
               important: true,
               required_touches: 2,
-              input: { approved_listing_task_id: task.id }
+              input: { approved_distribution_task_id: task.id }
             });
           }
         }
 
         if (body.status === "rejected" && approval.experiment_id) {
-          await supabase.from("f10_experiments").update({
-            status: "killed",
-            kill_reason: "Operator rejected required approval",
-            updated_at: new Date().toISOString()
-          }).eq("id", approval.experiment_id);
+          if (approval.approval_type === "outbound_message") {
+            await supabase.from("f10_experiments").update({
+              status: "launched",
+              updated_at: new Date().toISOString()
+            }).eq("id", approval.experiment_id);
+            await supabase.from("f10_events").insert({
+              experiment_id: approval.experiment_id,
+              task_id: task.id,
+              event_type: "distribution_rejected",
+              payload: { approval_id: approval.id, note: body.note ?? null }
+            });
+          } else {
+            await supabase.from("f10_experiments").update({
+              status: "killed",
+              kill_reason: "Operator rejected required approval",
+              updated_at: new Date().toISOString()
+            }).eq("id", approval.experiment_id);
+          }
         }
       }
+
+      if (!approval.task_id && body.status === "rejected" && approval.experiment_id && approval.approval_type === "payment_link") {
+        await supabase.from("f10_experiments").update({
+          status: "killed",
+          kill_reason: "Operator rejected payment-link creation",
+          updated_at: new Date().toISOString()
+        }).eq("id", approval.experiment_id);
+      }
+
+      await supabase.from("f10_events").insert({
+        experiment_id: approval.experiment_id,
+        task_id: approval.task_id,
+        event_type: "approval_decision",
+        payload: {
+          approval_id: approval.id,
+          approval_type: approval.approval_type,
+          status: body.status,
+          note: body.note ?? null
+        }
+      });
       return json({ ok: true, approval });
     }
 
@@ -882,25 +1005,66 @@ Deno.serve(async (req: Request) => {
         return json({ error: "experiment requires approved listing before checkout attachment" }, 409);
       }
 
+      const { data: paymentApproval, error: paymentApprovalError } = await supabase.from("f10_approvals")
+        .select("id").eq("experiment_id", id).eq("approval_type", "payment_link")
+        .eq("status", "approved").limit(1).maybeSingle();
+      if (paymentApprovalError) throw paymentApprovalError;
+      if (!paymentApproval) return json({ error: "approved payment-link approval required" }, 409);
+
       const priceCents = body.price_cents == null ? Number(exp.price_cents || 0) : Math.trunc(Number(body.price_cents));
       if (!Number.isFinite(priceCents) || priceCents <= 0) return json({ error: "positive price_cents required" }, 400);
 
-      const { data, error } = await supabase.from("f10_experiments").update({
+      const patch: any = {
         checkout_url: checkoutUrl,
         price_cents: priceCents,
         status: "launched",
         updated_at: new Date().toISOString()
-      }).eq("id", id).select().single();
+      };
+      if (typeof body.stripe_product_id === "string") patch.stripe_product_id = body.stripe_product_id;
+      if (typeof body.stripe_price_id === "string") patch.stripe_price_id = body.stripe_price_id;
+      if (typeof body.stripe_payment_link_id === "string") patch.stripe_payment_link_id = body.stripe_payment_link_id;
+      if (typeof body.delivery_token_hash === "string") patch.delivery_token_hash = body.delivery_token_hash;
+
+      const { data, error } = await supabase.from("f10_experiments").update(patch)
+        .eq("id", id).select().single();
       if (error) throw error;
 
       await supabase.from("f10_events").insert({
         experiment_id: id,
         event_type: "checkout_attached",
         channel: "stripe_payment_link",
-        payload: { checkout_url: checkoutUrl, price_cents: priceCents }
+        payload: {
+          checkout_url: checkoutUrl,
+          price_cents: priceCents,
+          stripe_product_id: patch.stripe_product_id ?? null,
+          stripe_price_id: patch.stripe_price_id ?? null,
+          stripe_payment_link_id: patch.stripe_payment_link_id ?? null,
+          payment_approval_id: paymentApproval.id
+        }
       });
 
-      return json({ ok: true, experiment: data, public_path: "/foundry-offer/" + data.slug });
+      const { data: existingDistribution } = await supabase.from("f10_tasks")
+        .select("id").eq("experiment_id", id).eq("task_type", "distribution")
+        .neq("state", "killed").limit(1).maybeSingle();
+      if (!existingDistribution) {
+        await supabase.from("f10_tasks").insert({
+          experiment_id: id,
+          title: "Plan compliant distribution: " + exp.title,
+          task_type: "distribution",
+          state: "queued",
+          priority: 7,
+          important: true,
+          required_touches: 2,
+          input: { payment_approval_id: paymentApproval.id, checkout_url: checkoutUrl }
+        });
+      }
+
+      return json({
+        ok: true,
+        experiment: data,
+        public_path: "/foundry-offer/" + data.slug,
+        delivery_path: data.delivery_token_hash ? "/foundry-delivery/" : null
+      });
     }
 
     if (req.method === "POST" && path.startsWith("/experiment/") && path.endsWith("/kill")) {
