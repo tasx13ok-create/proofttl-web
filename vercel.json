@@ -412,6 +412,10 @@
       "dest": "/api/runtime-proxy.js?path=$runtimepath"
     },
     {
+      "src": "^/api/foundry10/(?<f10path>.*)$",
+      "dest": "/api/foundry10-proxy.js?path=$f10path"
+    },
+    {
       "src": "^/trust\\.html$",
       "status": 308,
       "headers": {
@@ -442,6 +446,9 @@
   ],
   "functions": {
     "api/mcp.ts": {
+      "maxDuration": 30
+    },
+    "api/foundry10-proxy.js": {
       "maxDuration": 30
     }
   }
