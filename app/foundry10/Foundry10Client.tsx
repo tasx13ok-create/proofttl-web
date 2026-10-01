@@ -75,9 +75,9 @@ function Office3D({agents,experiments}:{agents:Agent[];experiments:Experiment[]}
       #hud{position:absolute;left:16px;top:14px;z-index:2;padding:10px 12px;border:1px solid #ffffff24;background:#05070acc;border-radius:10px;backdrop-filter:blur(8px)}
       #hud b{display:block;font-size:13px;letter-spacing:.12em} #hud span{color:#9aa4b2}
       canvas{display:block;width:100%;height:100%}
-    </style></head><body><div id="hud"><b>FOUNDRY-10 OFFICE</b><span>drag to orbit · wheel to zoom</span></div>
+    </style><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.181.1/build/three.module.js"}}</script></head><body><div id="hud"><b>FOUNDRY-10 OFFICE</b><span>drag to orbit · wheel to zoom</span></div>
     <script type="module">
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.181.1/build/three.module.js';
+    import * as THREE from 'three';
     import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.181.1/examples/jsm/controls/OrbitControls.js';
     const agents=${safeAgents}; const experiments=${safeExperiments};
     const scene=new THREE.Scene(); scene.background=new THREE.Color(0x07090d); scene.fog=new THREE.Fog(0x07090d,18,42);
