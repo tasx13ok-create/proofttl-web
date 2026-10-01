@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-01T06:10:33.200Z",
+  "generatedAt": "2026-10-01T13:33:52.490Z",
   "system": "FOUNDRY-10",
   "mode": "zero-spend",
   "cloudOnly": true,
@@ -58,7 +58,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T06:10:33.199Z"
+      "lastActionAt": "2026-10-01T13:33:52.489Z"
     },
     {
       "id": "scout-b",
@@ -72,7 +72,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T06:10:33.199Z"
+      "lastActionAt": "2026-10-01T13:33:52.489Z"
     },
     {
       "id": "validator-a",
@@ -86,7 +86,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T06:10:33.199Z"
+      "lastActionAt": "2026-10-01T13:33:52.489Z"
     },
     {
       "id": "validator-b",
@@ -100,7 +100,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T06:10:33.199Z"
+      "lastActionAt": "2026-10-01T13:33:52.489Z"
     },
     {
       "id": "builder-a",
@@ -114,7 +114,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T06:10:33.199Z"
+      "lastActionAt": "2026-10-01T13:33:52.489Z"
     },
     {
       "id": "builder-b",
@@ -128,7 +128,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T06:10:33.199Z"
+      "lastActionAt": "2026-10-01T13:33:52.489Z"
     },
     {
       "id": "distribution-a",
@@ -142,7 +142,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T06:10:33.199Z"
+      "lastActionAt": "2026-10-01T13:33:52.489Z"
     },
     {
       "id": "distribution-b",
@@ -156,7 +156,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T06:10:33.199Z"
+      "lastActionAt": "2026-10-01T13:33:52.489Z"
     },
     {
       "id": "finance",
@@ -170,7 +170,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T06:10:33.199Z"
+      "lastActionAt": "2026-10-01T13:33:52.489Z"
     },
     {
       "id": "risk",
@@ -184,7 +184,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T06:10:33.199Z"
+      "lastActionAt": "2026-10-01T13:33:52.489Z"
     }
   ],
   "tasks": [
@@ -248,6 +248,18 @@
       "status": "watch"
     },
     {
+      "id": "49920340",
+      "title": "Ask HN: What landmarks/lighthouses in the era of LLM/AI?",
+      "url": "https://news.ycombinator.com/item?id=49920340",
+      "source": "ask",
+      "score": 56,
+      "offer": "AI workflow review micro-product",
+      "price": 9,
+      "format": "digital-service",
+      "channel": "search + direct product landing page",
+      "status": "watch"
+    },
+    {
       "id": "49906174",
       "title": "Ask HN: How will the AI endgame play out?",
       "url": "https://news.ycombinator.com/item?id=49906174",
@@ -268,6 +280,18 @@
       "offer": "Focused checklist + template",
       "price": 5,
       "format": "digital-kit",
+      "channel": "search + direct product landing page",
+      "status": "reject"
+    },
+    {
+      "id": "49920411",
+      "title": "Rpi – a Rust rewrite of the Pi agent, 10× faster startup",
+      "url": "https://news.ycombinator.com/item?id=49920411",
+      "source": "ask",
+      "score": 50,
+      "offer": "AI workflow review micro-product",
+      "price": 9,
+      "format": "digital-service",
       "channel": "search + direct product landing page",
       "status": "reject"
     },
@@ -313,6 +337,21 @@
       "nextGate": "prove buyer intent before build"
     },
     {
+      "id": "exp-49920340",
+      "title": "AI workflow review micro-product",
+      "sourceTitle": "Ask HN: What landmarks/lighthouses in the era of LLM/AI?",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49920340",
+      "score": 56,
+      "price": 9,
+      "channel": "search + direct product landing page",
+      "format": "digital-service",
+      "stage": "queued",
+      "revenueCents": 0,
+      "spendCents": 0,
+      "netProfitCents": 0,
+      "nextGate": "wait for higher-ranked experiment"
+    },
+    {
       "id": "exp-49906174",
       "title": "AI workflow review micro-product",
       "sourceTitle": "Ask HN: How will the AI endgame play out?",
@@ -343,25 +382,10 @@
       "nextGate": "wait for higher-ranked experiment"
     },
     {
-      "id": "exp-49907601",
+      "id": "exp-49920411",
       "title": "AI workflow review micro-product",
-      "sourceTitle": "Muse.ai gets me kicked off fb marketplace",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49907601",
-      "score": 50,
-      "price": 9,
-      "channel": "search + direct product landing page",
-      "format": "digital-service",
-      "stage": "queued",
-      "revenueCents": 0,
-      "spendCents": 0,
-      "netProfitCents": 0,
-      "nextGate": "wait for higher-ranked experiment"
-    },
-    {
-      "id": "exp-49913868",
-      "title": "AI workflow review micro-product",
-      "sourceTitle": "Factory AI vs. Cognition (Devin) board tussle",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49913868",
+      "sourceTitle": "Rpi – a Rust rewrite of the Pi agent, 10× faster startup",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49920411",
       "score": 50,
       "price": 9,
       "channel": "search + direct product landing page",
@@ -375,7 +399,7 @@
   ],
   "eventLog": [
     {
-      "at": "2026-10-01T06:10:33.200Z",
+      "at": "2026-10-01T13:33:52.490Z",
       "type": "cycle",
       "message": "10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized."
     }
