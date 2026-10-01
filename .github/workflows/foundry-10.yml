@@ -1,0 +1,61 @@
+name: FOUNDRY-10 cloud cycle
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - build/foundry-10-mainline
+    paths:
+      - 'scripts/foundry-10-loop.mjs'
+      - 'scripts/check-foundry-10.mjs'
+      - 'app/mill/office/**'
+      - '.github/workflows/foundry-10.yml'
+  schedule:
+    - cron: '23 */6 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: foundry-10-cloud
+  cancel-in-progress: false
+
+jobs:
+  cycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install pinned dependencies
+        run: npm ci
+
+      - name: Typecheck cloud office
+        run: npm run typecheck
+
+      - name: Verify FOUNDRY-10 invariants
+        run: node scripts/check-foundry-10.mjs
+
+      - name: Run ten-agent paired cloud cycle
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FOUNDRY_MODEL: ${{ vars.MILL_MODEL }}
+          FOUNDRY_ENABLE_PAID_MODELS: ${{ vars.FOUNDRY_ENABLE_PAID_MODELS }}
+        run: node scripts/foundry-10-loop.mjs
+
+      - name: Commit refreshed cloud state
+        run: |
+          if git diff --quiet -- public/foundry-10-state.json; then
+            echo "No state change."
+            exit 0
+          fi
+          git config user.name "foundry-10-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add public/foundry-10-state.json
+          git commit -m "FOUNDRY-10: refresh cloud agent state"
+          git push
