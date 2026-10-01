@@ -4,6 +4,7 @@ const UPSTREAM_TIMEOUT_MS = 15000
 const ALLOWED_PATHS = [
   /^health$/,
   /^state$/,
+  /^world-state$/,
   /^tick$/,
   /^controls$/,
   /^revenue$/,
