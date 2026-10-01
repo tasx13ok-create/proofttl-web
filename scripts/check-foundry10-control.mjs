@@ -10,6 +10,7 @@ const deliveryProxy=read('api/foundry-delivery.js')
 const deliveryClient=read('app/foundry-delivery/FoundryDeliveryClient.tsx')
 const edge=read('supabase/functions/foundry10-api/index.ts')
 const schema=read('supabase/foundry10/schema.sql')
+const worldContract=read('lib/foundry10-world-contract.ts')
 
 const must=(ok,msg)=>{ if(!ok){ console.error('FOUNDRY-10 check failed:',msg); process.exitCode=1 } }
 
@@ -28,6 +29,8 @@ must(proxy.includes('world-state'),'owner proxy must expose the versioned world-
 must(edge.includes('/world-state'),'edge runtime must expose owner-auth world-state')
 must(edge.includes('contract: "foundry10-world-state"'),'world-state contract must carry a stable contract identifier')
 must(edge.includes('version: 1'),'world-state contract must carry an explicit version')
+must(worldContract.includes("FOUNDRY_WORLD_CONTRACT = 'foundry10-world-state'"),'typed world contract must match edge contract id')
+must(worldContract.includes('FOUNDRY_WORLD_VERSION = 1'),'typed world contract must match edge contract version')
 must(offerProxy.includes('x-robots-tag') && offerProxy.includes('noindex'),'public experiment pages must remain noindex')
 must(offerProxy.includes('buy.stripe.com'),'offer renderer must constrain checkout to Stripe links')
 must(edge.includes('/public-offer/'),'edge runtime must expose safe launched-offer reads')
