@@ -283,6 +283,22 @@ async function main() {
     profitCents,
     reinvestCeilingCents: ceiling,
     paidInferenceEnabled: ENABLE_PAID_MODELS,
+    liveOffers: [
+      {
+        id: 'release-gate-5',
+        title: 'ProofTTL AI Release Gate Kit',
+        priceCents: 500,
+        status: 'live',
+        productUrl: 'https://proofttl-web.vercel.app/kits/release-gate/',
+        checkoutUrl: 'https://buy.stripe.com/7sYfZa6zc6wjbP270x9EI03',
+        fulfillment: 'instant self-serve material',
+        channels: [
+          { network: 'threads', status: 'published', publicUrl: 'https://www.threads.com/@proofttl/post/Dd7lMu0iKKb' },
+          { network: 'facebook', status: 'blocked', reason: 'Meta requires Page identity confirmation before publishing.' },
+        ],
+        realizedRevenueCents: 0,
+      },
+    ],
     connectors: {
       hackerNews: { status: 'active', cost: 'free' },
       anthropic: { status: ENABLE_PAID_MODELS ? 'enabled-if-secret-present' : 'disabled-by-zero-spend-governor' },
@@ -296,7 +312,7 @@ async function main() {
       {
         at: new Date().toISOString(),
         type: 'cycle',
-        message: '10 agents completed five paired task passes. No revenue is counted unless recorded as realized.',
+        message: '10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized.',
       },
     ],
   }
