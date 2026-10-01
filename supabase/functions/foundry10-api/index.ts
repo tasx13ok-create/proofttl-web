@@ -511,6 +511,115 @@ async function loadState(supabase: any) {
   };
 }
 
+async function loadWorldState(supabase: any) {
+  const state = await loadState(supabase);
+  const settings = state.settings || {};
+  const now = new Date().toISOString();
+  const activeTaskStates = new Set(["queued","claimed","researching","validating","building","reviewing","launching","tracking","scaling"]);
+  const pendingApprovals = (state.approvals || []).filter((a:any) => a.status === "pending");
+  const taskById = new Map((state.tasks || []).map((t:any) => [t.id, t]));
+  const experimentById = new Map((state.experiments || []).map((e:any) => [e.id, e]));
+
+  return {
+    contract: "foundry10-world-state",
+    version: 1,
+    generated_at: now,
+    system: {
+      name: "FOUNDRY-10",
+      paused: Boolean(settings.paused),
+      mode: Number(settings.reinvestment_cap_cents || 0) > 0 ? "earned-reinvestment" : "zero-spend",
+    },
+    finance: {
+      revenue_cents: Number(settings.earned_revenue_cents || 0),
+      cost_cents: Number(settings.total_cost_cents || 0),
+      profit_cents: Number(settings.earned_revenue_cents || 0) - Number(settings.total_cost_cents || 0),
+      reinvestment_cap_cents: Number(settings.reinvestment_cap_cents || 0),
+      spending_cap_cents: Number(settings.spending_cap_cents || 0),
+      revenue_goal_cents: Number(settings.revenue_goal_cents || 0),
+      risk_tolerance: Number(settings.risk_tolerance || 0),
+    },
+    agents: (state.agents || []).map((a:any) => {
+      const task:any = a.current_task_id ? taskById.get(a.current_task_id) : null;
+      const exp:any = task?.experiment_id ? experimentById.get(task.experiment_id) : null;
+      return {
+        id: a.id,
+        slug: a.slug,
+        name: a.name,
+        role: a.role,
+        status: a.status,
+        current_task_id: a.current_task_id,
+        current_task: task ? {
+          id: task.id,
+          title: task.title,
+          type: task.task_type,
+          state: task.state,
+          priority: Number(task.priority || 0),
+          important: Boolean(task.important),
+          touch_count: Number(task.touch_count || 0),
+          required_touches: Number(task.required_touches || 0),
+          experiment_id: task.experiment_id,
+          experiment_title: exp?.title || null,
+        } : null,
+        last_action: a.last_action || null,
+        blocker: a.blocker || null,
+        confidence: Number(a.confidence || 0),
+        revenue_influenced_cents: Number(a.revenue_influenced_cents || 0),
+        cost_used_cents: Number(a.cost_used_cents || 0),
+      };
+    }),
+    tasks: (state.tasks || []).filter((t:any) => activeTaskStates.has(t.state)).map((t:any) => ({
+      id: t.id,
+      experiment_id: t.experiment_id,
+      title: t.title,
+      type: t.task_type,
+      state: t.state,
+      priority: Number(t.priority || 0),
+      important: Boolean(t.important),
+      touch_count: Number(t.touch_count || 0),
+      required_touches: Number(t.required_touches || 0),
+      claimed_by: t.claimed_by || null,
+      reviewer_id: t.reviewer_id || null,
+      blocker: t.blocker || null,
+      attempts: Number(t.attempts || 0),
+      max_attempts: Number(t.max_attempts || 0),
+    })),
+    experiments: (state.experiments || []).map((e:any) => ({
+      id: e.id,
+      slug: e.slug,
+      title: e.title,
+      status: e.status,
+      score: Number(e.score || 0),
+      target_buyer: e.target_buyer,
+      monetization_method: e.monetization_method,
+      compliance_risk: Number(e.compliance_risk || 0),
+      price_cents: e.price_cents == null ? null : Number(e.price_cents),
+      checkout_attached: Boolean(e.checkout_url),
+      revenue_cents: Number(e.revenue_cents || 0),
+      cost_cents: Number(e.cost_cents || 0),
+      clicks: Number(e.clicks || 0),
+      conversions: Number(e.conversions || 0),
+      kill_reason: e.kill_reason || null,
+    })),
+    approvals: pendingApprovals.map((a:any) => ({
+      id: a.id,
+      type: a.approval_type,
+      experiment_id: a.experiment_id || null,
+      task_id: a.task_id || null,
+      created_at: a.created_at,
+    })),
+    activity: (state.recentEvents || []).slice(0, 30).map((e:any) => ({
+      id: e.id,
+      type: e.event_type,
+      agent_id: e.agent_id || null,
+      experiment_id: e.experiment_id || null,
+      task_id: e.task_id || null,
+      revenue_cents: Number(e.revenue_cents || 0),
+      cost_cents: Number(e.cost_cents || 0),
+      created_at: e.created_at,
+    })),
+  };
+}
+
 async function tick(supabase: any) {
   const { data: settings, error: settingsError } = await supabase
     .from("f10_settings").select("*").eq("id", true).single();
@@ -717,7 +826,7 @@ Deno.serve(async (req: Request) => {
     const path = markerIndex >= 0 ? (url.pathname.slice(markerIndex + marker.length) || "/") : url.pathname;
 
     if (req.method === "GET" && path === "/health") {
-      return json({ ok: true, service: "foundry10-api", version: 12 });
+      return json({ ok: true, service: "foundry10-api", version: 13 });
     }
 
     if (req.method === "GET" && path.startsWith("/public-offer/")) {
@@ -825,6 +934,10 @@ Deno.serve(async (req: Request) => {
 
     if (req.method === "GET" && path === "/state") {
       return json(await loadState(supabase));
+    }
+
+    if (req.method === "GET" && path === "/world-state") {
+      return json(await loadWorldState(supabase));
     }
 
     if (req.method === "POST" && path === "/tick") {
