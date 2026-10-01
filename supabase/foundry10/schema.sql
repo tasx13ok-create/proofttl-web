@@ -70,6 +70,10 @@ create table if not exists public.f10_experiments (
   conversions bigint not null default 0,
   kill_reason text,
   source_signal_id uuid references public.f10_signals(id) on delete set null,
+  stripe_product_id text,
+  stripe_price_id text,
+  stripe_payment_link_id text,
+  delivery_token_hash text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -291,6 +295,7 @@ create index if not exists f10_agents_current_task_idx on public.f10_agents(curr
 create index if not exists f10_signals_observed_idx on public.f10_signals(observed_at desc);
 create index if not exists f10_experiments_score_idx on public.f10_experiments(score desc);
 create index if not exists f10_experiments_source_signal_idx on public.f10_experiments(source_signal_id);
+create index if not exists f10_experiments_payment_link_idx on public.f10_experiments(stripe_payment_link_id) where stripe_payment_link_id is not null;
 create index if not exists f10_tasks_claimed_by_idx on public.f10_tasks(claimed_by);
 create index if not exists f10_tasks_experiment_idx on public.f10_tasks(experiment_id);
 create index if not exists f10_tasks_reviewer_idx on public.f10_tasks(reviewer_id);
