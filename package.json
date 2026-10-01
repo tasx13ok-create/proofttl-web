@@ -2,7 +2,7 @@
   "name": "proofttl-web",
   "version": "1.0.1",
   "private": true,
-  "description": "Official ProofTTL website for source-backed claim verification: a $299 Rapid Claim Check for up to five claims and a $1,500 Fact Audit for up to 25 outputs.",
+  "description": "Official ProofTTL website and supervised source-backed verification systems.",
   "homepage": "https://proofttl-web.vercel.app/",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
   "scripts": {
     "dev": "vite",
     "build": "next build",
-    "postbuild": "node scripts/check-buyer-recovery.mjs && node scripts/check-static-export.js && node scripts/check-discovery-identity.js && node scripts/check-assistant-session.js && node scripts/check-sales-intake.js && node scripts/check-auth-trust.js && node scripts/check-product-1000.js && node scripts/check-public-sales-shell.js && node scripts/check-mobile-sales-layout.js && node scripts/check-reality-engine.cjs && npm run check:mcp",
+    "postbuild": "node scripts/check-buyer-recovery.mjs && node scripts/check-static-export.js && node scripts/check-discovery-identity.js && node scripts/check-assistant-session.js && node scripts/check-sales-intake.js && node scripts/check-auth-trust.js && node scripts/check-product-1000.js && node scripts/check-public-sales-shell.js && node scripts/check-mobile-sales-layout.js && node scripts/check-reality-engine.cjs && npm run check:mcp && npm run check:foundry10",
     "start": "npx serve out",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run build",
@@ -35,7 +35,8 @@
     "check:reality": "node scripts/check-reality-engine.cjs",
     "discovery:indexnow": "node scripts/indexnow-submit.js",
     "discovery:websub": "node scripts/websub-publish.js",
-    "check:mcp": "node scripts/check-mcp-contract.mjs"
+    "check:mcp": "node scripts/check-mcp-contract.mjs",
+    "check:foundry10": "node scripts/check-foundry10-control.mjs"
   },
   "dependencies": {
     "@better-auth/core": "1.6.25",
