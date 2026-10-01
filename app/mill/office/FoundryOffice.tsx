@@ -25,6 +25,18 @@ type Experiment = {
   revenueCents:number
 }
 
+type LiveOffer = {
+  id:string
+  title:string
+  priceCents:number
+  status:string
+  productUrl:string
+  checkoutUrl:string
+  fulfillment:string
+  channels:Array<{network:string,status:string,publicUrl?:string,reason?:string}>
+  realizedRevenueCents:number
+}
+
 type FoundryState = {
   generatedAt:string
   system:string
@@ -35,6 +47,7 @@ type FoundryState = {
   reinvestCeilingCents:number
   agents:Agent[]
   experiments:Experiment[]
+  liveOffers:LiveOffer[]
 }
 
 const emptyState:FoundryState = {
@@ -47,6 +60,7 @@ const emptyState:FoundryState = {
   reinvestCeilingCents:0,
   agents:[],
   experiments:[],
+  liveOffers:[],
 }
 
 function money(cents:number){
@@ -328,6 +342,27 @@ export default function FoundryOffice(){
               <small>{agent.mode}</small>
             </article>
           ))}
+        </div>
+
+        <h2 className={styles.sectionTitle}>Live money surfaces</h2>
+        <div className={styles.grid}>
+          {state.liveOffers?.length ? state.liveOffers.map(offer=>(
+            <article className={styles.card} key={offer.id}>
+              <div className={styles.cardTop}>
+                <div><h3>{offer.title}</h3><small>{money(offer.priceCents)} · {offer.fulfillment}</small></div>
+                <span className={styles.status}>{offer.status}</span>
+              </div>
+              <p className={styles.task}><a href={offer.productUrl} target="_blank" rel="noreferrer">Open product page ↗</a></p>
+              {offer.channels.map(channel=>(
+                <p key={channel.network}>
+                  {channel.network}: {channel.status}
+                  {channel.publicUrl ? <> · <a href={channel.publicUrl} target="_blank" rel="noreferrer">view post</a></> : null}
+                  {channel.reason ? ' · '+channel.reason : ''}
+                </p>
+              ))}
+              <small>Realized revenue: {money(offer.realizedRevenueCents)}</small>
+            </article>
+          )) : <p className={styles.muted}>No live offer connected yet.</p>}
         </div>
 
         <h2 className={styles.sectionTitle}>Experiment queue</h2>
