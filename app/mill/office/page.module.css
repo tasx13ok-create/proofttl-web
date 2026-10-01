@@ -1,0 +1,27 @@
+.shell{min-height:100vh;background:#050608;color:#f4f5f7;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.viewport{position:relative;height:72vh;min-height:520px;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.12)}
+.canvas{width:100%;height:100%;display:block;background:radial-gradient(circle at 50% 40%,#1b2029 0%,#090b10 62%,#030405 100%)}
+.hud{position:absolute;inset:18px 18px auto 18px;display:flex;gap:10px;flex-wrap:wrap;pointer-events:none}
+.metric{min-width:130px;padding:10px 12px;border:1px solid rgba(255,255,255,.14);background:rgba(6,8,12,.72);backdrop-filter:blur(12px);border-radius:10px}
+.metric span{display:block;color:#8d96a6;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.metric strong{display:block;margin-top:4px;font-size:18px}
+.controls{position:absolute;right:18px;bottom:18px;max-width:330px;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(6,8,12,.78);color:#aeb7c6;font-size:12px}
+.detail{padding:24px}
+.header{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:18px}
+.header h1{margin:0;font-size:clamp(28px,4vw,54px);letter-spacing:-.04em}
+.header p{margin:6px 0 0;color:#939cab;max-width:680px}
+.badge{border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:8px 12px;color:#c7d0dd;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:12px}
+.card{border:1px solid rgba(255,255,255,.11);background:#0b0e13;border-radius:14px;padding:14px}
+.cardTop{display:flex;justify-content:space-between;gap:10px}
+.card h3{margin:0;font-size:15px}
+.card small{color:#788293}
+.card p{color:#a8b0bc;font-size:13px;line-height:1.45}
+.task{color:#d7dce4!important}
+.status{text-transform:uppercase;letter-spacing:.08em;font-size:10px;color:#8cf0b3}
+.sectionTitle{margin:28px 0 12px;font-size:18px}
+.table{width:100%;border-collapse:collapse;font-size:13px}
+.table th,.table td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+.table th{color:#7f8998;font-weight:500}
+.muted{color:#7f8998}
+@media(max-width:720px){.viewport{min-height:460px;height:68vh}.hud{inset:10px 10px auto 10px}.metric{min-width:100px}.controls{left:10px;right:10px;bottom:10px;max-width:none}.detail{padding:18px 12px 30px}.header{align-items:flex-start;flex-direction:column}}
