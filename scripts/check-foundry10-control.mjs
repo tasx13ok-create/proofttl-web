@@ -33,6 +33,8 @@ must(offerProxy.includes('buy.stripe.com'),'offer renderer must constrain checko
 must(edge.includes('/public-offer/'),'edge runtime must expose safe launched-offer reads')
 must(edge.includes('/checkout'),'edge runtime must support approved checkout attachment')
 must(schema.includes('f10_artifacts'),'schema source must include artifact persistence')
+must(schema.includes('f10_issue_delivery_token'),'schema source must include service-only delivery token issuer')
+must(schema.includes('security definer'),'delivery token issuer must stay server-side')
 must(page.includes('index: false') && page.includes('follow: false'),'control room must be noindex/nofollow')
 must(client.includes('type="importmap"') && client.includes('OrbitControls'),'Three.js office must use a browser-valid import map and interactive controls')
 must(vercel.includes('/api/foundry-delivery/'),'Vercel must route gated buyer delivery')
