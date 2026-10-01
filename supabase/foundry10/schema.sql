@@ -132,6 +132,21 @@ create table if not exists public.f10_approvals (
   decided_at timestamptz
 );
 
+create table if not exists public.f10_artifacts (
+  id uuid primary key default gen_random_uuid(),
+  experiment_id uuid not null references public.f10_experiments(id) on delete cascade,
+  task_id uuid references public.f10_tasks(id) on delete set null,
+  artifact_type text not null check (artifact_type in ('strategy','product','listing','distribution','analytics')),
+  version integer not null default 1 check (version > 0),
+  status text not null default 'draft' check (status in ('draft','reviewed','approved','retired')),
+  created_by_agent_id uuid references public.f10_agents(id) on delete set null,
+  reviewed_by_agent_id uuid references public.f10_agents(id) on delete set null,
+  content jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique(task_id, artifact_type)
+);
+
 create table if not exists public.f10_settings (
   id boolean primary key default true check (id),
   paused boolean not null default false,
@@ -255,10 +270,11 @@ alter table public.f10_experiments enable row level security;
 alter table public.f10_tasks enable row level security;
 alter table public.f10_events enable row level security;
 alter table public.f10_approvals enable row level security;
+alter table public.f10_artifacts enable row level security;
 alter table public.f10_settings enable row level security;
 
-revoke all on public.f10_agents,public.f10_signals,public.f10_experiments,public.f10_tasks,public.f10_events,public.f10_approvals,public.f10_settings from anon,authenticated;
-grant select,insert,update,delete on public.f10_agents,public.f10_signals,public.f10_experiments,public.f10_tasks,public.f10_events,public.f10_approvals,public.f10_settings to service_role;
+revoke all on public.f10_agents,public.f10_signals,public.f10_experiments,public.f10_tasks,public.f10_events,public.f10_approvals,public.f10_artifacts,public.f10_settings from anon,authenticated;
+grant select,insert,update,delete on public.f10_agents,public.f10_signals,public.f10_experiments,public.f10_tasks,public.f10_events,public.f10_approvals,public.f10_artifacts,public.f10_settings to service_role;
 grant usage,select on sequence public.f10_events_id_seq to service_role;
 grant execute on function public.f10_score_experiment(int,int,int,int,int,int,int,int,int,int) to service_role;
 grant execute on function public.f10_refresh_governor() to service_role;
@@ -286,6 +302,9 @@ create index if not exists f10_events_created_idx on public.f10_events(created_a
 create index if not exists f10_approvals_experiment_idx on public.f10_approvals(experiment_id);
 create index if not exists f10_approvals_task_idx on public.f10_approvals(task_id);
 create index if not exists f10_approvals_status_idx on public.f10_approvals(status,created_at desc);
+create index if not exists f10_artifacts_experiment_idx on public.f10_artifacts(experiment_id,created_at desc);
+create index if not exists f10_artifacts_task_idx on public.f10_artifacts(task_id);
+create index if not exists f10_artifacts_status_idx on public.f10_artifacts(status,created_at desc);
 
 insert into public.f10_agents(slug,name,role,objective) values
 ('scout-a','Opportunity Scout A','discovery','Find direct buyer pain with fast, truthful monetization paths.'),
