@@ -1,0 +1,383 @@
+{
+  "generatedAt": "2026-10-01T00:08:22.827Z",
+  "system": "FOUNDRY-10",
+  "mode": "zero-spend",
+  "cloudOnly": true,
+  "revenueCents": 0,
+  "spendCents": 0,
+  "profitCents": 0,
+  "reinvestCeilingCents": 0,
+  "paidInferenceEnabled": false,
+  "liveOffers": [
+    {
+      "id": "release-gate-5",
+      "title": "ProofTTL AI Release Gate Kit",
+      "priceCents": 500,
+      "status": "live",
+      "productUrl": "https://proofttl-web.vercel.app/kits/release-gate/",
+      "checkoutUrl": "https://buy.stripe.com/7sYfZa6zc6wjbP270x9EI03",
+      "fulfillment": "instant self-serve material",
+      "channels": [
+        {
+          "network": "threads",
+          "status": "published",
+          "publicUrl": "https://www.threads.com/@proofttl/post/Dd7lMu0iKKb"
+        },
+        {
+          "network": "facebook",
+          "status": "blocked",
+          "reason": "Meta requires Page identity confirmation before publishing."
+        }
+      ],
+      "realizedRevenueCents": 0
+    }
+  ],
+  "connectors": {
+    "hackerNews": {
+      "status": "active",
+      "cost": "free"
+    },
+    "anthropic": {
+      "status": "disabled-by-zero-spend-governor"
+    },
+    "tinyfish": {
+      "status": "not-embedded",
+      "reason": "Connected ChatGPT plugin is metered and is not a GitHub Actions credential. Keep disabled until explicit reinvestment budget exists."
+    }
+  },
+  "agents": [
+    {
+      "id": "scout-a",
+      "name": "Opportunity Scout A",
+      "role": "discovery",
+      "pairId": "pair-discovery",
+      "status": "working",
+      "taskId": "pair-discovery",
+      "currentTask": "Find and cross-check demand signals",
+      "note": "Prioritize explicit pain plus buyer language; current lead score 64.",
+      "mode": "deterministic-zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": "2026-10-01T00:08:22.827Z"
+    },
+    {
+      "id": "scout-b",
+      "name": "Opportunity Scout B",
+      "role": "discovery",
+      "pairId": "pair-discovery",
+      "status": "working",
+      "taskId": "pair-discovery",
+      "currentTask": "Find and cross-check demand signals",
+      "note": "Cross-check whether the pain is narrow enough to solve with a tiny paid artifact before building.",
+      "mode": "deterministic-zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": "2026-10-01T00:08:22.827Z"
+    },
+    {
+      "id": "validator-a",
+      "name": "Demand Validator A",
+      "role": "validation",
+      "pairId": "pair-validation",
+      "status": "working",
+      "taskId": "pair-validation",
+      "currentTask": "Validate payment intent for top lead",
+      "note": "Validation pass: demand signal is public but payment intent is not proven. Require a low-friction price test.",
+      "mode": "deterministic-zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": "2026-10-01T00:08:22.827Z"
+    },
+    {
+      "id": "validator-b",
+      "name": "Demand Validator B",
+      "role": "validation",
+      "pairId": "pair-validation",
+      "status": "working",
+      "taskId": "pair-validation",
+      "currentTask": "Validate payment intent for top lead",
+      "note": "Counter-check: avoid building if the solution requires credentials, regulated advice, or custom support.",
+      "mode": "deterministic-zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": "2026-10-01T00:08:22.827Z"
+    },
+    {
+      "id": "builder-a",
+      "name": "Product Builder A",
+      "role": "product",
+      "pairId": "pair-product",
+      "status": "working",
+      "taskId": "pair-product",
+      "currentTask": "Design the smallest sellable product",
+      "note": "Build the smallest useful version of \"Focused checklist + template\" with one clear outcome.",
+      "mode": "deterministic-zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": "2026-10-01T00:08:22.827Z"
+    },
+    {
+      "id": "builder-b",
+      "name": "Product Builder B",
+      "role": "product",
+      "pairId": "pair-product",
+      "status": "working",
+      "taskId": "pair-product",
+      "currentTask": "Design the smallest sellable product",
+      "note": "Review scope: remove features that do not change purchase intent or fulfillment quality.",
+      "mode": "deterministic-zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": "2026-10-01T00:08:22.827Z"
+    },
+    {
+      "id": "distribution-a",
+      "name": "Distribution Scout A",
+      "role": "distribution",
+      "pairId": "pair-distribution",
+      "status": "working",
+      "taskId": "pair-distribution",
+      "currentTask": "Find compliant acquisition paths",
+      "note": "Primary channel: search + direct product landing page. Use truthful positioning and no unsolicited spam.",
+      "mode": "deterministic-zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": "2026-10-01T00:08:22.827Z"
+    },
+    {
+      "id": "distribution-b",
+      "name": "Distribution Scout B",
+      "role": "distribution",
+      "pairId": "pair-distribution",
+      "status": "working",
+      "taskId": "pair-distribution",
+      "currentTask": "Find compliant acquisition paths",
+      "note": "Backup channel: publish a useful landing page or marketplace listing only where automation is allowed.",
+      "mode": "deterministic-zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": "2026-10-01T00:08:22.827Z"
+    },
+    {
+      "id": "finance",
+      "name": "Finance Analyst",
+      "role": "finance",
+      "pairId": "pair-governance",
+      "status": "working",
+      "taskId": "pair-governance",
+      "currentTask": "Audit economics and reinvestment ceiling",
+      "note": "Hold paid expansion until realized profit clears the governor. Suggested test price $5.",
+      "mode": "deterministic-zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": "2026-10-01T00:08:22.827Z"
+    },
+    {
+      "id": "risk",
+      "name": "Risk & Kill Agent",
+      "role": "risk",
+      "pairId": "pair-governance",
+      "status": "working",
+      "taskId": "pair-governance",
+      "currentTask": "Attack-test risk and decide kill/hold",
+      "note": "Risk pass: no banned category detected; keep claims narrow and fulfillment truthful.",
+      "mode": "deterministic-zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": "2026-10-01T00:08:22.827Z"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "pair-discovery",
+      "title": "Discover + cross-check signals",
+      "agentIds": [
+        "scout-a",
+        "scout-b"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "pair-validation",
+      "title": "Validate buyer intent",
+      "agentIds": [
+        "validator-a",
+        "validator-b"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "pair-product",
+      "title": "Design minimum sellable product",
+      "agentIds": [
+        "builder-a",
+        "builder-b"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "pair-distribution",
+      "title": "Find compliant distribution",
+      "agentIds": [
+        "distribution-a",
+        "distribution-b"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "pair-governance",
+      "title": "Finance + risk gate",
+      "agentIds": [
+        "finance",
+        "risk"
+      ],
+      "status": "active"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "49884087",
+      "title": "Ask HN: How do you get your first users for an MVP?",
+      "url": "https://news.ycombinator.com/item?id=49884087",
+      "source": "ask",
+      "score": 64,
+      "offer": "Focused checklist + template",
+      "price": 5,
+      "format": "digital-kit",
+      "channel": "search + direct product landing page",
+      "status": "watch"
+    },
+    {
+      "id": "49906174",
+      "title": "Ask HN: How will the AI endgame play out?",
+      "url": "https://news.ycombinator.com/item?id=49906174",
+      "source": "ask",
+      "score": 56,
+      "offer": "AI workflow review micro-product",
+      "price": 9,
+      "format": "digital-service",
+      "channel": "search + direct product landing page",
+      "status": "watch"
+    },
+    {
+      "id": "49848955",
+      "title": "Ask HN: Who's still keeping a DOS machine up because the business depends on it?",
+      "url": "https://news.ycombinator.com/item?id=49848955",
+      "source": "ask",
+      "score": 54,
+      "offer": "Focused checklist + template",
+      "price": 5,
+      "format": "digital-kit",
+      "channel": "search + direct product landing page",
+      "status": "reject"
+    },
+    {
+      "id": "49907601",
+      "title": "Muse.ai gets me kicked off fb marketplace",
+      "url": "https://news.ycombinator.com/item?id=49907601",
+      "source": "ask",
+      "score": 50,
+      "offer": "AI workflow review micro-product",
+      "price": 9,
+      "format": "digital-service",
+      "channel": "search + direct product landing page",
+      "status": "reject"
+    },
+    {
+      "id": "49913868",
+      "title": "Factory AI vs. Cognition (Devin) board tussle",
+      "url": "https://news.ycombinator.com/item?id=49913868",
+      "source": "ask",
+      "score": 50,
+      "offer": "AI workflow review micro-product",
+      "price": 9,
+      "format": "digital-service",
+      "channel": "search + direct product landing page",
+      "status": "reject"
+    }
+  ],
+  "experiments": [
+    {
+      "id": "exp-49884087",
+      "title": "Focused checklist + template",
+      "sourceTitle": "Ask HN: How do you get your first users for an MVP?",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49884087",
+      "score": 64,
+      "price": 5,
+      "channel": "search + direct product landing page",
+      "format": "digital-kit",
+      "stage": "validation",
+      "revenueCents": 0,
+      "spendCents": 0,
+      "netProfitCents": 0,
+      "nextGate": "prove buyer intent before build"
+    },
+    {
+      "id": "exp-49906174",
+      "title": "AI workflow review micro-product",
+      "sourceTitle": "Ask HN: How will the AI endgame play out?",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49906174",
+      "score": 56,
+      "price": 9,
+      "channel": "search + direct product landing page",
+      "format": "digital-service",
+      "stage": "queued",
+      "revenueCents": 0,
+      "spendCents": 0,
+      "netProfitCents": 0,
+      "nextGate": "wait for higher-ranked experiment"
+    },
+    {
+      "id": "exp-49848955",
+      "title": "Focused checklist + template",
+      "sourceTitle": "Ask HN: Who's still keeping a DOS machine up because the business depends on it?",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49848955",
+      "score": 54,
+      "price": 5,
+      "channel": "search + direct product landing page",
+      "format": "digital-kit",
+      "stage": "queued",
+      "revenueCents": 0,
+      "spendCents": 0,
+      "netProfitCents": 0,
+      "nextGate": "wait for higher-ranked experiment"
+    },
+    {
+      "id": "exp-49907601",
+      "title": "AI workflow review micro-product",
+      "sourceTitle": "Muse.ai gets me kicked off fb marketplace",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49907601",
+      "score": 50,
+      "price": 9,
+      "channel": "search + direct product landing page",
+      "format": "digital-service",
+      "stage": "queued",
+      "revenueCents": 0,
+      "spendCents": 0,
+      "netProfitCents": 0,
+      "nextGate": "wait for higher-ranked experiment"
+    },
+    {
+      "id": "exp-49913868",
+      "title": "AI workflow review micro-product",
+      "sourceTitle": "Factory AI vs. Cognition (Devin) board tussle",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49913868",
+      "score": 50,
+      "price": 9,
+      "channel": "search + direct product landing page",
+      "format": "digital-service",
+      "stage": "queued",
+      "revenueCents": 0,
+      "spendCents": 0,
+      "netProfitCents": 0,
+      "nextGate": "wait for higher-ranked experiment"
+    }
+  ],
+  "eventLog": [
+    {
+      "at": "2026-10-01T00:08:22.827Z",
+      "type": "cycle",
+      "message": "10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized."
+    }
+  ]
+}
