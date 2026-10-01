@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { signInHref } from '../../lib/proofttl-auth'
 import styles from './page.module.css'
 
-const API = 'https://evrsofjaaudibnihjafb.supabase.co/functions/v1/foundry10-api'
-const KEY_STORAGE = 'foundry10.operatorKey'
+const API = '/api/foundry10'
 
 type Agent = {
   id:string; slug:string; name:string; role:string; objective:string; status:string;
@@ -15,7 +15,8 @@ type Experiment = {
   id:string; slug:string; title:string; target_buyer:string; why_pay:string;
   monetization_method:string; status:string; score:number; compliance_risk:number;
   revenue_cents:number; cost_cents:number; clicks:number; conversions:number;
-  price_cents?:number|null; kill_reason?:string|null
+  price_cents?:number|null; kill_reason?:string|null; checkout_url?:string|null;
+  stripe_payment_link_id?:string|null
 }
 type Task = {
   id:string; experiment_id:string; title:string; task_type:string; state:string;
@@ -30,20 +31,33 @@ type Settings = {
   paused:boolean; spending_cap_cents:number; revenue_goal_cents:number; risk_tolerance:number;
   earned_revenue_cents:number; total_cost_cents:number; reinvestment_cap_cents:number
 }
+type Signal = {
+  id:string; source_type:string; external_id:string; url:string; title:string;
+  excerpt?:string|null; author?:string|null; observed_at:string
+}
+type Artifact = {
+  id:string; experiment_id:string; task_id?:string|null; artifact_type:string; version:number;
+  status:string; content:any; created_at:string
+}
 type State = {
   agents:Agent[]; experiments:Experiment[]; tasks:Task[]; approvals:Approval[];
-  settings:Settings; recentEvents:any[]
+  settings:Settings; recentEvents:any[]; recentSignals:Signal[]; recentArtifacts:Artifact[]
 }
 
 function money(cents=0){ return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(cents/100) }
 function pct(n:number,d:number){ return d ? (n/d*100).toFixed(1)+'%' : '0.0%' }
 
-async function callApi(key:string,path:string,init?:RequestInit){
+async function callApi(path:string,init?:RequestInit){
   const res = await fetch(API+path,{
     ...init,
-    headers:{'content-type':'application/json','x-foundry-key':key,...(init?.headers||{})},
+    credentials:'include',
+    headers:{'content-type':'application/json',...(init?.headers||{})},
     cache:'no-store',
   })
+  if(res.status===401){
+    if(typeof window!=='undefined') window.location.replace(signInHref('/foundry10/'))
+    throw new Error('Owner sign-in required')
+  }
   const data = await res.json().catch(()=>({}))
   if(!res.ok) throw new Error(data.error || 'Request failed')
   return data
@@ -61,9 +75,9 @@ function Office3D({agents,experiments}:{agents:Agent[];experiments:Experiment[]}
       #hud{position:absolute;left:16px;top:14px;z-index:2;padding:10px 12px;border:1px solid #ffffff24;background:#05070acc;border-radius:10px;backdrop-filter:blur(8px)}
       #hud b{display:block;font-size:13px;letter-spacing:.12em} #hud span{color:#9aa4b2}
       canvas{display:block;width:100%;height:100%}
-    </style></head><body><div id="hud"><b>FOUNDRY-10 OFFICE</b><span>drag to orbit · wheel to zoom</span></div>
+    </style><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.181.1/build/three.module.js"}}</script></head><body><div id="hud"><b>FOUNDRY-10 OFFICE</b><span>drag to orbit · wheel to zoom</span></div>
     <script type="module">
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.181.1/build/three.module.js';
+    import * as THREE from 'three';
     import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.181.1/examples/jsm/controls/OrbitControls.js';
     const agents=${safeAgents}; const experiments=${safeExperiments};
     const scene=new THREE.Scene(); scene.background=new THREE.Color(0x07090d); scene.fog=new THREE.Fog(0x07090d,18,42);
@@ -99,8 +113,6 @@ function Office3D({agents,experiments}:{agents:Agent[];experiments:Experiment[]}
 }
 
 export default function Foundry10Client(){
-  const [key,setKey]=useState('')
-  const [input,setInput]=useState('')
   const [state,setState]=useState<State|null>(null)
   const [error,setError]=useState('')
   const [busy,setBusy]=useState(false)
@@ -110,20 +122,15 @@ export default function Foundry10Client(){
   const [econCost,setEconCost]=useState('')
   const [econChannel,setEconChannel]=useState('operator')
 
-  useEffect(()=>{const k=localStorage.getItem(KEY_STORAGE)||''; if(k){setKey(k); load(k)}},[])
+  useEffect(()=>{void load()},[])
 
-  async function load(k=key){
-    if(!k) return
+  async function load(){
     setBusy(true);setError('')
-    try{setState(await callApi(k,'/state'))}catch(e:any){setError(e.message);setState(null)}finally{setBusy(false)}
+    try{setState(await callApi('/state'))}catch(e:any){setError(e.message);setState(null)}finally{setBusy(false)}
   }
-  async function login(){
-    localStorage.setItem(KEY_STORAGE,input.trim());setKey(input.trim());setInput('');await load(input.trim())
-  }
-  function logout(){localStorage.removeItem(KEY_STORAGE);setKey('');setState(null)}
   async function action(path:string,body:any={}){
     setBusy(true);setError('')
-    try{await callApi(key,path,{method:'POST',body:JSON.stringify(body)});await load()}catch(e:any){setError(e.message)}finally{setBusy(false)}
+    try{await callApi(path,{method:'POST',body:JSON.stringify(body)});await load()}catch(e:any){setError(e.message)}finally{setBusy(false)}
   }
 
   async function recordEconomics(){
@@ -135,14 +142,13 @@ export default function Foundry10Client(){
     setEconRevenue('');setEconCost('')
   }
 
-  if(!key || !state){
+  if(!state){
     return <section className={styles.login}>
       <div className={styles.loginCard}>
-        <span className={styles.eyebrow}>FOUNDRY-10 / OPERATOR AUTH</span>
-        <h1>Enter operator key.</h1>
-        <p>This control surface can pause agents, approve launches, kill experiments, and mutate live revenue state. The key stays in this browser.</p>
-        <input type="password" value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&login()} placeholder="f10_…" />
-        <button onClick={login} disabled={!input||busy}>{busy?'Checking…':'Unlock control room'}</button>
+        <span className={styles.eyebrow}>FOUNDRY-10 / OWNER ACCESS</span>
+        <h1>{busy?'Loading control room…':'Owner session required.'}</h1>
+        <p>FOUNDRY-10 uses the existing ProofTTL owner session. No operator key is stored in the browser.</p>
+        {!busy&&<button onClick={()=>window.location.replace(signInHref('/foundry10/'))}>Sign in</button>}
         {error&&<div className={styles.error}>{error}</div>}
       </div>
     </section>
@@ -161,9 +167,10 @@ export default function Foundry10Client(){
       <div><span className={styles.eyebrow}>AUTONOMOUS REVENUE LAB</span><h1>FOUNDRY-10</h1></div>
       <div className={styles.headerActions}>
         <span className={s.paused?styles.badgeWarn:styles.badgeOk}>{s.paused?'PAUSED':'RUNNING'}</span>
+        <button onClick={()=>action('/discover')} disabled={busy}>Discover now</button>
         <button onClick={()=>action('/tick')} disabled={busy}>Run one cycle</button>
         <button onClick={()=>action('/controls',{paused:!s.paused})}>{s.paused?'Resume all':'Pause all'}</button>
-        <button className={styles.ghost} onClick={logout}>Lock</button>
+        <a className={styles.workspaceLink} href="/workspace/">Workspace</a>
       </div>
     </header>
 
@@ -201,7 +208,7 @@ export default function Foundry10Client(){
         <article className={styles.panel}>
           <div className={styles.panelHead}><h2>Approval / risk queue</h2><span>{pending.length} pending</span></div>
           <div className={styles.list}>{pending.length===0?<p className={styles.empty}>No pending approvals.</p>:pending.map(a=><div className={styles.row} key={a.id}>
-            <div><strong>{a.approval_type.replaceAll('_',' ')}</strong><small>{new Date(a.created_at).toLocaleString()}</small></div>
+            <div><strong>{a.approval_type.replaceAll('_',' ')}</strong><small>{new Date(a.created_at).toLocaleString()}</small><code>{JSON.stringify(a.request_payload)}</code></div>
             <div className={styles.rowActions}><button onClick={()=>action('/approval/'+a.id,{status:'approved',note:'Approved by operator'})}>Approve</button><button className={styles.danger} onClick={()=>action('/approval/'+a.id,{status:'rejected',note:'Rejected by operator'})}>Reject</button></div>
           </div>)}</div>
         </article>
@@ -239,6 +246,9 @@ export default function Foundry10Client(){
         <div className={styles.expBody}><div className={styles.expTitle}><strong>{e.title}</strong><span data-status={e.status}>{e.status}</span></div>
           <p>{e.target_buyer}</p><small>{e.why_pay}</small>
           <div className={styles.expMeta}><span>{e.monetization_method}</span><span>{money(e.price_cents||0)}</span><span>risk {e.compliance_risk}/10</span><span>rev {money(e.revenue_cents)}</span></div>
+          {e.checkout_url
+            ? <div className={styles.launchLinks}><a href={'/foundry-offer/'+e.slug+'/' } target="_blank" rel="noreferrer">Offer page</a><a href={e.checkout_url} target="_blank" rel="noreferrer">Stripe checkout</a></div>
+            : e.status==='approved'&&<small className={styles.awaiting}>Approved · awaiting payment-link processor</small>}
         </div>
         <button className={styles.danger} onClick={()=>action('/experiment/'+e.id+'/kill',{reason:'Killed by operator from pipeline'})}>Kill</button>
       </article>)}</div>
@@ -251,11 +261,23 @@ export default function Foundry10Client(){
       <article className={styles.panel}><div className={styles.panelHead}><h2>Agent-to-agent / event log</h2><span>{state.recentEvents.length} recent</span></div>
         <div className={styles.list}>{state.recentEvents.map((e:any)=><div className={styles.event} key={e.id}><strong>{e.event_type}</strong><small>{new Date(e.created_at).toLocaleString()}</small><code>{JSON.stringify(e.payload)}</code></div>)}</div>
       </article>
+      <article className={styles.panel}><div className={styles.panelHead}><h2>Live signal ledger</h2><span>{state.recentSignals?.length||0} recent</span></div>
+        <div className={styles.list}>{(state.recentSignals||[]).map((s)=><a className={styles.signal} key={s.id} href={s.url} target="_blank" rel="noreferrer">
+          <div><strong>{s.title}</strong><small>{s.source_type} · {new Date(s.observed_at).toLocaleString()}</small></div>
+          {s.excerpt&&<p>{s.excerpt.slice(0,260)}</p>}
+        </a>)}</div>
+      </article>
+      <article className={styles.panel}><div className={styles.panelHead}><h2>Artifact ledger</h2><span>{state.recentArtifacts?.length||0} recent</span></div>
+        <div className={styles.list}>{(state.recentArtifacts||[]).map((a)=><details className={styles.artifact} key={a.id}>
+          <summary><strong>{a.artifact_type}</strong><span data-status={a.status}>{a.status}</span><small>v{a.version} · {new Date(a.created_at).toLocaleString()}</small></summary>
+          <pre>{JSON.stringify(a.content,null,2)}</pre>
+        </details>)}</div>
+      </article>
     </section>}
 
     <footer className={styles.footer}>
       <span>FOUNDRY-10 · supervised autonomy</span>
-      <span>{busy?'working…':'idle'} · provider: deterministic-v1 · LLM adapters pending credentials</span>
+      <span>{busy?'working…':'idle'} · deterministic-v2 · Three.js office · paid adapters gated by realized revenue</span>
     </footer>
   </div>
 }

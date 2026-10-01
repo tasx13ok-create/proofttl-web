@@ -2,6 +2,40 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "headers": [
     {
+      "source": "/foundry-delivery",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "private, no-store"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        }
+      ]
+    },
+    {
+      "source": "/foundry-delivery/:path*",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "private, no-store"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        }
+      ]
+    },
+    {
       "source": "/owner",
       "headers": [
         {
@@ -412,6 +446,18 @@
       "dest": "/api/runtime-proxy.js?path=$runtimepath"
     },
     {
+      "src": "^/foundry-offer/(?<offerslug>[a-z0-9-]+)/?$",
+      "dest": "/api/foundry-offer.js?slug=$offerslug"
+    },
+    {
+      "src": "^/api/foundry-delivery/(?<deliveryslug>[a-z0-9-]+)/?$",
+      "dest": "/api/foundry-delivery.js?slug=$deliveryslug"
+    },
+    {
+      "src": "^/api/foundry10/(?<f10path>.*)$",
+      "dest": "/api/foundry10-proxy.js?path=$f10path"
+    },
+    {
       "src": "^/trust\\.html$",
       "status": 308,
       "headers": {
@@ -443,6 +489,15 @@
   "functions": {
     "api/mcp.ts": {
       "maxDuration": 30
+    },
+    "api/foundry10-proxy.js": {
+      "maxDuration": 30
+    },
+    "api/foundry-offer.js": {
+      "maxDuration": 15
+    },
+    "api/foundry-delivery.js": {
+      "maxDuration": 15
     }
   }
 }
