@@ -260,7 +260,152 @@ async function enqueueNextTask(supabase: any, exp: any, currentTask: any) {
   return created.id;
 }
 
-function deterministicReview(task: any, exp: any, reviewerSlug: string, signal: any = null) {
+
+function chooseOfferFormat(exp: any, signal: any) {
+  const text = (String(exp?.title || "") + " " + String(exp?.description || "") + " " + String(signal?.title || "")).toLowerCase();
+  if (/(price|quote|rate|margin|cost|budget)/.test(text)) return "calculator";
+  if (/(template|wording|email|message|copy|faq)/.test(text)) return "template-pack";
+  if (/(audit|review|check|verify|log|security|compliance)/.test(text)) return "review-checklist";
+  if (/(sync|migrate|setup|workflow|process)/.test(text)) return "workflow-kit";
+  return "focused-checklist";
+}
+
+async function createStageArtifact(supabase: any, task: any, exp: any, signal: any, creatorId: string) {
+  if (!["strategy","build","listing","distribution","analytics"].includes(task.task_type)) return null;
+
+  const { data: existing, error: existingError } = await supabase
+    .from("f10_artifacts")
+    .select("*")
+    .eq("task_id", task.id)
+    .eq("artifact_type", task.task_type === "build" ? "product" : task.task_type)
+    .maybeSingle();
+  if (existingError) throw existingError;
+  if (existing) return existing;
+
+  const format = chooseOfferFormat(exp, signal);
+  const sourceUrl = signal?.url || task?.input?.source_url || null;
+  const sourceTitle = signal?.title || task?.input?.source_title || null;
+  let artifactType = task.task_type === "build" ? "product" : task.task_type;
+  let content: any = {};
+
+  if (task.task_type === "strategy") {
+    content = {
+      buyer: exp.target_buyer,
+      problem: exp.description,
+      source_title: sourceTitle,
+      source_url: sourceUrl,
+      evidence_status: signal ? "public_problem_signal_only" : "seeded_hypothesis",
+      offer_format: format,
+      smallest_sellable_outcome: "Deliver one narrow, inspectable result tied to the stated problem without claiming demand is proven.",
+      price_hypothesis_cents: exp.price_cents || 500,
+      assumptions_to_test: [
+        "The target user has this problem often enough to care.",
+        "The proposed artifact saves enough time or risk to justify payment.",
+        "The buyer can understand the value without custom onboarding.",
+      ],
+      kill_conditions: [
+        "No direct buyer-intent signal after validation.",
+        "Delivery requires regulated professional judgment.",
+        "Support burden exceeds the low-ticket economics.",
+      ],
+    };
+  } else if (task.task_type === "build") {
+    content = {
+      product_name: exp.title,
+      format,
+      version: "v1",
+      buyer: exp.target_buyer,
+      source_title: sourceTitle,
+      what_you_get: [
+        "A concise problem-to-action worksheet tied to the validated source signal.",
+        "A step-by-step execution checklist that separates known facts from assumptions.",
+        "A failure-mode section showing when the workflow should stop or escalate.",
+        "A reusable output template so the buyer can repeat the process without rebuilding it.",
+      ],
+      how_to_use: [
+        "Write the concrete outcome you need.",
+        "Fill only facts you can support; mark unknowns explicitly.",
+        "Run each checklist item in order and record blockers.",
+        "Use the failure-mode gate before relying on the output.",
+        "Save the completed record for repeat use or human review.",
+      ],
+      quality_gates: [
+        "No invented customer facts.",
+        "No legal, medical, financial, or safety conclusions.",
+        "No guarantee of revenue, ranking, accuracy, or platform approval.",
+        "Every unresolved assumption remains visible.",
+      ],
+      fulfillment_note: "Draft artifact. It is not public and not purchasable until operator approval and a real checkout are attached.",
+    };
+  } else if (task.task_type === "listing") {
+    content = {
+      headline: exp.title,
+      subheadline: "A narrow self-serve tool for a concrete workflow problem — with assumptions and limits kept visible.",
+      buyer: exp.target_buyer,
+      price_cents: exp.price_cents || 500,
+      bullets: [
+        "Built for one specific outcome instead of a broad all-in-one promise.",
+        "Includes a repeatable checklist/template and explicit stop conditions.",
+        "Designed for fast self-serve use with no fabricated proof or guaranteed result.",
+      ],
+      source_disclosure: signal
+        ? "Inspired by a public problem signal. That signal is not proof of market size or willingness to pay."
+        : "Seeded internal hypothesis. Buyer demand must be validated separately.",
+      checkout_url: exp.checkout_url || null,
+      launch_state: exp.checkout_url ? "checkout_attached" : "needs_checkout",
+      approval_required: true,
+    };
+  } else if (task.task_type === "distribution") {
+    content = {
+      allowed_channels: [
+        "Owned landing page / SEO",
+        "Public educational posts that disclose what the product does",
+        "Replies only where someone explicitly asks for a relevant solution",
+      ],
+      blocked_channels: [
+        "Mass unsolicited DMs or email",
+        "Fake testimonials, fake users, or invented traction",
+        "Platform automation that violates rate limits or terms",
+      ],
+      source_community: signal?.source_type || null,
+      source_url: sourceUrl,
+      first_test: "Use one high-signal public explanation with a direct product link; measure clicks and paid conversions before expanding.",
+      success_metric: "realized_paid_checkout",
+    };
+  } else if (task.task_type === "analytics") {
+    const clicks = Number(exp.clicks || 0);
+    const conversions = Number(exp.conversions || 0);
+    const revenue = Number(exp.revenue_cents || 0);
+    const cost = Number(exp.cost_cents || 0);
+    content = {
+      clicks,
+      conversions,
+      conversion_rate: clicks > 0 ? conversions / clicks : 0,
+      revenue_cents: revenue,
+      cost_cents: cost,
+      net_profit_cents: revenue - cost,
+      decision: revenue > cost && conversions > 0 ? "continue_or_scale_cautiously" : "hold_or_retest",
+      note: "Only realized economics count. Missing traffic data is not treated as zero buyer interest.",
+    };
+  }
+
+  const { data: created, error } = await supabase
+    .from("f10_artifacts")
+    .insert({
+      experiment_id: exp.id,
+      task_id: task.id,
+      artifact_type: artifactType,
+      status: "draft",
+      created_by_agent_id: creatorId,
+      content,
+    })
+    .select("*")
+    .single();
+  if (error) throw error;
+  return created;
+}
+
+function deterministicReview(task: any, exp: any, reviewerSlug: string, signal: any = null, artifact: any = null) {
   const score = Number(exp?.score ?? task?.input?.score ?? 0);
   const highRisk = Number(exp?.compliance_risk ?? 0) >= 7;
   const weak = score < 58;
@@ -268,6 +413,9 @@ function deterministicReview(task: any, exp: any, reviewerSlug: string, signal: 
   const isValidation = task?.task_type === "validation";
   const sourceProfile = signal ? opportunityProfile(String(signal.title || "") + " " + String(signal.excerpt || "")) : null;
   const sourceRejected = Boolean(isValidation && sourceProfile?.reject);
+  const artifactRequired = ["strategy","build","listing","distribution","analytics"].includes(task?.task_type);
+  const missingArtifact = artifactRequired && !artifact;
+  const missingPrice = task?.task_type === "listing" && Number(exp?.price_cents || 0) <= 0;
   const weakCommercialProof = Boolean(
     isValidation &&
     signal &&
@@ -278,7 +426,7 @@ function deterministicReview(task: any, exp: any, reviewerSlug: string, signal: 
 
   const decision = highRisk
     ? "escalate"
-    : (weak || sourceRejected || weakCommercialProof)
+    : (weak || sourceRejected || weakCommercialProof || missingArtifact || missingPrice)
     ? "reject"
     : "advance";
 
@@ -288,9 +436,13 @@ function deterministicReview(task: any, exp: any, reviewerSlug: string, signal: 
     ? "The live source does not clear FOUNDRY-10's commercial-signal floor."
     : weakCommercialProof
     ? "Independent reviewer found pain but not enough direct or recurring commercial intent."
+    : missingArtifact
+    ? "Required stage artifact was not produced."
+    : missingPrice
+    ? "Listing cannot advance without a positive price hypothesis."
     : weak
     ? "Weighted opportunity score is below the current experiment threshold."
-    : "Opportunity clears the weighted score and independent commercial-signal gate.";
+    : "Opportunity clears the weighted score, artifact, and independent commercial-signal gates.";
 
   return {
     reviewer: reviewerSlug,
@@ -299,6 +451,7 @@ function deterministicReview(task: any, exp: any, reviewerSlug: string, signal: 
     rationale,
     score,
     source_signal_id: signal?.id || null,
+    artifact_id: artifact?.id || null,
     checked_at: new Date().toISOString(),
   };
 }
@@ -333,7 +486,7 @@ async function auth(req: Request, supabase: any) {
 }
 
 async function loadState(supabase: any) {
-  const [agents, tasks, experiments, approvals, settings, recentEvents, recentSignals] = await Promise.all([
+  const [agents, tasks, experiments, approvals, settings, recentEvents, recentSignals, recentArtifacts] = await Promise.all([
     supabase.from("f10_agents").select("*").order("name"),
     supabase.from("f10_tasks").select("*").order("priority", { ascending: false }).order("created_at"),
     supabase.from("f10_experiments").select("*").order("score", { ascending: false }),
@@ -341,8 +494,9 @@ async function loadState(supabase: any) {
     supabase.from("f10_settings").select("paused,spending_cap_cents,revenue_goal_cents,risk_tolerance,earned_revenue_cents,total_cost_cents,reinvestment_cap_cents,updated_at").eq("id", true).single(),
     supabase.from("f10_events").select("*").order("created_at", { ascending: false }).limit(100),
     supabase.from("f10_signals").select("*").order("observed_at", { ascending: false }).limit(50),
+    supabase.from("f10_artifacts").select("*").order("created_at", { ascending: false }).limit(50),
   ]);
-  for (const r of [agents,tasks,experiments,approvals,settings,recentEvents,recentSignals]) {
+  for (const r of [agents,tasks,experiments,approvals,settings,recentEvents,recentSignals,recentArtifacts]) {
     if (r.error) throw r.error;
   }
   return {
@@ -353,6 +507,7 @@ async function loadState(supabase: any) {
     settings: settings.data,
     recentEvents: recentEvents.data,
     recentSignals: recentSignals.data,
+    recentArtifacts: recentArtifacts.data,
   };
 }
 
@@ -407,8 +562,9 @@ async function tick(supabase: any) {
     status: "busy", current_task_id: task.id, last_action: "claimed " + task.title, updated_at: new Date().toISOString()
   }).eq("id", primary.id);
 
-  const first = deterministicReview(task, exp, primary.slug, signal);
-  const second = task.important ? deterministicReview(task, exp, secondary.slug, signal) : null;
+  const artifact = await createStageArtifact(supabase, task, exp, signal, primary.id);
+  const first = deterministicReview(task, exp, primary.slug, signal, artifact);
+  const second = task.important ? deterministicReview(task, exp, secondary.slug, signal, artifact) : null;
   const decisions = [first, second].filter(Boolean) as any[];
   const finalDecision = decisions.some((d) => d.decision === "escalate")
     ? "escalate"
@@ -480,10 +636,18 @@ async function tick(supabase: any) {
     }).eq("id", exp.id);
   }
 
+  if (artifact && finalDecision === "advance") {
+    await supabase.from("f10_artifacts").update({
+      status: task.task_type === "listing" ? "reviewed" : "approved",
+      reviewed_by_agent_id: task.important ? secondary.id : primary.id,
+      updated_at: new Date().toISOString()
+    }).eq("id", artifact.id);
+  }
+
   await supabase.from("f10_tasks").update({
     state: nextTaskState,
     touch_count: task.important ? 2 : 1,
-    output: { decisions, final_decision: finalDecision },
+    output: { decisions, final_decision: finalDecision, artifact_id: artifact?.id || null },
     confidence: Math.min(...decisions.map((d) => d.score / 100)),
     completed_at: nextTaskState === "done" || nextTaskState === "killed" ? new Date().toISOString() : null,
     updated_at: new Date().toISOString()
@@ -528,7 +692,49 @@ Deno.serve(async (req: Request) => {
     const path = markerIndex >= 0 ? (url.pathname.slice(markerIndex + marker.length) || "/") : url.pathname;
 
     if (req.method === "GET" && path === "/health") {
-      return json({ ok: true, service: "foundry10-api", version: 8 });
+      return json({ ok: true, service: "foundry10-api", version: 10 });
+    }
+
+    if (req.method === "GET" && path.startsWith("/public-offer/")) {
+      const slug = path.slice("/public-offer/".length);
+      if (!/^[a-z0-9-]{3,120}$/.test(slug)) return json({ error: "not found" }, 404);
+
+      const { data: exp, error: expError } = await supabase
+        .from("f10_experiments")
+        .select("id,slug,title,description,target_buyer,why_pay,monetization_method,status,price_cents,checkout_url")
+        .eq("slug", slug)
+        .in("status", ["launched","tracking","scaling"])
+        .not("checkout_url", "is", null)
+        .maybeSingle();
+      if (expError) throw expError;
+      if (!exp) return json({ error: "not found" }, 404);
+
+      const { data: artifacts, error: artifactError } = await supabase
+        .from("f10_artifacts")
+        .select("artifact_type,status,content,created_at")
+        .eq("experiment_id", exp.id)
+        .in("artifact_type", ["listing","product"])
+        .in("status", ["approved","reviewed"])
+        .order("created_at", { ascending: false });
+      if (artifactError) throw artifactError;
+
+      const listing = artifacts?.find((a:any) => a.artifact_type === "listing")?.content || null;
+      const product = artifacts?.find((a:any) => a.artifact_type === "product")?.content || null;
+
+      return json({
+        offer: {
+          slug: exp.slug,
+          title: exp.title,
+          description: exp.description,
+          target_buyer: exp.target_buyer,
+          why_pay: exp.why_pay,
+          monetization_method: exp.monetization_method,
+          price_cents: exp.price_cents,
+          checkout_url: exp.checkout_url,
+          listing,
+          product,
+        }
+      });
     }
 
     if (req.method === "POST" && path === "/scheduled-tick") {
@@ -596,6 +802,9 @@ Deno.serve(async (req: Request) => {
           await supabase.from("f10_experiments").update({
             status: "approved", updated_at: new Date().toISOString()
           }).eq("id", approval.experiment_id);
+          await supabase.from("f10_artifacts").update({
+            status: "approved", updated_at: new Date().toISOString()
+          }).eq("task_id", task.id).eq("artifact_type", "listing");
 
           const { data: existingDistribution } = await supabase.from("f10_tasks")
             .select("id").eq("experiment_id", approval.experiment_id)
@@ -654,6 +863,44 @@ Deno.serve(async (req: Request) => {
 
       await supabase.rpc("f10_refresh_governor");
       return json({ ok: true });
+    }
+
+    if (req.method === "POST" && path.startsWith("/experiment/") && path.endsWith("/checkout")) {
+      const id = path.split("/")[2];
+      const body = await req.json();
+      const checkoutUrl = String(body.checkout_url || "").trim();
+      let parsed: URL;
+      try { parsed = new URL(checkoutUrl); } catch { return json({ error: "invalid checkout URL" }, 400); }
+      if (parsed.protocol !== "https:" || parsed.hostname !== "buy.stripe.com") {
+        return json({ error: "checkout must be an https://buy.stripe.com URL" }, 400);
+      }
+
+      const { data: exp, error: expError } = await supabase.from("f10_experiments")
+        .select("*").eq("id", id).single();
+      if (expError) throw expError;
+      if (!["approved","launched","tracking"].includes(exp.status)) {
+        return json({ error: "experiment requires approved listing before checkout attachment" }, 409);
+      }
+
+      const priceCents = body.price_cents == null ? Number(exp.price_cents || 0) : Math.trunc(Number(body.price_cents));
+      if (!Number.isFinite(priceCents) || priceCents <= 0) return json({ error: "positive price_cents required" }, 400);
+
+      const { data, error } = await supabase.from("f10_experiments").update({
+        checkout_url: checkoutUrl,
+        price_cents: priceCents,
+        status: "launched",
+        updated_at: new Date().toISOString()
+      }).eq("id", id).select().single();
+      if (error) throw error;
+
+      await supabase.from("f10_events").insert({
+        experiment_id: id,
+        event_type: "checkout_attached",
+        channel: "stripe_payment_link",
+        payload: { checkout_url: checkoutUrl, price_cents: priceCents }
+      });
+
+      return json({ ok: true, experiment: data, public_path: "/foundry-offer/" + data.slug });
     }
 
     if (req.method === "POST" && path.startsWith("/experiment/") && path.endsWith("/kill")) {
