@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { signInHref } from '../../lib/proofttl-auth'
 import styles from './page.module.css'
 
-const API = 'https://evrsofjaaudibnihjafb.supabase.co/functions/v1/foundry10-api'
-const KEY_STORAGE = 'foundry10.operatorKey'
+const API = '/api/foundry10'
 
 type Agent = {
   id:string; slug:string; name:string; role:string; objective:string; status:string;
@@ -38,12 +38,17 @@ type State = {
 function money(cents=0){ return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(cents/100) }
 function pct(n:number,d:number){ return d ? (n/d*100).toFixed(1)+'%' : '0.0%' }
 
-async function callApi(key:string,path:string,init?:RequestInit){
+async function callApi(path:string,init?:RequestInit){
   const res = await fetch(API+path,{
     ...init,
-    headers:{'content-type':'application/json','x-foundry-key':key,...(init?.headers||{})},
+    credentials:'include',
+    headers:{'content-type':'application/json',...(init?.headers||{})},
     cache:'no-store',
   })
+  if(res.status===401){
+    if(typeof window!=='undefined') window.location.replace(signInHref('/foundry10/'))
+    throw new Error('Owner sign-in required')
+  }
   const data = await res.json().catch(()=>({}))
   if(!res.ok) throw new Error(data.error || 'Request failed')
   return data
@@ -99,8 +104,6 @@ function Office3D({agents,experiments}:{agents:Agent[];experiments:Experiment[]}
 }
 
 export default function Foundry10Client(){
-  const [key,setKey]=useState('')
-  const [input,setInput]=useState('')
   const [state,setState]=useState<State|null>(null)
   const [error,setError]=useState('')
   const [busy,setBusy]=useState(false)
@@ -110,20 +113,15 @@ export default function Foundry10Client(){
   const [econCost,setEconCost]=useState('')
   const [econChannel,setEconChannel]=useState('operator')
 
-  useEffect(()=>{const k=localStorage.getItem(KEY_STORAGE)||''; if(k){setKey(k); load(k)}},[])
+  useEffect(()=>{void load()},[])
 
-  async function load(k=key){
-    if(!k) return
+  async function load(){
     setBusy(true);setError('')
-    try{setState(await callApi(k,'/state'))}catch(e:any){setError(e.message);setState(null)}finally{setBusy(false)}
+    try{setState(await callApi('/state'))}catch(e:any){setError(e.message);setState(null)}finally{setBusy(false)}
   }
-  async function login(){
-    localStorage.setItem(KEY_STORAGE,input.trim());setKey(input.trim());setInput('');await load(input.trim())
-  }
-  function logout(){localStorage.removeItem(KEY_STORAGE);setKey('');setState(null)}
   async function action(path:string,body:any={}){
     setBusy(true);setError('')
-    try{await callApi(key,path,{method:'POST',body:JSON.stringify(body)});await load()}catch(e:any){setError(e.message)}finally{setBusy(false)}
+    try{await callApi(path,{method:'POST',body:JSON.stringify(body)});await load()}catch(e:any){setError(e.message)}finally{setBusy(false)}
   }
 
   async function recordEconomics(){
@@ -135,14 +133,13 @@ export default function Foundry10Client(){
     setEconRevenue('');setEconCost('')
   }
 
-  if(!key || !state){
+  if(!state){
     return <section className={styles.login}>
       <div className={styles.loginCard}>
-        <span className={styles.eyebrow}>FOUNDRY-10 / OPERATOR AUTH</span>
-        <h1>Enter operator key.</h1>
-        <p>This control surface can pause agents, approve launches, kill experiments, and mutate live revenue state. The key stays in this browser.</p>
-        <input type="password" value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&login()} placeholder="f10_…" />
-        <button onClick={login} disabled={!input||busy}>{busy?'Checking…':'Unlock control room'}</button>
+        <span className={styles.eyebrow}>FOUNDRY-10 / OWNER ACCESS</span>
+        <h1>{busy?'Loading control room…':'Owner session required.'}</h1>
+        <p>FOUNDRY-10 uses the existing ProofTTL owner session. No operator key is stored in the browser.</p>
+        {!busy&&<button onClick={()=>window.location.replace(signInHref('/foundry10/'))}>Sign in</button>}
         {error&&<div className={styles.error}>{error}</div>}
       </div>
     </section>
@@ -163,7 +160,7 @@ export default function Foundry10Client(){
         <span className={s.paused?styles.badgeWarn:styles.badgeOk}>{s.paused?'PAUSED':'RUNNING'}</span>
         <button onClick={()=>action('/tick')} disabled={busy}>Run one cycle</button>
         <button onClick={()=>action('/controls',{paused:!s.paused})}>{s.paused?'Resume all':'Pause all'}</button>
-        <button className={styles.ghost} onClick={logout}>Lock</button>
+        <a className={styles.workspaceLink} href="/workspace/">Workspace</a>
       </div>
     </header>
 
