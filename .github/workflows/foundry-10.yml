@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
+      - main
       - build/foundry-10-mainline
     paths:
       - 'scripts/foundry-10-loop.mjs'
