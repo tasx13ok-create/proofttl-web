@@ -10,6 +10,7 @@ const ALLOWED_PATHS = [
   /^discover$/,
   /^approval\/[0-9a-f-]{36}$/i,
   /^experiment\/[0-9a-f-]{36}\/kill$/i,
+  /^experiment\/[0-9a-f-]{36}\/checkout$/i,
 ]
 
 function cleanPath(value) {
