@@ -325,3 +325,35 @@ insert into public.f10_agents(slug,name,role,objective) values
 on conflict (slug) do nothing;
 
 notify pgrst,'reload schema';
+
+
+-- Service-only token issuer used after an approved payment-link gate.
+create or replace function public.f10_issue_delivery_token(p_experiment_id uuid)
+returns text
+language plpgsql
+security definer
+set search_path = public, extensions, pg_temp
+as $$
+declare
+  token text;
+  changed integer;
+begin
+  token := encode(extensions.gen_random_bytes(32), 'hex');
+
+  update public.f10_experiments
+  set delivery_token_hash = encode(extensions.digest(token, 'sha256'), 'hex'),
+      updated_at = now()
+  where id = p_experiment_id
+    and status in ('approved','launched','tracking','scaling');
+
+  get diagnostics changed = row_count;
+  if changed <> 1 then
+    raise exception 'experiment not eligible for delivery token';
+  end if;
+
+  return token;
+end;
+$$;
+
+revoke all on function public.f10_issue_delivery_token(uuid) from public, anon, authenticated;
+grant execute on function public.f10_issue_delivery_token(uuid) to service_role;
