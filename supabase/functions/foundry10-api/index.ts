@@ -1,0 +1,678 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
+
+const cors = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-foundry-key",
+  "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+};
+
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: { ...cors, "content-type": "application/json" } });
+
+async function sha256(value: string) {
+  const data = new TextEncoder().encode(value);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function requiredAgents(taskType: string) {
+  const map: Record<string, [string,string]> = {
+    discovery: ["scout-a","scout-b"],
+    validation: ["validator","scout-b"],
+    strategy: ["strategist","finance"],
+    build: ["builder-a","builder-b"],
+    listing: ["sales","risk"],
+    distribution: ["distribution","risk"],
+    analytics: ["finance","risk"],
+  };
+  return map[taskType] ?? ["strategist","risk"];
+}
+
+
+function stripHtml(value: string) {
+  return String(value || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function opportunityProfile(text: string) {
+  const value = text.toLowerCase();
+  const hardReject = /(firearm|ammunition|weapon|casino|gambl|porn|sex toy|spyware|malware|phishing|stolen|counterfeit|cannabis|marijuana|thc|cocaine|opioid|election campaign|political persuasion)/i.test(value);
+  const highRisk = /(legal advice|lawsuit|medical|diagnos|prescription|tax advice|investment advice|securities|insurance claim)/i.test(value);
+  const buyer = /(client|customer|business|company|team|agency|freelanc|founder|operator|shop|store|landlord|creator|developer)/i.test(value);
+  const intent = /(looking for|recommend|need a|need an|need help|would pay|pay for|budget|buy|purchase|alternative to|replace|tool for|software for|service for)/i.test(value);
+  const pain = /(manual|tedious|waste time|time-consuming|frustrat|pain|problem|broken|expensive|slow|annoy|struggl|difficult|hard to|can't find|cannot find)/i.test(value);
+  const recurring = /(every day|every week|every month|repeated|recurring|each client|each customer|workflow|process|pipeline)/i.test(value);
+  const vague = /(endgame|what do you think|thoughts on|future of|who is|why is everyone|general discussion|career advice|navigate career|job search|resume|outside tech|favorite hobby|what do you do outside|is there a market for)/i.test(value);
+
+  let relevance = 0;
+  if (buyer) relevance += 2;
+  if (intent) relevance += 3;
+  if (pain) relevance += 2;
+  if (recurring) relevance += 1;
+  if (vague) relevance -= 3;
+
+  const commercialSignal = intent || (pain && recurring && buyer);
+  return {
+    reject: hardReject || vague || relevance < 2 || !commercialSignal,
+    highRisk,
+    buyer_intent: Math.max(1, Math.min(10, 4 + (buyer ? 2 : 0) + (intent ? 2 : 0) + (pain ? 1 : 0))),
+    speed_to_launch: 8,
+    monetization_ease: Math.max(3, Math.min(9, 5 + (intent ? 2 : 0) + (buyer ? 1 : 0))),
+    competition: 6,
+    margin: 9,
+    compliance_risk: highRisk ? 9 : 3,
+    maintenance_burden: recurring ? 4 : 3,
+    distribution_difficulty: buyer ? 5 : 7,
+    automation_potential: recurring ? 9 : 8,
+    first_dollar_speed: Math.max(4, Math.min(9, 6 + (intent ? 2 : 0) + (pain ? 1 : 0))),
+    intent,
+    pain,
+    recurring,
+  };
+}
+
+async function discover(supabase: any) {
+  const { count: backlog, error: backlogError } = await supabase
+    .from("f10_tasks")
+    .select("id", { count: "exact", head: true })
+    .in("state", ["queued","claimed","researching","validating","building","reviewing","launching","tracking","scaling"]);
+  if (backlogError) throw backlogError;
+  if (Number(backlog || 0) >= 12) {
+    return { insertedSignals: 0, insertedExperiments: 0, rejected: 0, skipped: "backlog_cap", backlog: Number(backlog || 0) };
+  }
+
+  const sources = [
+    {
+      source_type: "hackernews_ask",
+      url: "https://hn.algolia.com/api/v1/search_by_date?tags=ask_hn&hitsPerPage=30",
+    },
+  ];
+
+  let insertedSignals = 0;
+  let insertedExperiments = 0;
+  let rejected = 0;
+  const maxNewExperiments = 3;
+
+  for (const source of sources) {
+    const response = await fetch(source.url, {
+      headers: { accept: "application/json", "user-agent": "FOUNDRY-10/1" },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!response.ok) throw new Error("discovery source HTTP " + response.status);
+    const body = await response.json();
+    const hits = Array.isArray(body?.hits) ? body.hits : [];
+
+    for (const hit of hits) {
+      if (insertedExperiments >= maxNewExperiments) break;
+      const externalId = String(hit?.objectID || "").trim();
+      const title = stripHtml(String(hit?.title || hit?.story_title || ""));
+      if (!externalId || !title) continue;
+      const excerpt = stripHtml(String(hit?.story_text || hit?.comment_text || "")).slice(0, 1200);
+      const profile = opportunityProfile(title + " " + excerpt);
+      if (profile.reject) {
+        rejected += 1;
+        continue;
+      }
+
+      let { data: signal, error: signalReadError } = await supabase
+        .from("f10_signals")
+        .select("id")
+        .eq("source_type", source.source_type)
+        .eq("external_id", externalId)
+        .maybeSingle();
+      if (signalReadError) throw signalReadError;
+
+      if (!signal) {
+        const { data: createdSignal, error: signalInsertError } = await supabase
+          .from("f10_signals")
+          .insert({
+            source_type: source.source_type,
+            external_id: externalId,
+            url: "https://news.ycombinator.com/item?id=" + externalId,
+            title,
+            excerpt,
+            author: hit?.author ? String(hit.author) : null,
+            observed_at: hit?.created_at || new Date().toISOString(),
+            payload: {
+              points: Number(hit?.points || 0),
+              num_comments: Number(hit?.num_comments || 0),
+              source_query: source.url,
+            },
+          })
+          .select("id")
+          .single();
+        if (signalInsertError) throw signalInsertError;
+        signal = createdSignal;
+        insertedSignals += 1;
+      }
+
+      const { data: existingExperiment, error: expReadError } = await supabase
+        .from("f10_experiments")
+        .select("id")
+        .eq("source_signal_id", signal.id)
+        .maybeSingle();
+      if (expReadError) throw expReadError;
+      if (existingExperiment) continue;
+
+      const slug = "hn-" + externalId;
+      const whyPay = profile.intent
+        ? "The source contains direct solution-seeking language; payment intent is still unproven and must pass validation."
+        : "The source shows concrete operational pain; willingness to pay is unproven and must pass validation.";
+
+      const { data: experiment, error: experimentError } = await supabase
+        .from("f10_experiments")
+        .insert({
+          slug,
+          title: title.slice(0, 180),
+          description: excerpt || "Public Ask HN demand signal. FOUNDRY-10 has not yet validated willingness to pay.",
+          target_buyer: "Operators adjacent to the public problem signal",
+          why_pay: whyPay,
+          monetization_method: "small paid experiment to be designed after validation",
+          estimated_build_minutes: profile.highRisk ? 240 : 90,
+          estimated_margin_pct: 95,
+          status: "idea",
+          risk_notes: profile.highRisk
+            ? "Regulated/high-consequence domain detected. Human approval required and automated launch is blocked."
+            : "Public signal only. Do not treat the post as proof of buyer demand or payment intent.",
+          buyer_intent: profile.buyer_intent,
+          speed_to_launch: profile.speed_to_launch,
+          monetization_ease: profile.monetization_ease,
+          competition: profile.competition,
+          margin: profile.margin,
+          compliance_risk: profile.compliance_risk,
+          maintenance_burden: profile.maintenance_burden,
+          distribution_difficulty: profile.distribution_difficulty,
+          automation_potential: profile.automation_potential,
+          first_dollar_speed: profile.first_dollar_speed,
+          source_signal_id: signal.id,
+        })
+        .select("id,score")
+        .single();
+      if (experimentError) throw experimentError;
+
+      await supabase.from("f10_tasks").insert({
+        experiment_id: experiment.id,
+        title: "Validate live demand signal: " + title.slice(0, 140),
+        task_type: "validation",
+        state: "queued",
+        priority: Number(experiment.score) >= 70 ? 9 : 7,
+        important: true,
+        required_touches: 2,
+        input: {
+          source_signal_id: signal.id,
+          source_type: source.source_type,
+          source_url: "https://news.ycombinator.com/item?id=" + externalId,
+          source_title: title,
+          payment_intent_proven: false,
+        },
+      });
+      insertedExperiments += 1;
+    }
+  }
+
+  return { insertedSignals, insertedExperiments, rejected };
+}
+
+function nextTaskSpec(taskType: string) {
+  const map: Record<string, { type: string; title: string; priority: number } | null> = {
+    validation: { type: "strategy", title: "Design smallest monetizable experiment", priority: 8 },
+    strategy: { type: "build", title: "Build minimum sellable product", priority: 8 },
+    build: { type: "listing", title: "Prepare truthful offer, price, and launch package", priority: 8 },
+    listing: null,
+    distribution: { type: "analytics", title: "Track traffic, conversions, revenue, and cost", priority: 6 },
+    analytics: null,
+  };
+  return map[taskType] ?? null;
+}
+
+async function enqueueNextTask(supabase: any, exp: any, currentTask: any) {
+  const spec = nextTaskSpec(currentTask.task_type);
+  if (!spec) return null;
+
+  const { data: existing, error: existingError } = await supabase
+    .from("f10_tasks")
+    .select("id")
+    .eq("experiment_id", exp.id)
+    .eq("task_type", spec.type)
+    .neq("state", "killed")
+    .limit(1)
+    .maybeSingle();
+  if (existingError) throw existingError;
+  if (existing) return existing.id;
+
+  const { data: created, error } = await supabase.from("f10_tasks").insert({
+    experiment_id: exp.id,
+    title: spec.title + ": " + exp.title,
+    task_type: spec.type,
+    state: "queued",
+    priority: spec.priority,
+    important: true,
+    required_touches: 2,
+    input: { parent_task_id: currentTask.id, score: exp.score, price_cents: exp.price_cents }
+  }).select("id").single();
+  if (error) throw error;
+  return created.id;
+}
+
+function deterministicReview(task: any, exp: any, reviewerSlug: string, signal: any = null) {
+  const score = Number(exp?.score ?? task?.input?.score ?? 0);
+  const highRisk = Number(exp?.compliance_risk ?? 0) >= 7;
+  const weak = score < 58;
+  const strictReviewer = reviewerSlug === "scout-b" || reviewerSlug === "risk" || reviewerSlug === "finance";
+  const isValidation = task?.task_type === "validation";
+  const sourceProfile = signal ? opportunityProfile(String(signal.title || "") + " " + String(signal.excerpt || "")) : null;
+  const sourceRejected = Boolean(isValidation && sourceProfile?.reject);
+  const weakCommercialProof = Boolean(
+    isValidation &&
+    signal &&
+    strictReviewer &&
+    !sourceProfile?.intent &&
+    !(sourceProfile?.pain && sourceProfile?.recurring)
+  );
+
+  const decision = highRisk
+    ? "escalate"
+    : (weak || sourceRejected || weakCommercialProof)
+    ? "reject"
+    : "advance";
+
+  const rationale = highRisk
+    ? "Compliance risk requires operator review before launch."
+    : sourceRejected
+    ? "The live source does not clear FOUNDRY-10's commercial-signal floor."
+    : weakCommercialProof
+    ? "Independent reviewer found pain but not enough direct or recurring commercial intent."
+    : weak
+    ? "Weighted opportunity score is below the current experiment threshold."
+    : "Opportunity clears the weighted score and independent commercial-signal gate.";
+
+  return {
+    reviewer: reviewerSlug,
+    provider: "deterministic-v2",
+    decision,
+    rationale,
+    score,
+    source_signal_id: signal?.id || null,
+    checked_at: new Date().toISOString(),
+  };
+}
+
+async function ownerAuth(req: Request) {
+  const cookie = req.headers.get("cookie") ?? "";
+  if (!cookie) return false;
+  try {
+    const response = await fetch("https://proofttl.tasx13ok.workers.dev/owner/overview", {
+      method: "GET",
+      headers: {
+        cookie,
+        accept: "application/json",
+        "user-agent": "foundry10-edge/1",
+      },
+      redirect: "manual",
+    });
+    return response.status === 200;
+  } catch {
+    return false;
+  }
+}
+
+async function auth(req: Request, supabase: any) {
+  const key = req.headers.get("x-foundry-key") ?? "";
+  if (key) {
+    const hash = await sha256(key);
+    const { data, error } = await supabase.rpc("f10_operator_key_valid", { p_hash: hash });
+    if (!error && data === true) return true;
+  }
+  return ownerAuth(req);
+}
+
+async function loadState(supabase: any) {
+  const [agents, tasks, experiments, approvals, settings, recentEvents, recentSignals] = await Promise.all([
+    supabase.from("f10_agents").select("*").order("name"),
+    supabase.from("f10_tasks").select("*").order("priority", { ascending: false }).order("created_at"),
+    supabase.from("f10_experiments").select("*").order("score", { ascending: false }),
+    supabase.from("f10_approvals").select("*").order("created_at", { ascending: false }).limit(50),
+    supabase.from("f10_settings").select("paused,spending_cap_cents,revenue_goal_cents,risk_tolerance,earned_revenue_cents,total_cost_cents,reinvestment_cap_cents,updated_at").eq("id", true).single(),
+    supabase.from("f10_events").select("*").order("created_at", { ascending: false }).limit(100),
+    supabase.from("f10_signals").select("*").order("observed_at", { ascending: false }).limit(50),
+  ]);
+  for (const r of [agents,tasks,experiments,approvals,settings,recentEvents,recentSignals]) {
+    if (r.error) throw r.error;
+  }
+  return {
+    agents: agents.data,
+    tasks: tasks.data,
+    experiments: experiments.data,
+    approvals: approvals.data,
+    settings: settings.data,
+    recentEvents: recentEvents.data,
+    recentSignals: recentSignals.data,
+  };
+}
+
+async function tick(supabase: any) {
+  const { data: settings, error: settingsError } = await supabase
+    .from("f10_settings").select("*").eq("id", true).single();
+  if (settingsError) throw settingsError;
+  if (settings.paused) return { action: "paused" };
+
+  const { data: task, error: taskError } = await supabase
+    .from("f10_tasks")
+    .select("*")
+    .eq("state", "queued")
+    .order("priority", { ascending: false })
+    .order("created_at")
+    .limit(1)
+    .maybeSingle();
+
+  if (taskError) throw taskError;
+  if (!task) return { action: "idle", reason: "no queued tasks" };
+
+  const { data: exp, error: expError } = await supabase
+    .from("f10_experiments").select("*").eq("id", task.experiment_id).single();
+  if (expError) throw expError;
+
+  let signal = null;
+  if (exp.source_signal_id) {
+    const { data: signalRow, error: signalError } = await supabase
+      .from("f10_signals").select("*").eq("id", exp.source_signal_id).maybeSingle();
+    if (signalError) throw signalError;
+    signal = signalRow;
+  }
+
+  const [primarySlug, secondarySlug] = requiredAgents(task.task_type);
+  const { data: agentRows, error: agentError } = await supabase
+    .from("f10_agents").select("*").in("slug", [primarySlug, secondarySlug]);
+  if (agentError) throw agentError;
+
+  const primary = agentRows.find((a:any) => a.slug === primarySlug);
+  const secondary = agentRows.find((a:any) => a.slug === secondarySlug);
+  if (!primary || !secondary) throw new Error("required agents missing");
+
+  await supabase.from("f10_tasks").update({
+    state: "validating",
+    claimed_by: primary.id,
+    reviewer_id: task.important ? secondary.id : null,
+    attempts: task.attempts + 1,
+    updated_at: new Date().toISOString(),
+  }).eq("id", task.id);
+
+  await supabase.from("f10_agents").update({
+    status: "busy", current_task_id: task.id, last_action: "claimed " + task.title, updated_at: new Date().toISOString()
+  }).eq("id", primary.id);
+
+  const first = deterministicReview(task, exp, primary.slug, signal);
+  const second = task.important ? deterministicReview(task, exp, secondary.slug, signal) : null;
+  const decisions = [first, second].filter(Boolean) as any[];
+  const finalDecision = decisions.some((d) => d.decision === "escalate")
+    ? "escalate"
+    : decisions.some((d) => d.decision === "reject")
+    ? "reject"
+    : "advance";
+
+  let nextTaskState = "done";
+  let nextExperimentStatus = exp.status;
+  let approvalCreated = false;
+
+  if (finalDecision === "escalate") {
+    nextTaskState = "reviewing";
+    const { data: existing } = await supabase.from("f10_approvals")
+      .select("id").eq("task_id", task.id).eq("status", "pending").maybeSingle();
+    if (!existing) {
+      await supabase.from("f10_approvals").insert({
+        task_id: task.id,
+        experiment_id: exp.id,
+        approval_type: "launch",
+        request_payload: { reason: "compliance escalation", decisions }
+      });
+      approvalCreated = true;
+    }
+  } else if (finalDecision === "reject") {
+    nextTaskState = "killed";
+    nextExperimentStatus = "killed";
+    await supabase.from("f10_experiments").update({
+      status: "killed",
+      kill_reason: "Failed deterministic two-agent validation gate",
+      updated_at: new Date().toISOString()
+    }).eq("id", exp.id);
+  } else {
+    const statusByTask: Record<string,string> = {
+      validation: "queued",
+      strategy: "building",
+      build: "reviewing",
+      distribution: "tracking",
+      analytics: "tracking"
+    };
+    nextExperimentStatus = statusByTask[task.task_type] ?? exp.status;
+
+    if (task.task_type === "listing") {
+      nextTaskState = "reviewing";
+      nextExperimentStatus = "reviewing";
+      const { data: existingApproval } = await supabase.from("f10_approvals")
+        .select("id").eq("task_id", task.id).eq("status", "pending").maybeSingle();
+      if (!existingApproval) {
+        await supabase.from("f10_approvals").insert({
+          task_id: task.id,
+          experiment_id: exp.id,
+          approval_type: "public_listing",
+          request_payload: {
+            title: exp.title,
+            price_cents: exp.price_cents,
+            monetization_method: exp.monetization_method,
+            note: "Approval allows the workflow to proceed to distribution planning. It does not create a Stripe link or publish externally."
+          }
+        });
+        approvalCreated = true;
+      }
+    } else {
+      await enqueueNextTask(supabase, exp, task);
+    }
+
+    await supabase.from("f10_experiments").update({
+      status: nextExperimentStatus,
+      updated_at: new Date().toISOString()
+    }).eq("id", exp.id);
+  }
+
+  await supabase.from("f10_tasks").update({
+    state: nextTaskState,
+    touch_count: task.important ? 2 : 1,
+    output: { decisions, final_decision: finalDecision },
+    confidence: Math.min(...decisions.map((d) => d.score / 100)),
+    completed_at: nextTaskState === "done" || nextTaskState === "killed" ? new Date().toISOString() : null,
+    updated_at: new Date().toISOString()
+  }).eq("id", task.id);
+
+  await supabase.from("f10_agents").update({
+    status: "idle", current_task_id: null, last_action: "completed " + task.title, updated_at: new Date().toISOString()
+  }).in("id", [primary.id, ...(task.important ? [secondary.id] : [])]);
+
+  await supabase.from("f10_events").insert([
+    {
+      experiment_id: exp.id, task_id: task.id, agent_id: primary.id,
+      event_type: "agent_touch", payload: first
+    },
+    ...(second ? [{
+      experiment_id: exp.id, task_id: task.id, agent_id: secondary.id,
+      event_type: "agent_touch", payload: second
+    }] : []),
+    {
+      experiment_id: exp.id, task_id: task.id,
+      event_type: "task_decision", payload: { finalDecision, approvalCreated }
+    }
+  ]);
+
+  await supabase.rpc("f10_refresh_governor");
+  return { action: "processed", task_id: task.id, experiment_id: exp.id, finalDecision, approvalCreated };
+}
+
+Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
+
+  const supabase = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    { auth: { persistSession: false } }
+  );
+
+  try {
+    const url = new URL(req.url);
+    const marker = "/foundry10-api";
+    const markerIndex = url.pathname.indexOf(marker);
+    const path = markerIndex >= 0 ? (url.pathname.slice(markerIndex + marker.length) || "/") : url.pathname;
+
+    if (req.method === "GET" && path === "/health") {
+      return json({ ok: true, service: "foundry10-api", version: 8 });
+    }
+
+    if (req.method === "POST" && path === "/scheduled-tick") {
+      const { data: claimed, error: claimError } = await supabase.rpc("f10_scheduler_claim");
+      if (claimError) throw claimError;
+      if (!claimed) return json({ ok: true, action: "rate_limited" });
+
+      let discovery = { action: "skipped" } as any;
+      const { data: discoveryClaimed, error: discoveryClaimError } = await supabase.rpc("f10_discovery_claim");
+      if (discoveryClaimError) throw discoveryClaimError;
+      if (discoveryClaimed) discovery = { action: "ran", ...(await discover(supabase)) };
+
+      return json({ ok: true, discovery, result: await tick(supabase) });
+    }
+
+    if (!(await auth(req, supabase))) return json({ error: "unauthorized" }, 401);
+
+    if (req.method === "POST" && path === "/discover") {
+      return json({ ok: true, result: await discover(supabase) });
+    }
+
+    if (req.method === "GET" && path === "/state") {
+      return json(await loadState(supabase));
+    }
+
+    if (req.method === "POST" && path === "/tick") {
+      return json(await tick(supabase));
+    }
+
+    if (req.method === "POST" && path === "/controls") {
+      const body = await req.json();
+      const allowed = ["paused","spending_cap_cents","revenue_goal_cents","risk_tolerance"];
+      const patch: Record<string,unknown> = {};
+      for (const key of allowed) if (key in body) patch[key] = body[key];
+      patch.updated_at = new Date().toISOString();
+      const { data, error } = await supabase.from("f10_settings").update(patch).eq("id", true).select().single();
+      if (error) throw error;
+      return json({ ok: true, settings: data });
+    }
+
+    if (req.method === "POST" && path.startsWith("/approval/")) {
+      const id = path.split("/").pop()!;
+      const body = await req.json();
+      if (!["approved","rejected"].includes(body.status)) return json({ error: "invalid approval status" }, 400);
+      const { data: approval, error: aerr } = await supabase.from("f10_approvals")
+        .update({ status: body.status, decision_note: body.note ?? null, decided_at: new Date().toISOString() })
+        .eq("id", id).select().single();
+      if (aerr) throw aerr;
+
+      if (approval.task_id) {
+        const { data: task, error: taskErr } = await supabase.from("f10_tasks")
+          .select("*").eq("id", approval.task_id).single();
+        if (taskErr) throw taskErr;
+
+        await supabase.from("f10_tasks").update({
+          state: body.status === "approved" ? "done" : "killed",
+          completed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }).eq("id", approval.task_id);
+
+        if (body.status === "approved" && task.task_type === "listing") {
+          const { data: exp, error: expErr } = await supabase.from("f10_experiments")
+            .select("*").eq("id", approval.experiment_id).single();
+          if (expErr) throw expErr;
+          await supabase.from("f10_experiments").update({
+            status: "approved", updated_at: new Date().toISOString()
+          }).eq("id", approval.experiment_id);
+
+          const { data: existingDistribution } = await supabase.from("f10_tasks")
+            .select("id").eq("experiment_id", approval.experiment_id)
+            .eq("task_type", "distribution").neq("state", "killed").limit(1).maybeSingle();
+          if (!existingDistribution) {
+            await supabase.from("f10_tasks").insert({
+              experiment_id: approval.experiment_id,
+              title: "Plan compliant distribution: " + exp.title,
+              task_type: "distribution",
+              state: "queued",
+              priority: 7,
+              important: true,
+              required_touches: 2,
+              input: { approved_listing_task_id: task.id }
+            });
+          }
+        }
+
+        if (body.status === "rejected" && approval.experiment_id) {
+          await supabase.from("f10_experiments").update({
+            status: "killed",
+            kill_reason: "Operator rejected required approval",
+            updated_at: new Date().toISOString()
+          }).eq("id", approval.experiment_id);
+        }
+      }
+      return json({ ok: true, approval });
+    }
+
+    if (req.method === "POST" && path === "/revenue") {
+      const body = await req.json();
+      const amount = Math.trunc(Number(body.revenue_cents ?? 0));
+      const cost = Math.trunc(Number(body.cost_cents ?? 0));
+      if (!body.experiment_id || !Number.isFinite(amount) || !Number.isFinite(cost) || amount < 0 || cost < 0) {
+        return json({ error: "experiment_id and non-negative revenue_cents/cost_cents required" }, 400);
+      }
+      const { data: exp, error: expError } = await supabase.from("f10_experiments")
+        .select("*").eq("id", body.experiment_id).single();
+      if (expError) throw expError;
+
+      await supabase.from("f10_events").insert({
+        experiment_id: body.experiment_id,
+        event_type: "realized_economics",
+        channel: body.channel ?? "operator",
+        revenue_cents: amount,
+        cost_cents: cost,
+        payload: { note: body.note ?? null, external_reference: body.external_reference ?? null }
+      });
+
+      await supabase.from("f10_experiments").update({
+        revenue_cents: Number(exp.revenue_cents || 0) + amount,
+        cost_cents: Number(exp.cost_cents || 0) + cost,
+        conversions: Number(exp.conversions || 0) + (amount > 0 ? 1 : 0),
+        updated_at: new Date().toISOString()
+      }).eq("id", body.experiment_id);
+
+      await supabase.rpc("f10_refresh_governor");
+      return json({ ok: true });
+    }
+
+    if (req.method === "POST" && path.startsWith("/experiment/") && path.endsWith("/kill")) {
+      const id = path.split("/")[2];
+      const body = await req.json().catch(() => ({}));
+      const { data, error } = await supabase.from("f10_experiments").update({
+        status: "killed",
+        kill_reason: body.reason ?? "Killed by operator",
+        updated_at: new Date().toISOString()
+      }).eq("id", id).select().single();
+      if (error) throw error;
+      await supabase.from("f10_tasks").update({ state: "killed", updated_at: new Date().toISOString() })
+        .eq("experiment_id", id).not("state", "in", "(done,killed)");
+      return json({ ok: true, experiment: data });
+    }
+
+    return json({ error: "not found" }, 404);
+  } catch (error) {
+    console.error(error);
+    return json({ error: error instanceof Error ? error.message : String(error) }, 500);
+  }
+});
