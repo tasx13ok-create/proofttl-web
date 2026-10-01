@@ -30,9 +30,13 @@ type Settings = {
   paused:boolean; spending_cap_cents:number; revenue_goal_cents:number; risk_tolerance:number;
   earned_revenue_cents:number; total_cost_cents:number; reinvestment_cap_cents:number
 }
+type Signal = {
+  id:string; source_type:string; external_id:string; url:string; title:string;
+  excerpt?:string|null; author?:string|null; observed_at:string
+}
 type State = {
   agents:Agent[]; experiments:Experiment[]; tasks:Task[]; approvals:Approval[];
-  settings:Settings; recentEvents:any[]
+  settings:Settings; recentEvents:any[]; recentSignals:Signal[]
 }
 
 function money(cents=0){ return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(cents/100) }
@@ -158,6 +162,7 @@ export default function Foundry10Client(){
       <div><span className={styles.eyebrow}>AUTONOMOUS REVENUE LAB</span><h1>FOUNDRY-10</h1></div>
       <div className={styles.headerActions}>
         <span className={s.paused?styles.badgeWarn:styles.badgeOk}>{s.paused?'PAUSED':'RUNNING'}</span>
+        <button onClick={()=>action('/discover')} disabled={busy}>Discover now</button>
         <button onClick={()=>action('/tick')} disabled={busy}>Run one cycle</button>
         <button onClick={()=>action('/controls',{paused:!s.paused})}>{s.paused?'Resume all':'Pause all'}</button>
         <a className={styles.workspaceLink} href="/workspace/">Workspace</a>
@@ -247,6 +252,12 @@ export default function Foundry10Client(){
       </article>
       <article className={styles.panel}><div className={styles.panelHead}><h2>Agent-to-agent / event log</h2><span>{state.recentEvents.length} recent</span></div>
         <div className={styles.list}>{state.recentEvents.map((e:any)=><div className={styles.event} key={e.id}><strong>{e.event_type}</strong><small>{new Date(e.created_at).toLocaleString()}</small><code>{JSON.stringify(e.payload)}</code></div>)}</div>
+      </article>
+      <article className={styles.panel}><div className={styles.panelHead}><h2>Live signal ledger</h2><span>{state.recentSignals?.length||0} recent</span></div>
+        <div className={styles.list}>{(state.recentSignals||[]).map((s)=><a className={styles.signal} key={s.id} href={s.url} target="_blank" rel="noreferrer">
+          <div><strong>{s.title}</strong><small>{s.source_type} · {new Date(s.observed_at).toLocaleString()}</small></div>
+          {s.excerpt&&<p>{s.excerpt.slice(0,260)}</p>}
+        </a>)}</div>
       </article>
     </section>}
 
