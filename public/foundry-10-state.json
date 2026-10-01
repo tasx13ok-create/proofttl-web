@@ -1,0 +1,222 @@
+{
+  "generatedAt": "2026-09-30T23:58:00.000Z",
+  "system": "FOUNDRY-10",
+  "mode": "zero-spend",
+  "cloudOnly": true,
+  "revenueCents": 0,
+  "spendCents": 0,
+  "profitCents": 0,
+  "reinvestCeilingCents": 0,
+  "paidInferenceEnabled": false,
+  "connectors": {
+    "hackerNews": {
+      "status": "active",
+      "cost": "free"
+    },
+    "anthropic": {
+      "status": "disabled-by-zero-spend-governor"
+    },
+    "tinyfish": {
+      "status": "not-embedded",
+      "reason": "Metered plugin; preserve zero-spend rule until explicit reinvestment budget exists."
+    }
+  },
+  "agents": [
+    {
+      "id": "scout-a",
+      "name": "Opportunity Scout A",
+      "role": "discovery",
+      "pairId": "pair-discovery",
+      "status": "queued",
+      "taskId": "pair-discovery",
+      "currentTask": "Waiting for first cloud cycle",
+      "note": "",
+      "mode": "zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": null
+    },
+    {
+      "id": "scout-b",
+      "name": "Opportunity Scout B",
+      "role": "discovery",
+      "pairId": "pair-discovery",
+      "status": "queued",
+      "taskId": "pair-discovery",
+      "currentTask": "Waiting for first cloud cycle",
+      "note": "",
+      "mode": "zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": null
+    },
+    {
+      "id": "validator-a",
+      "name": "Demand Validator A",
+      "role": "validation",
+      "pairId": "pair-validation",
+      "status": "queued",
+      "taskId": "pair-validation",
+      "currentTask": "Waiting for first cloud cycle",
+      "note": "",
+      "mode": "zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": null
+    },
+    {
+      "id": "validator-b",
+      "name": "Demand Validator B",
+      "role": "validation",
+      "pairId": "pair-validation",
+      "status": "queued",
+      "taskId": "pair-validation",
+      "currentTask": "Waiting for first cloud cycle",
+      "note": "",
+      "mode": "zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": null
+    },
+    {
+      "id": "builder-a",
+      "name": "Product Builder A",
+      "role": "product",
+      "pairId": "pair-product",
+      "status": "queued",
+      "taskId": "pair-product",
+      "currentTask": "Waiting for first cloud cycle",
+      "note": "",
+      "mode": "zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": null
+    },
+    {
+      "id": "builder-b",
+      "name": "Product Builder B",
+      "role": "product",
+      "pairId": "pair-product",
+      "status": "queued",
+      "taskId": "pair-product",
+      "currentTask": "Waiting for first cloud cycle",
+      "note": "",
+      "mode": "zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": null
+    },
+    {
+      "id": "distribution-a",
+      "name": "Distribution Scout A",
+      "role": "distribution",
+      "pairId": "pair-distribution",
+      "status": "queued",
+      "taskId": "pair-distribution",
+      "currentTask": "Waiting for first cloud cycle",
+      "note": "",
+      "mode": "zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": null
+    },
+    {
+      "id": "distribution-b",
+      "name": "Distribution Scout B",
+      "role": "distribution",
+      "pairId": "pair-distribution",
+      "status": "queued",
+      "taskId": "pair-distribution",
+      "currentTask": "Waiting for first cloud cycle",
+      "note": "",
+      "mode": "zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": null
+    },
+    {
+      "id": "finance",
+      "name": "Finance Analyst",
+      "role": "finance",
+      "pairId": "pair-governance",
+      "status": "queued",
+      "taskId": "pair-governance",
+      "currentTask": "Waiting for first cloud cycle",
+      "note": "",
+      "mode": "zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": null
+    },
+    {
+      "id": "risk",
+      "name": "Risk & Kill Agent",
+      "role": "risk",
+      "pairId": "pair-governance",
+      "status": "queued",
+      "taskId": "pair-governance",
+      "currentTask": "Waiting for first cloud cycle",
+      "note": "",
+      "mode": "zero-spend",
+      "usage": null,
+      "revenueInfluencedCents": 0,
+      "lastActionAt": null
+    }
+  ],
+  "tasks": [
+    {
+      "id": "pair-discovery",
+      "title": "Discover + cross-check signals",
+      "agentIds": [
+        "scout-a",
+        "scout-b"
+      ],
+      "status": "queued"
+    },
+    {
+      "id": "pair-validation",
+      "title": "Validate buyer intent",
+      "agentIds": [
+        "validator-a",
+        "validator-b"
+      ],
+      "status": "queued"
+    },
+    {
+      "id": "pair-product",
+      "title": "Design minimum sellable product",
+      "agentIds": [
+        "builder-a",
+        "builder-b"
+      ],
+      "status": "queued"
+    },
+    {
+      "id": "pair-distribution",
+      "title": "Find compliant distribution",
+      "agentIds": [
+        "distribution-a",
+        "distribution-b"
+      ],
+      "status": "queued"
+    },
+    {
+      "id": "pair-governance",
+      "title": "Finance + risk gate",
+      "agentIds": [
+        "finance",
+        "risk"
+      ],
+      "status": "queued"
+    }
+  ],
+  "candidates": [],
+  "experiments": [],
+  "eventLog": [
+    {
+      "at": "2026-09-30T23:58:00.000Z",
+      "type": "bootstrap",
+      "message": "FOUNDRY-10 cloud branch initialized."
+    }
+  ]
+}
