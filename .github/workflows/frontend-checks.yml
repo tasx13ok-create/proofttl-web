@@ -34,3 +34,58 @@ jobs:
 
       - name: Validate exported routes and Pages headers
         run: node scripts/check-static-export.js
+
+      - name: Upload static preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: proofttl-static-preview
+          path: out
+          if-no-files-found: error
+          retention-days: 1
+
+  preview:
+    if: github.event_name == 'pull_request' && github.head_ref == 'ci/live-verification-probe'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Download built static site
+        uses: actions/download-artifact@v4
+        with:
+          name: proofttl-static-preview
+          path: preview
+
+      - name: Start temporary Cloudflare preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          python3 -m http.server 8080 --directory preview > /tmp/proofttl-http.log 2>&1 &
+          curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /tmp/cloudflared
+          chmod +x /tmp/cloudflared
+          /tmp/cloudflared tunnel --url http://127.0.0.1:8080 --no-autoupdate > /tmp/proofttl-tunnel.log 2>&1 &
+
+          PREVIEW_URL=""
+          for attempt in $(seq 1 60); do
+            PREVIEW_URL=$(grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' /tmp/proofttl-tunnel.log | head -1 || true)
+            if [ -n "$PREVIEW_URL" ]; then
+              break
+            fi
+            sleep 1
+          done
+
+          if [ -z "$PREVIEW_URL" ]; then
+            cat /tmp/proofttl-tunnel.log
+            exit 1
+          fi
+
+          echo "ProofTTL preview: $PREVIEW_URL"
+          echo "::notice title=ProofTTL temporary preview::$PREVIEW_URL"
+          gh api "repos/$GH_REPO/issues/$PR_NUMBER/comments" -f body="ProofTTL temporary live preview: $PREVIEW_URL"
+
+          # Keep the development-only tunnel alive long enough for an interactive review.
+          sleep 900
