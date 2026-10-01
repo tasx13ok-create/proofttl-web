@@ -15,7 +15,8 @@ type Experiment = {
   id:string; slug:string; title:string; target_buyer:string; why_pay:string;
   monetization_method:string; status:string; score:number; compliance_risk:number;
   revenue_cents:number; cost_cents:number; clicks:number; conversions:number;
-  price_cents?:number|null; kill_reason?:string|null
+  price_cents?:number|null; kill_reason?:string|null; checkout_url?:string|null;
+  stripe_payment_link_id?:string|null
 }
 type Task = {
   id:string; experiment_id:string; title:string; task_type:string; state:string;
@@ -34,9 +35,13 @@ type Signal = {
   id:string; source_type:string; external_id:string; url:string; title:string;
   excerpt?:string|null; author?:string|null; observed_at:string
 }
+type Artifact = {
+  id:string; experiment_id:string; task_id?:string|null; artifact_type:string; version:number;
+  status:string; content:any; created_at:string
+}
 type State = {
   agents:Agent[]; experiments:Experiment[]; tasks:Task[]; approvals:Approval[];
-  settings:Settings; recentEvents:any[]; recentSignals:Signal[]
+  settings:Settings; recentEvents:any[]; recentSignals:Signal[]; recentArtifacts:Artifact[]
 }
 
 function money(cents=0){ return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(cents/100) }
@@ -203,7 +208,7 @@ export default function Foundry10Client(){
         <article className={styles.panel}>
           <div className={styles.panelHead}><h2>Approval / risk queue</h2><span>{pending.length} pending</span></div>
           <div className={styles.list}>{pending.length===0?<p className={styles.empty}>No pending approvals.</p>:pending.map(a=><div className={styles.row} key={a.id}>
-            <div><strong>{a.approval_type.replaceAll('_',' ')}</strong><small>{new Date(a.created_at).toLocaleString()}</small></div>
+            <div><strong>{a.approval_type.replaceAll('_',' ')}</strong><small>{new Date(a.created_at).toLocaleString()}</small><code>{JSON.stringify(a.request_payload)}</code></div>
             <div className={styles.rowActions}><button onClick={()=>action('/approval/'+a.id,{status:'approved',note:'Approved by operator'})}>Approve</button><button className={styles.danger} onClick={()=>action('/approval/'+a.id,{status:'rejected',note:'Rejected by operator'})}>Reject</button></div>
           </div>)}</div>
         </article>
@@ -241,6 +246,9 @@ export default function Foundry10Client(){
         <div className={styles.expBody}><div className={styles.expTitle}><strong>{e.title}</strong><span data-status={e.status}>{e.status}</span></div>
           <p>{e.target_buyer}</p><small>{e.why_pay}</small>
           <div className={styles.expMeta}><span>{e.monetization_method}</span><span>{money(e.price_cents||0)}</span><span>risk {e.compliance_risk}/10</span><span>rev {money(e.revenue_cents)}</span></div>
+          {e.checkout_url
+            ? <div className={styles.launchLinks}><a href={'/foundry-offer/'+e.slug+'/' } target="_blank" rel="noreferrer">Offer page</a><a href={e.checkout_url} target="_blank" rel="noreferrer">Stripe checkout</a></div>
+            : e.status==='approved'&&<small className={styles.awaiting}>Approved · awaiting payment-link processor</small>}
         </div>
         <button className={styles.danger} onClick={()=>action('/experiment/'+e.id+'/kill',{reason:'Killed by operator from pipeline'})}>Kill</button>
       </article>)}</div>
@@ -259,11 +267,17 @@ export default function Foundry10Client(){
           {s.excerpt&&<p>{s.excerpt.slice(0,260)}</p>}
         </a>)}</div>
       </article>
+      <article className={styles.panel}><div className={styles.panelHead}><h2>Artifact ledger</h2><span>{state.recentArtifacts?.length||0} recent</span></div>
+        <div className={styles.list}>{(state.recentArtifacts||[]).map((a)=><details className={styles.artifact} key={a.id}>
+          <summary><strong>{a.artifact_type}</strong><span data-status={a.status}>{a.status}</span><small>v{a.version} · {new Date(a.created_at).toLocaleString()}</small></summary>
+          <pre>{JSON.stringify(a.content,null,2)}</pre>
+        </details>)}</div>
+      </article>
     </section>}
 
     <footer className={styles.footer}>
       <span>FOUNDRY-10 · supervised autonomy</span>
-      <span>{busy?'working…':'idle'} · provider: deterministic-v1 · LLM adapters pending credentials</span>
+      <span>{busy?'working…':'idle'} · deterministic-v2 · Three.js office · paid adapters gated by realized revenue</span>
     </footer>
   </div>
 }
