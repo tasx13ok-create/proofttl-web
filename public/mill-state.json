@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-30T23:54:20.483Z",
+  "generatedAt": "2026-10-01T05:46:46.923Z",
   "mode": "deterministic",
   "revenueCents": 0,
   "spendCents": 0,
@@ -11,16 +11,6 @@
       "score": 58,
       "signal": "direct problem/request signal; requires buyer validation",
       "offer": "focused template/checklist",
-      "price": 5,
-      "status": "draft"
-    },
-    {
-      "id": "49873913",
-      "title": "Management is forcing us to use AI",
-      "url": "https://news.ycombinator.com/item?id=49873913",
-      "score": 51,
-      "signal": "direct problem/request signal; requires buyer validation",
-      "offer": "AI workflow/checklist micro-kit",
       "price": 5,
       "status": "draft"
     },
