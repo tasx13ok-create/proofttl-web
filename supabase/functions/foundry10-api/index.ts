@@ -606,6 +606,12 @@ async function tick(supabase: any) {
       analytics: "tracking"
     };
     nextExperimentStatus = statusByTask[task.task_type] ?? exp.status;
+    if (task.task_type === "analytics" && artifact?.content) {
+      const revenue = Number(artifact.content.revenue_cents || 0);
+      const cost = Number(artifact.content.cost_cents || 0);
+      const conversions = Number(artifact.content.conversions || 0);
+      nextExperimentStatus = conversions > 0 && revenue > cost ? "scaling" : "tracking";
+    }
 
     if (task.task_type === "listing") {
       nextTaskState = "reviewing";
@@ -711,7 +717,7 @@ Deno.serve(async (req: Request) => {
     const path = markerIndex >= 0 ? (url.pathname.slice(markerIndex + marker.length) || "/") : url.pathname;
 
     if (req.method === "GET" && path === "/health") {
-      return json({ ok: true, service: "foundry10-api", version: 11 });
+      return json({ ok: true, service: "foundry10-api", version: 12 });
     }
 
     if (req.method === "GET" && path.startsWith("/public-offer/")) {
