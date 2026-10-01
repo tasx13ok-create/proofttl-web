@@ -7,6 +7,7 @@ const ALLOWED_PATHS = [
   /^tick$/,
   /^controls$/,
   /^revenue$/,
+  /^discover$/,
   /^approval\/[0-9a-f-]{36}$/i,
   /^experiment\/[0-9a-f-]{36}\/kill$/i,
 ]
