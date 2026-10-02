@@ -1,34 +1,14 @@
 {
-  "generatedAt": "2026-10-02T05:31:27.410Z",
+  "generatedAt": "2026-10-02T12:28:01.932Z",
   "mode": "deterministic",
   "revenueCents": 0,
   "spendCents": 0,
   "candidates": [
     {
-      "id": "49873913",
-      "title": "Management is forcing us to use AI",
-      "url": "https://news.ycombinator.com/item?id=49873913",
-      "score": 51,
-      "signal": "direct problem/request signal; requires buyer validation",
-      "offer": "AI workflow/checklist micro-kit",
-      "price": 5,
-      "status": "draft"
-    },
-    {
       "id": "49884087",
       "title": "Ask HN: How do you get your first users for an MVP?",
       "url": "https://news.ycombinator.com/item?id=49884087",
       "score": 46,
-      "signal": "direct problem/request signal; requires buyer validation",
-      "offer": "focused template/checklist",
-      "price": 5,
-      "status": "draft"
-    },
-    {
-      "id": "49929822",
-      "title": "GitHub can f..k you and you are forced to love it. or live with it...",
-      "url": "https://news.ycombinator.com/item?id=49929822",
-      "score": 42,
       "signal": "direct problem/request signal; requires buyer validation",
       "offer": "focused template/checklist",
       "price": 5,
