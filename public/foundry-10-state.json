@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-01T22:47:30.622Z",
+  "generatedAt": "2026-10-02T05:54:46.042Z",
   "system": "FOUNDRY-10",
   "mode": "zero-spend",
   "cloudOnly": true,
@@ -58,7 +58,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T22:47:30.622Z"
+      "lastActionAt": "2026-10-02T05:54:46.042Z"
     },
     {
       "id": "scout-b",
@@ -72,7 +72,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T22:47:30.622Z"
+      "lastActionAt": "2026-10-02T05:54:46.042Z"
     },
     {
       "id": "validator-a",
@@ -86,7 +86,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T22:47:30.622Z"
+      "lastActionAt": "2026-10-02T05:54:46.042Z"
     },
     {
       "id": "validator-b",
@@ -100,7 +100,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T22:47:30.622Z"
+      "lastActionAt": "2026-10-02T05:54:46.042Z"
     },
     {
       "id": "builder-a",
@@ -114,7 +114,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T22:47:30.622Z"
+      "lastActionAt": "2026-10-02T05:54:46.042Z"
     },
     {
       "id": "builder-b",
@@ -128,7 +128,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T22:47:30.622Z"
+      "lastActionAt": "2026-10-02T05:54:46.042Z"
     },
     {
       "id": "distribution-a",
@@ -142,7 +142,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T22:47:30.622Z"
+      "lastActionAt": "2026-10-02T05:54:46.042Z"
     },
     {
       "id": "distribution-b",
@@ -156,7 +156,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T22:47:30.622Z"
+      "lastActionAt": "2026-10-02T05:54:46.042Z"
     },
     {
       "id": "finance",
@@ -170,7 +170,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T22:47:30.622Z"
+      "lastActionAt": "2026-10-02T05:54:46.042Z"
     },
     {
       "id": "risk",
@@ -184,7 +184,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-01T22:47:30.622Z"
+      "lastActionAt": "2026-10-02T05:54:46.042Z"
     }
   ],
   "tasks": [
@@ -272,30 +272,6 @@
       "status": "watch"
     },
     {
-      "id": "49848955",
-      "title": "Ask HN: Who's still keeping a DOS machine up because the business depends on it?",
-      "url": "https://news.ycombinator.com/item?id=49848955",
-      "source": "ask",
-      "score": 54,
-      "offer": "Focused checklist + template",
-      "price": 5,
-      "format": "digital-kit",
-      "channel": "search + direct product landing page",
-      "status": "reject"
-    },
-    {
-      "id": "49926691",
-      "title": "Show HN: Premortem – AI agents that red-team your startup idea",
-      "url": "https://premortem.site",
-      "source": "top",
-      "score": 54,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "search + direct product landing page",
-      "status": "reject"
-    },
-    {
       "id": "49920411",
       "title": "Rpi – a Rust rewrite of the Pi agent, 10× faster startup",
       "url": "https://news.ycombinator.com/item?id=49920411",
@@ -379,14 +355,14 @@
       "nextGate": "wait for higher-ranked experiment"
     },
     {
-      "id": "exp-49848955",
-      "title": "Focused checklist + template",
-      "sourceTitle": "Ask HN: Who's still keeping a DOS machine up because the business depends on it?",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49848955",
-      "score": 54,
-      "price": 5,
+      "id": "exp-49920411",
+      "title": "AI workflow review micro-product",
+      "sourceTitle": "Rpi – a Rust rewrite of the Pi agent, 10× faster startup",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49920411",
+      "score": 50,
+      "price": 9,
       "channel": "search + direct product landing page",
-      "format": "digital-kit",
+      "format": "digital-service",
       "stage": "queued",
       "revenueCents": 0,
       "spendCents": 0,
@@ -394,11 +370,11 @@
       "nextGate": "wait for higher-ranked experiment"
     },
     {
-      "id": "exp-49926691",
+      "id": "exp-49907601",
       "title": "AI workflow review micro-product",
-      "sourceTitle": "Show HN: Premortem – AI agents that red-team your startup idea",
-      "sourceUrl": "https://premortem.site",
-      "score": 54,
+      "sourceTitle": "Muse.ai gets me kicked off fb marketplace",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49907601",
+      "score": 50,
       "price": 9,
       "channel": "search + direct product landing page",
       "format": "digital-service",
@@ -411,7 +387,7 @@
   ],
   "eventLog": [
     {
-      "at": "2026-10-01T22:47:30.622Z",
+      "at": "2026-10-02T05:54:46.042Z",
       "type": "cycle",
       "message": "10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized."
     }
