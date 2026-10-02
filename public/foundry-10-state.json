@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-02T12:52:30.545Z",
+  "generatedAt": "2026-10-02T22:22:34.320Z",
   "system": "FOUNDRY-10",
   "mode": "zero-spend",
   "cloudOnly": true,
@@ -58,7 +58,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-02T12:52:30.545Z"
+      "lastActionAt": "2026-10-02T22:22:34.320Z"
     },
     {
       "id": "scout-b",
@@ -72,7 +72,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-02T12:52:30.545Z"
+      "lastActionAt": "2026-10-02T22:22:34.320Z"
     },
     {
       "id": "validator-a",
@@ -86,7 +86,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-02T12:52:30.545Z"
+      "lastActionAt": "2026-10-02T22:22:34.320Z"
     },
     {
       "id": "validator-b",
@@ -100,7 +100,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-02T12:52:30.545Z"
+      "lastActionAt": "2026-10-02T22:22:34.320Z"
     },
     {
       "id": "builder-a",
@@ -114,7 +114,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-02T12:52:30.545Z"
+      "lastActionAt": "2026-10-02T22:22:34.320Z"
     },
     {
       "id": "builder-b",
@@ -128,7 +128,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-02T12:52:30.545Z"
+      "lastActionAt": "2026-10-02T22:22:34.320Z"
     },
     {
       "id": "distribution-a",
@@ -142,7 +142,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-02T12:52:30.545Z"
+      "lastActionAt": "2026-10-02T22:22:34.320Z"
     },
     {
       "id": "distribution-b",
@@ -156,7 +156,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-02T12:52:30.545Z"
+      "lastActionAt": "2026-10-02T22:22:34.320Z"
     },
     {
       "id": "finance",
@@ -170,7 +170,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-02T12:52:30.545Z"
+      "lastActionAt": "2026-10-02T22:22:34.320Z"
     },
     {
       "id": "risk",
@@ -184,7 +184,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-02T12:52:30.545Z"
+      "lastActionAt": "2026-10-02T22:22:34.320Z"
     }
   ],
   "tasks": [
@@ -251,18 +251,6 @@
       "id": "49920340",
       "title": "Ask HN: What landmarks/lighthouses in the era of LLM/AI?",
       "url": "https://news.ycombinator.com/item?id=49920340",
-      "source": "ask",
-      "score": 56,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "search + direct product landing page",
-      "status": "watch"
-    },
-    {
-      "id": "49906174",
-      "title": "Ask HN: How will the AI endgame play out?",
-      "url": "https://news.ycombinator.com/item?id=49906174",
       "source": "ask",
       "score": 56,
       "offer": "AI workflow review micro-product",
@@ -340,21 +328,6 @@
       "nextGate": "wait for higher-ranked experiment"
     },
     {
-      "id": "exp-49906174",
-      "title": "AI workflow review micro-product",
-      "sourceTitle": "Ask HN: How will the AI endgame play out?",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49906174",
-      "score": 56,
-      "price": 9,
-      "channel": "search + direct product landing page",
-      "format": "digital-service",
-      "stage": "queued",
-      "revenueCents": 0,
-      "spendCents": 0,
-      "netProfitCents": 0,
-      "nextGate": "wait for higher-ranked experiment"
-    },
-    {
       "id": "exp-49920411",
       "title": "AI workflow review micro-product",
       "sourceTitle": "Rpi – a Rust rewrite of the Pi agent, 10× faster startup",
@@ -383,11 +356,26 @@
       "spendCents": 0,
       "netProfitCents": 0,
       "nextGate": "wait for higher-ranked experiment"
+    },
+    {
+      "id": "exp-49913868",
+      "title": "AI workflow review micro-product",
+      "sourceTitle": "Factory AI vs. Cognition (Devin) board tussle",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49913868",
+      "score": 50,
+      "price": 9,
+      "channel": "search + direct product landing page",
+      "format": "digital-service",
+      "stage": "queued",
+      "revenueCents": 0,
+      "spendCents": 0,
+      "netProfitCents": 0,
+      "nextGate": "wait for higher-ranked experiment"
     }
   ],
   "eventLog": [
     {
-      "at": "2026-10-02T12:52:30.546Z",
+      "at": "2026-10-02T22:22:34.320Z",
       "type": "cycle",
       "message": "10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized."
     }
