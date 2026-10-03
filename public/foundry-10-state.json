@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-03T11:50:21.110Z",
+  "generatedAt": "2026-10-03T16:32:04.751Z",
   "system": "FOUNDRY-10",
   "mode": "zero-spend",
   "cloudOnly": true,
@@ -54,11 +54,11 @@
       "status": "working",
       "taskId": "pair-discovery",
       "currentTask": "Find and cross-check demand signals",
-      "note": "Prioritize explicit pain plus buyer language; current lead score 64.",
+      "note": "Prioritize explicit pain plus buyer language; current lead score 56.",
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T11:50:21.110Z"
+      "lastActionAt": "2026-10-03T16:32:04.751Z"
     },
     {
       "id": "scout-b",
@@ -72,7 +72,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T11:50:21.110Z"
+      "lastActionAt": "2026-10-03T16:32:04.751Z"
     },
     {
       "id": "validator-a",
@@ -86,7 +86,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T11:50:21.110Z"
+      "lastActionAt": "2026-10-03T16:32:04.751Z"
     },
     {
       "id": "validator-b",
@@ -100,7 +100,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T11:50:21.110Z"
+      "lastActionAt": "2026-10-03T16:32:04.751Z"
     },
     {
       "id": "builder-a",
@@ -110,11 +110,11 @@
       "status": "working",
       "taskId": "pair-product",
       "currentTask": "Design the smallest sellable product",
-      "note": "Build the smallest useful version of \"Focused checklist + template\" with one clear outcome.",
+      "note": "Build the smallest useful version of \"AI workflow review micro-product\" with one clear outcome.",
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T11:50:21.110Z"
+      "lastActionAt": "2026-10-03T16:32:04.751Z"
     },
     {
       "id": "builder-b",
@@ -128,7 +128,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T11:50:21.110Z"
+      "lastActionAt": "2026-10-03T16:32:04.751Z"
     },
     {
       "id": "distribution-a",
@@ -142,7 +142,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T11:50:21.110Z"
+      "lastActionAt": "2026-10-03T16:32:04.751Z"
     },
     {
       "id": "distribution-b",
@@ -156,7 +156,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T11:50:21.110Z"
+      "lastActionAt": "2026-10-03T16:32:04.751Z"
     },
     {
       "id": "finance",
@@ -166,11 +166,11 @@
       "status": "working",
       "taskId": "pair-governance",
       "currentTask": "Audit economics and reinvestment ceiling",
-      "note": "Hold paid expansion until realized profit clears the governor. Suggested test price $5.",
+      "note": "Hold paid expansion until realized profit clears the governor. Suggested test price $9.",
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T11:50:21.110Z"
+      "lastActionAt": "2026-10-03T16:32:04.751Z"
     },
     {
       "id": "risk",
@@ -184,7 +184,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T11:50:21.110Z"
+      "lastActionAt": "2026-10-03T16:32:04.751Z"
     }
   ],
   "tasks": [
@@ -235,18 +235,6 @@
     }
   ],
   "candidates": [
-    {
-      "id": "49884087",
-      "title": "Ask HN: How do you get your first users for an MVP?",
-      "url": "https://news.ycombinator.com/item?id=49884087",
-      "source": "ask",
-      "score": 64,
-      "offer": "Focused checklist + template",
-      "price": 5,
-      "format": "digital-kit",
-      "channel": "search + direct product landing page",
-      "status": "watch"
-    },
     {
       "id": "49942208",
       "title": "Chamath says open AI models are \"commoditize your complement.\" Agree?",
@@ -306,24 +294,21 @@
       "format": "digital-service",
       "channel": "search + direct product landing page",
       "status": "reject"
+    },
+    {
+      "id": "49945323",
+      "title": "City building games have a Soul Problem pt.2",
+      "url": "https://www.radical-elements.com/minor-epiphanies/city-building-games-have-a-soul-problem-pt2",
+      "source": "top",
+      "score": 48,
+      "offer": "Focused checklist + template",
+      "price": 5,
+      "format": "digital-kit",
+      "channel": "search + direct product landing page",
+      "status": "reject"
     }
   ],
   "experiments": [
-    {
-      "id": "exp-49884087",
-      "title": "Focused checklist + template",
-      "sourceTitle": "Ask HN: How do you get your first users for an MVP?",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49884087",
-      "score": 64,
-      "price": 5,
-      "channel": "search + direct product landing page",
-      "format": "digital-kit",
-      "stage": "validation",
-      "revenueCents": 0,
-      "spendCents": 0,
-      "netProfitCents": 0,
-      "nextGate": "prove buyer intent before build"
-    },
     {
       "id": "exp-49942208",
       "title": "AI workflow review micro-product",
@@ -337,7 +322,7 @@
       "revenueCents": 0,
       "spendCents": 0,
       "netProfitCents": 0,
-      "nextGate": "wait for higher-ranked experiment"
+      "nextGate": "prove buyer intent before build"
     },
     {
       "id": "exp-49920340",
@@ -383,11 +368,26 @@
       "spendCents": 0,
       "netProfitCents": 0,
       "nextGate": "wait for higher-ranked experiment"
+    },
+    {
+      "id": "exp-49920411",
+      "title": "AI workflow review micro-product",
+      "sourceTitle": "Rpi – a Rust rewrite of the Pi agent, 10× faster startup",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49920411",
+      "score": 50,
+      "price": 9,
+      "channel": "search + direct product landing page",
+      "format": "digital-service",
+      "stage": "queued",
+      "revenueCents": 0,
+      "spendCents": 0,
+      "netProfitCents": 0,
+      "nextGate": "wait for higher-ranked experiment"
     }
   ],
   "eventLog": [
     {
-      "at": "2026-10-03T11:50:21.110Z",
+      "at": "2026-10-03T16:32:04.752Z",
       "type": "cycle",
       "message": "10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized."
     }
