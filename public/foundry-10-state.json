@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-03T05:29:41.697Z",
+  "generatedAt": "2026-10-03T11:50:21.110Z",
   "system": "FOUNDRY-10",
   "mode": "zero-spend",
   "cloudOnly": true,
@@ -58,7 +58,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T05:29:41.697Z"
+      "lastActionAt": "2026-10-03T11:50:21.110Z"
     },
     {
       "id": "scout-b",
@@ -72,7 +72,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T05:29:41.697Z"
+      "lastActionAt": "2026-10-03T11:50:21.110Z"
     },
     {
       "id": "validator-a",
@@ -86,7 +86,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T05:29:41.697Z"
+      "lastActionAt": "2026-10-03T11:50:21.110Z"
     },
     {
       "id": "validator-b",
@@ -100,7 +100,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T05:29:41.697Z"
+      "lastActionAt": "2026-10-03T11:50:21.110Z"
     },
     {
       "id": "builder-a",
@@ -114,7 +114,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T05:29:41.697Z"
+      "lastActionAt": "2026-10-03T11:50:21.110Z"
     },
     {
       "id": "builder-b",
@@ -128,7 +128,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T05:29:41.697Z"
+      "lastActionAt": "2026-10-03T11:50:21.110Z"
     },
     {
       "id": "distribution-a",
@@ -142,7 +142,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T05:29:41.697Z"
+      "lastActionAt": "2026-10-03T11:50:21.110Z"
     },
     {
       "id": "distribution-b",
@@ -156,7 +156,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T05:29:41.697Z"
+      "lastActionAt": "2026-10-03T11:50:21.110Z"
     },
     {
       "id": "finance",
@@ -170,7 +170,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T05:29:41.697Z"
+      "lastActionAt": "2026-10-03T11:50:21.110Z"
     },
     {
       "id": "risk",
@@ -184,7 +184,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T05:29:41.697Z"
+      "lastActionAt": "2026-10-03T11:50:21.110Z"
     }
   ],
   "tasks": [
@@ -248,14 +248,14 @@
       "status": "watch"
     },
     {
-      "id": "49940029",
-      "title": "We need to deobligate humans from reading generated content",
-      "url": "https://news.ycombinator.com/item?id=49940029",
+      "id": "49942208",
+      "title": "Chamath says open AI models are \"commoditize your complement.\" Agree?",
+      "url": "https://news.ycombinator.com/item?id=49942208",
       "source": "ask",
-      "score": 58,
-      "offer": "Focused checklist + template",
-      "price": 5,
-      "format": "digital-kit",
+      "score": 56,
+      "offer": "AI workflow review micro-product",
+      "price": 9,
+      "format": "digital-service",
       "channel": "search + direct product landing page",
       "status": "watch"
     },
@@ -306,18 +306,6 @@
       "format": "digital-service",
       "channel": "search + direct product landing page",
       "status": "reject"
-    },
-    {
-      "id": "49913868",
-      "title": "Factory AI vs. Cognition (Devin) board tussle",
-      "url": "https://news.ycombinator.com/item?id=49913868",
-      "source": "ask",
-      "score": 50,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "search + direct product landing page",
-      "status": "reject"
     }
   ],
   "experiments": [
@@ -337,14 +325,14 @@
       "nextGate": "prove buyer intent before build"
     },
     {
-      "id": "exp-49940029",
-      "title": "Focused checklist + template",
-      "sourceTitle": "We need to deobligate humans from reading generated content",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49940029",
-      "score": 58,
-      "price": 5,
+      "id": "exp-49942208",
+      "title": "AI workflow review micro-product",
+      "sourceTitle": "Chamath says open AI models are \"commoditize your complement.\" Agree?",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49942208",
+      "score": 56,
+      "price": 9,
       "channel": "search + direct product landing page",
-      "format": "digital-kit",
+      "format": "digital-service",
       "stage": "queued",
       "revenueCents": 0,
       "spendCents": 0,
@@ -399,7 +387,7 @@
   ],
   "eventLog": [
     {
-      "at": "2026-10-03T05:29:41.697Z",
+      "at": "2026-10-03T11:50:21.110Z",
       "type": "cycle",
       "message": "10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized."
     }
