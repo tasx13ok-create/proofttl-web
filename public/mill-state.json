@@ -1,18 +1,7 @@
 {
-  "generatedAt": "2026-10-03T11:35:38.211Z",
+  "generatedAt": "2026-10-03T16:14:27.702Z",
   "mode": "deterministic",
   "revenueCents": 0,
   "spendCents": 0,
-  "candidates": [
-    {
-      "id": "49884087",
-      "title": "Ask HN: How do you get your first users for an MVP?",
-      "url": "https://news.ycombinator.com/item?id=49884087",
-      "score": 46,
-      "signal": "direct problem/request signal; requires buyer validation",
-      "offer": "focused template/checklist",
-      "price": 5,
-      "status": "draft"
-    }
-  ]
+  "candidates": []
 }
