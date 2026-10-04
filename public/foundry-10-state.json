@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-03T21:29:39.863Z",
+  "generatedAt": "2026-10-04T06:03:54.262Z",
   "system": "FOUNDRY-10",
   "mode": "zero-spend",
   "cloudOnly": true,
@@ -58,7 +58,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T21:29:39.863Z"
+      "lastActionAt": "2026-10-04T06:03:54.262Z"
     },
     {
       "id": "scout-b",
@@ -72,7 +72,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T21:29:39.863Z"
+      "lastActionAt": "2026-10-04T06:03:54.262Z"
     },
     {
       "id": "validator-a",
@@ -86,7 +86,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T21:29:39.863Z"
+      "lastActionAt": "2026-10-04T06:03:54.262Z"
     },
     {
       "id": "validator-b",
@@ -100,7 +100,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T21:29:39.863Z"
+      "lastActionAt": "2026-10-04T06:03:54.262Z"
     },
     {
       "id": "builder-a",
@@ -114,7 +114,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T21:29:39.863Z"
+      "lastActionAt": "2026-10-04T06:03:54.262Z"
     },
     {
       "id": "builder-b",
@@ -128,7 +128,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T21:29:39.863Z"
+      "lastActionAt": "2026-10-04T06:03:54.262Z"
     },
     {
       "id": "distribution-a",
@@ -142,7 +142,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T21:29:39.863Z"
+      "lastActionAt": "2026-10-04T06:03:54.262Z"
     },
     {
       "id": "distribution-b",
@@ -156,7 +156,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T21:29:39.863Z"
+      "lastActionAt": "2026-10-04T06:03:54.262Z"
     },
     {
       "id": "finance",
@@ -170,7 +170,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T21:29:39.863Z"
+      "lastActionAt": "2026-10-04T06:03:54.262Z"
     },
     {
       "id": "risk",
@@ -184,7 +184,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-03T21:29:39.863Z"
+      "lastActionAt": "2026-10-04T06:03:54.262Z"
     }
   ],
   "tasks": [
@@ -248,18 +248,6 @@
       "status": "watch"
     },
     {
-      "id": "49920340",
-      "title": "Ask HN: What landmarks/lighthouses in the era of LLM/AI?",
-      "url": "https://news.ycombinator.com/item?id=49920340",
-      "source": "ask",
-      "score": 56,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "search + direct product landing page",
-      "status": "watch"
-    },
-    {
       "id": "49940260",
       "title": "GitHub mutuals on AI in life sciences or bioinformatics",
       "url": "https://news.ycombinator.com/item?id=49940260",
@@ -296,14 +284,38 @@
       "status": "reject"
     },
     {
-      "id": "49945323",
-      "title": "City building games have a Soul Problem pt.2",
-      "url": "https://www.radical-elements.com/minor-epiphanies/city-building-games-have-a-soul-problem-pt2",
+      "id": "49949235",
+      "title": "We're going to need default hard budget caps on pretty much everything",
+      "url": "https://simonwillison.net/2026/Oct/3/default-hard-budget-caps/",
       "source": "top",
       "score": 48,
       "offer": "Focused checklist + template",
       "price": 5,
       "format": "digital-kit",
+      "channel": "search + direct product landing page",
+      "status": "reject"
+    },
+    {
+      "id": "49945933",
+      "title": "Agents don't need memory, they need documentation",
+      "url": "https://liao.gg/blog/agents-dont-need-memory",
+      "source": "top",
+      "score": 48,
+      "offer": "AI workflow review micro-product",
+      "price": 9,
+      "format": "digital-service",
+      "channel": "search + direct product landing page",
+      "status": "reject"
+    },
+    {
+      "id": "49944227",
+      "title": "I quit OpenAI because its culture is broken",
+      "url": "https://www.theatlantic.com/technology/2026/10/openai-safety-team-resignation/688881/?gift=v5U_UzUTothfWXsPxtvNVAh7esWToMRD6XnbXmc5WgA",
+      "source": "top",
+      "score": 48,
+      "offer": "AI workflow review micro-product",
+      "price": 9,
+      "format": "digital-service",
       "channel": "search + direct product landing page",
       "status": "reject"
     }
@@ -323,21 +335,6 @@
       "spendCents": 0,
       "netProfitCents": 0,
       "nextGate": "prove buyer intent before build"
-    },
-    {
-      "id": "exp-49920340",
-      "title": "AI workflow review micro-product",
-      "sourceTitle": "Ask HN: What landmarks/lighthouses in the era of LLM/AI?",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49920340",
-      "score": 56,
-      "price": 9,
-      "channel": "search + direct product landing page",
-      "format": "digital-service",
-      "stage": "queued",
-      "revenueCents": 0,
-      "spendCents": 0,
-      "netProfitCents": 0,
-      "nextGate": "wait for higher-ranked experiment"
     },
     {
       "id": "exp-49940260",
@@ -383,11 +380,26 @@
       "spendCents": 0,
       "netProfitCents": 0,
       "nextGate": "wait for higher-ranked experiment"
+    },
+    {
+      "id": "exp-49949235",
+      "title": "Focused checklist + template",
+      "sourceTitle": "We're going to need default hard budget caps on pretty much everything",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/3/default-hard-budget-caps/",
+      "score": 48,
+      "price": 5,
+      "channel": "search + direct product landing page",
+      "format": "digital-kit",
+      "stage": "queued",
+      "revenueCents": 0,
+      "spendCents": 0,
+      "netProfitCents": 0,
+      "nextGate": "wait for higher-ranked experiment"
     }
   ],
   "eventLog": [
     {
-      "at": "2026-10-03T21:29:39.863Z",
+      "at": "2026-10-04T06:03:54.262Z",
       "type": "cycle",
       "message": "10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized."
     }
