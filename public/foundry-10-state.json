@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-04T12:34:20.852Z",
+  "generatedAt": "2026-10-04T21:40:14.867Z",
   "system": "FOUNDRY-10",
   "mode": "zero-spend",
   "cloudOnly": true,
@@ -58,7 +58,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-04T12:34:20.852Z"
+      "lastActionAt": "2026-10-04T21:40:14.866Z"
     },
     {
       "id": "scout-b",
@@ -72,7 +72,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-04T12:34:20.852Z"
+      "lastActionAt": "2026-10-04T21:40:14.866Z"
     },
     {
       "id": "validator-a",
@@ -86,7 +86,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-04T12:34:20.852Z"
+      "lastActionAt": "2026-10-04T21:40:14.866Z"
     },
     {
       "id": "validator-b",
@@ -100,7 +100,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-04T12:34:20.852Z"
+      "lastActionAt": "2026-10-04T21:40:14.866Z"
     },
     {
       "id": "builder-a",
@@ -114,7 +114,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-04T12:34:20.852Z"
+      "lastActionAt": "2026-10-04T21:40:14.866Z"
     },
     {
       "id": "builder-b",
@@ -128,7 +128,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-04T12:34:20.852Z"
+      "lastActionAt": "2026-10-04T21:40:14.866Z"
     },
     {
       "id": "distribution-a",
@@ -138,11 +138,11 @@
       "status": "working",
       "taskId": "pair-distribution",
       "currentTask": "Find compliant acquisition paths",
-      "note": "Primary channel: search + direct product landing page. Use truthful positioning and no unsolicited spam.",
+      "note": "Primary channel: developer communities + search. Use truthful positioning and no unsolicited spam.",
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-04T12:34:20.852Z"
+      "lastActionAt": "2026-10-04T21:40:14.866Z"
     },
     {
       "id": "distribution-b",
@@ -156,7 +156,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-04T12:34:20.852Z"
+      "lastActionAt": "2026-10-04T21:40:14.866Z"
     },
     {
       "id": "finance",
@@ -170,7 +170,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-04T12:34:20.852Z"
+      "lastActionAt": "2026-10-04T21:40:14.866Z"
     },
     {
       "id": "risk",
@@ -184,7 +184,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-04T12:34:20.852Z"
+      "lastActionAt": "2026-10-04T21:40:14.866Z"
     }
   ],
   "tasks": [
@@ -235,6 +235,18 @@
     }
   ],
   "candidates": [
+    {
+      "id": "49954166",
+      "title": "Why Linux is picking up at a rapid pace for AI usage?",
+      "url": "https://news.ycombinator.com/item?id=49954166",
+      "source": "ask",
+      "score": 56,
+      "offer": "AI workflow review micro-product",
+      "price": 9,
+      "format": "digital-service",
+      "channel": "developer communities + search",
+      "status": "watch"
+    },
     {
       "id": "49942208",
       "title": "Chamath says open AI models are \"commoditize your complement.\" Agree?",
@@ -296,18 +308,6 @@
       "status": "reject"
     },
     {
-      "id": "49949235",
-      "title": "We're going to need default hard budget caps on pretty much everything",
-      "url": "https://simonwillison.net/2026/Oct/3/default-hard-budget-caps/",
-      "source": "top",
-      "score": 48,
-      "offer": "Focused checklist + template",
-      "price": 5,
-      "format": "digital-kit",
-      "channel": "search + direct product landing page",
-      "status": "reject"
-    },
-    {
       "id": "49944227",
       "title": "I quit OpenAI because its culture is broken",
       "url": "https://www.theatlantic.com/technology/2026/10/openai-safety-team-resignation/688881/?gift=v5U_UzUTothfWXsPxtvNVAh7esWToMRD6XnbXmc5WgA",
@@ -320,9 +320,9 @@
       "status": "reject"
     },
     {
-      "id": "49945323",
-      "title": "City building games have a Soul Problem pt.2",
-      "url": "https://www.radical-elements.com/minor-epiphanies/city-building-games-have-a-soul-problem-pt2",
+      "id": "49949235",
+      "title": "We're going to need default hard budget caps on pretty much everything",
+      "url": "https://simonwillison.net/2026/Oct/3/default-hard-budget-caps/",
       "source": "top",
       "score": 48,
       "offer": "Focused checklist + template",
@@ -333,7 +333,7 @@
     },
     {
       "id": "49951641",
-      "title": "What's the Future for Pure Math Research in the Age of AI?",
+      "title": "What's the future for pure math research in the age of AI?",
       "url": "https://writings.stephenwolfram.com/2026/09/whats-the-future-for-pure-math-research-in-the-age-of-ai/",
       "source": "top",
       "score": 46,
@@ -345,6 +345,21 @@
     }
   ],
   "experiments": [
+    {
+      "id": "exp-49954166",
+      "title": "AI workflow review micro-product",
+      "sourceTitle": "Why Linux is picking up at a rapid pace for AI usage?",
+      "sourceUrl": "https://news.ycombinator.com/item?id=49954166",
+      "score": 56,
+      "price": 9,
+      "channel": "developer communities + search",
+      "format": "digital-service",
+      "stage": "queued",
+      "revenueCents": 0,
+      "spendCents": 0,
+      "netProfitCents": 0,
+      "nextGate": "prove buyer intent before build"
+    },
     {
       "id": "exp-49942208",
       "title": "AI workflow review micro-product",
@@ -358,7 +373,7 @@
       "revenueCents": 0,
       "spendCents": 0,
       "netProfitCents": 0,
-      "nextGate": "prove buyer intent before build"
+      "nextGate": "wait for higher-ranked experiment"
     },
     {
       "id": "exp-49907601",
@@ -404,26 +419,11 @@
       "spendCents": 0,
       "netProfitCents": 0,
       "nextGate": "wait for higher-ranked experiment"
-    },
-    {
-      "id": "exp-49945933",
-      "title": "AI workflow review micro-product",
-      "sourceTitle": "Agents don't need memory, they need documentation",
-      "sourceUrl": "https://liao.gg/blog/agents-dont-need-memory",
-      "score": 48,
-      "price": 9,
-      "channel": "search + direct product landing page",
-      "format": "digital-service",
-      "stage": "queued",
-      "revenueCents": 0,
-      "spendCents": 0,
-      "netProfitCents": 0,
-      "nextGate": "wait for higher-ranked experiment"
     }
   ],
   "eventLog": [
     {
-      "at": "2026-10-04T12:34:20.852Z",
+      "at": "2026-10-04T21:40:14.867Z",
       "type": "cycle",
       "message": "10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized."
     }
