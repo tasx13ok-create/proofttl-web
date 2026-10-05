@@ -488,7 +488,7 @@
   ],
   "functions": {
     "api/mcp.ts": {
-      "maxDuration": 30
+      "maxDuration": 60
     },
     "api/foundry10-proxy.js": {
       "maxDuration": 30

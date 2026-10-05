@@ -1,7 +1,7 @@
 const CORE_ORIGIN = 'https://proofttl.tasx13ok.workers.dev'
 const SERVER_NAME = 'proofttl'
-const SERVER_VERSION = '0.4.1'
-const TOOLSET_VERSION = '5'
+const SERVER_VERSION = '0.5.0'
+const TOOLSET_VERSION = '6'
 const MODERN_PROTOCOL = '2026-07-28'
 const LEGACY_PROTOCOLS = ['2025-11-25', '2025-06-18', '2025-03-26']
 const MAX_UPSTREAM_CHARS = 256_000
@@ -15,6 +15,23 @@ type RateEntry = { startedAt: number; count: number }
 const rateBuckets = new Map<string, RateEntry>()
 
 const tools = [
+  {
+    name: 'proofttl_verify_claim',
+    title: 'Verify a claim with ProofTTL',
+    description: 'Invoke truth.verify for a specific claim against a caller-supplied public source URL. Returns time-bounded SUPPORTED, CONTRADICTED, or UNKNOWN evidence. Requires the existing x402 payment: without payment_signature returns PAYMENT_REQUIRED, not a verdict. Only provide an externally signed payment authorization with explicit user authorization; this tool may settle it and create a public Fact Lease. Never provide wallet private keys. Does not search for sources or purchase a human audit.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        claim: { type: 'string', minLength: 1, maxLength: 1000, description: 'Specific factual claim. Issued Fact Leases are public; do not submit confidential information.' },
+        source_url: { type: 'string', minLength: 1, maxLength: 2048, description: 'Public HTTP(S) source to examine. Core enforces DNS/IP checks before settlement and redirect safety during source access.' },
+        ttl_seconds: { type: 'integer', minimum: 60, maximum: 604800, default: 3600 },
+        payment_signature: { type: 'string', minLength: 1, maxLength: 16384, description: 'Optional base64 x402 v2 PAYMENT-SIGNATURE for the core /verify resource, signed outside this tool. Omit to obtain payment requirements. Submitting it authorizes settlement; never automatically retry after an ambiguous failure.' },
+      },
+      required: ['claim', 'source_url'],
+      additionalProperties: false,
+    },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
+  },
   {
     name: 'proofttl_status',
     title: 'ProofTTL status',
@@ -242,7 +259,7 @@ function toolSuccess(data: unknown, modern: boolean): JsonObject {
 function toolFailure(code: string, message: string, modern: boolean, details?: unknown): JsonObject {
   const structuredContent: JsonObject = { error: { code, message, ...(details === undefined ? {} : { details }) } }
   return complete({
-    content: [{ type: 'text', text: `${code}: ${message}` }],
+    content: [{ type: 'text', text: JSON.stringify(structuredContent, null, 2) }],
     structuredContent,
     isError: true,
   }, modern)
@@ -264,9 +281,11 @@ function serviceInfo() {
       toolset_version: TOOLSET_VERSION,
       tools: tools.map((tool) => tool.name),
       canonical_endpoint: 'https://proofttl-web.vercel.app/api/mcp/',
+      verification: { capability: 'truth.verify', tool: 'proofttl_verify_claim', payment: 'x402', source_required: true },
     },
     boundaries: [
-      'This public MCP test surface is read-only except for one bounded fixed test-lease action. Cached clients can invoke the same bounded round-trip through proofttl_get_fact_lease with lease_id __roundtrip_test__.',
+      'Arbitrary claim verification is available through proofttl_verify_claim and remains protected by core x402 payment. Unpaid calls return payment requirements, never a verification verdict.',
+      'The only unpaid issuance is the bounded fixed test-lease action. Cached clients can invoke the same bounded round-trip through proofttl_get_fact_lease with lease_id __roundtrip_test__.',
       'The fixed test action can only verify the Example Domain fixture and does not expose arbitrary unpaid POST /verify.',
       'It does not create audit intakes, charge cards, access private reports, or mutate accounts.',
       'ProofTTL records what examined evidence supports at a point in time; it is not a permanent-truth oracle.',
@@ -274,7 +293,83 @@ function serviceInfo() {
   }
 }
 
+async function verifyClaim(args: unknown, modern: boolean): Promise<JsonObject> {
+  if (!args || typeof args !== 'object' || Array.isArray(args)) return toolFailure('INVALID_ARGUMENT', 'Expected a verification argument object.', modern)
+  const input = args as JsonObject
+  const allowed = ['claim', 'source_url', 'ttl_seconds', 'payment_signature']
+  if (Object.keys(input).some((key) => !allowed.includes(key))) return toolFailure('INVALID_ARGUMENT', 'Unknown verification argument.', modern)
+  const { claim, source_url, ttl_seconds = 3600, payment_signature } = input
+  if (typeof claim !== 'string' || !claim.trim() || claim.length > 1000) return toolFailure('INVALID_ARGUMENT', 'claim must contain 1-1000 characters.', modern)
+  if (typeof source_url !== 'string' || !source_url.trim() || source_url.length > 2048) return toolFailure('INVALID_ARGUMENT', 'source_url must contain 1-2048 characters.', modern)
+  try {
+    const source = new URL(source_url)
+    if (!['http:', 'https:'].includes(source.protocol) || source.username || source.password || (source.port && source.port !== (source.protocol === 'https:' ? '443' : '80'))) throw new Error('invalid source')
+  } catch {
+    return toolFailure('INVALID_ARGUMENT', 'source_url must be an HTTP(S) URL without credentials or a nonstandard port.', modern)
+  }
+  if (typeof ttl_seconds !== 'number' || !Number.isInteger(ttl_seconds) || ttl_seconds < 60 || ttl_seconds > 604800) return toolFailure('INVALID_ARGUMENT', 'ttl_seconds must be an integer from 60 to 604800.', modern)
+  if (payment_signature !== undefined && (typeof payment_signature !== 'string' || payment_signature.length > 16384 || !/^[A-Za-z0-9+/]+={0,2}$/.test(payment_signature))) return toolFailure('INVALID_ARGUMENT', 'payment_signature must be a bounded base64 x402 authorization.', modern)
+
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 55_000)
+  const paymentSubmitted = typeof payment_signature === 'string'
+  const outcome = { payment_submitted: paymentSubmitted, retry_safe: !paymentSubmitted }
+  try {
+    // Always traverse the deployed payment/SSRF/rate-limit middleware. Never
+    // call the core issuer or the free fixture route for an arbitrary claim.
+    const upstream = await fetch(`${CORE_ORIGIN}/verify`, {
+      method: 'POST',
+      headers: { accept: 'application/json', 'content-type': 'application/json', ...(paymentSubmitted ? { 'payment-signature': payment_signature } : {}) },
+      body: JSON.stringify({ claim: claim.trim(), source_url: source_url.trim(), ttl_seconds }),
+      redirect: 'error',
+      signal: controller.signal,
+    })
+    // Bound the streamed response before buffering it; do not retry a request
+    // that may already have settled payment or issued a lease.
+    const reader = upstream.body?.getReader()
+    let text = ''
+    let bytes = 0
+    const decoder = new TextDecoder()
+    if (reader) {
+      try {
+        while (true) {
+          const chunk = await reader.read()
+          if (chunk.done) break
+          bytes += chunk.value.byteLength
+          if (bytes > MAX_UPSTREAM_CHARS) {
+            void reader.cancel().catch(() => {})
+            return toolFailure('UPSTREAM_RESPONSE_TOO_LARGE', 'Verification response exceeded the size limit; outcome may be unknown. Do not automatically resubmit a payment.', modern, outcome)
+          }
+          text += decoder.decode(chunk.value, { stream: true })
+        }
+        text += decoder.decode()
+      } finally { reader.releaseLock() }
+    }
+    let data: unknown
+    try { data = text ? JSON.parse(text) : null } catch {
+      return toolFailure('UPSTREAM_INVALID_JSON', 'Verification returned invalid JSON; outcome may be unknown. Do not automatically resubmit a payment.', modern, outcome)
+    }
+    if (upstream.status === 402) {
+      return toolFailure('PAYMENT_REQUIRED', 'Verification has not completed. Obtain explicit user authorization and an externally signed x402 payment before resubmitting.', modern, {
+        status: 402, payment_required: upstream.headers.get('payment-required'), upstream: data,
+        resource: `${CORE_ORIGIN}/verify`, capability: 'truth.verify',
+      })
+    }
+    if (!upstream.ok) return toolFailure('VERIFICATION_FAILED', 'Core rejected or could not complete verification. Do not automatically resubmit a payment.', modern, { status: upstream.status, upstream: data, ...outcome })
+    if (!data || typeof data !== 'object' || Array.isArray(data) || !['SUPPORTED', 'CONTRADICTED', 'UNKNOWN'].includes(String((data as JsonObject).status))) {
+      return toolFailure('UPSTREAM_INVALID_RESPONSE', 'Core returned no recognized verification verdict. Do not automatically resubmit a payment.', modern, outcome)
+    }
+    return toolSuccess({ ...(data as JsonObject), payment_response: upstream.headers.get('payment-response') }, modern)
+  } catch {
+    return toolFailure('UPSTREAM_UNAVAILABLE', 'Verification outcome is unknown. A submitted payment may have settled; do not automatically retry.', modern, outcome)
+  } finally { clearTimeout(timeout) }
+}
+
 async function callTool(name: string, args: unknown, modern: boolean): Promise<JsonObject> {
+  if (name === 'proofttl_verify_claim') return verifyClaim(args, modern)
+  if ((name === 'proofttl_create_test_fact_lease' || name === 'proofttl_fact_lease_roundtrip_test') && (!args || typeof args !== 'object' || Array.isArray(args) || Object.keys(args).length > 0)) {
+    return toolFailure('INVALID_ARGUMENT', 'The fixed test fixture accepts no arguments.', modern)
+  }
   if (name === 'proofttl_service_info') return toolSuccess(serviceInfo(), modern)
 
   if (name === 'proofttl_create_test_fact_lease') {
@@ -347,7 +442,11 @@ async function callTool(name: string, args: unknown, modern: boolean): Promise<J
   if (name === 'proofttl_capabilities') {
     const upstream = await fetchCore('/capabilities')
     if (!upstream.ok) return toolFailure('UPSTREAM_UNAVAILABLE', 'ProofTTL capabilities could not be read.', modern, { status: upstream.status })
-    return toolSuccess(upstream.data, modern)
+    return toolSuccess({ ...(upstream.data as JsonObject), mcp: {
+      toolset_version: TOOLSET_VERSION,
+      verification: { capability: 'truth.verify', tool: 'proofttl_verify_claim', payment_required: true, source_required: true },
+      audit: { capability: 'truth.audit', tool: null, entry_point: 'https://proofttl-web.vercel.app/audit/', commercial_only: true },
+    } }, modern)
   }
 
   if (name === 'proofttl_get_fact_lease') {
@@ -455,7 +554,7 @@ export default async function handler(request: any, response: any) {
     sendJson(response, 200, rpcResult(id, complete({
       supportedVersions: [MODERN_PROTOCOL],
       capabilities: { tools: {} },
-      instructions: 'Use ProofTTL for source-backed factual verification context. The MCP exposes bounded Fact Lease integration-test actions; arbitrary verification remains x402-protected.',
+      instructions: 'Use proofttl_verify_claim for truth.verify against a supplied public source. Arbitrary verification remains x402-protected; unpaid calls return payment requirements, not verdicts. Fixed test tools only verify Example Domain. Human audits remain a separate commercial service.',
       toolsetVersion: TOOLSET_VERSION,
       toolNames: tools.map((tool) => tool.name),
       ttlMs: 0,
@@ -476,7 +575,7 @@ export default async function handler(request: any, response: any) {
         title: 'ProofTTL',
         websiteUrl: 'https://proofttl-web.vercel.app/',
       },
-      instructions: 'Use ProofTTL for source-backed factual verification context. The public MCP exposes one bounded fixed test-lease action; arbitrary verification remains protected and is not exposed here.',
+      instructions: 'Use proofttl_verify_claim for truth.verify against a supplied public source. Arbitrary verification remains x402-protected; unpaid calls return payment requirements, not verdicts. Fixed test tools only verify Example Domain. Human audits remain a separate commercial service.',
     }))
     return
   }
