@@ -10,6 +10,7 @@ function assert(condition, message) {
 }
 
 const requiredTools = [
+  'proofttl_verify_claim',
   'proofttl_status',
   'proofttl_capabilities',
   'proofttl_get_fact_lease',
@@ -18,8 +19,8 @@ const requiredTools = [
   'proofttl_service_info',
 ]
 
-assert(source.includes("const SERVER_VERSION = '0.4.1'"), 'server version must be 0.4.1')
-assert(source.includes("const TOOLSET_VERSION = '5'"), 'toolset version must be 5')
+assert(source.includes("const SERVER_VERSION = '0.5.0'"), 'server version must be 0.5.0')
+assert(source.includes("const TOOLSET_VERSION = '6'"), 'toolset version must be 6')
 assert(source.includes("const CORE_ORIGIN = 'https://proofttl.tasx13ok.workers.dev'"), 'core origin must remain fixed')
 assert(source.includes("postCore('/mcp/test-lease')"), 'bounded test-lease creation route must remain wired')
 assert(source.includes("value === '__roundtrip_test__'"), 'cached-client round-trip fallback must remain wired')
@@ -36,4 +37,4 @@ const declaredNames = [...source.matchAll(/name:\s*'(proofttl_[a-z0-9_]+)'/g)].m
 const duplicates = declaredNames.filter((name, index) => declaredNames.indexOf(name) !== index)
 assert(duplicates.length === 0, `duplicate MCP tool names: ${[...new Set(duplicates)].join(', ')}`)
 
-console.log(`MCP contract check passed: server 0.4.1, toolset 5, ${requiredTools.length} required tools present.`)
+console.log(`MCP contract check passed: server 0.5.0, toolset 6, ${requiredTools.length} required tools present.`)

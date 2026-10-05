@@ -35,7 +35,7 @@
     "check:reality": "node scripts/check-reality-engine.cjs",
     "discovery:indexnow": "node scripts/indexnow-submit.js",
     "discovery:websub": "node scripts/websub-publish.js",
-    "check:mcp": "node scripts/check-mcp-contract.mjs",
+    "check:mcp": "node scripts/check-mcp-contract.mjs && node --test scripts/mcp.test.mjs",
     "check:foundry10": "node scripts/check-foundry10-control.mjs"
   },
   "dependencies": {

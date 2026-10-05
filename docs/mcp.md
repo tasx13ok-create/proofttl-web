@@ -1,13 +1,14 @@
 # ProofTTL MCP
 
-Public test endpoint:
+Public MCP endpoint (server `0.5.0`, toolset `6`):
 
 `https://proofttl-web.vercel.app/api/mcp/`
 
-This endpoint exposes a deliberately constrained subset of ProofTTL over Model Context Protocol (MCP). It exists so MCP clients can inspect ProofTTL, read live capability/status information, retrieve public Fact Leases, and create one fixed Example Domain test lease for end-to-end connector testing.
+This endpoint exposes protected claim verification, public status/capability and Fact Lease reads, and a bounded Example Domain fixture over Model Context Protocol (MCP).
 
 ## Tools
 
+- `proofttl_verify_claim` — invokes `truth.verify` against a caller-supplied public source through the existing x402-protected `POST /verify` route.
 - `proofttl_status` — reads the live ProofTTL core `/health` response.
 - `proofttl_capabilities` — reads the live ProofTTL capability registry.
 - `proofttl_get_fact_lease` — reads an existing public Fact Lease by ID.
@@ -15,7 +16,19 @@ This endpoint exposes a deliberately constrained subset of ProofTTL over Model C
 - `proofttl_create_test_fact_lease` — creates or reuses a real five-minute Fact Lease for the fixed `Example Domain` / `https://example.com` fixture.
 - `proofttl_fact_lease_roundtrip_test` — creates/reuses the bounded test lease, immediately retrieves that exact lease, verifies the lease IDs match, and returns both complete payloads plus diagnostic checks.
 
-The public MCP does **not** proxy arbitrary `POST /verify`. Technical verification remains protected by the existing x402 gate. The only mutation is the bounded fixed test fixture, which reuses an active lease during its five-minute TTL. It does not create audit intakes, access private reports, charge cards, or mutate accounts.
+Arbitrary verification remains protected by the existing x402 gate. Unpaid requests return an MCP tool error with code `PAYMENT_REQUIRED`, the core challenge body and `payment-required` header, and the canonical core resource URL. This is not a verdict. The only unpaid issuance is the bounded fixed test fixture, which reuses an active lease during its five-minute TTL. MCP does not create audit intakes, access private reports, charge cards, or mutate accounts. `truth.audit` remains a separate commercial service; the capabilities response explicitly describes both mappings.
+
+## Claim verification
+
+Supply `claim` (1–1000 characters), `source_url` (public HTTP(S), at most 2048 characters), and optionally `ttl_seconds` (integer 60–604800, default 3600). The tool checks the supplied source; it does not discover sources or promise universal truth. Issued leases are public, so do not submit confidential information.
+
+```json
+{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"proofttl_verify_claim","arguments":{"claim":"A specific factual claim","source_url":"https://example.org/evidence","ttl_seconds":300}}}
+```
+
+After explicit user authorization, an x402-capable client can sign the returned challenge externally and supply the base64 v2 header value as `payment_signature`. It is forwarded only as `PAYMENT-SIGNATURE` to the fixed core `/verify` resource. The adapter has no wallet, signing key, payment bypass, auto-payment, or automatic retry. Never put a wallet private key in tool arguments. ChatGPT clients without a signing integration can obtain the challenge but cannot finish paid verification unaided.
+
+Core authenticates payment and applies payer limits and source URL/DNS checks before settlement. Settlement must succeed before source fetching, inference, or lease persistence. Redirect protections remain in core. Successful MCP responses preserve the verdict/evidence and include `payment_response` settlement metadata when present. `UNKNOWN` may legitimately lack a lease when the source is unavailable. Failures after payment submission can leave settlement/issuance outcome unknown: do not automatically resubmit or assume no charge occurred.
 
 ## Protocol compatibility
 
@@ -42,13 +55,13 @@ The public test surface uses a fixed upstream origin:
 
 `https://proofttl.tasx13ok.workers.dev`
 
-It never accepts an arbitrary upstream URL. Fact Lease identifiers are restricted to a bounded non-path character set. Normal upstream reads are GET-only. The fixed test-lease tool makes one POST to the hard-coded `/mcp/test-lease` backend route; it accepts no arbitrary claim or source URL. All upstream calls are time-bounded, response-bounded, and use manual error handling without exposing stack traces or secrets.
+It never accepts an arbitrary upstream target. The source URL is JSON data sent to core, never fetched by this adapter. Verification rejects unknown fields and malformed values before upstream requests, and only POSTs to `/verify`. The fixed test tools only POST to `/mcp/test-lease` and reject arguments. Fact Lease identifiers remain bounded non-path strings. No account cookies, arbitrary headers, or server credentials are forwarded. Verification responses are stream-bounded to 256000 bytes and requests time out at 55 seconds without following redirects or retrying.
 
 Requests are body-size limited and use a best-effort in-process per-IP rate limit. Browser origins, when present, are allowlisted. Server-to-server MCP clients normally send no Origin header.
 
-This public test endpoint contains no signing keys, admin tokens, payment secrets, customer cookies, or private-report credentials.
+The adapter stores no signing keys, admin tokens, payment secrets, customer cookies, or private-report credentials. A caller-provided payment authorization is used only for that request, is not logged by the adapter, and is not copied into the verification JSON body or successful output.
 
-The in-process rate limiter is not a substitute for a platform-level Vercel Firewall rule under sustained distributed traffic. Before expanding this MCP to mutation-capable or credentialed tools, add platform-level rate limiting and authentication.
+The in-process rate limiter is best-effort. Core also retains platform challenge/payment-attempt limits and cryptographically verified payer rate limits. Payment authorization is enforced in core, not inferred from MCP access. Private account/report tools remain unexposed.
 
 ## Legacy smoke test
 
@@ -88,6 +101,6 @@ curl -sS https://proofttl-web.vercel.app/api/mcp/ \
   --data '{"jsonrpc":"2.0","id":1,"method":"server/discover","params":{"_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientInfo":{"name":"curl","version":"1.0"},"io.modelcontextprotocol/clientCapabilities":{}}}}'
 ```
 
-## Expansion path
+## Checks and live verification
 
-After this public read-only endpoint is proven against real clients, the next MCP layer should reuse the existing hardened ProofTTL backend instead of duplicating verification logic. Credentialed/private-report tools and any paid verification workflow should stay fail-closed until their authentication, platform rate limiting, and payment semantics are explicitly wired and tested.
+Run `npm run check:mcp` for contract and mocked handler tests, and `npm run check` for typecheck/build and postbuild checks. Run `node scripts/mcp-live-smoke.mjs` against production after deployment, or set `MCP_URL` to a preview endpoint. The live test checks discovery, an unpaid challenge, fixed-fixture isolation and roundtrip; it never signs or spends funds. Mocked paid responses are not evidence of a live paid verification. That requires a separately authorized signed payment.
