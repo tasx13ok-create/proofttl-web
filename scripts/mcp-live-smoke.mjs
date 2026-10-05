@@ -20,28 +20,36 @@ async function rpc(method, params = {}, modern = false) {
   return body.result
 }
 
-// Wait for the release version as well as HTTP readiness during rollout.
-// Mutation/payment calls below are never retried.
+// During alias propagation, successive requests can reach different releases.
+// Check the whole read-only discovery contract and require two consistent
+// rounds in rollout-wait mode. Mutation/payment calls below are never retried.
 const attempts = Math.max(1, Math.min(90, Number(process.env.MCP_WAIT_ATTEMPTS || 1)))
-let initialized
+const requiredRounds = attempts > 1 ? 2 : 1
+let consistentRounds = 0
+let discoveryError
 for (let attempt = 1; attempt <= attempts; attempt++) {
   try {
-    initialized = await rpc('initialize', { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'proofttl-smoke', version: '1.0' } })
-    if (initialized.serverInfo.version === version) break
-  } catch (error) { if (attempt === attempts) throw error }
+    const initialized = await rpc('initialize', { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'proofttl-smoke', version: '1.0' } })
+    assert.equal(initialized?.serverInfo.version, version, 'expected deployed MCP release')
+    assert.match(initialized.instructions, /proofttl_verify_claim/)
+    for (const modern of [false, true]) {
+      const listed = await rpc('tools/list', {}, modern)
+      assert.deepEqual(listed.tools.map((t) => t.name).sort(), expectedTools)
+      assert.equal(listed.tools.find((t) => t.name === 'proofttl_verify_claim').annotations.readOnlyHint, false)
+    }
+    const discovered = await rpc('server/discover', {}, true)
+    assert.equal(discovered.toolsetVersion, toolset)
+    assert.deepEqual([...discovered.toolNames].sort(), expectedTools)
+    assert.equal(discovered.ttlMs, 0)
+    consistentRounds++
+    if (consistentRounds >= requiredRounds) break
+  } catch (error) {
+    consistentRounds = 0
+    discoveryError = error
+  }
   if (attempt < attempts) await delay(10000)
 }
-assert.equal(initialized?.serverInfo.version, version, 'expected deployed MCP release')
-assert.match(initialized.instructions, /proofttl_verify_claim/)
-for (const modern of [false, true]) {
-  const listed = await rpc('tools/list', {}, modern)
-  assert.deepEqual(listed.tools.map((t) => t.name).sort(), expectedTools)
-  assert.equal(listed.tools.find((t) => t.name === 'proofttl_verify_claim').annotations.readOnlyHint, false)
-}
-const discovered = await rpc('server/discover', {}, true)
-assert.equal(discovered.toolsetVersion, toolset)
-assert.deepEqual([...discovered.toolNames].sort(), expectedTools)
-assert.equal(discovered.ttlMs, 0)
+if (consistentRounds < requiredRounds) throw discoveryError || new Error('MCP discovery did not stabilize before the deadline')
 const call = (name, args = {}) => rpc('tools/call', { name, arguments: args })
 const unpaid = await call('proofttl_verify_claim', { claim: 'IANA manages the DNS root zone.', source_url: 'https://www.iana.org/domains/root', ttl_seconds: 300 })
 assert.equal(unpaid.isError, true)
