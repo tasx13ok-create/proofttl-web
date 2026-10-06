@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-06T00:10:37.606Z",
+  "generatedAt": "2026-10-06T06:33:57.043Z",
   "system": "FOUNDRY-10",
   "mode": "zero-spend",
   "cloudOnly": true,
@@ -58,7 +58,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T00:10:37.606Z"
+      "lastActionAt": "2026-10-06T06:33:57.043Z"
     },
     {
       "id": "scout-b",
@@ -72,7 +72,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T00:10:37.606Z"
+      "lastActionAt": "2026-10-06T06:33:57.043Z"
     },
     {
       "id": "validator-a",
@@ -86,7 +86,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T00:10:37.606Z"
+      "lastActionAt": "2026-10-06T06:33:57.043Z"
     },
     {
       "id": "validator-b",
@@ -100,7 +100,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T00:10:37.606Z"
+      "lastActionAt": "2026-10-06T06:33:57.043Z"
     },
     {
       "id": "builder-a",
@@ -114,7 +114,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T00:10:37.606Z"
+      "lastActionAt": "2026-10-06T06:33:57.043Z"
     },
     {
       "id": "builder-b",
@@ -128,7 +128,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T00:10:37.606Z"
+      "lastActionAt": "2026-10-06T06:33:57.043Z"
     },
     {
       "id": "distribution-a",
@@ -142,7 +142,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T00:10:37.606Z"
+      "lastActionAt": "2026-10-06T06:33:57.043Z"
     },
     {
       "id": "distribution-b",
@@ -156,7 +156,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T00:10:37.606Z"
+      "lastActionAt": "2026-10-06T06:33:57.043Z"
     },
     {
       "id": "finance",
@@ -170,7 +170,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T00:10:37.606Z"
+      "lastActionAt": "2026-10-06T06:33:57.043Z"
     },
     {
       "id": "risk",
@@ -184,7 +184,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T00:10:37.606Z"
+      "lastActionAt": "2026-10-06T06:33:57.043Z"
     }
   ],
   "tasks": [
@@ -248,18 +248,6 @@
       "status": "watch"
     },
     {
-      "id": "49954166",
-      "title": "Why Linux is picking up at a rapid pace for AI usage?",
-      "url": "https://news.ycombinator.com/item?id=49954166",
-      "source": "ask",
-      "score": 56,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "developer communities + search",
-      "status": "watch"
-    },
-    {
       "id": "49970078",
       "title": "Orcah Studio: A local-first video agent that can search your videos",
       "url": "https://news.ycombinator.com/item?id=49970078",
@@ -294,18 +282,6 @@
       "format": "digital-service",
       "channel": "search + direct product landing page",
       "status": "reject"
-    },
-    {
-      "id": "49940260",
-      "title": "GitHub mutuals on AI in life sciences or bioinformatics",
-      "url": "https://news.ycombinator.com/item?id=49940260",
-      "source": "ask",
-      "score": 50,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "search + direct product landing page",
-      "status": "reject"
     }
   ],
   "experiments": [
@@ -323,21 +299,6 @@
       "spendCents": 0,
       "netProfitCents": 0,
       "nextGate": "prove buyer intent before build"
-    },
-    {
-      "id": "exp-49954166",
-      "title": "AI workflow review micro-product",
-      "sourceTitle": "Why Linux is picking up at a rapid pace for AI usage?",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49954166",
-      "score": 56,
-      "price": 9,
-      "channel": "developer communities + search",
-      "format": "digital-service",
-      "stage": "queued",
-      "revenueCents": 0,
-      "spendCents": 0,
-      "netProfitCents": 0,
-      "nextGate": "wait for higher-ranked experiment"
     },
     {
       "id": "exp-49970078",
@@ -387,7 +348,7 @@
   ],
   "eventLog": [
     {
-      "at": "2026-10-06T00:10:37.606Z",
+      "at": "2026-10-06T06:33:57.043Z",
       "type": "cycle",
       "message": "10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized."
     }
