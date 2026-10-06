@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-06T06:33:57.043Z",
+  "generatedAt": "2026-10-06T18:29:50.711Z",
   "system": "FOUNDRY-10",
   "mode": "zero-spend",
   "cloudOnly": true,
@@ -58,7 +58,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T06:33:57.043Z"
+      "lastActionAt": "2026-10-06T18:29:50.711Z"
     },
     {
       "id": "scout-b",
@@ -72,7 +72,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T06:33:57.043Z"
+      "lastActionAt": "2026-10-06T18:29:50.711Z"
     },
     {
       "id": "validator-a",
@@ -86,7 +86,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T06:33:57.043Z"
+      "lastActionAt": "2026-10-06T18:29:50.711Z"
     },
     {
       "id": "validator-b",
@@ -100,7 +100,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T06:33:57.043Z"
+      "lastActionAt": "2026-10-06T18:29:50.711Z"
     },
     {
       "id": "builder-a",
@@ -114,7 +114,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T06:33:57.043Z"
+      "lastActionAt": "2026-10-06T18:29:50.711Z"
     },
     {
       "id": "builder-b",
@@ -128,7 +128,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T06:33:57.043Z"
+      "lastActionAt": "2026-10-06T18:29:50.711Z"
     },
     {
       "id": "distribution-a",
@@ -142,7 +142,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T06:33:57.043Z"
+      "lastActionAt": "2026-10-06T18:29:50.711Z"
     },
     {
       "id": "distribution-b",
@@ -156,7 +156,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T06:33:57.043Z"
+      "lastActionAt": "2026-10-06T18:29:50.711Z"
     },
     {
       "id": "finance",
@@ -170,7 +170,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T06:33:57.043Z"
+      "lastActionAt": "2026-10-06T18:29:50.711Z"
     },
     {
       "id": "risk",
@@ -184,7 +184,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-06T06:33:57.043Z"
+      "lastActionAt": "2026-10-06T18:29:50.711Z"
     }
   ],
   "tasks": [
@@ -270,18 +270,6 @@
       "format": "digital-service",
       "channel": "search + direct product landing page",
       "status": "reject"
-    },
-    {
-      "id": "49920411",
-      "title": "Rpi – a Rust rewrite of the Pi agent, 10× faster startup",
-      "url": "https://news.ycombinator.com/item?id=49920411",
-      "source": "ask",
-      "score": 50,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "search + direct product landing page",
-      "status": "reject"
     }
   ],
   "experiments": [
@@ -329,26 +317,11 @@
       "spendCents": 0,
       "netProfitCents": 0,
       "nextGate": "wait for higher-ranked experiment"
-    },
-    {
-      "id": "exp-49920411",
-      "title": "AI workflow review micro-product",
-      "sourceTitle": "Rpi – a Rust rewrite of the Pi agent, 10× faster startup",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49920411",
-      "score": 50,
-      "price": 9,
-      "channel": "search + direct product landing page",
-      "format": "digital-service",
-      "stage": "queued",
-      "revenueCents": 0,
-      "spendCents": 0,
-      "netProfitCents": 0,
-      "nextGate": "wait for higher-ranked experiment"
     }
   ],
   "eventLog": [
     {
-      "at": "2026-10-06T06:33:57.043Z",
+      "at": "2026-10-06T18:29:50.711Z",
       "type": "cycle",
       "message": "10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized."
     }
