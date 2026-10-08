@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-08T13:46:19.523Z",
+  "generatedAt": "2026-10-08T23:27:26.975Z",
   "system": "FOUNDRY-10",
   "mode": "zero-spend",
   "cloudOnly": true,
@@ -58,7 +58,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T13:46:19.523Z"
+      "lastActionAt": "2026-10-08T23:27:26.975Z"
     },
     {
       "id": "scout-b",
@@ -72,7 +72,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T13:46:19.523Z"
+      "lastActionAt": "2026-10-08T23:27:26.975Z"
     },
     {
       "id": "validator-a",
@@ -86,7 +86,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T13:46:19.523Z"
+      "lastActionAt": "2026-10-08T23:27:26.975Z"
     },
     {
       "id": "validator-b",
@@ -100,7 +100,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T13:46:19.523Z"
+      "lastActionAt": "2026-10-08T23:27:26.975Z"
     },
     {
       "id": "builder-a",
@@ -114,7 +114,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T13:46:19.523Z"
+      "lastActionAt": "2026-10-08T23:27:26.975Z"
     },
     {
       "id": "builder-b",
@@ -128,7 +128,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T13:46:19.523Z"
+      "lastActionAt": "2026-10-08T23:27:26.975Z"
     },
     {
       "id": "distribution-a",
@@ -142,7 +142,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T13:46:19.523Z"
+      "lastActionAt": "2026-10-08T23:27:26.975Z"
     },
     {
       "id": "distribution-b",
@@ -156,7 +156,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T13:46:19.523Z"
+      "lastActionAt": "2026-10-08T23:27:26.975Z"
     },
     {
       "id": "finance",
@@ -170,7 +170,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T13:46:19.523Z"
+      "lastActionAt": "2026-10-08T23:27:26.975Z"
     },
     {
       "id": "risk",
@@ -184,7 +184,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T13:46:19.523Z"
+      "lastActionAt": "2026-10-08T23:27:26.975Z"
     }
   ],
   "tasks": [
@@ -248,14 +248,14 @@
       "status": "watch"
     },
     {
-      "id": "49977695",
-      "title": "Ask HN: Is observability broken for you?",
-      "url": "https://news.ycombinator.com/item?id=49977695",
-      "source": "ask",
+      "id": "50012199",
+      "title": "Show HN: Free open source Adobe Lightroom alternative, completely local with AI",
+      "url": "https://github.com/thesnarkitecht/rembrandt",
+      "source": "top",
       "score": 64,
-      "offer": "Focused checklist + template",
-      "price": 5,
-      "format": "digital-kit",
+      "offer": "AI workflow review micro-product",
+      "price": 9,
+      "format": "digital-service",
       "channel": "search + direct product landing page",
       "status": "watch"
     },
@@ -284,6 +284,18 @@
       "status": "watch"
     },
     {
+      "id": "50010950",
+      "title": "Ask HN: If AI doing decades of math now doesn't get our attention, what will?",
+      "url": "https://news.ycombinator.com/item?id=50010950",
+      "source": "ask",
+      "score": 56,
+      "offer": "AI workflow review micro-product",
+      "price": 9,
+      "format": "digital-service",
+      "channel": "search + direct product landing page",
+      "status": "watch"
+    },
+    {
       "id": "50002378",
       "title": "Ask HN: Are we losing control of AI?",
       "url": "https://news.ycombinator.com/item?id=50002378",
@@ -296,28 +308,28 @@
       "status": "watch"
     },
     {
-      "id": "49982033",
-      "title": "Ask HN: What would you like to see in a new AI technology release?",
-      "url": "https://news.ycombinator.com/item?id=49982033",
+      "id": "50010880",
+      "title": "Ontological Language Model (OLM) + LLM: Deterministic AI Advancement",
+      "url": "https://news.ycombinator.com/item?id=50010880",
       "source": "ask",
-      "score": 56,
+      "score": 50,
       "offer": "AI workflow review micro-product",
       "price": 9,
       "format": "digital-service",
       "channel": "search + direct product landing page",
-      "status": "watch"
+      "status": "reject"
     },
     {
-      "id": "49976227",
-      "title": "Ask HN: Agent access to chat data should require participant consent?",
-      "url": "https://news.ycombinator.com/item?id=49976227",
+      "id": "50004396",
+      "title": "Ask HN: Why hasn't AI replaced Tax filing software",
+      "url": "https://news.ycombinator.com/item?id=50004396",
       "source": "ask",
-      "score": 56,
+      "score": 50,
       "offer": "AI workflow review micro-product",
       "price": 9,
       "format": "digital-service",
-      "channel": "search + direct product landing page",
-      "status": "watch"
+      "channel": "developer communities + search",
+      "status": "reject"
     },
     {
       "id": "49990335",
@@ -344,27 +356,15 @@
       "status": "reject"
     },
     {
-      "id": "49997654",
-      "title": "Claude Agents SDK will no longer use subscription; API credits included in plans",
-      "url": "https://news.ycombinator.com/item?id=49997654",
-      "source": "ask",
-      "score": 50,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
+      "id": "49980346",
+      "title": "The Slow Formation of Durable Software",
+      "url": "https://newsletter.dancohen.org/archive/the-slow-formation-of-durable-software/",
+      "source": "top",
+      "score": 48,
+      "offer": "Focused checklist + template",
+      "price": 5,
+      "format": "digital-kit",
       "channel": "developer communities + search",
-      "status": "reject"
-    },
-    {
-      "id": "49970078",
-      "title": "Orcah Studio: A local-first video agent that can search your videos",
-      "url": "https://news.ycombinator.com/item?id=49970078",
-      "source": "ask",
-      "score": 50,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "search + direct product landing page",
       "status": "reject"
     },
     {
@@ -397,14 +397,14 @@
       "nextGate": "prove buyer intent before build"
     },
     {
-      "id": "exp-49977695",
-      "title": "Focused checklist + template",
-      "sourceTitle": "Ask HN: Is observability broken for you?",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49977695",
+      "id": "exp-50012199",
+      "title": "AI workflow review micro-product",
+      "sourceTitle": "Show HN: Free open source Adobe Lightroom alternative, completely local with AI",
+      "sourceUrl": "https://github.com/thesnarkitecht/rembrandt",
       "score": 64,
-      "price": 5,
+      "price": 9,
       "channel": "search + direct product landing page",
-      "format": "digital-kit",
+      "format": "digital-service",
       "stage": "queued",
       "revenueCents": 0,
       "spendCents": 0,
@@ -442,10 +442,10 @@
       "nextGate": "wait for higher-ranked experiment"
     },
     {
-      "id": "exp-50002378",
+      "id": "exp-50010950",
       "title": "AI workflow review micro-product",
-      "sourceTitle": "Ask HN: Are we losing control of AI?",
-      "sourceUrl": "https://news.ycombinator.com/item?id=50002378",
+      "sourceTitle": "Ask HN: If AI doing decades of math now doesn't get our attention, what will?",
+      "sourceUrl": "https://news.ycombinator.com/item?id=50010950",
       "score": 56,
       "price": 9,
       "channel": "search + direct product landing page",
@@ -459,7 +459,7 @@
   ],
   "eventLog": [
     {
-      "at": "2026-10-08T13:46:19.523Z",
+      "at": "2026-10-08T23:27:26.975Z",
       "type": "cycle",
       "message": "10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized."
     }
