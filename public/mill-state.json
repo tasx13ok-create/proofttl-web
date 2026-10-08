@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-08T05:57:36.106Z",
+  "generatedAt": "2026-10-08T13:23:01.014Z",
   "mode": "deterministic",
   "revenueCents": 0,
   "spendCents": 0,
@@ -8,16 +8,6 @@
       "id": "49983113",
       "title": "Ask HN: How do you describe what your relationship brings you?",
       "url": "https://news.ycombinator.com/item?id=49983113",
-      "score": 46,
-      "signal": "direct problem/request signal; requires buyer validation",
-      "offer": "focused template/checklist",
-      "price": 5,
-      "status": "draft"
-    },
-    {
-      "id": "49975162",
-      "title": "Ask HN: Alternatives to NeurIPS, ICLR and ICML",
-      "url": "https://news.ycombinator.com/item?id=49975162",
       "score": 46,
       "signal": "direct problem/request signal; requires buyer validation",
       "offer": "focused template/checklist",
