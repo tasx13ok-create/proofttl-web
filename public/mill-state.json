@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-08T13:23:01.014Z",
+  "generatedAt": "2026-10-08T23:18:14.883Z",
   "mode": "deterministic",
   "revenueCents": 0,
   "spendCents": 0,
@@ -15,12 +15,12 @@
       "status": "draft"
     },
     {
-      "id": "49977695",
-      "title": "Ask HN: Is observability broken for you?",
-      "url": "https://news.ycombinator.com/item?id=49977695",
-      "score": 42,
-      "signal": "direct problem/request signal; requires buyer validation",
-      "offer": "focused template/checklist",
+      "id": "50012199",
+      "title": "Show HN: Free open source Adobe Lightroom alternative, completely local with AI",
+      "url": "https://github.com/thesnarkitecht/rembrandt",
+      "score": 43,
+      "signal": "public problem signal; requires buyer validation",
+      "offer": "AI workflow/checklist micro-kit",
       "price": 5,
       "status": "draft"
     }
