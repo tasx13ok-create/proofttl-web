@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-08T06:20:03.883Z",
+  "generatedAt": "2026-10-08T13:46:19.523Z",
   "system": "FOUNDRY-10",
   "mode": "zero-spend",
   "cloudOnly": true,
@@ -54,11 +54,11 @@
       "status": "working",
       "taskId": "pair-discovery",
       "currentTask": "Find and cross-check demand signals",
-      "note": "Prioritize explicit pain plus buyer language; current lead score 70.",
+      "note": "Prioritize explicit pain plus buyer language; current lead score 64.",
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T06:20:03.883Z"
+      "lastActionAt": "2026-10-08T13:46:19.523Z"
     },
     {
       "id": "scout-b",
@@ -72,7 +72,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T06:20:03.883Z"
+      "lastActionAt": "2026-10-08T13:46:19.523Z"
     },
     {
       "id": "validator-a",
@@ -86,7 +86,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T06:20:03.883Z"
+      "lastActionAt": "2026-10-08T13:46:19.523Z"
     },
     {
       "id": "validator-b",
@@ -100,7 +100,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T06:20:03.883Z"
+      "lastActionAt": "2026-10-08T13:46:19.523Z"
     },
     {
       "id": "builder-a",
@@ -110,11 +110,11 @@
       "status": "working",
       "taskId": "pair-product",
       "currentTask": "Design the smallest sellable product",
-      "note": "Build the smallest useful version of \"AI workflow review micro-product\" with one clear outcome.",
+      "note": "Build the smallest useful version of \"Focused checklist + template\" with one clear outcome.",
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T06:20:03.883Z"
+      "lastActionAt": "2026-10-08T13:46:19.523Z"
     },
     {
       "id": "builder-b",
@@ -128,7 +128,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T06:20:03.883Z"
+      "lastActionAt": "2026-10-08T13:46:19.523Z"
     },
     {
       "id": "distribution-a",
@@ -142,7 +142,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T06:20:03.883Z"
+      "lastActionAt": "2026-10-08T13:46:19.523Z"
     },
     {
       "id": "distribution-b",
@@ -156,7 +156,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T06:20:03.883Z"
+      "lastActionAt": "2026-10-08T13:46:19.523Z"
     },
     {
       "id": "finance",
@@ -166,11 +166,11 @@
       "status": "working",
       "taskId": "pair-governance",
       "currentTask": "Audit economics and reinvestment ceiling",
-      "note": "Hold paid expansion until realized profit clears the governor. Suggested test price $9.",
+      "note": "Hold paid expansion until realized profit clears the governor. Suggested test price $5.",
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T06:20:03.883Z"
+      "lastActionAt": "2026-10-08T13:46:19.523Z"
     },
     {
       "id": "risk",
@@ -184,7 +184,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T06:20:03.883Z"
+      "lastActionAt": "2026-10-08T13:46:19.523Z"
     }
   ],
   "tasks": [
@@ -236,18 +236,6 @@
   ],
   "candidates": [
     {
-      "id": "49972842",
-      "title": "Ask HN: How are AI budgets changing in your company?",
-      "url": "https://news.ycombinator.com/item?id=49972842",
-      "source": "ask",
-      "score": 70,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "search + direct product landing page",
-      "status": "validate-now"
-    },
-    {
       "id": "49983113",
       "title": "Ask HN: How do you describe what your relationship brings you?",
       "url": "https://news.ycombinator.com/item?id=49983113",
@@ -284,6 +272,30 @@
       "status": "watch"
     },
     {
+      "id": "50000356",
+      "title": "What is the actual percentage of people for and against AI?",
+      "url": "https://news.ycombinator.com/item?id=50000356",
+      "source": "ask",
+      "score": 56,
+      "offer": "AI workflow review micro-product",
+      "price": 9,
+      "format": "digital-service",
+      "channel": "search + direct product landing page",
+      "status": "watch"
+    },
+    {
+      "id": "50002378",
+      "title": "Ask HN: Are we losing control of AI?",
+      "url": "https://news.ycombinator.com/item?id=50002378",
+      "source": "ask",
+      "score": 56,
+      "offer": "AI workflow review micro-product",
+      "price": 9,
+      "format": "digital-service",
+      "channel": "search + direct product landing page",
+      "status": "watch"
+    },
+    {
       "id": "49982033",
       "title": "Ask HN: What would you like to see in a new AI technology release?",
       "url": "https://news.ycombinator.com/item?id=49982033",
@@ -308,45 +320,9 @@
       "status": "watch"
     },
     {
-      "id": "49974436",
-      "title": "Ask HN: What brings you back to personal AI agents like Instinct and Muse?",
-      "url": "https://news.ycombinator.com/item?id=49974436",
-      "source": "ask",
-      "score": 56,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "search + direct product landing page",
-      "status": "watch"
-    },
-    {
-      "id": "49973382",
-      "title": "Ask HN: What do you think about AI generated slides for conferences?",
-      "url": "https://news.ycombinator.com/item?id=49973382",
-      "source": "ask",
-      "score": 56,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "search + direct product landing page",
-      "status": "watch"
-    },
-    {
       "id": "49990335",
       "title": "Google Chrome's AI API actively used for device fingerprinting and profiling",
       "url": "https://news.ycombinator.com/item?id=49990335",
-      "source": "ask",
-      "score": 50,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "developer communities + search",
-      "status": "reject"
-    },
-    {
-      "id": "49997654",
-      "title": "Claude Agents SDK will no longer use subscription; API credits included in plans",
-      "url": "https://news.ycombinator.com/item?id=49997654",
       "source": "ask",
       "score": 50,
       "offer": "AI workflow review micro-product",
@@ -368,6 +344,18 @@
       "status": "reject"
     },
     {
+      "id": "49997654",
+      "title": "Claude Agents SDK will no longer use subscription; API credits included in plans",
+      "url": "https://news.ycombinator.com/item?id=49997654",
+      "source": "ask",
+      "score": 50,
+      "offer": "AI workflow review micro-product",
+      "price": 9,
+      "format": "digital-service",
+      "channel": "developer communities + search",
+      "status": "reject"
+    },
+    {
       "id": "49970078",
       "title": "Orcah Studio: A local-first video agent that can search your videos",
       "url": "https://news.ycombinator.com/item?id=49970078",
@@ -378,24 +366,21 @@
       "format": "digital-service",
       "channel": "search + direct product landing page",
       "status": "reject"
+    },
+    {
+      "id": "50002008",
+      "title": "“Math 2.0” will need to value mathematical progress more holistically",
+      "url": "https://mathstodon.xyz/@tao/117395269325940185",
+      "source": "top",
+      "score": 48,
+      "offer": "Focused checklist + template",
+      "price": 5,
+      "format": "digital-kit",
+      "channel": "search + direct product landing page",
+      "status": "reject"
     }
   ],
   "experiments": [
-    {
-      "id": "exp-49972842",
-      "title": "AI workflow review micro-product",
-      "sourceTitle": "Ask HN: How are AI budgets changing in your company?",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49972842",
-      "score": 70,
-      "price": 9,
-      "channel": "search + direct product landing page",
-      "format": "digital-service",
-      "stage": "validation",
-      "revenueCents": 0,
-      "spendCents": 0,
-      "netProfitCents": 0,
-      "nextGate": "prove buyer intent before build"
-    },
     {
       "id": "exp-49983113",
       "title": "Focused checklist + template",
@@ -405,11 +390,11 @@
       "price": 5,
       "channel": "search + direct product landing page",
       "format": "digital-kit",
-      "stage": "queued",
+      "stage": "validation",
       "revenueCents": 0,
       "spendCents": 0,
       "netProfitCents": 0,
-      "nextGate": "wait for higher-ranked experiment"
+      "nextGate": "prove buyer intent before build"
     },
     {
       "id": "exp-49977695",
@@ -442,10 +427,25 @@
       "nextGate": "wait for higher-ranked experiment"
     },
     {
-      "id": "exp-49982033",
+      "id": "exp-50000356",
       "title": "AI workflow review micro-product",
-      "sourceTitle": "Ask HN: What would you like to see in a new AI technology release?",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49982033",
+      "sourceTitle": "What is the actual percentage of people for and against AI?",
+      "sourceUrl": "https://news.ycombinator.com/item?id=50000356",
+      "score": 56,
+      "price": 9,
+      "channel": "search + direct product landing page",
+      "format": "digital-service",
+      "stage": "queued",
+      "revenueCents": 0,
+      "spendCents": 0,
+      "netProfitCents": 0,
+      "nextGate": "wait for higher-ranked experiment"
+    },
+    {
+      "id": "exp-50002378",
+      "title": "AI workflow review micro-product",
+      "sourceTitle": "Ask HN: Are we losing control of AI?",
+      "sourceUrl": "https://news.ycombinator.com/item?id=50002378",
       "score": 56,
       "price": 9,
       "channel": "search + direct product landing page",
@@ -459,7 +459,7 @@
   ],
   "eventLog": [
     {
-      "at": "2026-10-08T06:20:03.883Z",
+      "at": "2026-10-08T13:46:19.523Z",
       "type": "cycle",
       "message": "10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized."
     }
