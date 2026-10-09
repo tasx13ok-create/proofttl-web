@@ -24,6 +24,7 @@ const APP_SECONDARY = [
 ] as const
 
 const PUBLIC_PRIMARY = [
+  { href: '/verify/', label: 'Verify a claim' },
   { href: '/audit/', label: 'Verification' },
   { href: '/services/', label: 'Services' },
   { href: '/audit/sample/', label: 'Sample' },
