@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-08T23:27:26.975Z",
+  "generatedAt": "2026-10-09T06:22:03.168Z",
   "system": "FOUNDRY-10",
   "mode": "zero-spend",
   "cloudOnly": true,
@@ -58,7 +58,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T23:27:26.975Z"
+      "lastActionAt": "2026-10-09T06:22:03.168Z"
     },
     {
       "id": "scout-b",
@@ -72,7 +72,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T23:27:26.975Z"
+      "lastActionAt": "2026-10-09T06:22:03.168Z"
     },
     {
       "id": "validator-a",
@@ -86,7 +86,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T23:27:26.975Z"
+      "lastActionAt": "2026-10-09T06:22:03.168Z"
     },
     {
       "id": "validator-b",
@@ -100,7 +100,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T23:27:26.975Z"
+      "lastActionAt": "2026-10-09T06:22:03.168Z"
     },
     {
       "id": "builder-a",
@@ -114,7 +114,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T23:27:26.975Z"
+      "lastActionAt": "2026-10-09T06:22:03.168Z"
     },
     {
       "id": "builder-b",
@@ -128,7 +128,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T23:27:26.975Z"
+      "lastActionAt": "2026-10-09T06:22:03.168Z"
     },
     {
       "id": "distribution-a",
@@ -142,7 +142,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T23:27:26.975Z"
+      "lastActionAt": "2026-10-09T06:22:03.168Z"
     },
     {
       "id": "distribution-b",
@@ -156,7 +156,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T23:27:26.975Z"
+      "lastActionAt": "2026-10-09T06:22:03.168Z"
     },
     {
       "id": "finance",
@@ -170,7 +170,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T23:27:26.975Z"
+      "lastActionAt": "2026-10-09T06:22:03.168Z"
     },
     {
       "id": "risk",
@@ -184,7 +184,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-08T23:27:26.975Z"
+      "lastActionAt": "2026-10-09T06:22:03.168Z"
     }
   ],
   "tasks": [
@@ -248,18 +248,6 @@
       "status": "watch"
     },
     {
-      "id": "50012199",
-      "title": "Show HN: Free open source Adobe Lightroom alternative, completely local with AI",
-      "url": "https://github.com/thesnarkitecht/rembrandt",
-      "source": "top",
-      "score": 64,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "search + direct product landing page",
-      "status": "watch"
-    },
-    {
       "id": "49972125",
       "title": "Ask HN: Are there AI models for generating sounds based on a text and reference?",
       "url": "https://news.ycombinator.com/item?id=49972125",
@@ -284,42 +272,6 @@
       "status": "watch"
     },
     {
-      "id": "50010950",
-      "title": "Ask HN: If AI doing decades of math now doesn't get our attention, what will?",
-      "url": "https://news.ycombinator.com/item?id=50010950",
-      "source": "ask",
-      "score": 56,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "search + direct product landing page",
-      "status": "watch"
-    },
-    {
-      "id": "50002378",
-      "title": "Ask HN: Are we losing control of AI?",
-      "url": "https://news.ycombinator.com/item?id=50002378",
-      "source": "ask",
-      "score": 56,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "search + direct product landing page",
-      "status": "watch"
-    },
-    {
-      "id": "50010880",
-      "title": "Ontological Language Model (OLM) + LLM: Deterministic AI Advancement",
-      "url": "https://news.ycombinator.com/item?id=50010880",
-      "source": "ask",
-      "score": 50,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "search + direct product landing page",
-      "status": "reject"
-    },
-    {
       "id": "50004396",
       "title": "Ask HN: Why hasn't AI replaced Tax filing software",
       "url": "https://news.ycombinator.com/item?id=50004396",
@@ -332,39 +284,15 @@
       "status": "reject"
     },
     {
-      "id": "49990335",
-      "title": "Google Chrome's AI API actively used for device fingerprinting and profiling",
-      "url": "https://news.ycombinator.com/item?id=49990335",
-      "source": "ask",
-      "score": 50,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "developer communities + search",
-      "status": "reject"
-    },
-    {
-      "id": "49981268",
-      "title": "Ask HN: How to deal with AI \"true believer\" leadership at work",
-      "url": "https://news.ycombinator.com/item?id=49981268",
+      "id": "50010880",
+      "title": "Ontological Language Model (OLM) + LLM: Deterministic AI Advancement",
+      "url": "https://news.ycombinator.com/item?id=50010880",
       "source": "ask",
       "score": 50,
       "offer": "AI workflow review micro-product",
       "price": 9,
       "format": "digital-service",
       "channel": "search + direct product landing page",
-      "status": "reject"
-    },
-    {
-      "id": "49980346",
-      "title": "The Slow Formation of Durable Software",
-      "url": "https://newsletter.dancohen.org/archive/the-slow-formation-of-durable-software/",
-      "source": "top",
-      "score": 48,
-      "offer": "Focused checklist + template",
-      "price": 5,
-      "format": "digital-kit",
-      "channel": "developer communities + search",
       "status": "reject"
     },
     {
@@ -397,21 +325,6 @@
       "nextGate": "prove buyer intent before build"
     },
     {
-      "id": "exp-50012199",
-      "title": "AI workflow review micro-product",
-      "sourceTitle": "Show HN: Free open source Adobe Lightroom alternative, completely local with AI",
-      "sourceUrl": "https://github.com/thesnarkitecht/rembrandt",
-      "score": 64,
-      "price": 9,
-      "channel": "search + direct product landing page",
-      "format": "digital-service",
-      "stage": "queued",
-      "revenueCents": 0,
-      "spendCents": 0,
-      "netProfitCents": 0,
-      "nextGate": "wait for higher-ranked experiment"
-    },
-    {
       "id": "exp-49972125",
       "title": "AI workflow review micro-product",
       "sourceTitle": "Ask HN: Are there AI models for generating sounds based on a text and reference?",
@@ -442,11 +355,26 @@
       "nextGate": "wait for higher-ranked experiment"
     },
     {
-      "id": "exp-50010950",
+      "id": "exp-50004396",
       "title": "AI workflow review micro-product",
-      "sourceTitle": "Ask HN: If AI doing decades of math now doesn't get our attention, what will?",
-      "sourceUrl": "https://news.ycombinator.com/item?id=50010950",
-      "score": 56,
+      "sourceTitle": "Ask HN: Why hasn't AI replaced Tax filing software",
+      "sourceUrl": "https://news.ycombinator.com/item?id=50004396",
+      "score": 50,
+      "price": 9,
+      "channel": "developer communities + search",
+      "format": "digital-service",
+      "stage": "queued",
+      "revenueCents": 0,
+      "spendCents": 0,
+      "netProfitCents": 0,
+      "nextGate": "wait for higher-ranked experiment"
+    },
+    {
+      "id": "exp-50010880",
+      "title": "AI workflow review micro-product",
+      "sourceTitle": "Ontological Language Model (OLM) + LLM: Deterministic AI Advancement",
+      "sourceUrl": "https://news.ycombinator.com/item?id=50010880",
+      "score": 50,
       "price": 9,
       "channel": "search + direct product landing page",
       "format": "digital-service",
@@ -459,7 +387,7 @@
   ],
   "eventLog": [
     {
-      "at": "2026-10-08T23:27:26.975Z",
+      "at": "2026-10-09T06:22:03.168Z",
       "type": "cycle",
       "message": "10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized."
     }
