@@ -24,8 +24,8 @@ async function main() {
     "name: 'proofttl_verify_claim'",
     "const MCP_ENDPOINT = 'https://proofttl-web.vercel.app/api/mcp/'",
     'navigator.clipboard.writeText',
-    'payment boundary',
-    'payment_signature',
+    'Payment boundary:',
+    'x402 payment flow',
     'Do not sign, settle, or retry payment without my explicit approval.',
     'source_url: sourceUrl.trim()',
   ])
