@@ -26,7 +26,7 @@ async function main() {
     'navigator.clipboard.writeText',
     'Payment boundary:',
     'x402 payment flow',
-    'Do not sign, settle, or retry payment without my explicit approval.',
+    'do not sign, settle, or retry payment without my explicit approval.',
     'source_url: sourceUrl.trim()',
     'publicLinkApproved',
     'MAX_PUBLIC_LINK_LENGTH = 1800',
