@@ -28,6 +28,9 @@ async function main() {
     'x402 payment flow',
     'Do not sign, settle, or retry payment without my explicit approval.',
     'source_url: sourceUrl.trim()',
+    'publicLinkApproved',
+    'MAX_PUBLIC_LINK_LENGTH = 1800',
+    'Anyone receiving it may read both',
   ])
   if (component.includes("fetch(MCP_ENDPOINT")) throw new Error('Handoff must not submit claims automatically')
   if (component.includes('payment_signature:')) throw new Error('Handoff must not fabricate or collect payment authorization')
@@ -47,6 +50,7 @@ async function main() {
     'Payment boundary:',
     'x402 payment flow',
     'SUPPORTED',
+    'public handoff link',
   ])
   if (exported.includes('payment_signature')) throw new Error('Exported handoff must not render payment-signature handling')
   console.log('PASS: ProofTTL redirect-to-verification handoff, explicit payment boundary, navigation, and discovery surfaces.')
