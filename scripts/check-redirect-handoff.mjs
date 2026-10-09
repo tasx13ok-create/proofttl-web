@@ -44,8 +44,9 @@ async function main() {
     'Send the claim.',
     'Prepare a verification request',
     'proofttl_verify_claim',
-    'Nothing has been submitted, verified, or charged.',
-    'SUPPORT',
+    'Payment boundary:',
+    'x402 payment flow',
+    'SUPPORTED',
   ])
   if (exported.includes('payment_signature')) throw new Error('Exported handoff must not render payment-signature handling')
   console.log('PASS: ProofTTL redirect-to-verification handoff, explicit payment boundary, navigation, and discovery surfaces.')
