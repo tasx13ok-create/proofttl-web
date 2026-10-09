@@ -25,7 +25,7 @@
   "scripts": {
     "dev": "vite",
     "build": "next build",
-    "postbuild": "node scripts/check-buyer-recovery.mjs && node scripts/check-static-export.js && node scripts/check-discovery-identity.js && node scripts/check-assistant-session.js && node scripts/check-sales-intake.js && node scripts/check-auth-trust.js && node scripts/check-product-1000.js && node scripts/check-public-sales-shell.js && node scripts/check-mobile-sales-layout.js && node scripts/check-reality-engine.cjs && npm run check:mcp && npm run check:foundry10",
+    "postbuild": "node scripts/check-buyer-recovery.mjs && node scripts/check-static-export.js && node scripts/check-discovery-identity.js && node scripts/check-assistant-session.js && node scripts/check-sales-intake.js && node scripts/check-auth-trust.js && node scripts/check-product-1000.js && node scripts/check-public-sales-shell.js && node scripts/check-mobile-sales-layout.js && node scripts/check-reality-engine.cjs && npm run check:mcp && npm run check:foundry10 && npm run check:redirect-handoff",
     "start": "npx serve out",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run build",
@@ -36,7 +36,8 @@
     "discovery:indexnow": "node scripts/indexnow-submit.js",
     "discovery:websub": "node scripts/websub-publish.js",
     "check:mcp": "node scripts/check-mcp-contract.mjs && node --test scripts/mcp.test.mjs",
-    "check:foundry10": "node scripts/check-foundry10-control.mjs"
+    "check:foundry10": "node scripts/check-foundry10-control.mjs",
+    "check:redirect-handoff": "node scripts/check-redirect-handoff.mjs"
   },
   "dependencies": {
     "@better-auth/core": "1.6.25",
