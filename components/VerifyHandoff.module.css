@@ -1,0 +1,66 @@
+.card {
+  width: min(100%, 920px);
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 36px);
+  border: 1px solid #30333b;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #111318, #0b0c0f 72%);
+  box-shadow: 0 24px 80px #0005;
+}
+.cardHead { margin-bottom: 28px; }
+.step { color: #a9b8ff; font-size: 11px; font-weight: 800; letter-spacing: .16em; }
+.cardHead h2 { margin: 10px 0 8px; color: #f6f7f9; font-size: clamp(24px, 4vw, 34px); letter-spacing: -.035em; }
+.cardHead p, .muted { margin: 0; color: #aab0bc; font-size: 14px; line-height: 1.65; }
+.card form { display: grid; gap: 10px; }
+.card label { margin-top: 10px; color: #f0f1f4; font-size: 14px; font-weight: 650; }
+.card label span { display: block; margin-top: 4px; color: #8e95a2; font-size: 12px; font-weight: 450; }
+.card input, .card textarea, .card select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #3a3e48;
+  border-radius: 11px;
+  background: #090a0d;
+  color: #f6f7f9;
+  padding: 13px 14px;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.card textarea { resize: vertical; min-height: 112px; }
+.card input:focus, .card textarea:focus, .card select:focus { outline: 2px solid #8798f6; outline-offset: 2px; border-color: #8798f6; }
+.primary, .actions button {
+  border: 1px solid #555b6b;
+  border-radius: 999px;
+  padding: 12px 16px;
+  color: #f8f9fc;
+  background: #20232b;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.primary { margin-top: 10px; background: #e7eaff; color: #141722; border-color: #e7eaff; }
+.primary:disabled, .actions button:disabled { cursor: not-allowed; opacity: .45; }
+.error { margin: 0; color: #ffb3b3; font-size: 13px; }
+.status { margin: 16px 0 0; color: #cbd3ff; font-size: 14px; }
+.output { margin-top: 30px; padding-top: 24px; border-top: 1px solid #30333b; }
+.outputTitle { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+.outputTitle h3 { margin: 0; color: #f4f5f7; font-size: 18px; }
+.outputTitle span { color: #8e95a2; font-size: 12px; }
+.muted { margin-top: 10px; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.actions button { flex: 1 1 220px; }
+.card details { margin-top: 18px; color: #d9dce3; font-size: 14px; }
+.card summary { cursor: pointer; font-weight: 650; }
+.card pre { max-width: 100%; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; padding: 14px; border: 1px solid #30333b; border-radius: 10px; background: #070809; color: #d2d7e2; font-size: 12px; line-height: 1.55; }
+.endpoint { display: grid; gap: 6px; margin-top: 18px; font-size: 12px; }
+.endpoint span { color: #8e95a2; }
+.endpoint a { color: #c2ccff; overflow-wrap: anywhere; }
+.boundary { margin: 24px 0 0; border-left: 3px solid #6876bd; padding: 10px 0 10px 14px; color: #aab0bc; font-size: 13px; line-height: 1.65; }
+.boundary strong { color: #f0f1f4; }
+@media (max-width: 560px) {
+  .card { border-radius: 16px; padding: 18px; }
+  .actions { flex-direction: column; }
+  .actions button { flex-basis: auto; width: 100%; }
+}
