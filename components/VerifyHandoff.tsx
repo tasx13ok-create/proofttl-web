@@ -27,7 +27,7 @@ export default function VerifyHandoff() {
 
   const sourceError = useMemo(() => sourceUrl.trim() ? validateSource(sourceUrl) : null, [sourceUrl])
   const claimError = claim.trim().length > 1000 ? 'Keep the claim under 1,000 characters.' : null
-  const valid = claim.trim().length > 0 && claim.trim().length <= 1000 && sourceUrl.trim().length <= 2048 && !sourceError
+  const valid = claim.trim().length > 0 && claim.trim().length <= 1000 && sourceUrl.trim().length > 0 && sourceUrl.trim().length <= 2048 && !sourceError
   const request = useMemo(() => JSON.stringify({
     jsonrpc: '2.0',
     id: 'proofttl-verify-handoff',
