@@ -157,7 +157,8 @@ export default function VerifyHandoff() {
         </details>
         <div className={styles.endpoint}>
           <span>Canonical MCP endpoint</span>
-          <a href={MCP_ENDPOINT} target="_blank" rel="noreferrer">{MCP_ENDPOINT}</a>
+          <code>{MCP_ENDPOINT}</code>
+          <a href="/docs/">Read integration documentation</a>
         </div>
       </div>
       <p className={styles.boundary}><strong>Payment boundary:</strong> ProofTTL’s technical verification requires the existing x402 payment flow. This handoff page does not request payment credentials, sign a payment, submit a claim, or bypass that requirement. A compatible MCP client must be configured to use ProofTTL.</p>
