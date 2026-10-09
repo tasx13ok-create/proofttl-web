@@ -9,6 +9,7 @@ Founder location: New York, United States
 Official website: https://proofttl-web.vercel.app/
 About / canonical identity: https://proofttl-web.vercel.app/about/
 Paid verification: https://proofttl-web.vercel.app/audit/
+Verify a claim / MCP handoff: https://proofttl-web.vercel.app/verify/
 Verification services: https://proofttl-web.vercel.app/services/
 Solutions: https://proofttl-web.vercel.app/solutions/
 FAQ: https://proofttl-web.vercel.app/faq/
