@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-09T13:33:56.022Z",
+  "generatedAt": "2026-10-09T22:45:42.425Z",
   "system": "FOUNDRY-10",
   "mode": "zero-spend",
   "cloudOnly": true,
@@ -58,7 +58,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T13:33:56.022Z"
+      "lastActionAt": "2026-10-09T22:45:42.425Z"
     },
     {
       "id": "scout-b",
@@ -72,7 +72,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T13:33:56.022Z"
+      "lastActionAt": "2026-10-09T22:45:42.425Z"
     },
     {
       "id": "validator-a",
@@ -86,7 +86,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T13:33:56.022Z"
+      "lastActionAt": "2026-10-09T22:45:42.425Z"
     },
     {
       "id": "validator-b",
@@ -100,7 +100,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T13:33:56.022Z"
+      "lastActionAt": "2026-10-09T22:45:42.425Z"
     },
     {
       "id": "builder-a",
@@ -114,7 +114,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T13:33:56.022Z"
+      "lastActionAt": "2026-10-09T22:45:42.425Z"
     },
     {
       "id": "builder-b",
@@ -128,7 +128,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T13:33:56.022Z"
+      "lastActionAt": "2026-10-09T22:45:42.425Z"
     },
     {
       "id": "distribution-a",
@@ -142,7 +142,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T13:33:56.022Z"
+      "lastActionAt": "2026-10-09T22:45:42.425Z"
     },
     {
       "id": "distribution-b",
@@ -156,7 +156,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T13:33:56.022Z"
+      "lastActionAt": "2026-10-09T22:45:42.425Z"
     },
     {
       "id": "finance",
@@ -170,7 +170,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T13:33:56.022Z"
+      "lastActionAt": "2026-10-09T22:45:42.425Z"
     },
     {
       "id": "risk",
@@ -184,7 +184,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T13:33:56.022Z"
+      "lastActionAt": "2026-10-09T22:45:42.425Z"
     }
   ],
   "tasks": [
@@ -272,18 +272,6 @@
       "status": "watch"
     },
     {
-      "id": "50000356",
-      "title": "What is the actual percentage of people for and against AI?",
-      "url": "https://news.ycombinator.com/item?id=50000356",
-      "source": "ask",
-      "score": 56,
-      "offer": "AI workflow review micro-product",
-      "price": 9,
-      "format": "digital-service",
-      "channel": "search + direct product landing page",
-      "status": "watch"
-    },
-    {
       "id": "50004396",
       "title": "Ask HN: Why hasn't AI replaced Tax filing software",
       "url": "https://news.ycombinator.com/item?id=50004396",
@@ -355,21 +343,6 @@
       "nextGate": "wait for higher-ranked experiment"
     },
     {
-      "id": "exp-50000356",
-      "title": "AI workflow review micro-product",
-      "sourceTitle": "What is the actual percentage of people for and against AI?",
-      "sourceUrl": "https://news.ycombinator.com/item?id=50000356",
-      "score": 56,
-      "price": 9,
-      "channel": "search + direct product landing page",
-      "format": "digital-service",
-      "stage": "queued",
-      "revenueCents": 0,
-      "spendCents": 0,
-      "netProfitCents": 0,
-      "nextGate": "wait for higher-ranked experiment"
-    },
-    {
       "id": "exp-50004396",
       "title": "AI workflow review micro-product",
       "sourceTitle": "Ask HN: Why hasn't AI replaced Tax filing software",
@@ -383,11 +356,26 @@
       "spendCents": 0,
       "netProfitCents": 0,
       "nextGate": "wait for higher-ranked experiment"
+    },
+    {
+      "id": "exp-50010880",
+      "title": "AI workflow review micro-product",
+      "sourceTitle": "Ontological Language Model (OLM) + LLM: Deterministic AI Advancement",
+      "sourceUrl": "https://news.ycombinator.com/item?id=50010880",
+      "score": 50,
+      "price": 9,
+      "channel": "search + direct product landing page",
+      "format": "digital-service",
+      "stage": "queued",
+      "revenueCents": 0,
+      "spendCents": 0,
+      "netProfitCents": 0,
+      "nextGate": "wait for higher-ranked experiment"
     }
   ],
   "eventLog": [
     {
-      "at": "2026-10-09T13:33:56.022Z",
+      "at": "2026-10-09T22:45:42.425Z",
       "type": "cycle",
       "message": "10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized."
     }
