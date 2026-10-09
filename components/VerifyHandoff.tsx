@@ -116,13 +116,13 @@ export default function VerifyHandoff() {
       </div>
       <form onSubmit={handleSubmit} noValidate>
         <label htmlFor="claim">Factual claim <span>Required · up to 1,000 characters</span></label>
-        <textarea id="claim" value={claim} onChange={event => { setClaim(event.target.value); setStatus(''); setCopied(null) }} maxLength={1200} rows={4} placeholder="Example: The product’s published documentation states that feature X is available on plan Y." required />
+        <textarea id="claim" value={claim} onChange={event => { setClaim(event.target.value); setStatus(''); setCopied(null); setPublicLinkApproved(false) }} maxLength={1200} rows={4} placeholder="Example: The product’s published documentation states that feature X is available on plan Y." required />
         {claimError && <p className={styles.error}>{claimError}</p>}
         <label htmlFor="source-url">Public source URL <span>Required · HTTP(S)</span></label>
-        <input id="source-url" type="url" inputMode="url" autoCapitalize="none" autoCorrect="off" spellCheck={false} value={sourceUrl} onChange={event => { setSourceUrl(event.target.value); setStatus(''); setCopied(null) }} maxLength={2048} placeholder="https://example.com/documentation" required />
+        <input id="source-url" type="url" inputMode="url" autoCapitalize="none" autoCorrect="off" spellCheck={false} value={sourceUrl} onChange={event => { setSourceUrl(event.target.value); setStatus(''); setCopied(null); setPublicLinkApproved(false) }} maxLength={2048} placeholder="https://example.com/documentation" required />
         {sourceError && <p className={styles.error}>{sourceError}</p>}
         <label htmlFor="ttl">Evidence freshness window</label>
-        <select id="ttl" value={ttlSeconds} onChange={event => { setTtlSeconds(event.target.value); setCopied(null) }}>
+        <select id="ttl" value={ttlSeconds} onChange={event => { setTtlSeconds(event.target.value); setCopied(null); setPublicLinkApproved(false) }}>
           <option value="3600">1 hour</option>
           <option value="86400">24 hours</option>
           <option value="604800">7 days</option>
