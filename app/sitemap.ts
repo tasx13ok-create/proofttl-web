@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/',
     '/about/',
     '/audit/',
+    '/verify/',
     '/audit/sample/',
     '/ai-fact-checker/',
     '/stress-test/',

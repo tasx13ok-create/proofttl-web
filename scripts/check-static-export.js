@@ -1,6 +1,6 @@
 import { access, readFile } from 'node:fs/promises'
 
-const requiredFiles = ['package.json','out/index.html','out/audit/index.html','out/audit/sample/index.html','out/audit/status/index.html','out/robots.txt','out/_headers','components/CommercialHome.tsx','components/AuditIntakeForm.tsx','scripts/check-public-sales-shell.js']
+const requiredFiles = ['package.json','out/index.html','out/verify/index.html','out/audit/index.html','out/audit/sample/index.html','out/audit/status/index.html','out/robots.txt','out/_headers','components/CommercialHome.tsx','components/AuditIntakeForm.tsx','components/VerifyHandoff.tsx','app/verify/page.tsx','scripts/check-public-sales-shell.js','scripts/check-redirect-handoff.mjs']
 
 async function expect(file, values, label = file) {
   const text = await readFile(file, 'utf8')

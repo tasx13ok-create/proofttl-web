@@ -2,6 +2,7 @@ https://proofttl-web.vercel.app/
 https://proofttl-web.vercel.app/about/
 https://proofttl-web.vercel.app/ai-fact-checker/
 https://proofttl-web.vercel.app/audit/
+https://proofttl-web.vercel.app/verify/
 https://proofttl-web.vercel.app/audit/sample/
 https://proofttl-web.vercel.app/services/
 https://proofttl-web.vercel.app/services/ai-claim-verification/
