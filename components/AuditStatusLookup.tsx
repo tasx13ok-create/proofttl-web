@@ -55,6 +55,7 @@ export default function AuditStatusLookup() {
       paidReturn = params.get('paid') === '1'
       if (paidReturn) setReturnMessage('Checking the stored Stripe payment confirmation. The checkout return alone does not confirm payment.')
       else if (params.get('cancelled') === '1') setReturnMessage('Checkout was cancelled. Your approved scope remains stored and can be paid later while checkout is valid.')
+      else if (params.get('submitted') === '1') setReturnMessage('Your request was submitted and its reference is being checked below. Keep the reference shown on this page. Email confirmations are not available yet, so use this page to track scope review and payment status.')
     } catch {}
 
     let cancelled = false
