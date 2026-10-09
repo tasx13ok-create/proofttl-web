@@ -25,7 +25,7 @@ export default function VerifyPage() {
       <section className={styles.notes} aria-label="Verification boundaries">
         <h2>Before you verify</h2>
         <ul>
-          <li>Only submit information you are authorized to share. Do not submit confidential claims: issued Fact Leases may be public.</li>
+          <li>Only submit information you are authorized to share. Do not submit confidential claims: issued verification records may be public.</li>
           <li>A public HTTP(S) source URL is required. ProofTTL checks source and network safety before accessing it.</li>
           <li>Preparing or copying a request does not run an audit or charge you. Verification requires the existing x402 payment authorization and an explicit decision to submit it.</li>
           <li>Results are time-bounded evidence assessments: SUPPORTED, CONTRADICTED, or UNKNOWN. They are not a guarantee of permanent truth.</li>
