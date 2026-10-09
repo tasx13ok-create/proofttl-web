@@ -1,0 +1,51 @@
+.page {
+  min-height: 100vh;
+  padding: 0 20px 72px;
+  color: #f4f5f7;
+  background: #070809;
+}
+.hero, .notes {
+  width: min(100%, 920px);
+  margin: 0 auto;
+}
+.hero {
+  padding: clamp(42px, 8vw, 88px) 0 28px;
+}
+.eyebrow {
+  margin: 0 0 16px;
+  color: #9ca3af;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: .16em;
+}
+.hero h1 {
+  margin: 0;
+  font-size: clamp(42px, 7vw, 76px);
+  line-height: .98;
+  letter-spacing: -.055em;
+  font-weight: 760;
+}
+.hero h1 span { color: #a9b8ff; }
+.lede {
+  max-width: 680px;
+  margin: 24px 0 0;
+  color: #b4bac5;
+  font-size: clamp(16px, 2vw, 19px);
+  line-height: 1.65;
+}
+.notes {
+  margin-top: 32px;
+  border-top: 1px solid #292c33;
+  padding-top: 26px;
+  color: #aeb4bf;
+  line-height: 1.7;
+  font-size: 14px;
+}
+.notes h2 { color: #f4f5f7; font-size: 19px; margin: 0 0 10px; }
+.notes ul { padding-left: 22px; }
+.notes li { margin: 8px 0; }
+.notes a { color: #c2ccff; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 560px) {
+  .page { padding-inline: 16px; }
+  .hero { padding-top: 42px; }
+}
