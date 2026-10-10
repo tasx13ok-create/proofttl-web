@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-09T22:45:42.425Z",
+  "generatedAt": "2026-10-10T06:04:08.236Z",
   "system": "FOUNDRY-10",
   "mode": "zero-spend",
   "cloudOnly": true,
@@ -58,7 +58,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T22:45:42.425Z"
+      "lastActionAt": "2026-10-10T06:04:08.236Z"
     },
     {
       "id": "scout-b",
@@ -72,7 +72,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T22:45:42.425Z"
+      "lastActionAt": "2026-10-10T06:04:08.236Z"
     },
     {
       "id": "validator-a",
@@ -86,7 +86,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T22:45:42.425Z"
+      "lastActionAt": "2026-10-10T06:04:08.236Z"
     },
     {
       "id": "validator-b",
@@ -100,7 +100,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T22:45:42.425Z"
+      "lastActionAt": "2026-10-10T06:04:08.236Z"
     },
     {
       "id": "builder-a",
@@ -114,7 +114,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T22:45:42.425Z"
+      "lastActionAt": "2026-10-10T06:04:08.236Z"
     },
     {
       "id": "builder-b",
@@ -128,7 +128,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T22:45:42.425Z"
+      "lastActionAt": "2026-10-10T06:04:08.236Z"
     },
     {
       "id": "distribution-a",
@@ -142,7 +142,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T22:45:42.425Z"
+      "lastActionAt": "2026-10-10T06:04:08.236Z"
     },
     {
       "id": "distribution-b",
@@ -156,7 +156,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T22:45:42.425Z"
+      "lastActionAt": "2026-10-10T06:04:08.236Z"
     },
     {
       "id": "finance",
@@ -170,7 +170,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T22:45:42.425Z"
+      "lastActionAt": "2026-10-10T06:04:08.236Z"
     },
     {
       "id": "risk",
@@ -184,7 +184,7 @@
       "mode": "deterministic-zero-spend",
       "usage": null,
       "revenueInfluencedCents": 0,
-      "lastActionAt": "2026-10-09T22:45:42.425Z"
+      "lastActionAt": "2026-10-10T06:04:08.236Z"
     }
   ],
   "tasks": [
@@ -272,6 +272,18 @@
       "status": "watch"
     },
     {
+      "id": "50029232",
+      "title": "Data centre company's much-hyped Australian stock market listing imploded",
+      "url": "https://www.theguardian.com/australia-news/2026/oct/09/firmus-australian-stock-market-listing-bust-finance",
+      "source": "top",
+      "score": 54,
+      "offer": "Focused checklist + template",
+      "price": 5,
+      "format": "digital-kit",
+      "channel": "search + direct product landing page",
+      "status": "reject"
+    },
+    {
       "id": "50004396",
       "title": "Ask HN: Why hasn't AI replaced Tax filing software",
       "url": "https://news.ycombinator.com/item?id=50004396",
@@ -292,6 +304,18 @@
       "offer": "AI workflow review micro-product",
       "price": 9,
       "format": "digital-service",
+      "channel": "search + direct product landing page",
+      "status": "reject"
+    },
+    {
+      "id": "50021410",
+      "title": "Can you use autoregressive diffusion to generate market data?",
+      "url": "https://blog.janestreet.com/can-you-use-autoregressive-diffusion-to-generate-market-data/",
+      "source": "top",
+      "score": 46,
+      "offer": "Focused checklist + template",
+      "price": 5,
+      "format": "digital-kit",
       "channel": "search + direct product landing page",
       "status": "reject"
     }
@@ -343,6 +367,21 @@
       "nextGate": "wait for higher-ranked experiment"
     },
     {
+      "id": "exp-50029232",
+      "title": "Focused checklist + template",
+      "sourceTitle": "Data centre company's much-hyped Australian stock market listing imploded",
+      "sourceUrl": "https://www.theguardian.com/australia-news/2026/oct/09/firmus-australian-stock-market-listing-bust-finance",
+      "score": 54,
+      "price": 5,
+      "channel": "search + direct product landing page",
+      "format": "digital-kit",
+      "stage": "queued",
+      "revenueCents": 0,
+      "spendCents": 0,
+      "netProfitCents": 0,
+      "nextGate": "wait for higher-ranked experiment"
+    },
+    {
       "id": "exp-50004396",
       "title": "AI workflow review micro-product",
       "sourceTitle": "Ask HN: Why hasn't AI replaced Tax filing software",
@@ -356,26 +395,11 @@
       "spendCents": 0,
       "netProfitCents": 0,
       "nextGate": "wait for higher-ranked experiment"
-    },
-    {
-      "id": "exp-50010880",
-      "title": "AI workflow review micro-product",
-      "sourceTitle": "Ontological Language Model (OLM) + LLM: Deterministic AI Advancement",
-      "sourceUrl": "https://news.ycombinator.com/item?id=50010880",
-      "score": 50,
-      "price": 9,
-      "channel": "search + direct product landing page",
-      "format": "digital-service",
-      "stage": "queued",
-      "revenueCents": 0,
-      "spendCents": 0,
-      "netProfitCents": 0,
-      "nextGate": "wait for higher-ranked experiment"
     }
   ],
   "eventLog": [
     {
-      "at": "2026-10-09T22:45:42.425Z",
+      "at": "2026-10-10T06:04:08.236Z",
       "type": "cycle",
       "message": "10 agents completed five paired task passes. The $5 Release Gate remains the baseline live offer; no revenue is counted unless recorded as realized."
     }
